@@ -12,22 +12,27 @@ program
 program
   .command("search")
   .argument("[query]")
-  .description("Search domain availability across 30 TLDs")
-  .action(async (query: string | undefined) => {
+  .option("--tlds <tlds>", "Comma-separated TLDs to check (e.g. com,io,dev)")
+  .description("Search domain availability across TLDs")
+  .action(async (query: string | undefined, opts: { tlds?: string }) => {
     if (!query) {
-      console.error("Usage: temper search <name>");
+      console.error("Usage: temper search <name> [--tlds=com,io,dev]");
       process.exit(1);
     }
 
     const config = await loadConfig();
     setTheme(config.theme);
 
+    const tlds = opts.tlds
+      ? opts.tlds.split(",").map((t) => t.replace(/^\./, "").trim())
+      : undefined;
+
     const { render } = await import("ink");
     const React = (await import("react")).default;
     const { default: App } = await import("./tui/App");
 
     const isTTY = process.stdin.isTTY;
-    const instance = render(React.createElement(App, { query }), {
+    const instance = render(React.createElement(App, { query, tlds }), {
       ...(isTTY ? { alternateScreen: true } : { stdin: false as never }),
     });
 
@@ -39,7 +44,7 @@ program
 program
   .command("suggest")
   .argument("[query]")
-  .description("Generate name combinations and check .com availability")
+  .description("Generate name combinations and check availability")
   .action(async (query: string | undefined) => {
     if (!query) {
       console.error("Usage: temper suggest <name>");
@@ -79,6 +84,66 @@ program
     instance.waitUntilExit().then(() => {
       process.exit(0);
     });
+  });
+
+program
+  .command("history")
+  .description("Show search history")
+  .action(async () => {
+    const { loadHistory } = await import("./config/history");
+    const history = await loadHistory();
+
+    if (history.length === 0) {
+      console.log("  No search history yet.");
+      return;
+    }
+
+    for (const entry of history) {
+      const date = new Date(entry.timestamp);
+      const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      console.log(
+        `  ${dateStr}  ${entry.query.padEnd(20)} ${entry.available}/${entry.total} available`,
+      );
+    }
+  });
+
+program
+  .command("watch")
+  .argument("<domain>")
+  .description("Add a domain to watchlist")
+  .action(async (domain: string) => {
+    const { addWatch } = await import("./config/watchlist");
+    await addWatch(domain);
+    console.log(`  ✓ Added ${domain} to watchlist`);
+  });
+
+program
+  .command("list")
+  .description("Show watchlist with current availability")
+  .action(async () => {
+    const { loadWatchlist } = await import("./config/watchlist");
+    const { dnsCheck } = await import("./checker/dns");
+
+    const watchlist = await loadWatchlist();
+
+    if (watchlist.length === 0) {
+      console.log("  Watchlist is empty. Use: temper watch <domain>");
+      return;
+    }
+
+    console.log("");
+    for (const entry of watchlist) {
+      const status = await dnsCheck(entry.domain);
+      const icon = status === "available" ? "✓" : "✗";
+      const color = status === "available" ? "\x1b[32m" : "\x1b[31m";
+      const reset = "\x1b[0m";
+      const dateStr = new Date(entry.addedAt).toLocaleDateString();
+      const suffix = status === "available" ? "  ← available!" : "";
+      console.log(
+        `  ${color}${icon}${reset} ${entry.domain.padEnd(25)} ${color}${status.padEnd(12)}${reset} added ${dateStr}${suffix}`,
+      );
+    }
+    console.log("");
   });
 
 const configCmd = program

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { checkDomains } from "../checker/checker";
 import type { DomainResult } from "../checker/types";
 import { DEFAULT_TLDS } from "../checker/types";
+import { addHistory } from "../config/history";
 import { openBrowser } from "../registrar/browser";
 import { type Registrar, buildURL } from "../registrar/urls";
 import KeyHints from "./KeyHints";
@@ -61,14 +62,22 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
     }, 100);
 
     (async () => {
+      const collected: DomainResult[] = [];
       for await (const result of checkDomains(query, tlds)) {
         if (cancelledRef.current) break;
+        collected.push(result);
         setResults((prev) => new Map(prev).set(result.domain, result));
       }
       clearInterval(timer);
       setElapsed(Math.round(performance.now() - startTime));
       if (!cancelledRef.current) {
         setScreenState("selecting");
+        addHistory({
+          query,
+          timestamp: new Date().toISOString(),
+          available: collected.filter((r) => r.status === "available").length,
+          total: collected.length,
+        });
       }
     })();
 
