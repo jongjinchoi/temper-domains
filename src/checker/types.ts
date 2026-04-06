@@ -23,3 +23,13 @@ export const DEFAULT_TLDS = [
   "store", "site", "online", "dev", "tech", "pro", "live", "lol", "club", "vip",
   "link", "top", "me", "tv", "blog", "cloud", "design", "studio", "art", "fun",
 ] as const;
+
+export const EXTENDED_TLDS = [
+  ...DEFAULT_TLDS,
+  "one", "world", "digital", "global", "space", "plus",
+  "media", "email", "host", "page", "ltd", "biz",
+  "agency", "social", "stream", "zone", "website", "team",
+  "work", "life", "love", "best", "cool", "today",
+  "guru", "bio",
+  "gg", "sh", "so",
+] as const;

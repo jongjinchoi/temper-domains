@@ -4,6 +4,9 @@ const WHOIS_SERVERS: Record<string, string> = {
   io: "whois.nic.io",
   co: "whois.registry.co",
   me: "whois.nic.me",
+  gg: "whois.gg",
+  sh: "whois.nic.sh",
+  so: "whois.nic.so",
 };
 
 async function whoisRaw(

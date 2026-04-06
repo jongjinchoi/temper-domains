@@ -40,11 +40,16 @@ function formatResults(name: string, results: DomainResult[]): string {
 
 server.tool(
   "search_domain",
-  "Check domain availability across 30 TLDs. Input a name without TLD (e.g. 'keycove') and get availability for .com, .io, .app, .dev, etc.",
-  { name: z.string().describe("Domain name without TLD, e.g. 'keycove'") },
-  async ({ name }) => {
+  "Check domain availability across TLDs. Default 30 TLDs, or 64 with extended=true.",
+  {
+    name: z.string().describe("Domain name without TLD, e.g. 'keycove'"),
+    extended: z.boolean().optional().describe("Check 64 TLDs instead of 30"),
+  },
+  async ({ name, extended }) => {
+    const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types");
+    const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
-    for await (const result of checkDomains(name)) {
+    for await (const result of checkDomains(name, tlds)) {
       results.push(result);
     }
     const text = formatResults(name, results);

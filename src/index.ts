@@ -13,19 +13,24 @@ program
   .command("search")
   .argument("[query]")
   .option("--tlds <tlds>", "Comma-separated TLDs to check (e.g. com,io,dev)")
+  .option("--extended", "Check 64 TLDs instead of 30")
   .description("Search domain availability across TLDs")
-  .action(async (query: string | undefined, opts: { tlds?: string }) => {
+  .action(async (query: string | undefined, opts: { tlds?: string; extended?: boolean }) => {
     if (!query) {
-      console.error("Usage: temper search <name> [--tlds=com,io,dev]");
+      console.error("Usage: temper search <name> [--tlds=com,io,dev] [--extended]");
       process.exit(1);
     }
 
     const config = await loadConfig();
     setTheme(config.theme);
 
-    const tlds = opts.tlds
-      ? opts.tlds.split(",").map((t) => t.replace(/^\./, "").trim())
-      : undefined;
+    let tlds: string[] | undefined;
+    if (opts.tlds) {
+      tlds = opts.tlds.split(",").map((t) => t.replace(/^\./, "").trim());
+    } else if (opts.extended) {
+      const { EXTENDED_TLDS } = await import("./checker/types");
+      tlds = [...EXTENDED_TLDS];
+    }
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
