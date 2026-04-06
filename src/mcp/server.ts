@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { getBootstrap, getRdapUrl } from "../checker/bootstrap";
 import { checkDomains } from "../checker/checker";
-import { pLimit } from "../checker/limiter";
+import { getServerLimit, pLimit } from "../checker/limiter";
 import { rdapLookup } from "../checker/rdap";
 import type { DomainResult } from "../checker/types";
 import { whoisLookup } from "../checker/whois";
@@ -76,28 +76,22 @@ const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.tool(
   "suggest_domain",
-  "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai.",
+  "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
   { name: z.string().describe("Base name, e.g. 'keycove'") },
   async ({ name }) => {
+    const { dnsCheck } = await import("../checker/dns");
     const combinations = [name];
     for (const p of PREFIXES) combinations.push(`${p}${name}`);
     for (const s of SUFFIXES) combinations.push(`${name}${s}`);
 
-    await getBootstrap();
-    const controller = new AbortController();
-    const limit = pLimit(20);
-
+    const limit = pLimit(30);
     const resultMap = new Map<string, string>();
 
     const tasks = combinations.flatMap((n) =>
       SUGGEST_TLDS.map((tld) =>
         limit(async () => {
-          const domain = `${n}.${tld}`;
-          const rdapUrl = getRdapUrl(tld);
-          const r = rdapUrl
-            ? await rdapLookup(domain, rdapUrl, controller.signal)
-            : await whoisLookup(domain, controller.signal);
-          resultMap.set(`${n}:${tld}`, r.status);
+          const status = await dnsCheck(`${n}.${tld}`);
+          resultMap.set(`${n}:${tld}`, status);
         }),
       ),
     );

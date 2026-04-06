@@ -1,9 +1,7 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useMemo, useState } from "react";
-import { getBootstrap, getRdapUrl } from "../checker/bootstrap";
+import { dnsCheck } from "../checker/dns";
 import { pLimit } from "../checker/limiter";
-import { rdapLookup } from "../checker/rdap";
-import { whoisLookup } from "../checker/whois";
 import type { DomainStatus } from "../checker/types";
 import Spinner from "./Spinner";
 import { getStatusStyle, theme } from "./theme";
@@ -12,7 +10,7 @@ const PREFIXES = ["get", "use", "try", "my", "go", "join"];
 const SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
-type ResultKey = string; // "name:tld"
+type ResultKey = string;
 function makeKey(name: string, tld: string): ResultKey {
   return `${name}:${tld}`;
 }
@@ -39,21 +37,15 @@ export default function SuggestView({ query }: { query: string }) {
       setElapsed(Math.round(performance.now() - startTime));
     }, 100);
 
-    const controller = new AbortController();
-    const limit = pLimit(20);
+    const limit = pLimit(30);
 
     (async () => {
-      await getBootstrap();
-
       const tasks = combinations.flatMap((name) =>
         SUGGEST_TLDS.map((tld) =>
           limit(async () => {
             const domain = `${name}.${tld}`;
-            const rdapUrl = getRdapUrl(tld);
-            const result = rdapUrl
-              ? await rdapLookup(domain, rdapUrl, controller.signal)
-              : await whoisLookup(domain, controller.signal);
-            setResults((prev) => new Map(prev).set(makeKey(name, tld), result.status));
+            const status = await dnsCheck(domain);
+            setResults((prev) => new Map(prev).set(makeKey(name, tld), status));
           }),
         ),
       );
@@ -64,10 +56,7 @@ export default function SuggestView({ query }: { query: string }) {
       setDone(true);
     })();
 
-    return () => {
-      controller.abort();
-      clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, [combinations]);
 
   useInput(
@@ -77,7 +66,6 @@ export default function SuggestView({ query }: { query: string }) {
     { isActive: process.stdin.isTTY === true },
   );
 
-  const availableCount = [...results.values()].filter((s) => s === "available").length;
   const elapsedSec = (elapsed / 1000).toFixed(1);
 
   return (
