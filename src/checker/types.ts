@@ -33,3 +33,10 @@ export const EXTENDED_TLDS = [
   "guru", "bio",
   "gg", "sh", "so",
 ] as const;
+
+export const TLD_PRESETS: Record<string, readonly string[]> = {
+  popular: ["com", "net", "org", "io", "co", "app", "dev", "ai", "me"],
+  tech: ["io", "ai", "dev", "app", "gg", "sh", "tech", "cloud", "digital"],
+  startup: ["com", "io", "co", "ai", "app", "dev", "xyz", "so", "gg"],
+  cheap: ["xyz", "fun", "lol", "top", "site", "online", "store", "shop", "club"],
+};

@@ -17,12 +17,13 @@ type ScreenState = "searching" | "selecting" | "registrar";
 interface Props {
   query: string;
   tlds?: readonly string[];
+  onlyAvailable?: boolean;
 }
 
 // header(1) + marginBottom(1) + footer(1) + marginTop(1) + border top/bottom(2)
 const CHROME_LINES = 6;
 
-export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
+export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
@@ -99,7 +100,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
 
       if (screenState === "selecting") {
         if (key.downArrow || input === "j") {
-          setCursor((prev) => Math.min(prev + 1, allDomains.length - 1));
+          setCursor((prev) => Math.min(prev + 1, displayDomains.length - 1));
         } else if (key.upArrow || input === "k") {
           setCursor((prev) => Math.max(prev - 1, 0));
         } else if (key.return) {
@@ -133,11 +134,17 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
   const count = results.size;
   const total = allDomains.length;
   const elapsedSec = (elapsed / 1000).toFixed(1);
-  const selectedDomain = allDomains[cursor];
+
+  // Filter domains if onlyAvailable
+  const displayDomains = onlyAvailable && screenState !== "searching"
+    ? allDomains.filter((d) => results.get(d)?.status === "available")
+    : allDomains;
+
+  const selectedDomain = displayDomains[cursor];
 
   // Visible slice of domains
-  const visibleDomains = allDomains.slice(viewOffset, viewOffset + visibleCount);
-  const hasMore = viewOffset + visibleCount < allDomains.length;
+  const visibleDomains = displayDomains.slice(viewOffset, viewOffset + visibleCount);
+  const hasMore = viewOffset + visibleCount < displayDomains.length;
   const hasLess = viewOffset > 0;
 
   const searchingHints = [{ key: "q", action: "quit" }];
@@ -188,7 +195,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
             <Text color={theme.dim}>  ↑ {viewOffset} more</Text>
           )}
           {visibleDomains.map((domain) => {
-            const i = allDomains.indexOf(domain);
+            const i = displayDomains.indexOf(domain);
             return (
               <ResultRow
                 key={domain}
@@ -199,7 +206,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS }: Props) {
             );
           })}
           {hasMore && (
-            <Text color={theme.dim}>  ↓ {allDomains.length - viewOffset - visibleCount} more</Text>
+            <Text color={theme.dim}>  ↓ {displayDomains.length - viewOffset - visibleCount} more</Text>
           )}
         </Box>
       )}

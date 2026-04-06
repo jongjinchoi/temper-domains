@@ -6,24 +6,33 @@ import type { DomainStatus } from "../checker/types";
 import Spinner from "./Spinner";
 import { getStatusStyle, theme } from "./theme";
 
-const PREFIXES = ["get", "use", "try", "my", "go", "join"];
-const SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
+const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"];
+const DEFAULT_SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
+
+interface Props {
+  query: string;
+  prefixes?: string[];
+  suffixes?: string[];
+}
 
 type ResultKey = string;
 function makeKey(name: string, tld: string): ResultKey {
   return `${name}:${tld}`;
 }
 
-export default function SuggestView({ query }: { query: string }) {
+export default function SuggestView({ query, prefixes, suffixes }: Props) {
   const { exit } = useApp();
+
+  const pList = prefixes ?? DEFAULT_PREFIXES;
+  const sList = suffixes ?? DEFAULT_SUFFIXES;
 
   const combinations = useMemo(() => {
     const names = [query];
-    for (const p of PREFIXES) names.push(`${p}${query}`);
-    for (const s of SUFFIXES) names.push(`${query}${s}`);
+    for (const p of pList) names.push(`${p}${query}`);
+    for (const s of sList) names.push(`${query}${s}`);
     return names;
-  }, [query]);
+  }, [query, pList, sList]);
 
   const [results, setResults] = useState<Map<ResultKey, DomainStatus>>(new Map());
   const [done, setDone] = useState(false);
