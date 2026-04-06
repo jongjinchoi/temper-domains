@@ -34,5 +34,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Internal docs (not for repo)
-temper-domains-prd.md
-temper-tui-mockup.html
+docs/internal/

@@ -1,8 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { getBootstrap, getRdapUrl } from "../checker/bootstrap";
 import { checkDomains } from "../checker/checker";
+import { pLimit } from "../checker/limiter";
+import { rdapLookup } from "../checker/rdap";
 import type { DomainResult } from "../checker/types";
+import { whoisLookup } from "../checker/whois";
 import { openBrowser } from "../registrar/browser";
 import { type Registrar, buildURL } from "../registrar/urls";
 
@@ -63,6 +67,60 @@ server.tool(
     return {
       content: [{ type: "text" as const, text: `Opened ${registrar} for ${domain}: ${url}` }],
     };
+  },
+);
+
+const PREFIXES = ["get", "use", "try", "my", "go", "join"];
+const SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
+const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
+
+server.tool(
+  "suggest_domain",
+  "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai.",
+  { name: z.string().describe("Base name, e.g. 'keycove'") },
+  async ({ name }) => {
+    const combinations = [name];
+    for (const p of PREFIXES) combinations.push(`${p}${name}`);
+    for (const s of SUFFIXES) combinations.push(`${name}${s}`);
+
+    await getBootstrap();
+    const controller = new AbortController();
+    const limit = pLimit(20);
+
+    const resultMap = new Map<string, string>();
+
+    const tasks = combinations.flatMap((n) =>
+      SUGGEST_TLDS.map((tld) =>
+        limit(async () => {
+          const domain = `${n}.${tld}`;
+          const rdapUrl = getRdapUrl(tld);
+          const r = rdapUrl
+            ? await rdapLookup(domain, rdapUrl, controller.signal)
+            : await whoisLookup(domain, controller.signal);
+          resultMap.set(`${n}:${tld}`, r.status);
+        }),
+      ),
+    );
+
+    await Promise.allSettled(tasks);
+
+    const header = `${"name".padEnd(20)} ${SUGGEST_TLDS.map((t) => `.${t}`.padEnd(8)).join("")}`;
+    const lines = [header];
+
+    for (const n of combinations) {
+      const cols = SUGGEST_TLDS.map((tld) => {
+        const status = resultMap.get(`${n}:${tld}`) ?? "error";
+        const icon = status === "available" ? "✓" : "✗";
+        return icon.padEnd(8);
+      }).join("");
+      lines.push(`${n.padEnd(20)} ${cols}`);
+    }
+
+    const available = [...resultMap.values()].filter((s) => s === "available").length;
+    const total = resultMap.size;
+    lines.push(`\n${available}/${total} available`);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
   },
 );
 
