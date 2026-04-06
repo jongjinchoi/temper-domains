@@ -18,12 +18,13 @@ interface Props {
   query: string;
   tlds?: readonly string[];
   onlyAvailable?: boolean;
+  timeoutMs?: number;
 }
 
 // header(1) + marginBottom(1) + footer(1) + marginTop(1) + border top/bottom(2)
 const CHROME_LINES = 6;
 
-export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false }: Props) {
+export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
@@ -64,7 +65,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
     (async () => {
       const collected: DomainResult[] = [];
-      for await (const result of checkDomains(query, tlds)) {
+      for await (const result of checkDomains(query, tlds, { timeoutMs })) {
         if (cancelledRef.current) break;
         collected.push(result);
         setResults((prev) => new Map(prev).set(result.domain, result));

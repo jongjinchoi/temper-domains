@@ -18,6 +18,7 @@ program
   .option("--extended", "Check 59 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
+  .option("-t, --timeout <seconds>", "Timeout in seconds (default: 3)", "3")
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
     const config = await loadConfig();
@@ -40,13 +41,15 @@ program
       tlds = [...EXTENDED_TLDS];
     }
 
+    const timeoutMs = parseInt(opts.timeout, 10) * 1000;
+
     // JSON output mode — no Ink
     if (opts.format === "json") {
       const { checkDomains } = await import("./checker/checker");
       const allResults = [];
       for (const query of queries) {
         const results = [];
-        for await (const r of checkDomains(query, tlds)) {
+        for await (const r of checkDomains(query, tlds, { timeoutMs })) {
           if (opts.onlyAvailable && r.status !== "available") continue;
           results.push(r);
         }
@@ -65,7 +68,7 @@ program
     const query = queries[0];
     const isTTY = process.stdin.isTTY;
     const instance = render(
-      React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable }),
+      React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable, timeoutMs }),
       { ...(isTTY ? { alternateScreen: true } : { stdin: false as never }) },
     );
 
