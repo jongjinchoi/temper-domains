@@ -118,6 +118,67 @@ server.tool(
   },
 );
 
+server.tool(
+  "check_domain_availability",
+  "Check availability for a list of full domain names. Uses DNS fast-check then RDAP verification for accuracy. Max 100 domains.",
+  {
+    domains: z
+      .array(z.string())
+      .max(100)
+      .describe("List of full domain names, e.g. ['keycove.com', 'getkeycove.dev']"),
+  },
+  async ({ domains }) => {
+    const { dnsCheck } = await import("../checker/dns");
+
+    await getBootstrap();
+    const limit = pLimit(30);
+
+    // Step 1: DNS fast check (no rate limits)
+    const dnsResults = new Map<string, string>();
+    await Promise.allSettled(
+      domains.map((domain) =>
+        limit(async () => {
+          const status = await dnsCheck(domain);
+          dnsResults.set(domain, status);
+        }),
+      ),
+    );
+
+    // Step 2: RDAP verify only DNS "available" results (prevent false positives)
+    const needsVerify = domains.filter((d) => dnsResults.get(d) === "available");
+    const verifyLimit = pLimit(10);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    await Promise.allSettled(
+      needsVerify.map((domain) =>
+        verifyLimit(async () => {
+          const tld = domain.split(".").pop()!;
+          const rdapUrl = getRdapUrl(tld);
+          if (!rdapUrl) return;
+          const r = await rdapLookup(domain, rdapUrl, controller.signal);
+          if (r.status === "taken") dnsResults.set(domain, "taken");
+        }),
+      ),
+    );
+
+    clearTimeout(timeout);
+
+    // Format output
+    const lines = ["Domain availability check:\n"];
+    for (const domain of domains) {
+      const status = dnsResults.get(domain) ?? "error";
+      const icon = status === "available" ? "✓" : "✗";
+      lines.push(`${icon} ${domain.padEnd(30)} ${status}`);
+    }
+
+    const available = [...dnsResults.values()].filter((s) => s === "available").length;
+    lines.push(`\n${available}/${domains.length} available`);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
 export async function startMcpServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
