@@ -1,10 +1,8 @@
 import { Box, Text, useApp, useInput, useStdout } from "ink";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { checkDomains } from "../checker/checker.ts";
-import type { DomainResult } from "../checker/types.ts";
+import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_TLDS } from "../checker/types.ts";
-import { addHistory } from "../config/history.ts";
 import { addWatch } from "../config/watchlist.ts";
+import { useSearchExecution } from "./hooks/useSearchExecution.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, buildURL } from "../registrar/urls.ts";
 import FrameBox from "./FrameBox.tsx";
@@ -40,16 +38,19 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     return () => { stdout.off("resize", onResize); };
   }, [stdout]);
 
+  const { results, count, elapsed, done } = useSearchExecution(query, tlds, timeoutMs);
+
   const [screenState, setScreenState] = useState<ScreenState>("searching");
-  const [results, setResults] = useState<Map<string, DomainResult>>(new Map());
   const [cursor, setCursor] = useState(0);
   const [viewOffset, setViewOffset] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const [filterText, setFilterText] = useState("");
-  const cancelledRef = useRef(false);
   const maxVisible = Math.max(5, termRows - CHROME_LINES);
   const visibleCount = Math.min(maxVisible, allDomains.length);
+
+  useEffect(() => {
+    if (done) setScreenState("selecting");
+  }, [done]);
 
   useEffect(() => {
     if (cursor < viewOffset) {
@@ -58,38 +59,6 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       setViewOffset(cursor - visibleCount + 1);
     }
   }, [cursor, viewOffset, visibleCount]);
-
-  useEffect(() => {
-    const startTime = performance.now();
-    const timer = setInterval(() => {
-      setElapsed(Math.round(performance.now() - startTime));
-    }, 100);
-
-    (async () => {
-      const collected: DomainResult[] = [];
-      for await (const result of checkDomains(query, tlds, { timeoutMs })) {
-        if (cancelledRef.current) break;
-        collected.push(result);
-        setResults((prev) => new Map(prev).set(result.domain, result));
-      }
-      clearInterval(timer);
-      setElapsed(Math.round(performance.now() - startTime));
-      if (!cancelledRef.current) {
-        setScreenState("selecting");
-        addHistory({
-          query,
-          timestamp: new Date().toISOString(),
-          available: collected.filter((r) => r.status === "available").length,
-          total: collected.length,
-        }).catch(() => {});
-      }
-    })();
-
-    return () => {
-      cancelledRef.current = true;
-      clearInterval(timer);
-    };
-  }, [query, tlds]);
 
   // Filter domains early so keyboard handler can reference it
   let displayDomains = onlyAvailable && screenState !== "searching"
@@ -178,7 +147,6 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     setScreenState("selecting");
   };
 
-  const count = results.size;
   const total = allDomains.length;
   const elapsedSec = (elapsed / 1000).toFixed(1);
 
