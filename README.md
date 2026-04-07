@@ -55,7 +55,7 @@ $ temper search localhoston
 
 ```bash
 # Homebrew (macOS/Linux)
-brew tap choi-jongjin/temper
+brew tap jongjinchoi/temper
 brew install temper
 
 # Or run with Bun
@@ -163,21 +163,21 @@ temper runs as a local MCP server. Your AI assistant searches domains without yo
 | `open_registrar` | Open purchase page in browser |
 
 ```
-You:    "I'm building a habit tracker called streakly. Find me a domain."
+You:    "I'm building a local dev server tool called localhoston. Find me a domain."
 
 Claude: [calls search_domain]
-        streakly.com is taken, but these are available:
-        - streakly.dev
-        - streakly.app
-        - streakly.io
+        localhoston.com is taken, but these are available:
+        - localhoston.dev
+        - localhoston.app
+        - localhoston.io
 
-You:    "Check getstreakly and trystreakly too"
+You:    "Check getlocalhoston and trylocalhoston too"
 
 Claude: [calls check_domain_availability]
-        ✓ getstreakly.com — available
-        ✓ trystreakly.com — available
+        ✓ getlocalhoston.com — available
+        ✓ trylocalhoston.com — available
 
-You:    "Open Cloudflare for getstreakly.com"
+You:    "Open Cloudflare for getlocalhoston.com"
 
 Claude: [calls open_registrar]
         Done. Cloudflare opened in your browser.
