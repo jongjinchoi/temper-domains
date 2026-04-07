@@ -1,3 +1,7 @@
+import { readFile } from "node:fs/promises";
+
+const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
+
 const TARGETS = [
   "bun-darwin-arm64",
   "bun-darwin-x64",
@@ -28,6 +32,9 @@ for (const t of buildTargets) {
     },
     minify: true,
     sourcemap: "linked",
+    define: {
+      "PKG_VERSION": JSON.stringify(pkg.version),
+    },
   });
 
   if (result.success) {

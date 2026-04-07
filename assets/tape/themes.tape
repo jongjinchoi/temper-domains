@@ -1,4 +1,4 @@
-Output assets/themes.gif
+Output assets/screenshots/themes.gif
 
 Require temper
 
@@ -17,7 +17,7 @@ Type "temper search localhoston"
 Enter
 Show
 Sleep 5s
-Screenshot assets/theme-temper-forge.png
+Screenshot assets/screenshots/theme-temper-forge.png
 Sleep 1s
 Type "q"
 Sleep 500ms
@@ -31,7 +31,7 @@ Type "temper search localhoston"
 Enter
 Show
 Sleep 5s
-Screenshot assets/theme-seoul-night.png
+Screenshot assets/screenshots/theme-seoul-night.png
 Sleep 1s
 Type "q"
 Sleep 500ms
@@ -45,7 +45,7 @@ Type "temper search localhoston"
 Enter
 Show
 Sleep 5s
-Screenshot assets/theme-catppuccin-mocha.png
+Screenshot assets/screenshots/theme-catppuccin-mocha.png
 Sleep 1s
 Type "q"
 Sleep 500ms
@@ -59,7 +59,7 @@ Type "temper search localhoston"
 Enter
 Show
 Sleep 5s
-Screenshot assets/theme-dracula.png
+Screenshot assets/screenshots/theme-dracula.png
 Sleep 1s
 Type "q"
 Sleep 500ms
@@ -73,7 +73,7 @@ Type "temper search localhoston"
 Enter
 Show
 Sleep 5s
-Screenshot assets/theme-default.png
+Screenshot assets/screenshots/theme-default.png
 Sleep 1s
 Type "q"
 Sleep 500ms
