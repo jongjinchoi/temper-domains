@@ -29,3 +29,10 @@ export async function addHistory(entry: HistoryEntry): Promise<void> {
   await mkdir(join(homedir(), ".temper"), { recursive: true });
   await Bun.write(HISTORY_FILE, JSON.stringify(history, null, 2) + "\n");
 }
+
+export async function removeHistoryAt(index: number): Promise<void> {
+  const history = await loadHistory();
+  history.splice(index, 1);
+  await mkdir(join(homedir(), ".temper"), { recursive: true });
+  await Bun.write(HISTORY_FILE, JSON.stringify(history, null, 2) + "\n");
+}

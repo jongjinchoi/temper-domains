@@ -68,7 +68,7 @@ program
     const query = queries[0];
     const instance = render(
       React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable, timeoutMs }),
-      { incrementalRendering: true },
+      {},
     );
 
     instance.waitUntilExit().then(() => {
@@ -101,7 +101,7 @@ program
 
     const instance = render(
       React.createElement(SuggestView, { query, prefixes, suffixes }),
-      { incrementalRendering: true },
+      {},
     );
 
     instance.waitUntilExit().then(() => {
@@ -114,14 +114,14 @@ program
   .command("init")
   .description("Set up temper (registrar + theme)")
   .action(async () => {
+    const config = await loadConfig();
+    setTheme(config.theme);
+
     const { render } = await import("ink");
     const React = (await import("react")).default;
     const { default: InitView } = await import("./tui/InitView");
 
-    const isTTY = process.stdin.isTTY;
-    const instance = render(React.createElement(InitView), {
-      ...(isTTY ? {} : { stdin: false as never }),
-    });
+    const instance = render(React.createElement(InitView, { currentConfig: config }), {});
 
     instance.waitUntilExit().then(() => {
       process.exit(0);
@@ -133,21 +133,15 @@ program
   .command("history")
   .description("Show search history")
   .action(async () => {
-    const { loadHistory } = await import("./config/history");
-    const history = await loadHistory();
+    const config = await loadConfig();
+    setTheme(config.theme);
 
-    if (history.length === 0) {
-      console.log("  No search history yet.");
-      return;
-    }
+    const { render } = await import("ink");
+    const React = (await import("react")).default;
+    const { default: HistoryView } = await import("./tui/HistoryView");
 
-    for (const entry of history) {
-      const date = new Date(entry.timestamp);
-      const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-      console.log(
-        `  ${dateStr}  ${entry.query.padEnd(20)} ${entry.available}/${entry.total} available`,
-      );
-    }
+    const instance = render(React.createElement(HistoryView), {});
+    instance.waitUntilExit().then(() => process.exit(0));
   });
 
 // --- watch ---
@@ -166,29 +160,15 @@ program
   .command("list")
   .description("Show watchlist with current availability")
   .action(async () => {
-    const { loadWatchlist } = await import("./config/watchlist");
-    const { dnsCheck } = await import("./checker/dns");
+    const config = await loadConfig();
+    setTheme(config.theme);
 
-    const watchlist = await loadWatchlist();
+    const { render } = await import("ink");
+    const React = (await import("react")).default;
+    const { default: WatchlistView } = await import("./tui/WatchlistView");
 
-    if (watchlist.length === 0) {
-      console.log("  Watchlist is empty. Use: temper watch <domain>");
-      return;
-    }
-
-    console.log("");
-    for (const entry of watchlist) {
-      const status = await dnsCheck(entry.domain);
-      const icon = status === "available" ? "✓" : "✗";
-      const color = status === "available" ? "\x1b[32m" : "\x1b[31m";
-      const reset = "\x1b[0m";
-      const dateStr = new Date(entry.addedAt).toLocaleDateString();
-      const suffix = status === "available" ? "  ← available!" : "";
-      console.log(
-        `  ${color}${icon}${reset} ${entry.domain.padEnd(25)} ${color}${status.padEnd(12)}${reset} added ${dateStr}${suffix}`,
-      );
-    }
-    console.log("");
+    const instance = render(React.createElement(WatchlistView), {});
+    instance.waitUntilExit().then(() => process.exit(0));
   });
 
 // --- show-presets ---

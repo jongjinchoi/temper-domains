@@ -1,6 +1,5 @@
 import { Box, Text, useInput } from "ink";
 import { type Registrar, REGISTRAR_META } from "../registrar/urls";
-import KeyHints from "./KeyHints";
 import { theme } from "./theme";
 
 interface Props {
@@ -16,6 +15,13 @@ const HOTKEY_MAP: Record<string, Registrar> = {
   v: "vercel",
 };
 
+const BRAND_COLORS: Record<string, string> = {
+  cloudflare: "peach",
+  porkbun: "maroon",
+  namecheap: "red",
+  vercel: "text",
+};
+
 export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
   useInput((input, key) => {
     if (key.escape) {
@@ -29,11 +35,11 @@ export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
   });
 
   return (
-    <Box flexDirection="column" paddingX={1}>
+    <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text color={theme.text}>Selected: </Text>
+        <Text color={theme.dim}>Selected:  </Text>
         <Text color={theme.green}>{domain}</Text>
-        <Text color={theme.green}> ✓ available</Text>
+        <Text color={theme.green}>  ✓ available</Text>
       </Box>
 
       <Box
@@ -44,28 +50,21 @@ export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
         paddingY={1}
       >
         <Box marginBottom={1}>
-          <Text color={theme.text} bold>
-            Where to buy?
-          </Text>
+          <Text color={theme.text} bold>Where to buy?</Text>
         </Box>
 
-        {REGISTRAR_META.map((r) => (
-          <Box key={r.key}>
-            <Text color={theme.primary}>[{r.hotkey}]</Text>
-            <Text> </Text>
-            <Text color={theme.text}>{r.label.padEnd(12)}</Text>
-            <Text color={theme.dim}>{r.description}</Text>
-          </Box>
-        ))}
-      </Box>
-
-      <Box marginTop={1}>
-        <KeyHints
-          hints={[
-            { key: "c/p/n/v", action: "select" },
-            { key: "esc", action: "cancel" },
-          ]}
-        />
+        {REGISTRAR_META.map((r) => {
+          const brandColorKey = BRAND_COLORS[r.key] ?? "text";
+          const brandColor = theme[brandColorKey as keyof typeof theme] ?? theme.text;
+          return (
+            <Box key={r.key}>
+              <Text color={theme.blue} bold>[{r.hotkey}]</Text>
+              <Text> </Text>
+              <Text color={brandColor}>{r.label.padEnd(14)}</Text>
+              <Text color={theme.dim}>{r.description}</Text>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

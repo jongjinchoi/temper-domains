@@ -4,33 +4,34 @@ import { checkDomains } from "../checker/checker";
 import type { DomainResult } from "../checker/types";
 import { DEFAULT_TLDS } from "../checker/types";
 import { addHistory } from "../config/history";
+import { addWatch } from "../config/watchlist";
 import { openBrowser } from "../registrar/browser";
 import { type Registrar, buildURL } from "../registrar/urls";
-import KeyHints from "./KeyHints";
+import FrameBox from "./FrameBox";
+import ProgressBar from "./ProgressBar";
 import RegistrarModal from "./RegistrarModal";
 import ResultRow from "./ResultRow";
 import Spinner from "./Spinner";
 import { theme } from "./theme";
 
-type ScreenState = "searching" | "selecting" | "registrar";
+type ScreenState = "searching" | "selecting" | "filtering" | "registrar";
 
 interface Props {
   query: string;
   tlds?: readonly string[];
   onlyAvailable?: boolean;
   timeoutMs?: number;
+  onBack?: () => void;
 }
 
-// header(1) + marginBottom(1) + footer(1) + marginTop(1) + border top/bottom(2)
-const CHROME_LINES = 6;
+const CHROME_LINES = 8;
 
-export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs }: Props) {
+export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, onBack }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
   const allDomains = useMemo(() => tlds.map((tld) => `${query}.${tld}`), [query, tlds]);
 
-  // Track terminal resize
   useEffect(() => {
     const onResize = () => setTermRows(stdout.rows ?? 40);
     stdout.on("resize", onResize);
@@ -43,11 +44,11 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const [viewOffset, setViewOffset] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [filterText, setFilterText] = useState("");
   const cancelledRef = useRef(false);
   const maxVisible = Math.max(5, termRows - CHROME_LINES);
   const visibleCount = Math.min(maxVisible, allDomains.length);
 
-  // Keep cursor within visible window
   useEffect(() => {
     if (cursor < viewOffset) {
       setViewOffset(cursor);
@@ -56,7 +57,6 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     }
   }, [cursor, viewOffset, visibleCount]);
 
-  // Progressive rendering: stream results from checker
   useEffect(() => {
     const startTime = performance.now();
     const timer = setInterval(() => {
@@ -89,13 +89,37 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     };
   }, [query, tlds]);
 
-  // Keyboard handling
+  // Filter domains early so keyboard handler can reference it
+  let displayDomains = onlyAvailable && screenState !== "searching"
+    ? allDomains.filter((d) => results.get(d)?.status === "available")
+    : allDomains;
+
+  if (filterText) {
+    displayDomains = displayDomains.filter((d) => d.includes(filterText));
+  }
+
   useInput(
     (input, key) => {
       if (screenState === "registrar") return;
 
+      if (screenState === "filtering") {
+        if (key.escape) {
+          setFilterText("");
+          setScreenState("selecting");
+          setCursor(0);
+        } else if (key.return) {
+          setScreenState("selecting");
+          setCursor(0);
+        } else if (key.backspace || key.delete) {
+          setFilterText((prev) => prev.slice(0, -1));
+        } else if (input && !key.ctrl && !key.meta) {
+          setFilterText((prev) => prev + input);
+        }
+        return;
+      }
+
       if (input === "q" || key.escape) {
-        exit();
+        onBack ? onBack() : exit();
         return;
       }
 
@@ -104,11 +128,23 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           setCursor((prev) => Math.min(prev + 1, displayDomains.length - 1));
         } else if (key.upArrow || input === "k") {
           setCursor((prev) => Math.max(prev - 1, 0));
+        } else if (input === "/") {
+          setScreenState("filtering");
+          setFilterText("");
+        } else if (input === "w") {
+          const domain = displayDomains[cursor];
+          if (domain) {
+            addWatch(domain);
+            setConfirmation(`✓ Added ${domain} to watchlist`);
+            setTimeout(() => setConfirmation(null), 3000);
+          }
         } else if (key.return) {
-          const domain = allDomains[cursor];
-          const result = results.get(domain);
-          if (result && result.status === "available") {
-            setScreenState("registrar");
+          const domain = displayDomains[cursor];
+          if (domain) {
+            const result = results.get(domain);
+            if (result && result.status === "available") {
+              setScreenState("registrar");
+            }
           }
         }
       }
@@ -117,15 +153,13 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   );
 
   const handleRegistrarSelect = (registrar: Registrar) => {
-    const domain = allDomains[cursor];
+    const domain = displayDomains[cursor];
+    if (!domain) return;
     const url = buildURL(registrar, domain);
     openBrowser(url);
     setConfirmation(`✓ Opening ${registrar} for ${domain}...`);
     setScreenState("selecting");
-
-    setTimeout(() => {
-      setConfirmation(null);
-    }, 3000);
+    setTimeout(() => setConfirmation(null), 3000);
   };
 
   const handleRegistrarCancel = () => {
@@ -136,52 +170,70 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const total = allDomains.length;
   const elapsedSec = (elapsed / 1000).toFixed(1);
 
-  // Filter domains if onlyAvailable
-  const displayDomains = onlyAvailable && screenState !== "searching"
-    ? allDomains.filter((d) => results.get(d)?.status === "available")
-    : allDomains;
-
   const selectedDomain = displayDomains[cursor];
 
-  // Visible slice of domains
   const visibleDomains = displayDomains.slice(viewOffset, viewOffset + visibleCount);
   const hasMore = viewOffset + visibleCount < displayDomains.length;
   const hasLess = viewOffset > 0;
 
-  const searchingHints = [{ key: "q", action: "quit" }];
+  const searchingHints = [
+    { key: "ctrl+c", action: "cancel" },
+    { key: "esc", action: "back" },
+  ];
   const selectingHints = [
     { key: "j/k", action: "move" },
+    { key: "/", action: "filter" },
     { key: "enter", action: "buy" },
+    { key: "w", action: "watch" },
     { key: "q", action: "quit" },
   ];
+  const filteringHints = [
+    { key: "esc", action: "clear" },
+    { key: "enter", action: "confirm" },
+  ];
+  const registrarHints = [
+    { key: "c/p/n/v", action: "select" },
+    { key: "esc", action: "cancel" },
+  ];
+
+  const currentHints =
+    screenState === "searching" ? searchingHints :
+    screenState === "filtering" ? filteringHints :
+    screenState === "registrar" ? registrarHints :
+    selectingHints;
 
   return (
-    <Box flexDirection="column" borderStyle="single" borderColor={theme.border} paddingX={1}>
+    <FrameBox title={`temper search ${query}`} hints={currentHints}>
       {/* Header */}
       <Box marginBottom={1}>
         {screenState === "searching" ? (
-          <Text wrap="truncate-end">
+          <Text>
             <Spinner />
-            <Text color={theme.text}>
-              {" "}
-              Searching {total} TLDs...{" "}
-            </Text>
-            <Text color={theme.primary}>
-              {count}/{total}
-            </Text>
-            <Text color={theme.dim}> ({elapsedSec}s)</Text>
+            <Text color={theme.text}> Searching {total} TLDs...  </Text>
+            <Text color={theme.lavender}>{count}/{total}</Text>
+            <Text color={theme.dim}>  ({elapsedSec}s elapsed)</Text>
           </Text>
         ) : (
-          <Text wrap="truncate-end">
+          <Text>
             <Text color={theme.green}>✓</Text>
-            <Text color={theme.text}> Search complete </Text>
-            <Text color={theme.primary}>
-              {count}/{total}
-            </Text>
-            <Text color={theme.dim}> ({elapsedSec}s)</Text>
+            <Text color={theme.text}> Search complete  </Text>
+            <Text color={theme.lavender}>{count}/{total}</Text>
+            <Text color={theme.dim}>  ({elapsedSec}s)</Text>
           </Text>
         )}
       </Box>
+
+      {/* Filter input */}
+      {screenState === "filtering" && (
+        <Box marginBottom={1}>
+          <Text>
+            <Text color={theme.blue} bold>/</Text>
+            <Text color={theme.text}> Filter: </Text>
+            <Text color={theme.lavender}>{filterText}</Text>
+            <Text color={theme.primary}>█</Text>
+          </Text>
+        </Box>
+      )}
 
       {/* Body */}
       {screenState === "registrar" && selectedDomain ? (
@@ -192,9 +244,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         />
       ) : (
         <Box flexDirection="column">
-          {hasLess && (
-            <Text color={theme.dim}>  ↑ {viewOffset} more</Text>
-          )}
+          {hasLess && <Text color={theme.dim}>  ↑ {viewOffset} more</Text>}
           {visibleDomains.map((domain) => {
             const i = displayDomains.indexOf(domain);
             return (
@@ -202,14 +252,25 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
                 key={domain}
                 domain={domain}
                 result={results.get(domain) ?? null}
-                isSelected={screenState === "selecting" && i === cursor}
+                isSelected={screenState !== "searching" && i === cursor}
+                showTime={screenState === "searching"}
               />
             );
           })}
-          {hasMore && (
-            <Text color={theme.dim}>  ↓ {displayDomains.length - viewOffset - visibleCount} more</Text>
-          )}
+          {hasMore && <Text color={theme.dim}>  ↓ {displayDomains.length - viewOffset - visibleCount} more</Text>}
         </Box>
+      )}
+
+      {/* Progress bar during search */}
+      {screenState === "searching" && (
+        <Box marginTop={1}>
+          <ProgressBar current={count} total={total} />
+        </Box>
+      )}
+
+      {/* Filter match count */}
+      {screenState === "filtering" && (
+        <Text color={theme.dim}>{displayDomains.length} of {allDomains.length} matches</Text>
       )}
 
       {/* Confirmation */}
@@ -218,11 +279,6 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           <Text color={theme.green}>{confirmation}</Text>
         </Box>
       )}
-
-      {/* Footer */}
-      <Box marginTop={1}>
-        <KeyHints hints={screenState === "searching" ? searchingHints : selectingHints} />
-      </Box>
-    </Box>
+    </FrameBox>
   );
 }

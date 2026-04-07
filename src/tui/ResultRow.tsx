@@ -1,4 +1,4 @@
-import { Box, Text } from "ink";
+import { Text } from "ink";
 import type { DomainResult } from "../checker/types";
 import { getStatusStyle, theme } from "./theme";
 
@@ -6,47 +6,29 @@ interface Props {
   domain: string;
   result: DomainResult | null;
   isSelected: boolean;
+  showTime?: boolean;
 }
 
-export default function ResultRow({ domain, result, isSelected }: Props) {
-  const indicator = isSelected ? "▸" : " ";
-  const indicatorColor = isSelected ? theme.primary : undefined;
-  const bgColor = isSelected ? theme.surface : undefined;
-
+export default function ResultRow({ domain, result, isSelected, showTime = true }: Props) {
   if (!result) {
     return (
-      <Box>
-        <Text wrap="truncate-end" backgroundColor={bgColor}>
-          <Text color={indicatorColor}>{indicator}</Text>
-          {"  "}
-          <Text>{domain.padEnd(20)}</Text>
-          {"  "}
-          <Text color={theme.dim}>… checking</Text>
-        </Text>
-      </Box>
+      <Text wrap="truncate-end">
+        {isSelected ? <Text color={theme.primary}>  ▸ </Text> : <Text>    </Text>}
+        <Text color={theme.text}>{domain.padEnd(20)}</Text>
+        <Text color={theme.dim}>  … checking</Text>
+      </Text>
     );
   }
 
   const { icon, color } = getStatusStyle(result.status);
-  const time = `${result.responseTime}ms`;
-  const method = result.method === "whois" ? " (whois)" : "";
+  const time = showTime ? `(${(result.responseTime / 1000).toFixed(2)}s${result.method === "whois" ? ", whois" : ""})` : "";
 
   return (
-    <Box>
-      <Text wrap="truncate-end" backgroundColor={bgColor}>
-        <Text color={indicatorColor}>{indicator}</Text>
-        {"  "}
-        <Text>{domain.padEnd(20)}</Text>
-        {"  "}
-        <Text color={color}>
-          {icon} {result.status.padEnd(12)}
-        </Text>
-        {"  "}
-        <Text color={theme.dim}>
-          {time}
-          {method}
-        </Text>
-      </Text>
-    </Box>
+    <Text wrap="truncate-end" backgroundColor={isSelected ? theme.surface : undefined}>
+      {isSelected ? <Text color={theme.primary}>  ▸ </Text> : <Text>    </Text>}
+      <Text color={isSelected ? theme.text : theme.text}>{domain.padEnd(20)}</Text>
+      <Text color={color}>  {icon} {result.status.padEnd(12)}</Text>
+      {showTime && <Text color={theme.dim}>  {time}</Text>}
+    </Text>
   );
 }

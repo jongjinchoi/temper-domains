@@ -74,7 +74,7 @@ temper search myproject --tld-preset tech         # preset: tech, popular, start
 temper search myproject -a                        # available only
 temper search myproject -t 5                      # 5s timeout (default: 3)
 temper search myproject --format json             # JSON output for piping
-temper search localhoston myproject streakly          # multiple keywords
+temper search localhoston dashflow calmbox             # multiple keywords
 ```
 
 Select a domain with `j`/`k`, press `Enter`, pick a registrar (`c` Cloudflare · `p` Porkbun · `n` Namecheap · `v` Vercel) — the purchase page opens in your browser.
