@@ -243,21 +243,46 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 | `check_domain_availability` | Verify a list of domains (up to 100) |
 | `open_registrar` | Open purchase page in browser |
 
+**Example: Brainstorm from scratch**
+
 ```
-You:    "I'm building a local dev server tool called localhoston. Find me a domain."
+You:    "I'm building a health management app. Suggest domain names."
+
+Claude: [generates candidates: wellbi, vitalo, medra, healix, ...]
+        [calls search_domain for each]
+        [calls suggest_domain for top picks]
+
+        Top Pick: wellbi.app
+        - Short, pronounceable, .app TLD fits mobile apps
+        - getwellbi.com also available
+
+        ⚠ Medra means "fear" in Spanish — avoid for global use
+        💡 Check @wellbi on social media before registering
+```
+
+**Example: Search with a name**
+
+```
+You:    "Find domains for localhoston"
 
 Claude: [calls search_domain]
         localhoston.com is taken, but these are available:
-        - localhoston.dev
-        - localhoston.app
-        - localhoston.io
+        - localhoston.dev, localhoston.app, localhoston.io
+```
 
-You:    "Check getlocalhoston and trylocalhoston too"
+**Example: Check specific domains**
+
+```
+You:    "Check getlocalhoston.com and trylocalhoston.com"
 
 Claude: [calls check_domain_availability]
         ✓ getlocalhoston.com — available
         ✓ trylocalhoston.com — available
+```
 
+**Example: Buy a domain**
+
+```
 You:    "Open Cloudflare for getlocalhoston.com"
 
 Claude: [calls open_registrar]
