@@ -15,8 +15,7 @@
   </p>
 </p>
 
-<!-- TODO: demo GIF -->
-<!-- <p align="center"><img src="./assets/demo.gif" width="600" /></p> -->
+<p align="center"><img src="./assets/demo.gif" width="600" /></p>
 
 ---
 
@@ -79,7 +78,7 @@ temper search localhoston dashflow calmbox             # multiple keywords
 
 Select a domain with `j`/`k`, press `Enter`, pick a registrar (`c` Cloudflare · `p` Porkbun · `n` Namecheap · `v` Vercel) — the purchase page opens in your browser.
 
-<!-- TODO: search screenshot -->
+<p align="center"><img src="./assets/search.png" width="600" /></p>
 
 #### TLD Presets
 
@@ -120,7 +119,7 @@ temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
 Default prefixes: `get` `use` `try` `my` `go` `join`
 Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 
-<!-- TODO: suggest screenshot -->
+<p align="center"><img src="./assets/suggest.png" width="600" /></p>
 
 ### Watchlist & History
 
@@ -187,8 +186,11 @@ All queries run locally. No data leaves your machine.
 
 <h2 id="themes">Themes</h2>
 
-<!-- TODO: theme screenshots -->
-<!-- <p align="center"><img src="./assets/themes.png" width="600" /></p> -->
+| | |
+|---|---|
+| ![Temper Forge](./assets/theme-temper-forge.png) | ![Seoul Night](./assets/theme-seoul-night.png) |
+| ![Catppuccin Mocha](./assets/theme-catppuccin-mocha.png) | ![Dracula](./assets/theme-dracula.png) |
+| ![Default](./assets/theme-default.png) | |
 
 | Theme | |
 |-------|---|
