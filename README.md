@@ -27,15 +27,15 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 **temper fixes this.** One command. 30 TLDs. Under 2 seconds.
 
 ```
-$ temper search keycove
+$ temper search localhoston
 
   ✓ Search complete 30/30 (1.7s)
 
-  keycove.com     ✗ taken         491ms
-  keycove.net     ✓ available     489ms
-  keycove.dev     ✓ available     314ms
-  keycove.io      ✓ available     359ms  (whois)
-  keycove.app     ✓ available     241ms
+  localhoston.com     ✗ taken         491ms
+  localhoston.net     ✓ available     489ms
+  localhoston.dev     ✓ available     314ms
+  localhoston.io      ✓ available     359ms  (whois)
+  localhoston.app     ✓ available     241ms
   ...
 
   j/k move · enter buy · q quit
@@ -74,7 +74,7 @@ temper search myproject --tld-preset tech         # preset: tech, popular, start
 temper search myproject -a                        # available only
 temper search myproject -t 5                      # 5s timeout (default: 3)
 temper search myproject --format json             # JSON output for piping
-temper search keycove myproject streakly          # multiple keywords
+temper search localhoston myproject streakly          # multiple keywords
 ```
 
 Select a domain with `j`/`k`, press `Enter`, pick a registrar (`c` Cloudflare · `p` Porkbun · `n` Namecheap · `v` Vercel) — the purchase page opens in your browser.
@@ -95,7 +95,7 @@ temper show-presets
 #### JSON output
 
 ```bash
-temper search keycove --format json | jq '.[] | select(.status == "available") | .domain'
+temper search localhoston --format json | jq '.[] | select(.status == "available") | .domain'
 ```
 
 ### Suggest
@@ -103,17 +103,17 @@ temper search keycove --format json | jq '.[] | select(.status == "available") |
 Generate name combinations and check availability across `.com` `.dev` `.io` `.app` `.ai`.
 
 ```bash
-temper suggest keycove                            # default prefixes + suffixes
-temper suggest keycove -p super,mega -s io,lab    # custom prefixes/suffixes
+temper suggest localhoston                            # default prefixes + suffixes
+temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
 ```
 
 ```
   name                .com    .dev    .io     .app    .ai
-  keycove             ✗       ✓       ✓       ✓       ✓
-  getkeycove          ✗       ✓       ✓       ✓       ✓
-  usekeycove          ✓       ✓       ✓       ✓       ✓
-  trykeycove          ✓       ✓       ✓       ✓       ✓
-  keycoveapp          ✓       ✓       ✓       ✓       ✓
+  localhoston             ✗       ✓       ✓       ✓       ✓
+  getlocalhoston          ✗       ✓       ✓       ✓       ✓
+  uselocalhoston          ✓       ✓       ✓       ✓       ✓
+  trylocalhoston          ✓       ✓       ✓       ✓       ✓
+  localhostonapp          ✓       ✓       ✓       ✓       ✓
   ...
 ```
 
@@ -125,7 +125,7 @@ Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 ### Watchlist & History
 
 ```bash
-temper watch keycove.com      # track a taken domain
+temper watch localhoston.com      # track a taken domain
 temper list                   # check current status
 temper history                # view past searches
 ```
