@@ -1,4 +1,4 @@
-import { resolve } from "dns/promises";
+import { resolve } from "node:dns/promises";
 
 export async function dnsCheck(
   domain: string,

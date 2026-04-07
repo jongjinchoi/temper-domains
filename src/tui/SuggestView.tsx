@@ -2,14 +2,13 @@ import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useMemo, useState } from "react";
 import { dnsCheck } from "../checker/dns.ts";
 import { pLimit } from "../checker/limiter.ts";
+import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
 import type { DomainStatus } from "../checker/types.ts";
 import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
 import Spinner from "./Spinner.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 
-const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"];
-const DEFAULT_SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
 const CHECK_TLD = "com";
 
 interface Props {

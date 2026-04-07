@@ -40,3 +40,6 @@ export const TLD_PRESETS: Record<string, readonly string[]> = {
   startup: ["com", "io", "co", "ai", "app", "dev", "xyz", "so", "gg"],
   cheap: ["xyz", "fun", "lol", "top", "site", "online", "store", "shop", "club"],
 };
+
+export const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"] as const;
+export const DEFAULT_SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"] as const;

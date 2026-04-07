@@ -81,7 +81,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           timestamp: new Date().toISOString(),
           available: collected.filter((r) => r.status === "available").length,
           total: collected.length,
-        });
+        }).catch(() => {});
       }
     })();
 
@@ -146,7 +146,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         } else if (input === "a") {
           const domain = displayDomains[cursor];
           if (domain) {
-            addWatch(domain);
+            addWatch(domain).catch(() => {});
             setConfirmation(`✓ Added ${domain} to watchlist`);
             setTimeout(() => setConfirmation(null), 3000);
           }

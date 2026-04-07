@@ -1,7 +1,6 @@
-import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { readJson, writeJson } from "../utils/fs.ts";
+import { ensureConfigDir, readJson, writeJson } from "../utils/fs.ts";
 
 const WATCHLIST_FILE = join(homedir(), ".temper", "watchlist.json");
 
@@ -15,7 +14,7 @@ export async function loadWatchlist(): Promise<WatchEntry[]> {
 }
 
 async function saveWatchlist(entries: WatchEntry[]): Promise<void> {
-  await mkdir(join(homedir(), ".temper"), { recursive: true });
+  await ensureConfigDir();
   await writeJson(WATCHLIST_FILE, entries);
 }
 

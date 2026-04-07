@@ -4,6 +4,8 @@ import { rdapLookup } from "./rdap.ts";
 import type { DomainResult } from "./types.ts";
 import { DEFAULT_TLDS } from "./types.ts";
 import { whoisLookup } from "./whois.ts";
+import { getTld } from "../utils/domain.ts";
+import { sanitizeDomain } from "../utils/validate.ts";
 
 export async function* checkDomains(
   name: string,
@@ -17,14 +19,15 @@ export async function* checkDomains(
 
   await getBootstrap();
 
-  const domains = tlds.map((tld) => `${name}.${tld}`);
+  const safeName = sanitizeDomain(name);
+  const domains = tlds.map((tld) => `${safeName}.${tld}`);
   const results: DomainResult[] = [];
   let resolveNext: (() => void) | null = null;
 
   const allDone = Promise.allSettled(
     domains.map((domain) =>
       globalLimit(async () => {
-        const tld = domain.split(".").pop()!;
+        const tld = getTld(domain);
         const rdapUrl = getRdapUrl(tld);
         let result: DomainResult;
 

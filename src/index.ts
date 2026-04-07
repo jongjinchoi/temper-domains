@@ -3,12 +3,15 @@ import { Command } from "commander";
 import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 
+declare const PKG_VERSION: string;
+const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
+
 const program = new Command();
 
 program
   .name("temper")
   .description("Never leave your terminal to find a domain.")
-  .version("0.1.0");
+  .version(VERSION);
 
 // --- search ---
 program
@@ -43,7 +46,8 @@ program
       tlds = [...EXTENDED_TLDS];
     }
 
-    const timeoutMs = parseInt(opts.timeout, 10) * 1000;
+    const parsed = parseInt(opts.timeout, 10);
+    const timeoutMs = Number.isNaN(parsed) ? 3000 : parsed * 1000;
 
     // JSON output mode — no Ink
     if (opts.format === "json") {

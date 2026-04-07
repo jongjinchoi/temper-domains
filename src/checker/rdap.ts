@@ -1,12 +1,13 @@
 import type { DomainResult } from "./types.ts";
+import { getTld } from "../utils/domain.ts";
 
 export async function rdapLookup(
   domain: string,
   rdapBaseUrl: string,
   signal: AbortSignal,
 ): Promise<DomainResult> {
-  const tld = domain.split(".").pop()!;
-  const url = `${rdapBaseUrl.replace(/\/$/, "")}/domain/${domain}`;
+  const tld = getTld(domain);
+  const url = `${rdapBaseUrl.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
   const start = performance.now();
 
   try {

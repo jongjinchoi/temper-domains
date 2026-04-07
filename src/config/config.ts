@@ -1,10 +1,8 @@
-import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { readJson, writeJson } from "../utils/fs.ts";
+import { ensureConfigDir, readJson, writeJson } from "../utils/fs.ts";
 
-const CONFIG_DIR = join(homedir(), ".temper");
-const CONFIG_FILE = join(CONFIG_DIR, "config.json");
+const CONFIG_FILE = join(homedir(), ".temper", "config.json");
 
 export interface TemperConfig {
   theme: string;
@@ -25,6 +23,6 @@ export async function loadConfig(): Promise<TemperConfig> {
 export async function saveConfig(partial: Partial<TemperConfig>): Promise<void> {
   const current = await loadConfig();
   const merged = { ...current, ...partial };
-  await mkdir(CONFIG_DIR, { recursive: true });
+  await ensureConfigDir();
   await writeJson(CONFIG_FILE, merged);
 }

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/logo/logo-dark.png" width="120" alt="temper">
+  <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-dark.png" width="120" alt="temper">
 </p>
 <h1 align="center">temper</h1>
 <p align="center">
@@ -16,7 +16,7 @@
   <a href="#themes">Themes</a>
 </p>
 
-<p align="center"><img src="./assets/screenshots/demo.gif" width="600" /></p>
+<p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/demo.gif" width="600" /></p>
 
 ---
 
@@ -77,7 +77,7 @@ temper search localhoston dashflow calmbox             # multiple keywords
 
 Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit.
 
-<p align="center"><img src="./assets/screenshots/search.png" width="600" /></p>
+<p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/search.png" width="600" /></p>
 
 #### TLD Presets
 
@@ -126,7 +126,7 @@ temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
 Default prefixes: `get` `use` `try` `my` `go` `join`
 Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 
-<p align="center"><img src="./assets/screenshots/suggest.png" width="600" /></p>
+<p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/suggest.png" width="600" /></p>
 
 ### Watchlist & History
 
@@ -247,9 +247,9 @@ All queries run locally. No data leaves your machine.
 
 | | |
 |---|---|
-| ![Temper Forge](./assets/screenshots/theme-temper-forge.png) | ![Seoul Night](./assets/screenshots/theme-seoul-night.png) |
-| ![Catppuccin Mocha](./assets/screenshots/theme-catppuccin-mocha.png) | ![Dracula](./assets/screenshots/theme-dracula.png) |
-| ![Default](./assets/screenshots/theme-default.png) | |
+| ![Temper Forge](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-temper-forge.png) | ![Seoul Night](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-seoul-night.png) |
+| ![Catppuccin Mocha](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-catppuccin-mocha.png) | ![Dracula](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-dracula.png) |
+| ![Default](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-default.png) | |
 
 | Theme | |
 |-------|---|

@@ -1,5 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 
+const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
+
 const result = await Bun.build({
   entrypoints: ["./src/index.ts"],
   outdir: "./dist/npm",
@@ -7,6 +9,9 @@ const result = await Bun.build({
   format: "esm",
   packages: "external",
   sourcemap: "linked",
+  define: {
+    "PKG_VERSION": JSON.stringify(pkg.version),
+  },
 });
 
 if (!result.success) {
@@ -14,7 +19,7 @@ if (!result.success) {
   process.exit(1);
 }
 
-// Add shebang to dist/index.js
+// Add shebang to dist/npm/index.js
 const indexPath = "./dist/npm/index.js";
 const content = await readFile(indexPath, "utf-8");
 if (!content.startsWith("#!/")) {

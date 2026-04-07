@@ -42,7 +42,10 @@ async function writeCache(data: BootstrapData): Promise<void> {
 }
 
 async function fetchBootstrap(): Promise<BootstrapData> {
-  const res = await fetch(BOOTSTRAP_URL);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  const res = await fetch(BOOTSTRAP_URL, { signal: controller.signal });
+  clearTimeout(timeout);
   if (!res.ok) throw new Error(`Bootstrap fetch failed: ${res.status}`);
   return res.json() as Promise<BootstrapData>;
 }

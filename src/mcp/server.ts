@@ -7,12 +7,16 @@ import { getServerLimit, pLimit } from "../checker/limiter.ts";
 import { rdapLookup } from "../checker/rdap.ts";
 import type { DomainResult } from "../checker/types.ts";
 import { whoisLookup } from "../checker/whois.ts";
+import { getTld } from "../utils/domain.ts";
 import { openBrowser } from "../registrar/browser.ts";
-import { type Registrar, buildURL } from "../registrar/urls.ts";
+import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
+
+declare const PKG_VERSION: string;
+const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
 
 const server = new McpServer({
   name: "temper",
-  version: "0.1.0",
+  version: VERSION,
 });
 
 function formatResults(name: string, results: DomainResult[]): string {
@@ -61,7 +65,7 @@ server.registerTool("open_registrar", {
   inputSchema: {
     domain: z.string().describe("Full domain name, e.g. 'localhoston.app'"),
     registrar: z
-      .enum(["cloudflare", "porkbun", "namecheap", "vercel"])
+      .enum(Object.keys(REGISTRAR_URLS) as [string, ...string[]])
       .describe("Registrar to open purchase page"),
   },
 }, async ({ domain, registrar }) => {
@@ -73,8 +77,7 @@ server.registerTool("open_registrar", {
   },
 );
 
-const PREFIXES = ["get", "use", "try", "my", "go", "join"];
-const SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
+import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.registerTool("suggest_domain", {
@@ -83,8 +86,8 @@ server.registerTool("suggest_domain", {
 }, async ({ name }) => {
     const { dnsCheck } = await import("../checker/dns.ts");
     const combinations = [name];
-    for (const p of PREFIXES) combinations.push(`${p}${name}`);
-    for (const s of SUFFIXES) combinations.push(`${name}${s}`);
+    for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${name}`);
+    for (const s of DEFAULT_SUFFIXES) combinations.push(`${name}${s}`);
 
     const limit = pLimit(30);
     const resultMap = new Map<string, string>();
@@ -154,7 +157,7 @@ server.registerTool("check_domain_availability", {
     await Promise.allSettled(
       needsVerify.map((domain) =>
         verifyLimit(async () => {
-          const tld = domain.split(".").pop()!;
+          const tld = getTld(domain);
           const rdapUrl = getRdapUrl(tld);
           if (!rdapUrl) return;
           const r = await rdapLookup(domain, rdapUrl, controller.signal);

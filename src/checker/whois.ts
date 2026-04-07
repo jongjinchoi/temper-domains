@@ -1,5 +1,6 @@
 import { createConnection } from "node:net";
 import type { DomainResult, DomainStatus } from "./types.ts";
+import { getTld } from "../utils/domain.ts";
 
 const WHOIS_SERVERS: Record<string, string> = {
   io: "whois.nic.io",
@@ -91,7 +92,7 @@ export async function whoisLookup(
   domain: string,
   signal: AbortSignal,
 ): Promise<DomainResult> {
-  const tld = domain.split(".").pop()!;
+  const tld = getTld(domain);
   const host = WHOIS_SERVERS[tld];
   if (!host) {
     return {
