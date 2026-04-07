@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import { theme } from "./theme";
+import { theme } from "./theme.ts";
 
 interface Hint {
   key: string;

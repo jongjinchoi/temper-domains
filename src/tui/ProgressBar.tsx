@@ -1,5 +1,5 @@
 import { Text } from "ink";
-import { theme } from "./theme";
+import { theme } from "./theme.ts";
 
 interface Props {
   current: number;

@@ -1,4 +1,4 @@
-import type { DomainStatus } from "../checker/types";
+import type { DomainStatus } from "../checker/types.ts";
 
 export interface ThemePalette {
   base: string;

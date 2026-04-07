@@ -1,6 +1,6 @@
 import { Box, Text, useInput } from "ink";
-import { type Registrar, REGISTRAR_META } from "../registrar/urls";
-import { theme } from "./theme";
+import { type Registrar, REGISTRAR_META } from "../registrar/urls.ts";
+import { theme } from "./theme.ts";
 
 interface Props {
   domain: string;

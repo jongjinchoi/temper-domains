@@ -1,9 +1,9 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useState } from "react";
-import { dnsCheck } from "../checker/dns";
-import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist";
-import FrameBox from "./FrameBox";
-import { theme } from "./theme";
+import { dnsCheck } from "../checker/dns.ts";
+import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist.ts";
+import FrameBox from "./FrameBox.tsx";
+import { theme } from "./theme.ts";
 
 interface WatchItem extends WatchEntry {
   status: "available" | "taken" | "error" | "checking";

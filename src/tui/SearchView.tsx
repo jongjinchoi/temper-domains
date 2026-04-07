@@ -1,18 +1,18 @@
 import { Box, Text, useApp, useInput, useStdout } from "ink";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { checkDomains } from "../checker/checker";
-import type { DomainResult } from "../checker/types";
-import { DEFAULT_TLDS } from "../checker/types";
-import { addHistory } from "../config/history";
-import { addWatch } from "../config/watchlist";
-import { openBrowser } from "../registrar/browser";
-import { type Registrar, buildURL } from "../registrar/urls";
-import FrameBox from "./FrameBox";
-import ProgressBar from "./ProgressBar";
-import RegistrarModal from "./RegistrarModal";
-import ResultRow from "./ResultRow";
-import Spinner from "./Spinner";
-import { theme } from "./theme";
+import { checkDomains } from "../checker/checker.ts";
+import type { DomainResult } from "../checker/types.ts";
+import { DEFAULT_TLDS } from "../checker/types.ts";
+import { addHistory } from "../config/history.ts";
+import { addWatch } from "../config/watchlist.ts";
+import { openBrowser } from "../registrar/browser.ts";
+import { type Registrar, buildURL } from "../registrar/urls.ts";
+import FrameBox from "./FrameBox.tsx";
+import ProgressBar from "./ProgressBar.tsx";
+import RegistrarModal from "./RegistrarModal.tsx";
+import ResultRow from "./ResultRow.tsx";
+import Spinner from "./Spinner.tsx";
+import { theme } from "./theme.ts";
 
 type ScreenState = "searching" | "selecting" | "filtering" | "registrar";
 

@@ -1,4 +1,5 @@
-import type { DomainResult, DomainStatus } from "./types";
+import { createConnection } from "node:net";
+import type { DomainResult, DomainStatus } from "./types.ts";
 
 const WHOIS_SERVERS: Record<string, string> = {
   io: "whois.nic.io",
@@ -17,32 +18,26 @@ async function whoisRaw(
   return new Promise<string>((resolve, reject) => {
     let data = "";
     const timer = setTimeout(() => {
+      socket.destroy();
       reject(new Error("whois timeout"));
     }, timeoutMs);
 
-    Bun.connect({
-      hostname: host,
-      port: 43,
-      socket: {
-        open(socket) {
-          socket.write(`${domain}\r\n`);
-        },
-        data(_socket, chunk) {
-          data += Buffer.from(chunk).toString();
-        },
-        close() {
-          clearTimeout(timer);
-          resolve(data);
-        },
-        error(_socket, err) {
-          clearTimeout(timer);
-          reject(err);
-        },
-        connectError(_socket, err) {
-          clearTimeout(timer);
-          reject(err);
-        },
-      },
+    const socket = createConnection(43, host, () => {
+      socket.write(`${domain}\r\n`);
+    });
+
+    socket.on("data", (chunk) => {
+      data += chunk.toString();
+    });
+
+    socket.on("end", () => {
+      clearTimeout(timer);
+      resolve(data);
+    });
+
+    socket.on("error", (err) => {
+      clearTimeout(timer);
+      reject(err);
     });
   });
 }

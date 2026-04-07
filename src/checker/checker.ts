@@ -1,9 +1,9 @@
-import { getBootstrap, getRdapUrl } from "./bootstrap";
-import { getServerLimit, pLimit } from "./limiter";
-import { rdapLookup } from "./rdap";
-import type { DomainResult } from "./types";
-import { DEFAULT_TLDS } from "./types";
-import { whoisLookup } from "./whois";
+import { getBootstrap, getRdapUrl } from "./bootstrap.ts";
+import { getServerLimit, pLimit } from "./limiter.ts";
+import { rdapLookup } from "./rdap.ts";
+import type { DomainResult } from "./types.ts";
+import { DEFAULT_TLDS } from "./types.ts";
+import { whoisLookup } from "./whois.ts";
 
 export async function* checkDomains(
   name: string,

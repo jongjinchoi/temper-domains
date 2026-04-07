@@ -1,6 +1,6 @@
 import { Text } from "ink";
-import type { DomainResult } from "../checker/types";
-import { getStatusStyle, theme } from "./theme";
+import type { DomainResult } from "../checker/types.ts";
+import { getStatusStyle, theme } from "./theme.ts";
 
 interface Props {
   domain: string;

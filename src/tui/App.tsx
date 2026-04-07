@@ -1,9 +1,9 @@
 import { useApp } from "ink";
 import { useState } from "react";
-import HistoryView from "./HistoryView";
-import SearchView from "./SearchView";
-import SuggestView from "./SuggestView";
-import WatchlistView from "./WatchlistView";
+import HistoryView from "./HistoryView.tsx";
+import SearchView from "./SearchView.tsx";
+import SuggestView from "./SuggestView.tsx";
+import WatchlistView from "./WatchlistView.tsx";
 
 type Screen = "search" | "suggest" | "history" | "list";
 

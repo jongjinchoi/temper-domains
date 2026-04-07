@@ -1,14 +1,14 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { getBootstrap, getRdapUrl } from "../checker/bootstrap";
-import { checkDomains } from "../checker/checker";
-import { getServerLimit, pLimit } from "../checker/limiter";
-import { rdapLookup } from "../checker/rdap";
-import type { DomainResult } from "../checker/types";
-import { whoisLookup } from "../checker/whois";
-import { openBrowser } from "../registrar/browser";
-import { type Registrar, buildURL } from "../registrar/urls";
+import { getBootstrap, getRdapUrl } from "../checker/bootstrap.ts";
+import { checkDomains } from "../checker/checker.ts";
+import { getServerLimit, pLimit } from "../checker/limiter.ts";
+import { rdapLookup } from "../checker/rdap.ts";
+import type { DomainResult } from "../checker/types.ts";
+import { whoisLookup } from "../checker/whois.ts";
+import { openBrowser } from "../registrar/browser.ts";
+import { type Registrar, buildURL } from "../registrar/urls.ts";
 
 const server = new McpServer({
   name: "temper",
@@ -45,7 +45,7 @@ server.registerTool("search_domain", {
     extended: z.boolean().optional().describe("Check 64 TLDs instead of 30"),
   },
 }, async ({ name, extended }) => {
-    const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types");
+    const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types.ts");
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
     for await (const result of checkDomains(name, tlds)) {
@@ -81,7 +81,7 @@ server.registerTool("suggest_domain", {
   description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
   inputSchema: { name: z.string().describe("Base name, e.g. 'localhoston'") },
 }, async ({ name }) => {
-    const { dnsCheck } = await import("../checker/dns");
+    const { dnsCheck } = await import("../checker/dns.ts");
     const combinations = [name];
     for (const p of PREFIXES) combinations.push(`${p}${name}`);
     for (const s of SUFFIXES) combinations.push(`${name}${s}`);
@@ -129,7 +129,7 @@ server.registerTool("check_domain_availability", {
       .describe("List of full domain names, e.g. ['localhoston.com', 'getlocalhoston.dev']"),
   },
 }, async ({ domains }) => {
-    const { dnsCheck } = await import("../checker/dns");
+    const { dnsCheck } = await import("../checker/dns.ts");
 
     await getBootstrap();
     const limit = pLimit(30);

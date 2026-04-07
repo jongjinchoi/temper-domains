@@ -1,5 +1,5 @@
 import { Box, Text, type PropsWithChildren } from "ink";
-import { theme } from "./theme";
+import { theme } from "./theme.ts";
 
 interface Props {
   title?: string;

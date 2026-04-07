@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { fileExists, fileStat, readJson, writeJson } from "../utils/fs.ts";
 
 const BOOTSTRAP_URL = "https://data.iana.org/rdap/dns.json";
 const CACHE_DIR = join(homedir(), ".temper", "cache");
@@ -26,21 +27,18 @@ function parseBootstrap(data: BootstrapData): Map<string, string> {
 }
 
 async function isCacheValid(): Promise<boolean> {
-  const file = Bun.file(CACHE_FILE);
-  if (!(await file.exists())) return false;
-  const stat = await file.stat();
-  return Date.now() - stat.mtime.getTime() < CACHE_TTL_MS;
+  if (!(await fileExists(CACHE_FILE))) return false;
+  const s = await fileStat(CACHE_FILE);
+  return Date.now() - s.mtime.getTime() < CACHE_TTL_MS;
 }
 
 async function readCache(): Promise<BootstrapData | null> {
-  const file = Bun.file(CACHE_FILE);
-  if (!(await file.exists())) return null;
-  return file.json();
+  return readJson<BootstrapData>(CACHE_FILE);
 }
 
 async function writeCache(data: BootstrapData): Promise<void> {
   await mkdir(CACHE_DIR, { recursive: true });
-  await Bun.write(CACHE_FILE, JSON.stringify(data));
+  await writeJson(CACHE_FILE, data);
 }
 
 async function fetchBootstrap(): Promise<BootstrapData> {

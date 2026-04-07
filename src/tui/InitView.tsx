@@ -1,9 +1,9 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useState } from "react";
-import { saveConfig } from "../config/config";
-import { REGISTRAR_META } from "../registrar/urls";
-import FrameBox from "./FrameBox";
-import { THEME_NAMES, setTheme, theme } from "./theme";
+import { saveConfig } from "../config/config.ts";
+import { REGISTRAR_META } from "../registrar/urls.ts";
+import FrameBox from "./FrameBox.tsx";
+import { THEME_NAMES, setTheme, theme } from "./theme.ts";
 
 type Step = "registrar" | "theme" | "done";
 

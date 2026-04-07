@@ -1,6 +1,6 @@
 import { Text } from "ink";
 import { useEffect, useState } from "react";
-import { theme } from "./theme";
+import { theme } from "./theme.ts";
 
 const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 

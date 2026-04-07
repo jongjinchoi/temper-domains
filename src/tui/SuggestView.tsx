@@ -1,12 +1,12 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useMemo, useState } from "react";
-import { dnsCheck } from "../checker/dns";
-import { pLimit } from "../checker/limiter";
-import type { DomainStatus } from "../checker/types";
-import FrameBox from "./FrameBox";
-import SearchView from "./SearchView";
-import Spinner from "./Spinner";
-import { getStatusStyle, theme } from "./theme";
+import { dnsCheck } from "../checker/dns.ts";
+import { pLimit } from "../checker/limiter.ts";
+import type { DomainStatus } from "../checker/types.ts";
+import FrameBox from "./FrameBox.tsx";
+import SearchView from "./SearchView.tsx";
+import Spinner from "./Spinner.tsx";
+import { getStatusStyle, theme } from "./theme.ts";
 
 const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"];
 const DEFAULT_SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];

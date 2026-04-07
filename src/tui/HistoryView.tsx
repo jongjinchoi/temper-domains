@@ -1,9 +1,9 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useState } from "react";
-import { type HistoryEntry, loadHistory, removeHistoryAt } from "../config/history";
-import FrameBox from "./FrameBox";
-import SearchView from "./SearchView";
-import { theme } from "./theme";
+import { type HistoryEntry, loadHistory, removeHistoryAt } from "../config/history.ts";
+import FrameBox from "./FrameBox.tsx";
+import SearchView from "./SearchView.tsx";
+import { theme } from "./theme.ts";
 
 interface Props {
   onBack?: () => void;

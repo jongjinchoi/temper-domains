@@ -1,6 +1,7 @@
+#!/usr/bin/env node
 import { Command } from "commander";
-import { loadConfig, saveConfig } from "./config/config";
-import { THEME_NAMES, setTheme } from "./tui/theme";
+import { loadConfig, saveConfig } from "./config/config.ts";
+import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 
 const program = new Command();
 
@@ -29,7 +30,7 @@ program
     if (opts.tlds) {
       tlds = opts.tlds.split(",").map((t: string) => t.replace(/^\./, "").trim());
     } else if (opts.tldPreset) {
-      const { TLD_PRESETS } = await import("./checker/types");
+      const { TLD_PRESETS } = await import("./checker/types.ts");
       tlds = TLD_PRESETS[opts.tldPreset] ? [...TLD_PRESETS[opts.tldPreset]] : undefined;
       if (!tlds) {
         console.error(`Unknown preset: ${opts.tldPreset}`);
@@ -37,7 +38,7 @@ program
         process.exit(1);
       }
     } else if (opts.extended) {
-      const { EXTENDED_TLDS } = await import("./checker/types");
+      const { EXTENDED_TLDS } = await import("./checker/types.ts");
       tlds = [...EXTENDED_TLDS];
     }
 
@@ -45,7 +46,7 @@ program
 
     // JSON output mode — no Ink
     if (opts.format === "json") {
-      const { checkDomains } = await import("./checker/checker");
+      const { checkDomains } = await import("./checker/checker.ts");
       const allResults = [];
       for (const query of queries) {
         const results = [];
@@ -62,7 +63,7 @@ program
     // TUI mode
     const { render } = await import("ink");
     const React = (await import("react")).default;
-    const { default: App } = await import("./tui/App");
+    const { default: App } = await import("./tui/App.tsx");
 
     // For TUI, process one query at a time
     const query = queries[0];
@@ -97,7 +98,7 @@ program
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
-    const { default: SuggestView } = await import("./tui/SuggestView");
+    const { default: SuggestView } = await import("./tui/SuggestView.tsx");
 
     const instance = render(
       React.createElement(SuggestView, { query, prefixes, suffixes }),
@@ -119,7 +120,7 @@ program
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
-    const { default: InitView } = await import("./tui/InitView");
+    const { default: InitView } = await import("./tui/InitView.tsx");
 
     const instance = render(React.createElement(InitView, { currentConfig: config }), {});
 
@@ -138,7 +139,7 @@ program
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
-    const { default: HistoryView } = await import("./tui/HistoryView");
+    const { default: HistoryView } = await import("./tui/HistoryView.tsx");
 
     const instance = render(React.createElement(HistoryView), {});
     instance.waitUntilExit().then(() => process.exit(0));
@@ -150,7 +151,7 @@ program
   .argument("<domain>")
   .description("Add a domain to watchlist")
   .action(async (domain: string) => {
-    const { addWatch } = await import("./config/watchlist");
+    const { addWatch } = await import("./config/watchlist.ts");
     await addWatch(domain);
     console.log(`  ✓ Added ${domain} to watchlist`);
   });
@@ -165,7 +166,7 @@ program
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
-    const { default: WatchlistView } = await import("./tui/WatchlistView");
+    const { default: WatchlistView } = await import("./tui/WatchlistView.tsx");
 
     const instance = render(React.createElement(WatchlistView), {});
     instance.waitUntilExit().then(() => process.exit(0));
@@ -176,7 +177,7 @@ program
   .command("show-presets")
   .description("Show available TLD presets")
   .action(async () => {
-    const { TLD_PRESETS } = await import("./checker/types");
+    const { TLD_PRESETS } = await import("./checker/types.ts");
     for (const [name, tlds] of Object.entries(TLD_PRESETS)) {
       console.log(`  ${name.padEnd(10)} ${(tlds as readonly string[]).join(", ")}`);
     }
@@ -220,7 +221,7 @@ program
     const config = await loadConfig();
     setTheme(config.theme);
 
-    const { startMcpServer } = await import("./mcp/server");
+    const { startMcpServer } = await import("./mcp/server.ts");
     await startMcpServer();
   });
 

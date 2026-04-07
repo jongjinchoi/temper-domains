@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { readJson, writeJson } from "../utils/fs.ts";
 
 const HISTORY_FILE = join(homedir(), ".temper", "history.json");
 const MAX_ENTRIES = 100;
@@ -13,13 +14,7 @@ export interface HistoryEntry {
 }
 
 export async function loadHistory(): Promise<HistoryEntry[]> {
-  const file = Bun.file(HISTORY_FILE);
-  if (!(await file.exists())) return [];
-  try {
-    return await file.json();
-  } catch {
-    return [];
-  }
+  return (await readJson<HistoryEntry[]>(HISTORY_FILE)) ?? [];
 }
 
 export async function addHistory(entry: HistoryEntry): Promise<void> {
@@ -27,12 +22,12 @@ export async function addHistory(entry: HistoryEntry): Promise<void> {
   history.unshift(entry);
   if (history.length > MAX_ENTRIES) history.length = MAX_ENTRIES;
   await mkdir(join(homedir(), ".temper"), { recursive: true });
-  await Bun.write(HISTORY_FILE, JSON.stringify(history, null, 2) + "\n");
+  await writeJson(HISTORY_FILE, history);
 }
 
 export async function removeHistoryAt(index: number): Promise<void> {
   const history = await loadHistory();
   history.splice(index, 1);
   await mkdir(join(homedir(), ".temper"), { recursive: true });
-  await Bun.write(HISTORY_FILE, JSON.stringify(history, null, 2) + "\n");
+  await writeJson(HISTORY_FILE, history);
 }

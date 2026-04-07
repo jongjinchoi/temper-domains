@@ -1,4 +1,4 @@
-import type { DomainResult } from "./types";
+import type { DomainResult } from "./types.ts";
 
 export async function rdapLookup(
   domain: string,
