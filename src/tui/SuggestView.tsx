@@ -44,9 +44,10 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
   const [selectedName, setSelectedName] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const startTime = performance.now();
     const timer = setInterval(() => {
-      setElapsed(Math.round(performance.now() - startTime));
+      if (!cancelled) setElapsed(Math.round(performance.now() - startTime));
     }, 100);
 
     const limit = pLimit(30);
@@ -56,17 +57,24 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
         limit(async () => {
           const domain = `${name}.${CHECK_TLD}`;
           const status = await dnsCheck(domain);
-          setResults((prev) => new Map(prev).set(name, status));
+          if (!cancelled) {
+            setResults((prev) => new Map(prev).set(name, status));
+          }
         }),
       );
 
       await Promise.allSettled(tasks);
-      clearInterval(timer);
-      setElapsed(Math.round(performance.now() - startTime));
-      setDone(true);
+      if (!cancelled) {
+        clearInterval(timer);
+        setElapsed(Math.round(performance.now() - startTime));
+        setDone(true);
+      }
     })();
 
-    return () => clearInterval(timer);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
   }, [allNames]);
 
   useInput(

@@ -49,6 +49,7 @@ server.registerTool("search_domain", {
     extended: z.boolean().optional().describe("Check 64 TLDs instead of 30"),
   },
 }, async ({ name, extended }) => {
+  try {
     const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types.ts");
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
@@ -57,8 +58,11 @@ server.registerTool("search_domain", {
     }
     const text = formatResults(name, results);
     return { content: [{ type: "text" as const, text }] };
-  },
-);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
 
 server.registerTool("open_registrar", {
   description: "Open a domain purchase page in the default browser. Choose from cloudflare, porkbun, namecheap, or vercel.",
@@ -69,13 +73,17 @@ server.registerTool("open_registrar", {
       .describe("Registrar to open purchase page"),
   },
 }, async ({ domain, registrar }) => {
+  try {
     const url = buildURL(registrar as Registrar, domain);
     openBrowser(url);
     return {
       content: [{ type: "text" as const, text: `Opened ${registrar} for ${domain}: ${url}` }],
     };
-  },
-);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
 
 import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
@@ -84,6 +92,7 @@ server.registerTool("suggest_domain", {
   description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
   inputSchema: { name: z.string().describe("Base name, e.g. 'localhoston'") },
 }, async ({ name }) => {
+  try {
     const { dnsCheck } = await import("../checker/dns.ts");
     const combinations = [name];
     for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${name}`);
@@ -120,8 +129,11 @@ server.registerTool("suggest_domain", {
     lines.push(`\n${available}/${total} available`);
 
     return { content: [{ type: "text" as const, text: lines.join("\n") }] };
-  },
-);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
 
 server.registerTool("check_domain_availability", {
   description: "Check availability for a list of full domain names. Uses DNS fast-check then RDAP verification for accuracy. Max 100 domains.",
@@ -132,12 +144,12 @@ server.registerTool("check_domain_availability", {
       .describe("List of full domain names, e.g. ['localhoston.com', 'getlocalhoston.dev']"),
   },
 }, async ({ domains }) => {
+  try {
     const { dnsCheck } = await import("../checker/dns.ts");
 
     await getBootstrap();
     const limit = pLimit(30);
 
-    // Step 1: DNS fast check (no rate limits)
     const dnsResults = new Map<string, string>();
     await Promise.allSettled(
       domains.map((domain) =>
@@ -148,7 +160,6 @@ server.registerTool("check_domain_availability", {
       ),
     );
 
-    // Step 2: RDAP verify only DNS "available" results (prevent false positives)
     const needsVerify = domains.filter((d) => dnsResults.get(d) === "available");
     const verifyLimit = pLimit(10);
     const controller = new AbortController();
@@ -168,7 +179,6 @@ server.registerTool("check_domain_availability", {
 
     clearTimeout(timeout);
 
-    // Format output
     const lines = ["Domain availability check:\n"];
     for (const domain of domains) {
       const status = dnsResults.get(domain) ?? "error";
@@ -180,8 +190,11 @@ server.registerTool("check_domain_availability", {
     lines.push(`\n${available}/${domains.length} available`);
 
     return { content: [{ type: "text" as const, text: lines.join("\n") }] };
-  },
-);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
 
 export async function startMcpServer() {
   const transport = new StdioServerTransport();

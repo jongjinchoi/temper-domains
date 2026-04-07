@@ -1,5 +1,5 @@
 import { Box, Text, useApp, useInput } from "ink";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dnsCheck } from "../checker/dns.ts";
 import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist.ts";
 import FrameBox from "./FrameBox.tsx";
@@ -19,15 +19,19 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const [items, setItems] = useState<WatchItem[]>([]);
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const cancelledRef = useRef(false);
 
   const checkAll = async () => {
     const watchlist = await loadWatchlist();
+    if (cancelledRef.current) return;
     const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
     setItems(initial);
     setLoaded(true);
 
     for (let i = 0; i < watchlist.length; i++) {
+      if (cancelledRef.current) return;
       const status = await dnsCheck(watchlist[i]!.domain);
+      if (cancelledRef.current) return;
       setItems((prev) => {
         const next = [...prev];
         next[i] = { ...next[i]!, status };
@@ -37,7 +41,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   };
 
   useEffect(() => {
+    cancelledRef.current = false;
     checkAll();
+    return () => { cancelledRef.current = true; };
   }, []);
 
   useInput(
@@ -49,6 +55,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (input === "r") {
+        cancelledRef.current = false;
         checkAll();
       } else if (input === "d") {
         const item = items[cursor];
