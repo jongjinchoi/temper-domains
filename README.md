@@ -40,7 +40,7 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 
 ```bash
 # Homebrew (macOS/Linux)
-brew install jongjinchoi/temper/temper
+brew install jongjinchoi/temper-domains/temper
 
 # Or run with Bun
 bun install && bun run src/index.ts search <name>
@@ -150,7 +150,7 @@ temper config theme --list            # list themes
 
 temper runs as a local MCP server. Your AI assistant searches domains without you switching context.
 
-> **Prerequisite:** Install temper first — `brew install jongjinchoi/temper/temper`
+> **Prerequisite:** Install temper first — `brew install jongjinchoi/temper-domains/temper`
 
 ### Claude Code
 
