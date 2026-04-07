@@ -25,21 +25,6 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 
 **temper fixes this.** One command. 30 TLDs. Under 2 seconds.
 
-```
-$ temper search localhoston
-
-  ✓ Search complete 30/30 (1.7s)
-
-  localhoston.com     ✗ taken         491ms
-  localhoston.net     ✓ available     489ms
-  localhoston.dev     ✓ available     314ms
-  localhoston.io      ✓ available     359ms  (whois)
-  localhoston.app     ✓ available     241ms
-  ...
-
-  j/k move · enter buy · q quit
-```
-
 ## Features
 
 - **Private** — all queries run on your machine. No server, no logs, no tracking.
@@ -54,14 +39,27 @@ $ temper search localhoston
 
 ```bash
 # Homebrew (macOS/Linux)
-brew tap jongjinchoi/temper
-brew install temper
+brew install jongjinchoi/temper/temper
 
 # Or run with Bun
 bun install && bun run src/index.ts search <name>
 ```
 
 ## Usage
+
+### Keyboard shortcuts
+
+| Key | Action |
+|-----|--------|
+| `j`/`k` | Move up/down |
+| `Enter` | Buy domain / select |
+| `/` | Filter results |
+| `a` | Add to watchlist |
+| `s` | Suggest combinations |
+| `h` | Search history |
+| `w` | Watchlist |
+| `esc` | Back |
+| `q` | Quit |
 
 ### Search
 
@@ -76,7 +74,7 @@ temper search myproject --format json             # JSON output for piping
 temper search localhoston dashflow calmbox             # multiple keywords
 ```
 
-Select a domain with `j`/`k`, press `Enter`, pick a registrar (`c` Cloudflare · `p` Porkbun · `n` Namecheap · `v` Vercel) — the purchase page opens in your browser.
+Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit.
 
 <p align="center"><img src="./assets/search.png" width="600" /></p>
 
@@ -99,7 +97,7 @@ temper search localhoston --format json | jq '.[] | select(.status == "available
 
 ### Suggest
 
-Generate name combinations and check availability across `.com` `.dev` `.io` `.app` `.ai`.
+Generate name combinations and check `.com` availability. Press `Enter` on any name to check all 30 TLDs.
 
 ```bash
 temper suggest localhoston                            # default prefixes + suffixes
@@ -107,13 +105,21 @@ temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
 ```
 
 ```
-  name                .com    .dev    .io     .app    .ai
-  localhoston             ✗       ✓       ✓       ✓       ✓
-  getlocalhoston          ✗       ✓       ✓       ✓       ✓
-  uselocalhoston          ✓       ✓       ✓       ✓       ✓
-  trylocalhoston          ✓       ✓       ✓       ✓       ✓
-  localhostonapp          ✓       ✓       ✓       ✓       ✓
-  ...
+  BASE
+    localhoston          ✗ taken
+
+  PREFIX
+    getlocalhoston       ✓ available
+    uselocalhoston       ✓ available
+    trylocalhoston       ✓ available
+    ...
+
+  SUFFIX
+    localhostonapp       ✓ available
+    localhostonlabs      ✓ available
+    ...
+
+  Summary: 13 available · 2 taken
 ```
 
 Default prefixes: `get` `use` `try` `my` `go` `join`
@@ -124,10 +130,12 @@ Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 ### Watchlist & History
 
 ```bash
-temper watch localhoston.com      # track a taken domain
-temper list                   # check current status
-temper history                # view past searches
+temper history                # interactive search history (re-search, remove)
+temper list                   # interactive watchlist (refresh, remove)
+temper watch localhoston.com  # add a domain to watchlist from CLI
 ```
+
+In search view, press `a` to add a domain to your watchlist, `h` to view history, `w` to view watchlist.
 
 ### Setup
 
