@@ -24,14 +24,14 @@ for (const t of buildTargets) {
     entrypoints: ["./src/index.ts"],
     compile: {
       target: t,
-      outfile: `./dist/temper-${t}`,
+      outfile: `./dist/bin/temper-${t}`,
     },
     minify: true,
     sourcemap: "linked",
   });
 
   if (result.success) {
-    console.log(`  ✓ dist/temper-${t}`);
+    console.log(`  ✓ dist/bin/temper-${t}`);
   } else {
     console.error(`  ✗ Failed:`, result.logs);
     process.exit(1);

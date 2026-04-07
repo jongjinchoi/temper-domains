@@ -2,10 +2,10 @@
   "name": "temper-domains",
   "version": "0.1.0",
   "description": "Search domain availability from your terminal",
-  "module": "src/index.ts",
+  "main": "dist/npm/index.js",
   "type": "module",
   "bin": {
-    "temper": "./src/index.ts"
+    "temper": "./dist/npm/index.js"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -13,7 +13,11 @@
     "url": "https://github.com/jongjinchoi/temper-domains"
   },
   "keywords": ["domain", "cli", "terminal", "tui", "mcp", "whois", "rdap"],
-  "files": ["src", "package.json", "README.md", "LICENSE"],
+  "files": ["dist/npm", "README.md", "LICENSE"],
+  "scripts": {
+    "build:npm": "bun run build-npm.ts",
+    "prepack": "bun run build-npm.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19.2.14",

@@ -44,7 +44,7 @@ async function writeCache(data: BootstrapData): Promise<void> {
 async function fetchBootstrap(): Promise<BootstrapData> {
   const res = await fetch(BOOTSTRAP_URL);
   if (!res.ok) throw new Error(`Bootstrap fetch failed: ${res.status}`);
-  return res.json();
+  return res.json() as Promise<BootstrapData>;
 }
 
 export async function getBootstrap(): Promise<Map<string, string>> {
