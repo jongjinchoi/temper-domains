@@ -46,7 +46,8 @@ const server = new McpServer(
 6. ADDITIONAL CHECKS — flag these in your response:
    - International meaning: If a suggested name has negative connotations in other languages, warn the user
    - Trademark risk: If a name is very similar to a well-known brand, note the potential conflict
-   - Remind user to verify: social media handle (@username) availability and Google search for existing usage`,
+   - Google the top picks to check if the name is already used by another product or company
+   - Remind user to verify: social media handle (@username) availability on major platforms`,
   },
 );
 
