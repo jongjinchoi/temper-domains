@@ -1,4 +1,11 @@
+import { useApp } from "ink";
+import { useState } from "react";
+import HistoryView from "./HistoryView";
 import SearchView from "./SearchView";
+import SuggestView from "./SuggestView";
+import WatchlistView from "./WatchlistView";
+
+type Screen = "search" | "suggest" | "history" | "list";
 
 interface Props {
   query: string;
@@ -8,5 +15,29 @@ interface Props {
 }
 
 export default function App({ query, tlds, onlyAvailable, timeoutMs }: Props) {
-  return <SearchView query={query} tlds={tlds} onlyAvailable={onlyAvailable} timeoutMs={timeoutMs} />;
+  const { exit } = useApp();
+  const [screen, setScreen] = useState<Screen>("search");
+
+  const quit = () => exit();
+  const back = () => setScreen("search");
+
+  switch (screen) {
+    case "search":
+      return (
+        <SearchView
+          query={query}
+          tlds={tlds}
+          onlyAvailable={onlyAvailable}
+          timeoutMs={timeoutMs}
+          onNavigate={(s: string) => setScreen(s as Screen)}
+          onQuit={quit}
+        />
+      );
+    case "suggest":
+      return <SuggestView query={query} onBack={back} onQuit={quit} />;
+    case "history":
+      return <HistoryView onBack={back} onQuit={quit} />;
+    case "list":
+      return <WatchlistView onBack={back} onQuit={quit} />;
+  }
 }

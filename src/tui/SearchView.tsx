@@ -22,11 +22,13 @@ interface Props {
   onlyAvailable?: boolean;
   timeoutMs?: number;
   onBack?: () => void;
+  onNavigate?: (screen: string) => void;
+  onQuit?: () => void;
 }
 
 const CHROME_LINES = 8;
 
-export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, onBack }: Props) {
+export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, onBack, onNavigate, onQuit }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
@@ -118,8 +120,12 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         return;
       }
 
-      if (input === "q" || key.escape) {
-        onBack ? onBack() : exit();
+      if (input === "q") {
+        onQuit ? onQuit() : exit();
+        return;
+      }
+      if (key.escape) {
+        onBack ? onBack() : (onQuit ? onQuit() : exit());
         return;
       }
 
@@ -128,10 +134,16 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           setCursor((prev) => Math.min(prev + 1, displayDomains.length - 1));
         } else if (key.upArrow || input === "k") {
           setCursor((prev) => Math.max(prev - 1, 0));
-        } else if (input === "/") {
+        } else if (input === "/" ) {
           setScreenState("filtering");
           setFilterText("");
-        } else if (input === "w") {
+        } else if (input === "s" && onNavigate) {
+          onNavigate("suggest");
+        } else if (input === "h" && onNavigate) {
+          onNavigate("history");
+        } else if (input === "w" && onNavigate) {
+          onNavigate("list");
+        } else if (input === "a") {
           const domain = displayDomains[cursor];
           if (domain) {
             addWatch(domain);
@@ -180,13 +192,25 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     { key: "ctrl+c", action: "cancel" },
     { key: "esc", action: "back" },
   ];
-  const selectingHints = [
-    { key: "j/k", action: "move" },
-    { key: "/", action: "filter" },
-    { key: "enter", action: "buy" },
-    { key: "w", action: "watch" },
-    { key: "q", action: "quit" },
-  ];
+  const selectingHints = onNavigate
+    ? [
+        { key: "j/k", action: "move" },
+        { key: "/", action: "filter" },
+        { key: "enter", action: "buy" },
+        { key: "a", action: "add" },
+        { key: "s", action: "suggest" },
+        { key: "h", action: "history" },
+        { key: "w", action: "watchlist" },
+        { key: "q", action: "quit" },
+      ]
+    : [
+        { key: "j/k", action: "move" },
+        { key: "/", action: "filter" },
+        { key: "enter", action: "buy" },
+        { key: "a", action: "add" },
+        { key: "esc", action: "back" },
+        { key: "q", action: "quit" },
+      ];
   const filteringHints = [
     { key: "esc", action: "clear" },
     { key: "enter", action: "confirm" },

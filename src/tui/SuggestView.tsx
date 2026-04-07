@@ -16,9 +16,11 @@ interface Props {
   query: string;
   prefixes?: string[];
   suffixes?: string[];
+  onBack?: () => void;
+  onQuit?: () => void;
 }
 
-export default function SuggestView({ query, prefixes, suffixes }: Props) {
+export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit }: Props) {
   const { exit } = useApp();
 
   const pList = prefixes ?? DEFAULT_PREFIXES;
@@ -70,7 +72,8 @@ export default function SuggestView({ query, prefixes, suffixes }: Props) {
 
   useInput(
     (input, key) => {
-      if (input === "q" || key.escape) exit();
+      if (input === "q") { onQuit ? onQuit() : exit(); return; }
+      if (key.escape) { onBack ? onBack() : exit(); return; }
       if (key.downArrow || input === "j") {
         setCursor((prev) => Math.min(prev + 1, allNames.length - 1));
       } else if (key.upArrow || input === "k") {
@@ -86,11 +89,18 @@ export default function SuggestView({ query, prefixes, suffixes }: Props) {
   const available = [...results.values()].filter((s) => s === "available").length;
   const taken = [...results.values()].filter((s) => s === "taken").length;
 
-  const hints = [
-    { key: "j/k", action: "move" },
-    { key: "enter", action: "check all TLDs" },
-    { key: "q", action: "quit" },
-  ];
+  const hints = onBack
+    ? [
+        { key: "j/k", action: "move" },
+        { key: "enter", action: "check all TLDs" },
+        { key: "esc", action: "back" },
+        { key: "q", action: "quit" },
+      ]
+    : [
+        { key: "j/k", action: "move" },
+        { key: "enter", action: "check all TLDs" },
+        { key: "q", action: "quit" },
+      ];
 
   const renderGroup = (label: string, names: string[], offset: number) => (
     <Box flexDirection="column" key={label} marginTop={1}>

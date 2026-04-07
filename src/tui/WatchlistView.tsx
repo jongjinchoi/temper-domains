@@ -9,7 +9,12 @@ interface WatchItem extends WatchEntry {
   status: "available" | "taken" | "error" | "checking";
 }
 
-export default function WatchlistView() {
+interface Props {
+  onBack?: () => void;
+  onQuit?: () => void;
+}
+
+export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const { exit } = useApp();
   const [items, setItems] = useState<WatchItem[]>([]);
   const [cursor, setCursor] = useState(0);
@@ -37,7 +42,8 @@ export default function WatchlistView() {
 
   useInput(
     (input, key) => {
-      if (input === "q" || key.escape) exit();
+      if (input === "q") { onQuit ? onQuit() : exit(); return; }
+      if (key.escape) { onBack ? onBack() : exit(); return; }
       if (key.downArrow || input === "j") {
         setCursor((prev) => Math.min(prev + 1, items.length - 1));
       } else if (key.upArrow || input === "k") {
@@ -56,12 +62,20 @@ export default function WatchlistView() {
     { isActive: process.stdin.isTTY === true },
   );
 
-  const hints = [
-    { key: "j/k", action: "move" },
-    { key: "r", action: "refresh" },
-    { key: "d", action: "remove" },
-    { key: "q", action: "quit" },
-  ];
+  const hints = onBack
+    ? [
+        { key: "j/k", action: "move" },
+        { key: "r", action: "refresh" },
+        { key: "d", action: "remove" },
+        { key: "esc", action: "back" },
+        { key: "q", action: "quit" },
+      ]
+    : [
+        { key: "j/k", action: "move" },
+        { key: "r", action: "refresh" },
+        { key: "d", action: "remove" },
+        { key: "q", action: "quit" },
+      ];
 
   if (!loaded) return null;
 
