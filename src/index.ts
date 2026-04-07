@@ -31,7 +31,8 @@ program
       tlds = opts.tlds.split(",").map((t: string) => t.replace(/^\./, "").trim());
     } else if (opts.tldPreset) {
       const { TLD_PRESETS } = await import("./checker/types.ts");
-      tlds = TLD_PRESETS[opts.tldPreset] ? [...TLD_PRESETS[opts.tldPreset]] : undefined;
+      const preset = TLD_PRESETS[opts.tldPreset as string];
+      tlds = preset ? [...preset] : undefined;
       if (!tlds) {
         console.error(`Unknown preset: ${opts.tldPreset}`);
         console.error(`Available: ${Object.keys(TLD_PRESETS).join(", ")}`);
@@ -66,7 +67,7 @@ program
     const { default: App } = await import("./tui/App.tsx");
 
     // For TUI, process one query at a time
-    const query = queries[0];
+    const query = queries[0] ?? "";
     const instance = render(
       React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable, timeoutMs }),
       {},

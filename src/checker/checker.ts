@@ -58,7 +58,8 @@ export async function* checkDomains(
   let yielded = 0;
   while (yielded < domains.length) {
     if (yielded < results.length) {
-      yield results[yielded++];
+      const result = results[yielded++];
+      if (result) yield result;
     } else {
       await new Promise<void>((r) => {
         resolveNext = r;

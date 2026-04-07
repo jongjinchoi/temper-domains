@@ -1,4 +1,5 @@
-import { Box, Text, type PropsWithChildren } from "ink";
+import { Box, Text } from "ink";
+import type { PropsWithChildren } from "react";
 import { theme } from "./theme.ts";
 
 interface Props {

@@ -54,7 +54,8 @@ export const THEME_NAMES = Object.keys(PALETTES);
 
 // Mutable theme object — setTheme() updates via Object.assign
 // All components import { theme } and see the updated values
-export const theme: ThemePalette = { ...PALETTES["temper-forge"] };
+const defaultPalette = PALETTES["temper-forge"] ?? PALETTES[Object.keys(PALETTES)[0] ?? ""] as ThemePalette;
+export const theme: ThemePalette = { ...defaultPalette } as ThemePalette;
 
 export function setTheme(name: string) {
   Object.assign(theme, PALETTES[name] ?? PALETTES["temper-forge"]);
