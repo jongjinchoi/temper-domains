@@ -1,18 +1,23 @@
 <p align="center">
-  <h1 align="center">temper</h1>
-  <p align="center">
-    <strong>Never leave your terminal to find a domain.</strong>
-  </p>
-  <p align="center">
-    Search domains, check availability, and open purchase pages — all from your terminal.<br>
-    Works as a CLI, or as an MCP server so Claude and Cursor can search domains for you.
-  </p>
-  <p align="center">
-    <a href="#install">Install</a> ·
-    <a href="#usage">Usage</a> ·
-    <a href="#mcp">MCP</a> ·
-    <a href="#themes">Themes</a>
-  </p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/logo-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/logo-light.png">
+    <img src="./assets/logo-dark.png" width="120" alt="temper">
+  </picture>
+</p>
+<h1 align="center">temper</h1>
+<p align="center">
+  <strong>Never leave your terminal to find a domain.</strong>
+</p>
+<p align="center">
+  Search domains, check availability, and open purchase pages — all from your terminal.<br>
+  Works as a CLI, or as an MCP server so Claude and Cursor can search domains for you.
+</p>
+<p align="center">
+  <a href="#install">Install</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#mcp">MCP</a> ·
+  <a href="#themes">Themes</a>
 </p>
 
 <p align="center"><img src="./assets/demo.gif" width="600" /></p>
