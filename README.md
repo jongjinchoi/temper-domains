@@ -1,9 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/logo/logo-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/logo/logo-light.png">
-    <img src="./assets/logo/logo-dark.png" width="120" alt="temper">
-  </picture>
+  <img src="./assets/logo/logo-dark.png" width="120" alt="temper">
 </p>
 <h1 align="center">temper</h1>
 <p align="center">
