@@ -47,22 +47,25 @@ export function detectStatus(raw: string): DomainStatus {
   const lower = raw.toLowerCase();
   const hasDomainName = /^domain name:/im.test(raw);
 
-  // Taken (highest confidence signal)
-  if (hasDomainName) {
-    return "taken";
-  }
-
-  // Available patterns (check before rate_limit to avoid Terms of Use false positives)
+  // Available patterns (check BEFORE Domain Name header — some registries like .so
+  // return "Domain Name:" even for non-existent domains with "does not exist")
   const availablePatterns = [
     "no match",
     "not found",
     "domain not found",
     "no data found",
     "no entries found",
+    "does not exist",
+    "no object found",
     "status: free",
   ];
   if (availablePatterns.some((p) => lower.includes(p))) {
     return "available";
+  }
+
+  // Taken (Domain Name header without any "not found" pattern)
+  if (hasDomainName) {
+    return "taken";
   }
 
   // Rate limit — only match first few lines (actual rejection responses are short)

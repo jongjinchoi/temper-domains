@@ -61,4 +61,12 @@ describe("detectStatus", () => {
   test("returns 'error' for empty string", () => {
     expect(detectStatus("")).toBe("error");
   });
+
+  test("returns 'available' for .so style response (Domain Name + does not exist)", () => {
+    expect(detectStatus("Domain Name: localhoston.so\nThe queried object does not exist: No Object Found")).toBe("available");
+  });
+
+  test("returns 'available' for 'No Object Found'", () => {
+    expect(detectStatus("No Object Found")).toBe("available");
+  });
 });
