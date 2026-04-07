@@ -3,6 +3,10 @@
 </p>
 <h1 align="center">temper</h1>
 <p align="center">
+  <a href="https://github.com/jongjinchoi/temper-domains/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/jongjinchoi/temper-domains"><img src="https://img.shields.io/github/stars/jongjinchoi/temper-domains?style=social" alt="GitHub Stars"></a>
+</p>
+<p align="center">
   <strong>Never leave your terminal to find a domain.</strong>
 </p>
 <p align="center">
@@ -39,10 +43,10 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 ## Install
 
 ```bash
-# Homebrew (macOS/Linux)
+# Homebrew (macOS/Linux) — no runtime needed
 brew install jongjinchoi/temper-domains/temper
 
-# Or run with Bun
+# Or run from source (requires Bun or Node.js >= 18)
 bun install && bun run src/index.ts search <name>
 ```
 
@@ -258,6 +262,18 @@ All queries run locally. No data leaves your machine.
 | **Catppuccin Mocha** | 🎨 Soft pastels |
 | **Dracula** | 🧛 High contrast |
 | **Default** | ⚫ Terminal native |
+
+## Contributing
+
+```bash
+git clone https://github.com/jongjinchoi/temper-domains.git
+cd temper-domains
+bun install
+bun run src/index.ts search <name>    # run locally
+bun test                               # run tests
+```
+
+Issues and pull requests are welcome.
 
 ## License
 
