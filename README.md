@@ -52,6 +52,25 @@ bun install && bun run src/index.ts search <name>
 
 ## Usage
 
+```
+$ temper --help
+
+Usage: temper [options] [command]
+
+Never leave your terminal to find a domain.
+
+Commands:
+  search [options] <queries...>  Search domain availability across TLDs
+  suggest [options] [query]      Generate name combinations and check availability
+  init                           Set up temper (registrar + theme)
+  history                        Show search history
+  watch <domain>                 Add a domain to watchlist
+  list                           Show watchlist with current availability
+  show-presets                   Show available TLD presets
+  config                         Manage temper configuration
+  mcp                            Start MCP server for Claude Code/Desktop
+```
+
 ### Keyboard shortcuts
 
 | Key | Action |
