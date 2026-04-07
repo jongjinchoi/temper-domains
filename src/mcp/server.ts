@@ -38,14 +38,13 @@ function formatResults(name: string, results: DomainResult[]): string {
   return lines.join("\n");
 }
 
-server.tool(
-  "search_domain",
-  "Check domain availability across TLDs. Default 30 TLDs, or 64 with extended=true.",
-  {
-    name: z.string().describe("Domain name without TLD, e.g. 'keycove'"),
+server.registerTool("search_domain", {
+  description: "Check domain availability across TLDs. Default 30 TLDs, or 64 with extended=true.",
+  inputSchema: {
+    name: z.string().describe("Domain name without TLD, e.g. 'localhoston'"),
     extended: z.boolean().optional().describe("Check 64 TLDs instead of 30"),
   },
-  async ({ name, extended }) => {
+}, async ({ name, extended }) => {
     const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types");
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
@@ -57,16 +56,15 @@ server.tool(
   },
 );
 
-server.tool(
-  "open_registrar",
-  "Open a domain purchase page in the default browser. Choose from cloudflare, porkbun, namecheap, or vercel.",
-  {
-    domain: z.string().describe("Full domain name, e.g. 'keycove.app'"),
+server.registerTool("open_registrar", {
+  description: "Open a domain purchase page in the default browser. Choose from cloudflare, porkbun, namecheap, or vercel.",
+  inputSchema: {
+    domain: z.string().describe("Full domain name, e.g. 'localhoston.app'"),
     registrar: z
       .enum(["cloudflare", "porkbun", "namecheap", "vercel"])
       .describe("Registrar to open purchase page"),
   },
-  async ({ domain, registrar }) => {
+}, async ({ domain, registrar }) => {
     const url = buildURL(registrar as Registrar, domain);
     openBrowser(url);
     return {
@@ -79,11 +77,10 @@ const PREFIXES = ["get", "use", "try", "my", "go", "join"];
 const SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"];
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
-server.tool(
-  "suggest_domain",
-  "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
-  { name: z.string().describe("Base name, e.g. 'keycove'") },
-  async ({ name }) => {
+server.registerTool("suggest_domain", {
+  description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
+  inputSchema: { name: z.string().describe("Base name, e.g. 'localhoston'") },
+}, async ({ name }) => {
     const { dnsCheck } = await import("../checker/dns");
     const combinations = [name];
     for (const p of PREFIXES) combinations.push(`${p}${name}`);
@@ -123,16 +120,15 @@ server.tool(
   },
 );
 
-server.tool(
-  "check_domain_availability",
-  "Check availability for a list of full domain names. Uses DNS fast-check then RDAP verification for accuracy. Max 100 domains.",
-  {
+server.registerTool("check_domain_availability", {
+  description: "Check availability for a list of full domain names. Uses DNS fast-check then RDAP verification for accuracy. Max 100 domains.",
+  inputSchema: {
     domains: z
       .array(z.string())
       .max(100)
-      .describe("List of full domain names, e.g. ['keycove.com', 'getkeycove.dev']"),
+      .describe("List of full domain names, e.g. ['localhoston.com', 'getlocalhoston.dev']"),
   },
-  async ({ domains }) => {
+}, async ({ domains }) => {
     const { dnsCheck } = await import("../checker/dns");
 
     await getBootstrap();

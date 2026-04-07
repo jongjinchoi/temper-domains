@@ -38,3 +38,6 @@ docs/internal/
 
 # Claude Code
 CLAUDE.md
+
+# VHS test files
+assets/test.*

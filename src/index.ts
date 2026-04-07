@@ -66,10 +66,9 @@ program
 
     // For TUI, process one query at a time
     const query = queries[0];
-    const isTTY = process.stdin.isTTY;
     const instance = render(
       React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable, timeoutMs }),
-      { ...(isTTY ? { alternateScreen: true } : { stdin: false as never }) },
+      { incrementalRendering: true },
     );
 
     instance.waitUntilExit().then(() => {
@@ -100,10 +99,9 @@ program
     const React = (await import("react")).default;
     const { default: SuggestView } = await import("./tui/SuggestView");
 
-    const isTTY = process.stdin.isTTY;
     const instance = render(
       React.createElement(SuggestView, { query, prefixes, suffixes }),
-      { ...(isTTY ? { alternateScreen: true } : { stdin: false as never }) },
+      { incrementalRendering: true },
     );
 
     instance.waitUntilExit().then(() => {
@@ -246,4 +244,4 @@ program
     await startMcpServer();
   });
 
-program.parse();
+program.parseAsync();
