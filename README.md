@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/logo-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/logo-light.png">
-    <img src="./assets/logo-dark.png" width="120" alt="temper">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/logo/logo-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/logo/logo-light.png">
+    <img src="./assets/logo/logo-dark.png" width="120" alt="temper">
   </picture>
 </p>
 <h1 align="center">temper</h1>
@@ -20,7 +20,7 @@
   <a href="#themes">Themes</a>
 </p>
 
-<p align="center"><img src="./assets/demo.gif" width="600" /></p>
+<p align="center"><img src="./assets/screenshots/demo.gif" width="600" /></p>
 
 ---
 
@@ -81,7 +81,7 @@ temper search localhoston dashflow calmbox             # multiple keywords
 
 Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit.
 
-<p align="center"><img src="./assets/search.png" width="600" /></p>
+<p align="center"><img src="./assets/screenshots/search.png" width="600" /></p>
 
 #### TLD Presets
 
@@ -130,7 +130,7 @@ temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
 Default prefixes: `get` `use` `try` `my` `go` `join`
 Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 
-<p align="center"><img src="./assets/suggest.png" width="600" /></p>
+<p align="center"><img src="./assets/screenshots/suggest.png" width="600" /></p>
 
 ### Watchlist & History
 
@@ -201,9 +201,9 @@ All queries run locally. No data leaves your machine.
 
 | | |
 |---|---|
-| ![Temper Forge](./assets/theme-temper-forge.png) | ![Seoul Night](./assets/theme-seoul-night.png) |
-| ![Catppuccin Mocha](./assets/theme-catppuccin-mocha.png) | ![Dracula](./assets/theme-dracula.png) |
-| ![Default](./assets/theme-default.png) | |
+| ![Temper Forge](./assets/screenshots/theme-temper-forge.png) | ![Seoul Night](./assets/screenshots/theme-seoul-night.png) |
+| ![Catppuccin Mocha](./assets/screenshots/theme-catppuccin-mocha.png) | ![Dracula](./assets/screenshots/theme-dracula.png) |
+| ![Default](./assets/screenshots/theme-default.png) | |
 
 | Theme | |
 |-------|---|
