@@ -48,6 +48,18 @@ const PALETTES: Record<string, ThemePalette> = {
     dim: "#666666", border: "#4e4e4e", surface: "#262626",
     lavender: "#af87ff", peach: "#ff8700", maroon: "#ff5f5f", sapphire: "#00afff",
   },
+  "catppuccin-latte": {
+    base: "#eff1f5", text: "#4c4f69", primary: "#8839ef",
+    green: "#40a02b", red: "#d20f39", yellow: "#df8e1d", blue: "#1e66f5",
+    dim: "#9ca0b0", border: "#acb0be", surface: "#ccd0da",
+    lavender: "#7287fd", peach: "#fe640b", maroon: "#e64553", sapphire: "#209fb5",
+  },
+  "rose-pine-dawn": {
+    base: "#faf4ed", text: "#464261", primary: "#907aa9",
+    green: "#286983", red: "#b4637a", yellow: "#ea9d34", blue: "#56949f",
+    dim: "#9893a5", border: "#cecacd", surface: "#f4ede8",
+    lavender: "#907aa9", peach: "#ea9d34", maroon: "#b4637a", sapphire: "#56949f",
+  },
 };
 
 export const THEME_NAMES = Object.keys(PALETTES);

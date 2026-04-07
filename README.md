@@ -37,7 +37,7 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 - **MCP native** — Claude Code, Claude Desktop, and Cursor can search domains directly.
 - **Keyboard-first** — vim-style navigation, single-key registrar selection.
 - **Pipe-friendly** — `--format json` for scripting and automation.
-- **Themeable** — 5 built-in themes.
+- **Themeable** — 7 built-in themes (5 dark + 2 light).
 - **Open source** — Apache 2.0. Zero telemetry.
 
 ## Install
@@ -306,6 +306,8 @@ All queries run locally. No data leaves your machine.
 | **Catppuccin Mocha** | 🎨 Soft pastels |
 | **Dracula** | 🧛 High contrast |
 | **Default** | ⚫ Terminal native |
+| **Catppuccin Latte** | ☀️ Pastel light |
+| **Rosé Pine Dawn** | 🌅 Warm natural light |
 
 ## Contributing
 

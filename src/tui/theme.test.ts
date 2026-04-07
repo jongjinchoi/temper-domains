@@ -2,8 +2,8 @@ import { test, expect, describe, beforeEach } from "bun:test";
 import { setTheme, theme, getStatusStyle, THEME_NAMES } from "./theme.ts";
 
 describe("THEME_NAMES", () => {
-  test("has 5 themes", () => {
-    expect(THEME_NAMES).toHaveLength(5);
+  test("has 7 themes", () => {
+    expect(THEME_NAMES).toHaveLength(7);
   });
 
   test("includes temper-forge", () => {
@@ -39,6 +39,18 @@ describe("setTheme", () => {
   test("temper-forge has correct primary color", () => {
     setTheme("temper-forge");
     expect(theme.primary).toBe("#ff7a45");
+  });
+
+  test("changes theme to catppuccin-latte (light)", () => {
+    setTheme("catppuccin-latte");
+    expect(theme.primary).toBe("#8839ef");
+    expect(theme.base).toBe("#eff1f5");
+  });
+
+  test("changes theme to rose-pine-dawn (light)", () => {
+    setTheme("rose-pine-dawn");
+    expect(theme.primary).toBe("#907aa9");
+    expect(theme.base).toBe("#faf4ed");
   });
 });
 
