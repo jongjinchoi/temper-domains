@@ -297,7 +297,8 @@ All queries run locally. No data leaves your machine.
 |---|---|
 | ![Temper Forge](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-temper-forge.png) | ![Seoul Night](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-seoul-night.png) |
 | ![Catppuccin Mocha](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-catppuccin-mocha.png) | ![Dracula](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-dracula.png) |
-| ![Default](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-default.png) | |
+| ![Default](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-default.png) | ![Catppuccin Latte](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-catppuccin-latte.png) |
+| ![Rosé Pine Dawn](https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/theme-rose-pine-dawn.png) | |
 
 | Theme | |
 |-------|---|
