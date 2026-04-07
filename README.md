@@ -150,6 +150,18 @@ temper config theme --list            # list themes
 
 temper runs as a local MCP server. Your AI assistant searches domains without you switching context.
 
+> **Prerequisite:** Install temper first — `brew install jongjinchoi/temper/temper`
+
+### Claude Code
+
+```bash
+claude mcp add --transport stdio temper -- temper mcp
+```
+
+### Claude Desktop
+
+Settings → Developer → Edit Config:
+
 ```json
 {
   "mcpServers": {
@@ -160,6 +172,44 @@ temper runs as a local MCP server. Your AI assistant searches domains without yo
   }
 }
 ```
+
+Restart Claude Desktop after saving.
+
+### Cursor
+
+Settings → Tools & Integrations → New MCP Server (command type):
+
+```json
+{
+  "mcpServers": {
+    "temper": {
+      "command": "temper",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "temper": {
+      "command": "temper",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### VS Code (Cline)
+
+Command Palette → `MCP: Add server` → stdio → `temper mcp`
+
+---
 
 **Tools:**
 
