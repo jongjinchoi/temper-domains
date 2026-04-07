@@ -14,10 +14,41 @@ import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 declare const PKG_VERSION: string;
 const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
 
-const server = new McpServer({
-  name: "temper",
-  version: VERSION,
-});
+const server = new McpServer(
+  { name: "temper", version: VERSION },
+  {
+    instructions: `temper is a domain availability search tool. When a user asks for domain name suggestions without a specific name:
+
+1. GENERATE NAMES FIRST using these rules:
+   - 4-8 characters, 1-3 syllables ideal
+   - Must be pronounceable and easy to spell over the phone
+   - No hyphens or numbers
+   - Brandable and unique — avoid generic industry keywords
+   - Consider these naming types: descriptive (PayPal), invented (Spotify), real-word reuse (Stripe, Slack), or metaphor (Amazon)
+
+2. CHECK AVAILABILITY using search_domain for each candidate
+
+3. SUGGEST ALTERNATIVES using suggest_domain for the best candidates (adds prefixes like get/try/use and suffixes like app/hub/dev)
+
+4. TLD SELECTION GUIDE:
+   - .com: Universal trust, always check first (YC top 20 all own .com)
+   - .io: Tech startups, developer tools
+   - .dev: Developer-focused products
+   - .ai: AI/ML products
+   - .app: Web/mobile applications
+   - Avoid: .top, .xin (high spam association)
+
+5. FINAL RECOMMENDATION should include:
+   - Top pick with reasoning
+   - 2-3 alternatives
+   - Note if .com is taken but alternatives exist
+
+6. ADDITIONAL CHECKS — flag these in your response:
+   - International meaning: If a suggested name has negative connotations in other languages, warn the user
+   - Trademark risk: If a name is very similar to a well-known brand, note the potential conflict
+   - Remind user to verify: social media handle (@username) availability and Google search for existing usage`,
+  },
+);
 
 function formatResults(name: string, results: DomainResult[]): string {
   const lines: string[] = [`Domain availability for "${name}":\n`];
