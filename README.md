@@ -62,6 +62,7 @@ Never leave your terminal to find a domain.
 Commands:
   search [options] <queries...>  Search domain availability across TLDs
   suggest [options] [query]      Generate name combinations and check availability
+  whois <domain>                 Show detailed WHOIS/RDAP info for a domain
   init                           Set up temper (registrar + theme)
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
@@ -77,6 +78,7 @@ Commands:
 |-----|--------|
 | `j`/`k` | Move up/down |
 | `Enter` | Buy domain / select |
+| `i` | WHOIS/RDAP detail |
 | `/` | Filter results |
 | `a` | Add to watchlist |
 | `s` | Suggest combinations |
@@ -118,6 +120,17 @@ temper show-presets
 ```bash
 temper search localhoston --format json | jq '.[] | select(.status == "available") | .domain'
 ```
+
+### Whois
+
+Look up detailed WHOIS/RDAP information for any domain. In search view, press `i` on any domain.
+
+```bash
+temper whois example.com                         # TUI view
+temper whois example.com --format json           # JSON output
+```
+
+Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Uses RDAP (RFC 9083) when available, falls back to WHOIS.
 
 ### Suggest
 
@@ -241,6 +254,7 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 | `search_domain` | Check 30 or 59 TLDs for a name |
 | `suggest_domain` | 15 name combinations × 5 TLDs |
 | `check_domain_availability` | Verify a list of domains (up to 100) |
+| `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
 
 **Example: Brainstorm from scratch**

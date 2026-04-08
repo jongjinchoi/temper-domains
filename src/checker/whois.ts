@@ -1,5 +1,5 @@
 import { createConnection } from "node:net";
-import type { DomainResult, DomainStatus } from "./types.ts";
+import type { DomainDetail, DomainResult, DomainStatus } from "./types.ts";
 import { getTld } from "../utils/domain.ts";
 
 const WHOIS_SERVERS: Record<string, string> = {
@@ -126,6 +126,128 @@ export async function whoisLookup(
     }
     return {
       domain, tld, status: "error", method: "whois", responseTime,
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+// --- Detail parsing ---
+
+function normalizeDate(value: string): string {
+  try {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  } catch { /* fallback */ }
+  return value;
+}
+
+export function parseWhoisRaw(raw: string): Partial<DomainDetail> {
+  const detail: Partial<DomainDetail> = {};
+  const nameServers: string[] = [];
+  const statusCodes: string[] = [];
+
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("%") || trimmed.startsWith("#")) continue;
+
+    const colonIdx = trimmed.indexOf(":");
+    if (colonIdx === -1) continue;
+
+    const key = trimmed.slice(0, colonIdx).trim().toLowerCase();
+    const value = trimmed.slice(colonIdx + 1).trim();
+    if (!value) continue;
+
+    switch (key) {
+      case "registrar":
+      case "sponsoring registrar":
+        if (!detail.registrar) detail.registrar = value;
+        break;
+      case "registrant organization":
+      case "registrant name":
+        if (!detail.registrant) detail.registrant = value;
+        break;
+      case "creation date":
+      case "created":
+      case "created on":
+      case "registered":
+        if (!detail.createdDate) detail.createdDate = normalizeDate(value);
+        break;
+      case "updated date":
+      case "last updated":
+      case "last modified":
+        if (!detail.updatedDate) detail.updatedDate = normalizeDate(value);
+        break;
+      case "expiry date":
+      case "expiration date":
+      case "registry expiry date":
+      case "registrar registration expiration date":
+      case "paid-till":
+        if (!detail.expiryDate) detail.expiryDate = normalizeDate(value);
+        break;
+      case "name server":
+      case "nserver":
+        nameServers.push(value.split(/\s/)[0]!.toLowerCase());
+        break;
+      case "dnssec":
+        detail.dnssec = value.toLowerCase().includes("signed") &&
+          !value.toLowerCase().includes("unsigned");
+        break;
+      case "domain status":
+      case "status": {
+        const code = value.split(/\s+/)[0];
+        if (code) statusCodes.push(code);
+        break;
+      }
+    }
+  }
+
+  if (nameServers.length > 0) detail.nameServers = [...new Set(nameServers)];
+  if (statusCodes.length > 0) detail.statusCodes = [...new Set(statusCodes)];
+
+  return detail;
+}
+
+export async function whoisDetail(
+  domain: string,
+  signal: AbortSignal,
+): Promise<DomainDetail> {
+  const tld = getTld(domain);
+  const host = WHOIS_SERVERS[tld];
+  if (!host) {
+    return {
+      domain, status: "error", method: "whois", responseTime: 0,
+      error: `No whois server for .${tld}`,
+    };
+  }
+
+  const start = performance.now();
+
+  try {
+    const raw = await Promise.race([
+      whoisRaw(host, domain, 5000),
+      new Promise<never>((_, reject) => {
+        signal.addEventListener("abort", () =>
+          reject(new DOMException("Aborted", "AbortError")),
+        );
+      }),
+    ]);
+
+    const responseTime = Math.round(performance.now() - start);
+    const status = detectStatus(raw);
+    const parsed = status === "taken" ? parseWhoisRaw(raw) : {};
+
+    return {
+      domain, status, method: "whois", responseTime,
+      ...parsed,
+      rawWhois: raw,
+    };
+  } catch (err) {
+    const responseTime = Math.round(performance.now() - start);
+    return {
+      domain,
+      status: signal.aborted ? "slow" : "error",
+      method: "whois",
+      responseTime,
       error: err instanceof Error ? err.message : String(err),
     };
   }

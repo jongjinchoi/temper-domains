@@ -41,5 +41,23 @@ export const TLD_PRESETS: Record<string, readonly string[]> = {
   cheap: ["xyz", "fun", "lol", "top", "site", "online", "store", "shop", "club"],
 };
 
+export interface DomainDetail {
+  domain: string;
+  status: DomainStatus;
+  method: CheckMethod;
+  responseTime: number;
+  registrar?: string;
+  registrant?: string;
+  createdDate?: string;
+  updatedDate?: string;
+  expiryDate?: string;
+  nameServers?: string[];
+  dnssec?: boolean;
+  statusCodes?: string[];
+  rawWhois?: string;
+  rawRdap?: Record<string, unknown>;
+  error?: string;
+}
+
 export const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"] as const;
 export const DEFAULT_SUFFIXES = ["app", "labs", "hq", "ly", "dev", "hub", "run", "kit"] as const;

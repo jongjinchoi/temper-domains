@@ -228,6 +228,45 @@ server.registerTool("check_domain_availability", {
   }
 });
 
+server.registerTool("whois_domain", {
+  description: "Get detailed WHOIS/RDAP information for a domain including registrar, expiry date, nameservers, and status codes.",
+  inputSchema: {
+    domain: z.string().describe("Full domain name, e.g. 'example.com'"),
+  },
+}, async ({ domain }) => {
+  try {
+    const { domainDetail } = await import("../checker/detail.ts");
+    const detail = await domainDetail(domain, { timeoutMs: 10000 });
+
+    const lines: string[] = [`WHOIS/RDAP info for ${domain}:\n`];
+    lines.push(`Status: ${detail.status} (via ${detail.method}, ${detail.responseTime}ms)`);
+
+    if (detail.status === "taken") {
+      if (detail.registrar) lines.push(`Registrar: ${detail.registrar}`);
+      if (detail.registrant) lines.push(`Registrant: ${detail.registrant}`);
+      if (detail.createdDate) lines.push(`Created: ${detail.createdDate}`);
+      if (detail.updatedDate) lines.push(`Updated: ${detail.updatedDate}`);
+      if (detail.expiryDate) lines.push(`Expires: ${detail.expiryDate}`);
+      if (detail.dnssec != null) lines.push(`DNSSEC: ${detail.dnssec ? "signed" : "unsigned"}`);
+      if (detail.nameServers?.length) lines.push(`Name Servers: ${detail.nameServers.join(", ")}`);
+      if (detail.statusCodes?.length) lines.push(`Status Codes: ${detail.statusCodes.join(", ")}`);
+    }
+
+    if (detail.status === "available") {
+      lines.push(`\nThis domain is available for registration!`);
+    }
+
+    if (detail.error) {
+      lines.push(`\nError: ${detail.error}`);
+    }
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
+
 export async function startMcpServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);

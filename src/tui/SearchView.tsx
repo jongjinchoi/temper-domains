@@ -10,9 +10,10 @@ import ProgressBar from "./ProgressBar.tsx";
 import RegistrarModal from "./RegistrarModal.tsx";
 import ResultRow from "./ResultRow.tsx";
 import Spinner from "./Spinner.tsx";
+import WhoisView from "./WhoisView.tsx";
 import { theme } from "./theme.ts";
 
-type ScreenState = "searching" | "selecting" | "filtering" | "registrar";
+type ScreenState = "searching" | "selecting" | "filtering" | "registrar" | "detail";
 
 interface Props {
   query: string;
@@ -71,7 +72,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
   useInput(
     (input, key) => {
-      if (screenState === "registrar") return;
+      if (screenState === "registrar" || screenState === "detail") return;
 
       if (screenState === "filtering") {
         if (key.escape) {
@@ -119,6 +120,11 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
             setConfirmation(`✓ Added ${domain} to watchlist`);
             setTimeout(() => setConfirmation(null), 3000);
           }
+        } else if (input === "i") {
+          const domain = displayDomains[cursor];
+          if (domain) {
+            setScreenState("detail");
+          }
         } else if (key.return) {
           const domain = displayDomains[cursor];
           if (domain) {
@@ -130,7 +136,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         }
       }
     },
-    { isActive: screenState !== "registrar" && process.stdin.isTTY === true },
+    { isActive: screenState !== "registrar" && screenState !== "detail" && process.stdin.isTTY === true },
   );
 
   const handleRegistrarSelect = (registrar: Registrar) => {
@@ -165,6 +171,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         { key: "j/k", action: "move" },
         { key: "/", action: "filter" },
         { key: "enter", action: "buy" },
+        { key: "i", action: "info" },
         { key: "a", action: "add" },
         { key: "s", action: "suggest" },
         { key: "h", action: "history" },
@@ -175,6 +182,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         { key: "j/k", action: "move" },
         { key: "/", action: "filter" },
         { key: "enter", action: "buy" },
+        { key: "i", action: "info" },
         { key: "a", action: "add" },
         { key: "esc", action: "back" },
         { key: "q", action: "quit" },
@@ -188,10 +196,15 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     { key: "esc", action: "cancel" },
   ];
 
+  const detailHints = [
+    { key: "esc", action: "back" },
+    { key: "q", action: "quit" },
+  ];
   const currentHints =
     screenState === "searching" ? searchingHints :
     screenState === "filtering" ? filteringHints :
     screenState === "registrar" ? registrarHints :
+    screenState === "detail" ? detailHints :
     selectingHints;
 
   return (
@@ -228,7 +241,13 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       )}
 
       {/* Body */}
-      {screenState === "registrar" && selectedDomain ? (
+      {screenState === "detail" && selectedDomain ? (
+        <WhoisView
+          domain={selectedDomain}
+          onBack={() => setScreenState("selecting")}
+          onQuit={onQuit ?? (() => exit())}
+        />
+      ) : screenState === "registrar" && selectedDomain ? (
         <RegistrarModal
           domain={selectedDomain}
           onSelect={handleRegistrarSelect}

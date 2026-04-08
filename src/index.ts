@@ -161,6 +161,41 @@ program
     console.log(`  ✓ Added ${domain} to watchlist`);
   });
 
+// --- whois ---
+program
+  .command("whois")
+  .argument("<domain>")
+  .option("-f, --format <format>", "Output format (tui, json)", "tui")
+  .option("-t, --timeout <seconds>", "Timeout in seconds (default: 10)", "10")
+  .description("Show detailed WHOIS/RDAP info for a domain")
+  .action(async (domain: string, opts) => {
+    const config = await loadConfig();
+    setTheme(config.theme);
+
+    const parsed = parseInt(opts.timeout, 10);
+    const timeoutMs = Number.isNaN(parsed) ? 10000 : parsed * 1000;
+
+    if (opts.format === "json") {
+      const { domainDetail } = await import("./checker/detail.ts");
+      const result = await domainDetail(domain, { timeoutMs });
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    const { render } = await import("ink");
+    const React = (await import("react")).default;
+    const { default: WhoisView } = await import("./tui/WhoisView.tsx");
+
+    const instance = render(
+      React.createElement(WhoisView, { domain, timeoutMs }),
+      {},
+    );
+
+    instance.waitUntilExit().then(() => {
+      process.exit(0);
+    });
+  });
+
 // --- list ---
 program
   .command("list")
