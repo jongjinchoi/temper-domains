@@ -190,6 +190,16 @@ temper runs as a local MCP server. Your AI assistant searches domains without yo
 
 ### Claude Code
 
+Pick one based on how you want temper available:
+
+**All projects (recommended):**
+
+```bash
+claude mcp add --scope user --transport stdio temper -- temper mcp
+```
+
+**Current folder only:**
+
 ```bash
 claude mcp add --transport stdio temper -- temper mcp
 ```
