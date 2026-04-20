@@ -203,7 +203,10 @@ server.registerTool("check_domain_availability", {
           const tld = getTld(domain);
           const rdapUrl = getRdapUrl(tld);
           if (!rdapUrl) return;
-          const r = await rdapLookup(domain, rdapUrl, controller.signal);
+          const serverLimit = getServerLimit(rdapUrl);
+          const r = await serverLimit(() =>
+            rdapLookup(domain, rdapUrl, controller.signal),
+          );
           if (r.status === "taken") dnsResults.set(domain, "taken");
         }),
       ),
