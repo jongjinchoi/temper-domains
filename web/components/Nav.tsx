@@ -5,7 +5,7 @@ export default function Nav() {
   return (
     <nav className={styles.nav}>
       <div className={styles.brand}>
-        <span className={styles.flameIcon} aria-hidden />
+        <span className={styles.monogram} aria-hidden>t</span>
         <span>
           temper <span className={styles.brandSub}>/ domains</span>
         </span>

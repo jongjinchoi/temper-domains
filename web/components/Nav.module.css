@@ -15,21 +15,14 @@
   font-size: 20px;
 }
 
-.flameIcon {
+.monogram {
   display: inline-block;
-  width: 22px;
-  height: 22px;
-  background: var(--flame);
-  border-radius: 50%;
-  position: relative;
-}
-
-.flameIcon::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  background: var(--flame-2);
-  border-radius: 50%;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.04em;
 }
 
 .brandSub {
