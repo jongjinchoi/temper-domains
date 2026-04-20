@@ -1,0 +1,68 @@
+.snaps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .snaps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .snaps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.snap {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 10px 10px 14px;
+  transition: all 0.15s;
+}
+
+.snap:nth-child(1) { transform: rotate(-1.5deg); }
+.snap:nth-child(2) { transform: rotate(1deg); }
+.snap:nth-child(3) { transform: rotate(-0.5deg); }
+.snap:nth-child(4) { transform: rotate(1.5deg); }
+.snap:nth-child(5) { transform: rotate(-1deg); }
+.snap:nth-child(6) { transform: rotate(0.5deg); }
+.snap:nth-child(7) { transform: rotate(-1.2deg); }
+
+.snap:hover {
+  transform: rotate(0) translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--flame);
+}
+
+.snapPreview {
+  aspect-ratio: 4 / 3;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: hidden;
+}
+
+.snapLabel {
+  padding: 10px 4px 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.snapLabel strong {
+  font-family: var(--grot);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.snapLabel span {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
