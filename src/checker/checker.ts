@@ -10,12 +10,17 @@ import { sanitizeDomain } from "../utils/validate.ts";
 export async function* checkDomains(
   name: string,
   tlds: readonly string[] = DEFAULT_TLDS,
-  options: { concurrency?: number; timeoutMs?: number } = {},
+  options: { concurrency?: number; timeoutMs?: number; signal?: AbortSignal } = {},
 ): AsyncGenerator<DomainResult> {
-  const { concurrency = 20, timeoutMs = 3000 } = options;
+  const { concurrency = 20, timeoutMs = 3000, signal: externalSignal } = options;
   const globalLimit = pLimit(concurrency);
   const controller = new AbortController();
   const { signal } = controller;
+
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
 
   await getBootstrap();
 

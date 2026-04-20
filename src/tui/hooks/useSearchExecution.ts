@@ -27,6 +27,7 @@ export function useSearchExecution(
     setElapsed(0);
     setDone(false);
 
+    const abortController = new AbortController();
     const startTime = performance.now();
     const timer = setInterval(() => {
       setElapsed(Math.round(performance.now() - startTime));
@@ -34,7 +35,7 @@ export function useSearchExecution(
 
     (async () => {
       const collected: DomainResult[] = [];
-      for await (const result of checkDomains(query, tlds, { timeoutMs })) {
+      for await (const result of checkDomains(query, tlds, { timeoutMs, signal: abortController.signal })) {
         if (cancelledRef.current) break;
         collected.push(result);
         setResults((prev) => new Map(prev).set(result.domain, result));
@@ -54,6 +55,7 @@ export function useSearchExecution(
 
     return () => {
       cancelledRef.current = true;
+      abortController.abort();
       clearInterval(timer);
     };
   }, [query, tlds, timeoutMs]);
