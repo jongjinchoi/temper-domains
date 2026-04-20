@@ -1,0 +1,128 @@
+.tickets {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .tickets {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tkCard {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  transition: all 0.15s;
+}
+
+.tkCard:nth-child(odd) {
+  transform: rotate(-0.4deg);
+}
+
+.tkCard:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+
+.tkCard:hover {
+  transform: rotate(0);
+  box-shadow: 4px 4px 0 var(--flame);
+}
+
+.stub {
+  background: var(--flame);
+  color: var(--paper);
+  padding: 20px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  border-right: 2px dashed var(--ink);
+  font-weight: 700;
+}
+
+.tkCard:nth-child(even) .stub {
+  background: var(--navy);
+}
+
+.body {
+  padding: 18px 20px;
+}
+
+.sig {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+.sigF {
+  color: var(--flame);
+}
+
+.sigArg {
+  color: var(--muted);
+}
+
+.d {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.d code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--cream-2);
+  padding: 1px 4px;
+}
+
+.ex {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--navy);
+  padding-top: 8px;
+  border-top: 1px dashed var(--ink);
+}
+
+/* Keys row */
+.keysRow {
+  margin-top: 28px;
+  padding: 20px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.keysLabel {
+  font-weight: 700;
+  color: var(--flame);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 11px;
+  margin-right: 8px;
+}
+
+.keysRow kbd {
+  display: inline-block;
+  padding: 2px 7px;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 2px;
+}

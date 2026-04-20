@@ -1,3 +1,4 @@
+import Commands from "@/components/Commands";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import Mcp from "@/components/Mcp";
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Mcp />
+      <Commands />
     </div>
   );
 }
