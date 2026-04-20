@@ -5,13 +5,14 @@ interface Props {
 }
 
 /**
- * temper brand mark — rounded square tile with a lowercase 't'.
- * Geometry approximates Space Mono 700 's' stem + crossbar so the
- * mark stays crisp at any pixel density without shipping a webfont.
+ * temper brand mark — a rounded square tile containing a genuine
+ * Space Mono 700 lowercase 't' rendered as SVG <text>. Falls back to
+ * the system monospace only if Space Mono hasn't loaded (affects
+ * first-paint of the favicon in some browsers; once the webfont is
+ * cached the Nav render is exact).
  *
- * Two fills for reuse beyond the site (README, print, inverted contexts):
- *   - "flame" → flame square, paper 't'  (primary, used in Nav + favicon)
- *   - "ink"   → ink square, cream 't'    (monochrome fallback)
+ *   variant="flame" → flame tile, paper glyph (primary, Nav + favicon)
+ *   variant="ink"   → ink tile, cream glyph (monochrome backup)
  */
 export default function Monogram({
   variant = "flame",
@@ -30,8 +31,20 @@ export default function Monogram({
       aria-hidden
     >
       <rect width="32" height="32" rx="5" fill={bg} />
-      <rect x="12.5" y="3" width="7" height="26" fill={fg} />
-      <rect x="4" y="9" width="24" height="4.5" fill={fg} />
+      <text
+        x="16"
+        y="25"
+        fill={fg}
+        textAnchor="middle"
+        style={{
+          fontFamily:
+            'var(--font-space-mono), "Space Mono", ui-monospace, Menlo, monospace',
+          fontWeight: 700,
+          fontSize: "26px",
+        }}
+      >
+        t
+      </text>
     </svg>
   );
 }
