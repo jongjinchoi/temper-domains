@@ -264,8 +264,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       ) : (
         <Box flexDirection="column">
           {hasLess && <Text color={theme.dim}>  ↑ {viewOffset} more</Text>}
-          {visibleDomains.map((domain) => {
-            const i = displayDomains.indexOf(domain);
+          {visibleDomains.map((domain, idx) => {
+            const i = viewOffset + idx;
             return (
               <ResultRow
                 key={domain}
