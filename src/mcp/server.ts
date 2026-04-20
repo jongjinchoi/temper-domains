@@ -75,10 +75,10 @@ function formatResults(name: string, results: DomainResult[]): string {
 }
 
 server.registerTool("search_domain", {
-  description: "Check domain availability across TLDs. Default 30 TLDs, or 64 with extended=true.",
+  description: "Check domain availability across TLDs. Default 30 TLDs, or 59 with extended=true.",
   inputSchema: {
     name: z.string().describe("Domain name without TLD, e.g. 'localhoston'"),
-    extended: z.boolean().optional().describe("Check 64 TLDs instead of 30"),
+    extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
   },
 }, async ({ name, extended }) => {
   try {

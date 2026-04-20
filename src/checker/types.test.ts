@@ -21,6 +21,10 @@ describe("DEFAULT_TLDS", () => {
 });
 
 describe("EXTENDED_TLDS", () => {
+  test("has 59 entries", () => {
+    expect(EXTENDED_TLDS.length).toBe(59);
+  });
+
   test("has more entries than DEFAULT_TLDS", () => {
     expect(EXTENDED_TLDS.length).toBeGreaterThan(DEFAULT_TLDS.length);
   });
