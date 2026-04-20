@@ -36,7 +36,7 @@ export async function* checkDomains(
             const serverLimit = getServerLimit(rdapUrl);
             result = await serverLimit(() => rdapLookup(domain, rdapUrl, signal));
           } else {
-            result = await whoisLookup(domain, signal);
+            result = await whoisLookup(domain, signal, timeoutMs);
           }
         } catch (err) {
           result = {

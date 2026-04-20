@@ -94,6 +94,7 @@ export function detectStatus(raw: string): DomainStatus {
 export async function whoisLookup(
   domain: string,
   signal: AbortSignal,
+  timeoutMs = 3000,
 ): Promise<DomainResult> {
   const tld = getTld(domain);
   const host = WHOIS_SERVERS[tld];
@@ -108,7 +109,7 @@ export async function whoisLookup(
 
   try {
     const raw = await Promise.race([
-      whoisRaw(host, domain, 3000),
+      whoisRaw(host, domain, timeoutMs),
       new Promise<never>((_, reject) => {
         signal.addEventListener("abort", () =>
           reject(new DOMException("Aborted", "AbortError")),
@@ -210,6 +211,7 @@ export function parseWhoisRaw(raw: string): Partial<DomainDetail> {
 export async function whoisDetail(
   domain: string,
   signal: AbortSignal,
+  timeoutMs = 5000,
 ): Promise<DomainDetail> {
   const tld = getTld(domain);
   const host = WHOIS_SERVERS[tld];
@@ -224,7 +226,7 @@ export async function whoisDetail(
 
   try {
     const raw = await Promise.race([
-      whoisRaw(host, domain, 5000),
+      whoisRaw(host, domain, timeoutMs),
       new Promise<never>((_, reject) => {
         signal.addEventListener("abort", () =>
           reject(new DOMException("Aborted", "AbortError")),

@@ -26,7 +26,7 @@ export async function domainDetail(
           rdapDetail(domain, rdapUrl, controller.signal),
         );
       }
-      return await whoisDetail(domain, controller.signal);
+      return await whoisDetail(domain, controller.signal, timeoutMs);
     } catch (err) {
       return {
         domain,
