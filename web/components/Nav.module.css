@@ -16,13 +16,17 @@
 }
 
 .monogram {
-  display: inline-block;
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 1;
-  color: var(--ink);
-  letter-spacing: -0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  transform: rotate(-2deg);
+  transition: transform 0.12s;
+}
+
+.monogram:hover {
+  transform: rotate(0);
 }
 
 .brandSub {

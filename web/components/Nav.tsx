@@ -1,11 +1,14 @@
 import { GITHUB_URL } from "@/lib/temper-data";
+import Monogram from "./Monogram";
 import styles from "./Nav.module.css";
 
 export default function Nav() {
   return (
     <nav className={styles.nav}>
       <div className={styles.brand}>
-        <span className={styles.monogram} aria-hidden>t</span>
+        <span className={styles.monogram}>
+          <Monogram variant="flame" size={26} />
+        </span>
         <span>
           temper <span className={styles.brandSub}>/ domains</span>
         </span>
