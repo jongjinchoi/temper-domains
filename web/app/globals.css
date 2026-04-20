@@ -25,12 +25,6 @@
   --mono: var(--font-mono), ui-monospace, Menlo, monospace;
   --retro: var(--font-retro), "JetBrains Mono", monospace;
   --grot: var(--font-grot), system-ui, sans-serif;
-
-  /* ── Legacy aliases (removed after swap commit) ──── */
-  --cream: var(--bg);
-  --cream-2: var(--bg-2);
-  --ink: var(--fg);
-  --paper: var(--surface);
 }
 
 * { box-sizing: border-box; }

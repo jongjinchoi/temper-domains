@@ -17,8 +17,8 @@
   text-transform: uppercase;
   letter-spacing: 0.15em;
   padding: 5px 9px;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
   transform: rotate(-4deg);
 }
 
@@ -28,7 +28,7 @@
 
 .flame {
   background: var(--flame);
-  color: var(--paper);
+  color: var(--bg);
 }
 
 .s1 {
@@ -74,7 +74,7 @@
   color: var(--navy);
   margin-bottom: 28px;
   padding-bottom: 8px;
-  border-bottom: 2px dashed var(--ink);
+  border-bottom: 2px dashed var(--border);
 }
 
 .issueBar span + span::before {
@@ -90,7 +90,7 @@
   letter-spacing: -0.035em;
   font-weight: 700;
   margin: 0 0 24px;
-  color: var(--ink);
+  color: var(--fg);
 }
 
 .headlineFlame {
@@ -131,7 +131,7 @@
 
 .lede strong {
   background: var(--flame);
-  color: var(--paper);
+  color: var(--bg);
   padding: 1px 6px;
   font-weight: 500;
 }
@@ -140,8 +140,8 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
   padding: 14px 20px;
   font-family: var(--mono);
   font-size: 14px;
@@ -172,7 +172,7 @@
 
 /* CRT — amber on dark, tilted */
 .crt {
-  background: var(--ink);
+  background: var(--screen);
   color: var(--flame-2);
   padding: 22px 24px;
   font-family: var(--retro);
@@ -181,7 +181,7 @@
   white-space: pre;
   overflow: hidden;
   position: relative;
-  border: 3px solid var(--ink);
+  border: 3px solid var(--fg);
   box-shadow: 8px 8px 0 var(--navy);
   transform: rotate(1.5deg);
   min-height: 320px;

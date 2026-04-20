@@ -46,15 +46,15 @@
 .toolsPill span {
   font-family: var(--mono);
   font-size: 11px;
-  background: var(--cream-2);
-  color: var(--ink);
+  background: var(--bg-2);
+  color: var(--fg);
   padding: 4px 10px;
-  border: 1.5px solid var(--ink);
+  border: 1.5px solid var(--border);
 }
 
 .mcpPanel {
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--border);
   box-shadow: 6px 6px 0 var(--navy);
   transform: rotate(0.8deg);
 }
@@ -62,14 +62,14 @@
 .mcpTabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 2px solid var(--border);
 }
 
 .mcpTabs button {
   padding: 12px 8px;
   background: transparent;
   border: none;
-  border-right: 2px solid var(--ink);
+  border-right: 2px solid var(--border);
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -84,14 +84,14 @@
 }
 
 .mcpTabs button.active {
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
 }
 
 .mcpCode {
   padding: 20px 22px;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--screen);
+  color: var(--surface);
   font-family: var(--mono);
   font-size: 13px;
   line-height: 1.7;

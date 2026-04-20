@@ -39,7 +39,7 @@
 
 .playSteps {
   margin-top: 20px;
-  border-top: 2px dashed var(--ink);
+  border-top: 2px dashed var(--border);
   padding-top: 12px;
 }
 
@@ -47,7 +47,7 @@
   display: flex;
   gap: 14px;
   padding: 10px 0;
-  border-bottom: 1px dashed var(--ink);
+  border-bottom: 1px dashed var(--border);
   font-size: 14px;
 }
 
@@ -61,8 +61,8 @@
 
 /* Terminal panel */
 .playTerm {
-  background: var(--ink);
-  border: 3px solid var(--ink);
+  background: var(--screen);
+  border: 3px solid var(--fg);
   box-shadow: 8px 8px 0 var(--flame);
   transform: rotate(-0.5deg);
 }

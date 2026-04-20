@@ -17,9 +17,9 @@
 }
 
 .ftCard {
-  background: var(--paper);
+  background: var(--surface);
   padding: 22px 22px 24px;
-  border: 2px solid var(--ink);
+  border: 2px solid var(--border);
   position: relative;
   transition: all 0.15s;
 }
@@ -49,8 +49,8 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 3px 8px;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
   margin-bottom: 14px;
 }
 
@@ -72,7 +72,7 @@
 
 .ftCard p {
   font-size: 14px;
-  color: var(--ink);
+  color: var(--fg-soft);
   line-height: 1.5;
   margin: 0;
 }
@@ -80,14 +80,14 @@
 .ftCard code {
   font-family: var(--mono);
   font-size: 12px;
-  background: var(--cream-2);
+  background: var(--bg-2);
   padding: 1px 4px;
 }
 
-/* Dark variant — last card (∞ / INSTALL) */
+/* Dark variant — last card (∞ / INSTALL). Uses the always-dark screen token. */
 .ftCardDark {
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--screen);
+  color: var(--surface);
 }
 
 .ftCardDark .badge {

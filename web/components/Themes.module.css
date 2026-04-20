@@ -17,8 +17,8 @@
 }
 
 .snap {
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--border);
   padding: 10px 10px 14px;
   transition: all 0.15s;
 }

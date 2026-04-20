@@ -49,14 +49,14 @@
 }
 
 .navCta {
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
   padding: 10px 16px;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.05em;
-  border: 2px solid var(--ink);
+  border: 2px solid var(--fg);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -66,7 +66,7 @@
 
 .navCta:hover {
   background: var(--flame);
-  color: var(--cream);
+  color: var(--bg);
   border-color: var(--flame);
   transform: rotate(0);
 }

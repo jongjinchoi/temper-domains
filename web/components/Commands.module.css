@@ -11,8 +11,8 @@
 }
 
 .tkCard {
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--border);
   padding: 0;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -34,7 +34,7 @@
 
 .stub {
   background: var(--flame);
-  color: var(--paper);
+  color: var(--bg);
   padding: 20px 14px;
   font-family: var(--mono);
   font-size: 10px;
@@ -42,7 +42,7 @@
   text-transform: uppercase;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  border-right: 2px dashed var(--ink);
+  border-right: 2px dashed var(--border);
   font-weight: 700;
 }
 
@@ -59,7 +59,7 @@
   font-size: 15px;
   font-weight: 500;
   margin-bottom: 6px;
-  color: var(--ink);
+  color: var(--fg);
 }
 
 .sigF {
@@ -72,7 +72,7 @@
 
 .d {
   font-size: 13px;
-  color: var(--ink);
+  color: var(--fg);
   line-height: 1.45;
   margin-bottom: 10px;
 }
@@ -80,7 +80,7 @@
 .d code {
   font-family: var(--mono);
   font-size: 12px;
-  background: var(--cream-2);
+  background: var(--bg-2);
   padding: 1px 4px;
 }
 
@@ -89,22 +89,22 @@
   font-size: 11px;
   color: var(--navy);
   padding-top: 8px;
-  border-top: 1px dashed var(--ink);
+  border-top: 1px dashed var(--border);
 }
 
 /* Keys row */
 .keysRow {
   margin-top: 28px;
   padding: 20px;
-  background: var(--paper);
-  border: 2px solid var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--border);
   display: flex;
   flex-wrap: wrap;
   gap: 12px 20px;
   align-items: center;
   font-family: var(--mono);
   font-size: 13px;
-  color: var(--ink);
+  color: var(--fg);
 }
 
 .keysLabel {
@@ -119,8 +119,8 @@
 .keysRow kbd {
   display: inline-block;
   padding: 2px 7px;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--fg);
+  color: var(--bg);
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
