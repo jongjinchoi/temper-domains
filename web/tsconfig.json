@@ -38,6 +38,8 @@
   "exclude": [
     "node_modules",
     "out",
-    ".next"
+    ".next",
+    "**/__tests__/**",
+    "**/*.test.ts"
   ]
 }
