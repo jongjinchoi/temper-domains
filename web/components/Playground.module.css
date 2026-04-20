@@ -1,0 +1,148 @@
+.playWrap {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .playWrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.playLeft h3 {
+  font-family: var(--grot);
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 16px;
+}
+
+.playLeft h3 em {
+  color: var(--flame);
+  font-style: italic;
+}
+
+.playLeft p {
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 38ch;
+  margin: 0 0 14px;
+}
+
+.playLeft .muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.playSteps {
+  margin-top: 20px;
+  border-top: 2px dashed var(--ink);
+  padding-top: 12px;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--ink);
+  font-size: 14px;
+}
+
+.stepNum {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--flame);
+  min-width: 28px;
+}
+
+/* Terminal panel */
+.playTerm {
+  background: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--flame);
+  transform: rotate(-0.5deg);
+}
+
+.playBar {
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #8a7a5c;
+  border-bottom: 1px solid #3a3035;
+  display: flex;
+  justify-content: space-between;
+}
+
+.playBody {
+  padding: 20px 22px;
+  font-family: var(--retro);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--flame-2);
+  white-space: pre;
+  min-height: 380px;
+  max-height: 480px;
+  overflow-y: auto;
+  cursor: text;
+  position: relative;
+}
+
+.playBody::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 3px
+  );
+  pointer-events: none;
+}
+
+.pr {
+  color: var(--flame);
+}
+
+.mu {
+  color: #8a7a5c;
+}
+
+.ok {
+  color: #c5e860;
+}
+
+.tk {
+  color: #ff7070;
+}
+
+.k {
+  color: #ffd87a;
+}
+
+.inputLine {
+  display: inline-flex;
+  align-items: baseline;
+  position: relative;
+  z-index: 2;
+}
+
+.input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--retro);
+  font-size: 20px;
+  color: var(--flame-2);
+  flex: 1;
+  min-width: 200px;
+  caret-color: var(--flame);
+  padding: 0;
+}

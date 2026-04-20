@@ -3,6 +3,7 @@ import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import Mcp from "@/components/Mcp";
 import Nav from "@/components/Nav";
+import Playground from "@/components/Playground";
 import Themes from "@/components/Themes";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <Mcp />
       <Commands />
       <Themes />
+      <Playground />
     </div>
   );
 }
