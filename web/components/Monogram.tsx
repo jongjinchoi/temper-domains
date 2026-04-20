@@ -21,7 +21,10 @@ export default function Monogram({
   size = 26,
   className,
 }: Props) {
-  const bg = variant === "flame" ? "#e8461a" : "#1e1a1f";
+  // flame tile uses the theme token so it brightens in dark mode;
+  // foreground + ink variant stay fixed so the brand reads identically
+  // in every context (README, print, inverted).
+  const bg = variant === "flame" ? "var(--flame)" : "#1e1a1f";
   const fg = variant === "flame" ? "#faf3df" : "#f3ead3";
   return (
     <svg
