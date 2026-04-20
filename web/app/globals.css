@@ -1,0 +1,64 @@
+:root {
+  --cream: #f3ead3;
+  --cream-2: #ead9b1;
+  --ink: #1e1a1f;
+  --navy: #1b3a5c;
+  --navy-2: #2a5280;
+  --flame: #e8461a;
+  --flame-2: #ff7a3d;
+  --ok: #2e6b3f;
+  --tk: #a8291e;
+  --muted: #7a705c;
+  --paper: #faf3df;
+
+  --mono: var(--font-mono), ui-monospace, Menlo, monospace;
+  --retro: var(--font-retro), "JetBrains Mono", monospace;
+  --grot: var(--font-grot), system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--grot);
+  font-size: 16px;
+  line-height: 1.5;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(232, 70, 26, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(27, 58, 92, 0.05) 0%, transparent 45%);
+}
+
+a { color: inherit; text-decoration: none; }
+
+::selection {
+  background: var(--flame);
+  color: var(--paper);
+}
+
+/* Paper texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(30, 26, 31, 0.015) 3px,
+    rgba(30, 26, 31, 0.015) 4px
+  );
+  z-index: 1;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
