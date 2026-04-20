@@ -1,0 +1,247 @@
+.hero {
+  padding: 40px 0 60px;
+  position: relative;
+}
+
+.heroStickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sticker {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 5px 9px;
+  background: var(--ink);
+  color: var(--cream);
+  transform: rotate(-4deg);
+}
+
+.navy {
+  background: var(--navy);
+}
+
+.flame {
+  background: var(--flame);
+  color: var(--paper);
+}
+
+.s1 {
+  top: 12px;
+  right: 80px;
+  transform: rotate(6deg);
+}
+
+.s2 {
+  top: 40px;
+  left: 10px;
+  transform: rotate(-8deg);
+}
+
+.s3 {
+  bottom: 30px;
+  right: 40px;
+  transform: rotate(3deg);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 880px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.issueBar {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 28px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--ink);
+}
+
+.issueBar span + span::before {
+  content: "//";
+  color: var(--muted);
+  margin-right: 12px;
+}
+
+.headline {
+  font-family: var(--grot);
+  font-size: clamp(48px, 8vw, 104px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: var(--ink);
+}
+
+.headlineFlame {
+  color: var(--flame);
+  font-style: italic;
+}
+
+.headlineStrike {
+  text-decoration: line-through;
+  text-decoration-color: var(--flame);
+  text-decoration-thickness: 4px;
+  color: var(--muted);
+}
+
+.headlineUnderline {
+  position: relative;
+  display: inline-block;
+}
+
+.headlineUnderline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 10px;
+  background: var(--flame);
+  opacity: 0.35;
+  z-index: -1;
+}
+
+.lede {
+  font-size: 18px;
+  line-height: 1.5;
+  max-width: 46ch;
+  margin: 0 0 28px;
+}
+
+.lede strong {
+  background: var(--flame);
+  color: var(--paper);
+  padding: 1px 6px;
+  font-weight: 500;
+}
+
+.installSticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 14px 20px;
+  font-family: var(--mono);
+  font-size: 14px;
+  cursor: pointer;
+  transform: rotate(-1.2deg);
+  box-shadow: 4px 4px 0 var(--flame);
+  transition: all 0.12s;
+  border: none;
+  text-align: left;
+}
+
+.installSticker:hover {
+  transform: rotate(0) translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--flame);
+}
+
+.installIc {
+  color: var(--flame);
+  font-weight: 700;
+}
+
+.copyHint {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+/* CRT — amber on dark, tilted */
+.crt {
+  background: var(--ink);
+  color: var(--flame-2);
+  padding: 22px 24px;
+  font-family: var(--retro);
+  font-size: 22px;
+  line-height: 1.3;
+  white-space: pre;
+  overflow: hidden;
+  position: relative;
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--navy);
+  transform: rotate(1.5deg);
+  min-height: 320px;
+}
+
+.crt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 3px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+.crtPrompt {
+  color: var(--flame);
+}
+
+.crtMuted {
+  color: #8a7a5c;
+}
+
+.crtOk {
+  color: #c5e860;
+}
+
+.crtTaken {
+  color: #ff7070;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55ch;
+  height: 0.9em;
+  background: var(--flame-2);
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
