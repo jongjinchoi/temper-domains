@@ -48,7 +48,7 @@ export function useSearchExecution(
           query,
           timestamp: new Date().toISOString(),
           available: collected.filter((r) => r.status === "available").length,
-          total: collected.length,
+          total: tlds.length,
         }).catch(() => {});
       }
     })();
