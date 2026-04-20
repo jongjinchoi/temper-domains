@@ -94,11 +94,17 @@ program
     }
 
     // TUI mode
+    if (queries.length > 1) {
+      const dropped = queries.slice(1).join(", ");
+      console.error(
+        `Note: TUI mode processes one query at a time. Dropped: ${dropped}. Use --format json for multiple queries.`,
+      );
+    }
+
     const { render } = await import("ink");
     const React = (await import("react")).default;
     const { default: App } = await import("./tui/App.tsx");
 
-    // For TUI, process one query at a time
     const query = queries[0] ?? "";
     const instance = render(
       React.createElement(App, { query, tlds, onlyAvailable: opts.onlyAvailable, timeoutMs }),
