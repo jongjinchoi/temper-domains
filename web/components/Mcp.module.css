@@ -1,0 +1,114 @@
+.mcpWrap {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 36px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .mcpWrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mcpIntro h3 {
+  font-family: var(--grot);
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 16px;
+}
+
+.mcpIntro h3 em {
+  color: var(--flame);
+  font-style: italic;
+}
+
+.mcpIntro p {
+  font-size: 16px;
+  line-height: 1.55;
+  max-width: 42ch;
+  margin: 0 0 14px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.toolsPill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.toolsPill span {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--cream-2);
+  color: var(--ink);
+  padding: 4px 10px;
+  border: 1.5px solid var(--ink);
+}
+
+.mcpPanel {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--navy);
+  transform: rotate(0.8deg);
+}
+
+.mcpTabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 2px solid var(--ink);
+}
+
+.mcpTabs button {
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  border-right: 2px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.mcpTabs button:last-child {
+  border-right: none;
+}
+
+.mcpTabs button.active {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.mcpCode {
+  padding: 20px 22px;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.mu {
+  color: #8a7a5c;
+}
+
+.pr {
+  color: var(--flame-2);
+  font-weight: 700;
+}
+
+.k {
+  color: #e0c878;
+}

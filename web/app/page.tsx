@@ -1,5 +1,6 @@
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
+import Mcp from "@/components/Mcp";
 import Nav from "@/components/Nav";
 
 export default function Home() {
@@ -8,6 +9,7 @@ export default function Home() {
       <Nav />
       <Hero />
       <Features />
+      <Mcp />
     </div>
   );
 }
