@@ -58,18 +58,21 @@ export async function* checkDomains(
 
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-  let yielded = 0;
-  while (yielded < domains.length) {
-    if (yielded < results.length) {
-      const result = results[yielded++];
-      if (result) yield result;
-    } else {
-      await new Promise<void>((r) => {
-        resolveNext = r;
-      });
+  try {
+    let yielded = 0;
+    while (yielded < domains.length) {
+      if (yielded < results.length) {
+        const result = results[yielded++];
+        if (result) yield result;
+      } else {
+        await new Promise<void>((r) => {
+          resolveNext = r;
+        });
+      }
     }
+    await allDone;
+  } finally {
+    clearTimeout(timeout);
+    controller.abort();
   }
-
-  clearTimeout(timeout);
-  await allDone;
 }
