@@ -2,9 +2,35 @@
 import { Command } from "commander";
 import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
+import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 
 declare const PKG_VERSION: string;
 const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
+
+function exitWithError(message: string): never {
+  console.error(`Error: ${message}`);
+  process.exit(1);
+}
+
+function validateLabelOrExit(label: string, argName: string): string {
+  const clean = sanitizeDomain(label);
+  if (!isValidDomainLabel(clean)) {
+    exitWithError(
+      `invalid ${argName} '${label}'. Must be 1-63 alphanumeric characters (hyphens allowed except at start/end).`,
+    );
+  }
+  return clean;
+}
+
+function validateDomainOrExit(domain: string, argName: string): string {
+  const clean = sanitizeDomain(domain);
+  if (!isValidDomain(clean)) {
+    exitWithError(
+      `invalid ${argName} '${domain}'. Expected a full domain like 'example.com'.`,
+    );
+  }
+  return clean;
+}
 
 const program = new Command();
 
@@ -25,6 +51,8 @@ program
   .option("-t, --timeout <seconds>", "Timeout in seconds (default: 3)", "3")
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
+    queries = queries.map((q) => validateLabelOrExit(q, "query"));
+
     const config = await loadConfig();
     setTheme(config.theme);
 
@@ -95,6 +123,8 @@ program
       process.exit(1);
     }
 
+    query = validateLabelOrExit(query, "name");
+
     const config = await loadConfig();
     setTheme(config.theme);
 
@@ -156,6 +186,7 @@ program
   .argument("<domain>")
   .description("Add a domain to watchlist")
   .action(async (domain: string) => {
+    domain = validateDomainOrExit(domain, "domain");
     const { addWatch } = await import("./config/watchlist.ts");
     await addWatch(domain);
     console.log(`  ✓ Added ${domain} to watchlist`);
@@ -169,6 +200,8 @@ program
   .option("-t, --timeout <seconds>", "Timeout in seconds (default: 10)", "10")
   .description("Show detailed WHOIS/RDAP info for a domain")
   .action(async (domain: string, opts) => {
+    domain = validateDomainOrExit(domain, "domain");
+
     const config = await loadConfig();
     setTheme(config.theme);
 
