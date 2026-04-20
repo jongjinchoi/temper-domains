@@ -43,38 +43,42 @@ async function writeCache(data: BootstrapData): Promise<void> {
 
 async function fetchBootstrap(): Promise<BootstrapData> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
-  const res = await fetch(BOOTSTRAP_URL, { signal: controller.signal });
-  clearTimeout(timeout);
-  if (!res.ok) throw new Error(`Bootstrap fetch failed: ${res.status}`);
-  return res.json() as Promise<BootstrapData>;
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch(BOOTSTRAP_URL, { signal: controller.signal });
+    if (!res.ok) throw new Error(`Bootstrap fetch failed: ${res.status}`);
+    return await (res.json() as Promise<BootstrapData>);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function refreshInBackground(): void {
+  fetchBootstrap()
+    .then(async (data) => {
+      await writeCache(data).catch(() => {});
+      bootstrapMap = parseBootstrap(data);
+    })
+    .catch(() => {
+      // Network failure during background refresh — keep stale map.
+    });
 }
 
 export async function getBootstrap(): Promise<Map<string, string>> {
   if (bootstrapMap) return bootstrapMap;
 
-  if (await isCacheValid()) {
-    const cached = await readCache();
-    if (cached) {
-      bootstrapMap = parseBootstrap(cached);
-      return bootstrapMap;
-    }
+  const cached = await readCache();
+  if (cached) {
+    bootstrapMap = parseBootstrap(cached);
+    if (!(await isCacheValid())) refreshInBackground();
+    return bootstrapMap;
   }
 
-  try {
-    const data = await fetchBootstrap();
-    await writeCache(data);
-    bootstrapMap = parseBootstrap(data);
-    return bootstrapMap;
-  } catch {
-    // Offline fallback: use stale cache if available
-    const stale = await readCache();
-    if (stale) {
-      bootstrapMap = parseBootstrap(stale);
-      return bootstrapMap;
-    }
-    throw new Error("No bootstrap data available (offline and no cache)");
-  }
+  // No cache: must fetch synchronously.
+  const data = await fetchBootstrap();
+  await writeCache(data);
+  bootstrapMap = parseBootstrap(data);
+  return bootstrapMap;
 }
 
 export function getRdapUrl(tld: string): string | null {
