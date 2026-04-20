@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-dark.png" width="120" alt="temper">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-dark.png">
+    <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-light.png" width="120" alt="temper">
+  </picture>
 </p>
 <h1 align="center">temper</h1>
 <p align="center">
