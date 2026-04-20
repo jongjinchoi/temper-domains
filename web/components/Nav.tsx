@@ -1,5 +1,6 @@
 import { GITHUB_URL } from "@/lib/temper-data";
 import Monogram from "./Monogram";
+import ThemeToggle from "./ThemeToggle";
 import styles from "./Nav.module.css";
 
 export default function Nav() {
@@ -20,14 +21,17 @@ export default function Nav() {
         <a href="#themes">themes</a>
         <a href="#play">demo</a>
       </div>
-      <a
-        className={styles.navCta}
-        href={GITHUB_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        ★ STAR / 5
-      </a>
+      <div className={styles.navRight}>
+        <ThemeToggle />
+        <a
+          className={styles.navCta}
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ★ STAR / 5
+        </a>
+      </div>
     </nav>
   );
 }

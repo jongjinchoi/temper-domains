@@ -1,0 +1,25 @@
+.toggle {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 11px;
+  background: var(--fg);
+  color: var(--bg);
+  border: 2px solid var(--fg);
+  cursor: pointer;
+  transform: rotate(2deg);
+  transition: all 0.12s;
+  line-height: 1;
+  min-width: 34px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle:hover {
+  transform: rotate(0);
+  background: var(--flame);
+  border-color: var(--flame);
+  color: var(--bg);
+}

@@ -48,6 +48,12 @@
   color: var(--flame);
 }
 
+.navRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .navCta {
   background: var(--fg);
   color: var(--bg);
