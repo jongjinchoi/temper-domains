@@ -1,30 +1,98 @@
 :root {
-  /* ── Semantic tokens ─────────────────────────────── */
-  --bg:        #f3ead3;  /* page background */
-  --bg-2:      #ead9b1;  /* subtle surface (pills, code hl) */
-  --surface:   #faf3df;  /* raised cards */
-  --surface-2: #ead9b1;  /* alt subsurface */
-  --fg:        #1e1a1f;  /* body text + swap'd contrast block bg */
-  --fg-soft:   #1e1a1f;  /* softened body (same in light) */
-  --muted:     #7a705c;  /* secondary text */
-  --border:    #1e1a1f;  /* dashed / solid rules */
-  --screen:    #1e1a1f;  /* CRT / code panel / playground — always dark */
-
-  --flame:     #e8461a;  /* primary accent */
-  --flame-2:   #ff7a3d;  /* warm ember */
-  --navy:      #1b3a5c;  /* secondary accent */
-  --navy-2:    #2a5280;
-  --ok:        #2e6b3f;  /* success status */
-  --tk:        #a8291e;  /* taken/error status */
-
-  /* ── Paper grain overlay — tuned per scheme ──────── */
-  --grain-rgb: 30, 26, 31;   /* ink-on-cream scratches */
-  --grain-opacity: 0.45;
-
   /* Typefaces loaded via next/font */
   --mono: var(--font-mono), ui-monospace, Menlo, monospace;
   --retro: var(--font-retro), "JetBrains Mono", monospace;
   --grot: var(--font-grot), system-ui, sans-serif;
+
+  /* ── Light tokens (default) ──────────────────────── */
+  --bg:        #f3ead3;
+  --bg-2:      #ead9b1;
+  --surface:   #faf3df;
+  --surface-2: #ead9b1;
+  --fg:        #1e1a1f;
+  --fg-soft:   #1e1a1f;
+  --muted:     #7a705c;
+  --border:    #1e1a1f;
+  --screen:    #1e1a1f;
+
+  --flame:     #e8461a;
+  --flame-2:   #ff7a3d;
+  --navy:      #1b3a5c;
+  --navy-2:    #2a5280;
+  --ok:        #2e6b3f;
+  --tk:        #a8291e;
+
+  /* Paper grain — ink-on-cream scratches */
+  --grain-rgb: 30, 26, 31;
+  --grain-opacity: 0.45;
+}
+
+/* System-level dark preference (can be overridden by data-theme) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #1a1612;  /* warm dark brown — "black kraft paper" */
+    --bg-2:      #221d18;
+    --surface:   #272421;
+    --surface-2: #3a332c;
+    --fg:        #f3ead3;  /* cream ink on dark paper */
+    --fg-soft:   #e5dccf;
+    --muted:     #9a8d75;
+    --border:    #3a332c;
+    --screen:    #0d0b0a;  /* deepest screen black */
+
+    --flame:     #ff6a3a;
+    --flame-2:   #ffa370;
+    --navy:      #5a82b0;
+    --ok:        #7bc488;
+    --tk:        #ff6770;
+
+    /* Flipped grain — light scratches on dark paper */
+    --grain-rgb: 243, 234, 211;
+    --grain-opacity: 0.55;
+  }
+}
+
+/* Explicit opt-in beats system preference */
+:root[data-theme="light"] {
+  --bg:        #f3ead3;
+  --bg-2:      #ead9b1;
+  --surface:   #faf3df;
+  --surface-2: #ead9b1;
+  --fg:        #1e1a1f;
+  --fg-soft:   #1e1a1f;
+  --muted:     #7a705c;
+  --border:    #1e1a1f;
+  --screen:    #1e1a1f;
+
+  --flame:     #e8461a;
+  --flame-2:   #ff7a3d;
+  --navy:      #1b3a5c;
+  --ok:        #2e6b3f;
+  --tk:        #a8291e;
+
+  --grain-rgb: 30, 26, 31;
+  --grain-opacity: 0.45;
+}
+
+:root[data-theme="dark"] {
+  --bg:        #1a1612;
+  --bg-2:      #221d18;
+  --surface:   #272421;
+  --surface-2: #3a332c;
+  --fg:        #f3ead3;
+  --fg-soft:   #e5dccf;
+  --muted:     #9a8d75;
+  --border:    #3a332c;
+  --screen:    #0d0b0a;
+
+  --flame:     #ff6a3a;
+  --flame-2:   #ffa370;
+  --navy:      #5a82b0;
+  --ok:        #7bc488;
+  --tk:        #ff6770;
+
+  --grain-rgb: 243, 234, 211;
+  --grain-opacity: 0.55;
 }
 
 * { box-sizing: border-box; }
