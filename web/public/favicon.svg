@@ -1,6 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="5" fill="#e8461a"/>
-  <text x="16" y="25" fill="#faf3df" text-anchor="middle"
-        font-family="'Space Mono', ui-monospace, Menlo, monospace"
-        font-weight="700" font-size="26">t</text>
+  <path d="M22.85 27.52L15.93 27.52Q14.82 27.52 14.11 26.80Q13.40 26.07 13.40 24.95L13.40 24.95L13.40 15.14L8.56 15.14L8.56 11.19L13.40 11.19L13.40 4.48L17.55 4.48L17.55 11.19L23.44 11.19L23.44 15.14L17.55 15.14L17.55 22.58Q17.55 23.57 18.44 23.57L18.44 23.57L22.85 23.57L22.85 27.52Z" fill="#faf3df"/>
 </svg>
