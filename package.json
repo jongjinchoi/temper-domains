@@ -1,6 +1,6 @@
 {
   "name": "temper-domains",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Search domain availability from your terminal",
   "main": "dist/npm/index.js",
   "type": "module",
