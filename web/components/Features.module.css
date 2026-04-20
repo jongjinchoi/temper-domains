@@ -1,0 +1,108 @@
+.feats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 820px) {
+  .feats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .feats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ftCard {
+  background: var(--paper);
+  padding: 22px 22px 24px;
+  border: 2px solid var(--ink);
+  position: relative;
+  transition: all 0.15s;
+}
+
+.ftCard:nth-child(3n + 1) {
+  transform: rotate(-0.8deg);
+}
+
+.ftCard:nth-child(3n + 2) {
+  transform: rotate(0.6deg);
+}
+
+.ftCard:nth-child(3n + 3) {
+  transform: rotate(-0.3deg);
+}
+
+.ftCard:hover {
+  transform: rotate(0) translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--flame);
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: var(--ink);
+  color: var(--cream);
+  margin-bottom: 14px;
+}
+
+.ftCard:nth-child(3n + 2) .badge {
+  background: var(--navy);
+}
+
+.ftCard:nth-child(3n + 3) .badge {
+  background: var(--flame);
+}
+
+.ftCard h3 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 8px;
+}
+
+.ftCard p {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ftCard code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--cream-2);
+  padding: 1px 4px;
+}
+
+/* Dark variant — last card (∞ / INSTALL) */
+.ftCardDark {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.ftCardDark .badge {
+  background: var(--flame);
+}
+
+.ftCardDark h3 {
+  color: var(--flame-2);
+}
+
+.ftCardDark p {
+  color: #ddd;
+}
+
+.ftCardDark code {
+  background: #333;
+  color: var(--flame-2);
+}

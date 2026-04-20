@@ -62,3 +62,63 @@ body::before {
   position: relative;
   z-index: 2;
 }
+
+/* Shared section chrome (used by every section after Hero) */
+.sec {
+  padding: 70px 0;
+  position: relative;
+  border-top: 2px dashed var(--ink);
+}
+
+.sec-head {
+  margin-bottom: 36px;
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sec-head h2 {
+  font-family: var(--grot);
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0;
+}
+
+.sec-head h2 em {
+  font-style: italic;
+  color: var(--flame);
+}
+
+.sec-head h2 .ul {
+  position: relative;
+  display: inline-block;
+}
+
+.sec-head h2 .ul::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 10px;
+  background: var(--flame);
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.sec-head .dek {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 44ch;
+}
+
+.sec-head .dek code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--cream-2);
+  padding: 1px 4px;
+}
