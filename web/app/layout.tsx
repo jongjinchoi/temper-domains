@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "temper — zine",
   description:
     "Never leave your terminal to find a domain. 30 TLDs, under 2 seconds, all private. Also an MCP server — so Claude and Cursor can search on your behalf.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

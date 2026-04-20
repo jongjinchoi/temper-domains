@@ -1,0 +1,66 @@
+.cta {
+  padding: 80px 0;
+  text-align: center;
+  position: relative;
+}
+
+.cta h2 {
+  font-family: var(--grot);
+  font-size: clamp(48px, 8vw, 112px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  margin: 0 0 20px;
+}
+
+.cta h2 em {
+  font-style: italic;
+  color: var(--flame);
+}
+
+.cta p {
+  font-size: 18px;
+  max-width: 44ch;
+  margin: 0 auto 32px;
+  color: var(--ink);
+}
+
+.btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px solid var(--ink);
+  transition: all 0.12s;
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--flame);
+}
+
+.primary {
+  background: var(--flame);
+  border-color: var(--flame);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+
+.ghost:hover {
+  box-shadow: 4px 4px 0 var(--navy);
+}
