@@ -33,9 +33,14 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (input === "d" && history[cursor]) {
-        removeHistoryAt(cursor);
-        setHistory((prev) => prev.filter((_, i) => i !== cursor));
-        setCursor((prev) => Math.min(prev, history.length - 2));
+        const idx = cursor;
+        const original = history;
+        const next = history.filter((_, i) => i !== idx);
+        setHistory(next);
+        setCursor((prev) => Math.min(prev, next.length - 1));
+        removeHistoryAt(idx).catch(() => {
+          setHistory(original);
+        });
       } else if (key.return && history[cursor]) {
         setSelectedQuery(history[cursor]!.query);
       }

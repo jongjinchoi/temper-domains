@@ -44,7 +44,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [cursor, setCursor] = useState(0);
   const [viewOffset, setViewOffset] = useState(0);
-  const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean } | null>(null);
   const [filterText, setFilterText] = useState("");
   const maxVisible = Math.max(5, termRows - CHROME_LINES);
   const visibleCount = Math.min(maxVisible, allDomains.length);
@@ -116,9 +116,17 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         } else if (input === "a") {
           const domain = displayDomains[cursor];
           if (domain) {
-            addWatch(domain).catch(() => {});
-            setConfirmation(`✓ Added ${domain} to watchlist`);
-            setTimeout(() => setConfirmation(null), 3000);
+            addWatch(domain).then(
+              () => {
+                setConfirmation({ text: `✓ Added ${domain} to watchlist` });
+                setTimeout(() => setConfirmation(null), 3000);
+              },
+              (err: unknown) => {
+                const msg = err instanceof Error ? err.message : String(err);
+                setConfirmation({ text: `✗ Failed to add ${domain}: ${msg}`, error: true });
+                setTimeout(() => setConfirmation(null), 5000);
+              },
+            );
           }
         } else if (input === "i") {
           const domain = displayDomains[cursor];
@@ -144,7 +152,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     if (!domain) return;
     const url = buildURL(registrar, domain);
     openBrowser(url);
-    setConfirmation(`✓ Opening ${registrar} for ${domain}...`);
+    setConfirmation({ text: `✓ Opening ${registrar} for ${domain}...` });
     setScreenState("selecting");
     setTimeout(() => setConfirmation(null), 3000);
   };
@@ -287,7 +295,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       {/* Confirmation */}
       {confirmation && (
         <Box marginTop={1}>
-          <Text color={theme.green}>{confirmation}</Text>
+          <Text color={confirmation.error ? theme.red : theme.green}>{confirmation.text}</Text>
         </Box>
       )}
     </FrameBox>

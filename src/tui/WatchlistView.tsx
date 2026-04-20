@@ -60,9 +60,14 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       } else if (input === "d") {
         const item = items[cursor];
         if (item) {
-          removeWatch(item.domain);
-          setItems((prev) => prev.filter((_, i) => i !== cursor));
-          setCursor((prev) => Math.min(prev, items.length - 2));
+          const idx = cursor;
+          const original = items;
+          const next = items.filter((_, i) => i !== idx);
+          setItems(next);
+          setCursor((prev) => Math.min(prev, next.length - 1));
+          removeWatch(item.domain).catch(() => {
+            setItems(original);
+          });
         }
       }
     },
