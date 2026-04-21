@@ -8,6 +8,7 @@ import {
   DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
   MCP_TOOLS,
+  PLAYGROUND_TLDS,
   THEMES,
 } from "../temper-data.ts";
 
@@ -18,6 +19,13 @@ describe("temper-data sync", () => {
 
   test("EXTENDED_TLDS_COUNT matches src/checker/types.ts", () => {
     expect(EXTENDED_TLDS_COUNT).toBe(EXTENDED_TLDS.length);
+  });
+
+  test("PLAYGROUND_TLDS is a subset of EXTENDED_TLDS", () => {
+    const extended = new Set<string>(EXTENDED_TLDS);
+    for (const tld of PLAYGROUND_TLDS) {
+      expect(extended.has(tld)).toBe(true);
+    }
   });
 
   test("THEMES keys match src/tui/theme.ts THEME_NAMES (order included)", () => {

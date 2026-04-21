@@ -7,16 +7,28 @@ import {
   useRef,
   useState,
 } from "react";
-import { getVersion } from "@/lib/temper-data";
-import { type Row, TLDS, elapsedSeconds, padTo, runSearch } from "@/lib/playground-sim";
+import { getVersion, PLAYGROUND_TLDS } from "@/lib/temper-data";
+import {
+  type LiveResult,
+  runLiveSearch,
+} from "@/lib/playground-client";
 import styles from "./Playground.module.css";
 
 type State =
   | { kind: "initial" }
-  | { kind: "loading"; name: string }
-  | { kind: "done"; name: string; rows: Row[]; elapsed: string };
+  | { kind: "loading"; name: string; rows: LiveResult[] }
+  | { kind: "done"; name: string; rows: LiveResult[]; elapsedMs: number }
+  | { kind: "error"; name: string; message: string; rows: LiveResult[] };
 
 const PAD = 20;
+
+function padTo(s: string, n: number): string {
+  return s.length >= n ? `${s} ` : s + " ".repeat(n - s.length);
+}
+
+function formatElapsed(ms: number): string {
+  return (ms / 1000).toFixed(1);
+}
 
 export default function Playground() {
   const version = getVersion();
@@ -24,6 +36,7 @@ export default function Playground() {
   const [value, setValue] = useState("");
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const focusInput = useCallback(() => {
     inputRef.current?.focus();
@@ -34,10 +47,14 @@ export default function Playground() {
   }, [focusInput]);
 
   useEffect(() => {
-    if (state.kind === "done" && bodyRef.current) {
+    if (bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
   }, [state]);
+
+  useEffect(() => {
+    return () => abortRef.current?.abort();
+  }, []);
 
   const startSearch = (raw: string) => {
     const clean = raw
@@ -46,19 +63,43 @@ export default function Playground() {
       .replace(/\s+/g, "")
       .toLowerCase();
     if (!clean) return;
-    setState({ kind: "loading", name: clean });
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setState({ kind: "loading", name: clean, rows: [] });
     setValue("");
-    setTimeout(() => {
-      setState({
-        kind: "done",
-        name: clean,
-        rows: runSearch(clean),
-        elapsed: elapsedSeconds(),
-      });
-    }, 480);
+
+    void runLiveSearch(
+      clean,
+      {
+        onRow: (row) => {
+          setState((prev) => {
+            if (prev.kind !== "loading" || prev.name !== clean) return prev;
+            return { ...prev, rows: [...prev.rows, row] };
+          });
+        },
+        onDone: (elapsedMs) => {
+          setState((prev) => {
+            if (prev.kind !== "loading" || prev.name !== clean) return prev;
+            return { kind: "done", name: clean, rows: prev.rows, elapsedMs };
+          });
+        },
+        onError: (message) => {
+          setState((prev) => {
+            const rows = prev.kind === "loading" ? prev.rows : [];
+            return { kind: "error", name: clean, message, rows };
+          });
+        },
+      },
+      controller.signal,
+    );
   };
 
   const reset = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
     setState({ kind: "initial" });
     setValue("");
     requestAnimationFrame(focusInput);
@@ -74,6 +115,15 @@ export default function Playground() {
     }
   };
 
+  const availableCount =
+    state.kind === "loading" || state.kind === "done" || state.kind === "error"
+      ? state.rows.filter((r) => r.status === "available").length
+      : 0;
+  const takenCount =
+    state.kind === "loading" || state.kind === "done" || state.kind === "error"
+      ? state.rows.filter((r) => r.status !== "available").length
+      : 0;
+
   return (
     <section className="sec" id="play">
       <div className="sec-head">
@@ -81,7 +131,7 @@ export default function Playground() {
           Try it <em>here.</em>
         </h2>
         <div className="dek">
-          // no install — a browser sandbox that behaves like the real CLI
+          // live RDAP + WHOIS, streamed as they resolve — the real CLI in a browser
         </div>
       </div>
 
@@ -91,12 +141,13 @@ export default function Playground() {
             Type a <em>name.</em> Hit enter.
           </h3>
           <p>
-            Try <em>dashflow</em>, <em>wellbi</em>, or <em>nimbus</em>.{" "}
-            {TLDS.length} TLDs resolve in the browser with simulated data.
+            Try any name — <em>vercel</em>, <em>nimbus</em>, or your own.{" "}
+            {PLAYGROUND_TLDS.length} TLDs resolve live via IANA RDAP (WHOIS
+            fallback for .io/.co/.me/.sh/.so/.gg).
           </p>
           <p className={styles.muted}>
-            The real CLI queries live RDAP and WHOIS. This sandbox just shows
-            the shape of it.
+            Same checker as the CLI. Names are queried in real time; nothing is
+            stored.
           </p>
 
           <div className={styles.playSteps}>
@@ -107,7 +158,8 @@ export default function Playground() {
             <div className={styles.step}>
               <span className={styles.stepNum}>02</span>
               <span>
-                Press <strong>enter</strong> — {TLDS.length} TLDs resolve.
+                Press <strong>enter</strong> — {PLAYGROUND_TLDS.length} TLDs
+                resolve.
               </span>
             </div>
             <div className={styles.step}>
@@ -136,7 +188,7 @@ export default function Playground() {
                 </span>
                 {"\n"}
                 <span className={styles.mu}>
-                  type a name and hit enter (try: dashflow, wellbi, nimbus)
+                  type a name and hit enter
                 </span>
                 {"\n\n"}
                 <Prompt />
@@ -150,59 +202,56 @@ export default function Playground() {
               </>
             )}
 
-            {state.kind === "loading" && (
-              <>
-                <Prompt />
-                <span>temper search {state.name}</span>
-                {"\n"}
-                <span className={styles.mu}>  searching {TLDS.length} TLDs...</span>
-              </>
-            )}
-
-            {state.kind === "done" && (
+            {state.kind !== "initial" && (
               <>
                 <Prompt />
                 <span>temper search {state.name}</span>
                 {"\n"}
                 <span className={styles.mu}>
                   {"  "}
-                  {TLDS.length} TLDs · {state.elapsed}s
+                  {state.kind === "done"
+                    ? `${PLAYGROUND_TLDS.length} TLDs · ${formatElapsed(state.elapsedMs)}s`
+                    : state.kind === "error"
+                      ? "error"
+                      : `resolving ${PLAYGROUND_TLDS.length} TLDs...`}
                 </span>
                 {"\n\n"}
                 {state.rows.map((row) => (
-                  <span key={row.full}>
-                    {"  "}
-                    {padTo(row.full, PAD)}
-                    {row.available ? (
-                      <>
-                        <span className={styles.ok}>[available]</span>
-                        <span className={styles.mu}>
-                          {"  "}${row.price}/yr
-                        </span>
-                      </>
-                    ) : (
-                      <span className={styles.tk}>[taken]</span>
-                    )}
-                    {"\n"}
-                  </span>
+                  <ResultRow key={row.domain} row={row} />
                 ))}
-                {"\n"}
-                <span className={styles.mu}>{"  "}── </span>
-                <span className={styles.k}>
-                  {state.rows.filter((r) => r.available).length} available
-                </span>
-                <span className={styles.mu}> · </span>
-                <span className={styles.tk}>
-                  {state.rows.filter((r) => !r.available).length} taken
-                </span>
-                {"\n\n"}
-                <Prompt />
-                <InputLine
-                  inputRef={inputRef}
-                  value={value}
-                  onChange={setValue}
-                  onKeyDown={handleKey}
-                />
+                {state.kind === "done" && (
+                  <>
+                    {"\n"}
+                    <span className={styles.mu}>{"  "}── </span>
+                    <span className={styles.k}>
+                      {availableCount} available
+                    </span>
+                    <span className={styles.mu}> · </span>
+                    <span className={styles.tk}>{takenCount} taken</span>
+                    {"\n\n"}
+                    <Prompt />
+                    <InputLine
+                      inputRef={inputRef}
+                      value={value}
+                      onChange={setValue}
+                      onKeyDown={handleKey}
+                    />
+                  </>
+                )}
+                {state.kind === "error" && (
+                  <>
+                    {"\n"}
+                    <span className={styles.tk}>{"  "}! {state.message}</span>
+                    {"\n\n"}
+                    <Prompt />
+                    <InputLine
+                      inputRef={inputRef}
+                      value={value}
+                      onChange={setValue}
+                      onKeyDown={handleKey}
+                    />
+                  </>
+                )}
               </>
             )}
           </div>
@@ -219,6 +268,33 @@ export default function Playground() {
       </>
     );
   }
+}
+
+function ResultRow({ row }: { row: LiveResult }) {
+  const available = row.status === "available";
+  const slow = row.status === "slow";
+  const errored = row.status === "error" || row.status === "rate_limited";
+  const label = available
+    ? "[available]"
+    : slow
+      ? "[slow]"
+      : errored
+        ? `[${row.status}]`
+        : "[taken]";
+  const labelCls = available ? styles.ok : errored || slow ? styles.k : styles.tk;
+
+  return (
+    <span>
+      {"  "}
+      {padTo(row.domain, PAD)}
+      <span className={labelCls}>{label}</span>
+      <span className={styles.mu}>
+        {"  "}
+        [{row.method}] {row.responseTime}ms
+      </span>
+      {"\n"}
+    </span>
+  );
 }
 
 interface InputLineProps {

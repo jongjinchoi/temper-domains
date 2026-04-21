@@ -2,6 +2,7 @@
 // before shipping a change to these values.
 //
 //   DEFAULT_TLDS_COUNT, EXTENDED_TLDS_COUNT  ← ../../src/checker/types.ts
+//   PLAYGROUND_TLDS                          ← playground-only subset, verified ⊆ EXTENDED_TLDS
 //   THEMES (key + palette)                   ← ../../src/tui/theme.ts
 //   THEMES (label + desc)                    ← ../../README.md + InitView.tsx
 //   MCP_TOOLS                                ← ../../src/mcp/server.ts
