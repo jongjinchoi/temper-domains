@@ -36,10 +36,13 @@ export async function runLiveSearch(
   name: string,
   callbacks: SearchCallbacks,
   signal: AbortSignal,
+  tlds?: readonly string[],
 ): Promise<void> {
+  const qs = new URLSearchParams({ name });
+  if (tlds && tlds.length > 0) qs.set("tlds", tlds.join(","));
   let res: Response;
   try {
-    res = await fetch(`${ENDPOINT}?name=${encodeURIComponent(name)}`, { signal });
+    res = await fetch(`${ENDPOINT}?${qs.toString()}`, { signal });
   } catch (err) {
     if ((err as { name?: string })?.name === "AbortError") return;
     callbacks.onError(err instanceof Error ? err.message : String(err));

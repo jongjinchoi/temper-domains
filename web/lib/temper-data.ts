@@ -3,6 +3,7 @@
 //
 //   DEFAULT_TLDS_COUNT, EXTENDED_TLDS_COUNT  ← ../../src/checker/types.ts
 //   PLAYGROUND_TLDS                          ← playground-only subset, verified ⊆ EXTENDED_TLDS
+//   HERO_DEMO_TLDS                           ← hero CRT subset, verified ⊆ EXTENDED_TLDS
 //   THEMES (key + palette)                   ← ../../src/tui/theme.ts
 //   THEMES (label + desc)                    ← ../../README.md + InitView.tsx
 //   MCP_TOOLS                                ← ../../src/mcp/server.ts
@@ -17,6 +18,13 @@ export const EXTENDED_TLDS_COUNT = 59;
 export const PLAYGROUND_TLDS = [
   "com", "io", "dev", "app", "ai", "co", "xyz", "net",
   "sh", "org", "me", "so", "gg", "cloud", "tech",
+] as const;
+
+// Hero CRT demo: the 7 TLDs rendered in the header CRT. Must remain a subset
+// of EXTENDED_TLDS; the Hero runs a live /api/check on mount with these.
+export const HERO_DEMO_NAME = "dashflow";
+export const HERO_DEMO_TLDS = [
+  "com", "io", "dev", "app", "ai", "co", "sh",
 ] as const;
 
 export interface Theme {

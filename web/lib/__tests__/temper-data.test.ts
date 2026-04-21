@@ -7,6 +7,7 @@ import {
   COMMANDS,
   DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
+  HERO_DEMO_TLDS,
   MCP_TOOLS,
   PLAYGROUND_TLDS,
   THEMES,
@@ -24,6 +25,13 @@ describe("temper-data sync", () => {
   test("PLAYGROUND_TLDS is a subset of EXTENDED_TLDS", () => {
     const extended = new Set<string>(EXTENDED_TLDS);
     for (const tld of PLAYGROUND_TLDS) {
+      expect(extended.has(tld)).toBe(true);
+    }
+  });
+
+  test("HERO_DEMO_TLDS is a subset of EXTENDED_TLDS", () => {
+    const extended = new Set<string>(EXTENDED_TLDS);
+    for (const tld of HERO_DEMO_TLDS) {
       expect(extended.has(tld)).toBe(true);
     }
   });
