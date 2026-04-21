@@ -64,21 +64,13 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     locale: "en_US",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1280,
-        height: 640,
-        alt: "temper — terminal-first domain search",
-        type: "image/png",
-      },
-    ],
+    // Image supplied by web/app/opengraph-image.tsx (file convention)
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/og-image.png"],
+    // Image supplied by web/app/twitter-image.tsx (file convention)
   },
   alternates: {
     canonical: "/",
