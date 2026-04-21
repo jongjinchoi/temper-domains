@@ -165,6 +165,18 @@ export function getVersion(): string {
   return process.env.NEXT_PUBLIC_TEMPER_VERSION ?? "0.0.0";
 }
 
+// ─── Site identity ─────────────────────────────────────────────────────────
+// Source of truth for page metadata, OG tags, sitemap, robots. Change
+// SITE_URL in one place when migrating to a custom domain.
+
+export const SITE_URL = "https://temper-domains.vercel.app";
+export const SITE_TITLE = "temper — terminal-first domain search";
+export const SITE_TAGLINE = "terminal-first domain search";
+export const SITE_DESCRIPTION =
+  "Never leave your terminal to find a domain. 30 TLDs, under 2 seconds, " +
+  "all private. Also an MCP server — so Claude and Cursor can search on " +
+  "your behalf.";
+
 // ─── Colophon ──────────────────────────────────────────────────────────────
 // Imprint data for the "judge the craft" block that sits between Cta and
 // Footer. Zine tradition: last-page masthead declaring who made this, with

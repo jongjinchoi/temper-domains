@@ -1,6 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { JetBrains_Mono, Space_Grotesk, VT323 } from "next/font/google";
+import {
+  AUTHOR_URL,
+  GITHUB_URL,
+  SITE_DESCRIPTION,
+  SITE_TITLE,
+  SITE_URL,
+  getVersion,
+} from "@/lib/temper-data";
 import "./globals.css";
 
 const mono = JetBrains_Mono({
@@ -25,12 +33,66 @@ const grot = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "temper — zine",
-  description:
-    "Never leave your terminal to find a domain. 30 TLDs, under 2 seconds, all private. Also an MCP server — so Claude and Cursor can search on your behalf.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: "%s | temper",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: "temper",
+  keywords: [
+    "domain search",
+    "cli",
+    "terminal",
+    "rdap",
+    "whois",
+    "mcp",
+    "claude",
+    "cursor",
+    "developer tools",
+  ],
+  authors: [{ name: "Jongjin Choi", url: AUTHOR_URL }],
+  creator: "Jongjin Choi",
   icons: {
     icon: "/favicon.svg",
+    apple: "/apple-icon.png",
   },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "temper",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1280,
+        height: 640,
+        alt: "temper — terminal-first domain search",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.png"],
+  },
+  alternates: {
+    canonical: "/",
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3ead3" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1612" },
+  ],
 };
 
 /**
@@ -39,6 +101,20 @@ export const metadata: Metadata = {
  * and user override. Falls through silently if storage is blocked.
  */
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('temper-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`;
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "temper",
+  description: SITE_DESCRIPTION,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "macOS, Linux",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: "Jongjin Choi", url: AUTHOR_URL },
+  codeRepository: GITHUB_URL,
+  license: "https://www.apache.org/licenses/LICENSE-2.0",
+  softwareVersion: getVersion(),
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -49,6 +125,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
       </head>
       <body>{children}</body>
     </html>
