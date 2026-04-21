@@ -1,0 +1,47 @@
+# temper
+
+> A terminal-first CLI for checking domain availability across 30 TLDs in under 2 seconds. MCP-native so Claude, Cursor, and other AI assistants can search on your behalf.
+
+## What it is
+
+temper is an open-source command-line tool that queries RDAP (with WHOIS fallback) to check domain availability. It runs entirely on the user's machine with zero telemetry and no server dependencies.
+
+- License: Apache 2.0
+- Language: TypeScript, built on the Bun runtime
+- Platforms: macOS, Linux
+- Install: `brew install jongjinchoi/temper-domains/temper`
+- Current version: 0.2.2
+- Source: https://github.com/jongjinchoi/temper-domains
+- Author: Jongjin Choi (https://jongjinchoi.com)
+
+## Features
+
+- 30 TLDs per search by default (59 with `--extended`, custom list via `--tlds`, or presets: `tech`, `popular`, `startup`, `cheap`)
+- Interactive TUI (Ink + React) with vim-style navigation (j/k, /, a, s, h)
+- MCP server mode for Claude Desktop, Claude Code, Cursor, Windsurf, and Cline
+- JSON output for shell piping (`--format json`)
+- 7 built-in themes (5 dark, 2 light)
+- Private by default — all queries run locally, no telemetry, no logs
+
+## MCP tools
+
+- `search_domain` — query multiple TLDs at once
+- `suggest_domain` — generate prefix/suffix combinations
+- `check_domain_availability` — single-domain check
+- `whois_domain` — registrar, expiry, nameserver lookup
+- `open_registrar` — open purchase page in the browser
+
+## Commands
+
+- `temper search <name>` — check 30 TLDs, Enter to buy
+- `temper suggest <name>` — prefix/suffix brainstorm
+- `temper whois <domain>` — RDAP-first registrar details
+- `temper watch <domain>` — track availability, `temper list` to review
+- `temper history` — interactive search history
+- `temper mcp` — start the MCP stdio server
+
+## Docs
+
+- README: https://github.com/jongjinchoi/temper-domains/blob/main/README.md
+- Releases / changelog: https://github.com/jongjinchoi/temper-domains/releases
+- Live demo: https://temper-domains.vercel.app
