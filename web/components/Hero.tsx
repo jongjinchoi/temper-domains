@@ -98,9 +98,9 @@ export default function Hero() {
             Just type &amp; <em className={styles.headlineFlame}>go.</em>
           </h1>
           <p className={styles.lede}>
-            A terminal-first domain search.{" "}
-            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong>, under 2 seconds, all
-            private. Also an MCP server — so Claude and Cursor can search on
+            temper is a terminal-first domain search CLI —{" "}
+            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> in under 2 seconds, all
+            private. Also an MCP server, so Claude and Cursor can search on
             your behalf.
           </p>
           <button
