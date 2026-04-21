@@ -55,7 +55,7 @@
 .mcpPanel {
   background: var(--surface);
   border: 2px solid var(--border);
-  box-shadow: 6px 6px 0 var(--navy);
+  box-shadow: 6px 6px 0 var(--flame);
   transform: rotate(0.8deg);
 }
 
