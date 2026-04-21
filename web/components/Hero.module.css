@@ -232,6 +232,11 @@
   color: #ff7070;
 }
 
+.crtPending {
+  color: #6a5d48;
+  opacity: 0.75;
+}
+
 .caret {
   display: inline-block;
   width: 0.55ch;
