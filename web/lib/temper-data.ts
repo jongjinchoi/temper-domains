@@ -164,3 +164,36 @@ export const INSTALL_CMD = "brew install jongjinchoi/temper-domains/temper";
 export function getVersion(): string {
   return process.env.NEXT_PUBLIC_TEMPER_VERSION ?? "0.0.0";
 }
+
+// ─── Colophon ──────────────────────────────────────────────────────────────
+// Imprint data for the "judge the craft" block that sits between Cta and
+// Footer. Zine tradition: last-page masthead declaring who made this, with
+// what, where, and when.
+
+export const AUTHOR_URL = "https://jongjinchoi.com";
+
+export interface SideProject {
+  name: string;
+  url: string;
+}
+
+export const AUTHOR_PRODUCTS: readonly SideProject[] = [
+  { name: "localhoston", url: "https://localhoston.com" },
+  { name: "writeholt", url: "https://writeholt.com" },
+] as const;
+
+export const AUTHOR_OSS: readonly SideProject[] = [
+  { name: "getclaudecode", url: "https://getclaudecode.com" },
+  { name: "wtfont", url: "https://wtfont.wtf" },
+] as const;
+
+export const COLOPHON_LOCATION = "GANGHWA";
+export const COLOPHON_YEAR = 2026;
+
+export const TYPEFACES = [
+  "Space Grotesk",
+  "JetBrains Mono",
+  "VT323",
+] as const;
+
+export const BUILD_STACK = ["Next.js", "Ink + React", "Bun"] as const;

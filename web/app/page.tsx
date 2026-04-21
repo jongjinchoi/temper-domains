@@ -1,3 +1,4 @@
+import Colophon from "@/components/Colophon";
 import Commands from "@/components/Commands";
 import Cta from "@/components/Cta";
 import Features from "@/components/Features";
@@ -19,6 +20,7 @@ export default function Home() {
       <Themes />
       <Playground />
       <Cta />
+      <Colophon />
       <Footer />
     </div>
   );
