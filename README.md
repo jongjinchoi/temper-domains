@@ -1,16 +1,12 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-dark.png">
-    <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/logo-light.png" width="120" alt="temper">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-dark.png">
+    <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-light.png" alt="temper — Never leave your terminal to find a domain.">
   </picture>
 </p>
-<h1 align="center">temper</h1>
 <p align="center">
   <a href="https://github.com/jongjinchoi/temper-domains/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
   <a href="https://github.com/jongjinchoi/temper-domains"><img src="https://img.shields.io/github/stars/jongjinchoi/temper-domains?style=social" alt="GitHub Stars"></a>
-</p>
-<p align="center">
-  <strong>Never leave your terminal to find a domain.</strong>
 </p>
 <p align="center">
   Search domains, check availability, and open purchase pages — all from your terminal.<br>

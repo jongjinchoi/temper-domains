@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <radialGradient id="grad" cx="0.85" cy="0.2" r="0.6">
+      <stop offset="0" stop-color="#ff6a3a" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#ff6a3a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="scanlines" patternUnits="userSpaceOnUse" width="3" height="3">
+      <rect width="3" height="2" fill="transparent"/>
+      <rect y="2" width="3" height="1" fill="rgba(0,0,0,0.22)"/>
+    </pattern>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0.5" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.45"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background + subtle accent gradient -->
+  <rect width="1280" height="640" fill="#1a1612"/>
+  <rect width="1280" height="640" fill="url(#grad)"/>
+
+  <!-- ═══════ LEFT COLUMN ═══════ -->
+
+  <!-- Brand: logo + wordmark -->
+  <g transform="translate(70, 78)">
+    <g transform="rotate(-2 36 36)">
+      <rect x="4" y="4" width="72" height="72" rx="12" fill="#5a82b0"/>
+      <rect width="72" height="72" rx="12" fill="#ff6a3a"/>
+      <g transform="scale(2.25)">
+        <path d="M22.85 27.52L15.93 27.52Q14.82 27.52 14.11 26.80Q13.40 26.07 13.40 24.95L13.40 24.95L13.40 15.14L8.56 15.14L8.56 11.19L13.40 11.19L13.40 4.48L17.55 4.48L17.55 11.19L23.44 11.19L23.44 15.14L17.55 15.14L17.55 22.58Q17.55 23.57 18.44 23.57L18.44 23.57L22.85 23.57L22.85 27.52Z" fill="#1a1612"/>
+      </g>
+    </g>
+    <text x="100" y="58" font-family="Space Grotesk" font-size="56" font-weight="700" letter-spacing="-1" fill="#f3ead3">temper</text>
+    <text x="325" y="52" font-family="JetBrains Mono" font-size="17" font-weight="400" fill="#9a8d75">/ domains</text>
+  </g>
+
+  <!-- Headline -->
+  <text x="70" y="270" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.9" fill="#f3ead3">Never leave your terminal</text>
+  <text x="70" y="334" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.9" fill="#f3ead3">to find a <tspan font-style="italic" fill="#ff6a3a">domain.</tspan></text>
+
+  <!-- Tagline -->
+  <g font-family="JetBrains Mono" font-size="15" fill="#f3ead3">
+    <text x="70" y="450">A terminal-first domain search.</text>
+    <text x="70" y="478"><tspan fill="#ff6a3a" font-weight="700">30 TLDs</tspan> in under 2 seconds.</text>
+    <text x="70" y="506">MCP-native for Claude and Cursor.</text>
+  </g>
+
+  <!-- ═══════ RIGHT COLUMN — CRT ═══════ -->
+
+  <g transform="translate(695, 130) rotate(1.2)">
+    <rect x="8" y="8" width="520" height="380" fill="#ff6a3a"/>
+    <rect width="520" height="380" fill="#0d0b0a" stroke="#f3ead3" stroke-width="3"/>
+
+    <g font-family="VT323" font-size="24" fill="#ffa370">
+      <text x="26" y="46"><tspan fill="#ff6a3a" font-weight="700">&gt;</tspan> temper search dashflow</text>
+      <text x="26" y="78" fill="#a09275">  30 TLDs · 1.4s</text>
+
+      <text x="26" y="140">  dashflow.com   <tspan fill="#ff8080">[taken]</tspan></text>
+      <text x="26" y="170">  dashflow.io    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="200">  dashflow.dev   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="230">  dashflow.app   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="260">  dashflow.ai    <tspan fill="#ff8080">[taken]</tspan></text>
+      <text x="26" y="290">  dashflow.co    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="320">  dashflow.sh    <tspan fill="#c5e860">[available]</tspan></text>
+
+      <text x="26" y="360" fill="#a09275">  ── 13 available · 3 taken</text>
+    </g>
+
+    <rect width="520" height="380" fill="url(#scanlines)"/>
+    <rect width="520" height="380" fill="url(#vignette)"/>
+  </g>
+</svg>
