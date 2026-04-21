@@ -39,12 +39,8 @@ export default function Playground() {
   const abortRef = useRef<AbortController | null>(null);
 
   const focusInput = useCallback(() => {
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   }, []);
-
-  useEffect(() => {
-    focusInput();
-  }, [focusInput]);
 
   useEffect(() => {
     if (bodyRef.current) {
@@ -316,7 +312,6 @@ function InputLine({ inputRef, value, onChange, onKeyDown }: InputLineProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
-        autoFocus
       />
     </span>
   );
