@@ -22,7 +22,7 @@ export default function Hero() {
           NEW · v{version}
         </span>
         <span className={`${styles.sticker} ${styles.navy} ${styles.s2}`}>
-          MADE IN SEOUL
+          MADE IN GANGHWA
         </span>
         <span className={`${styles.sticker} ${styles.s3}`}>APACHE 2.0</span>
       </div>
