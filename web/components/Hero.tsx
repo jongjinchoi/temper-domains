@@ -62,32 +62,32 @@ export default function Hero() {
         </div>
 
         <div className={styles.crt}>
-          <span className={styles.crtPrompt}>&gt;</span> temper search calmbox
+          <span className={styles.crtPrompt}>&gt;</span> temper search dashflow
           {"\n"}
           <span className={styles.crtMuted}>
             {"  "}
             {DEFAULT_TLDS_COUNT} TLDs · 1.4s
           </span>
           {"\n\n"}
-          {"  "}calmbox.com{"       "}
+          {"  "}dashflow.com{"      "}
           <span className={styles.crtTaken}>[taken]</span>
           {"\n"}
-          {"  "}calmbox.io{"        "}
+          {"  "}dashflow.io{"       "}
           <span className={styles.crtOk}>[available]</span>
           {"\n"}
-          {"  "}calmbox.dev{"       "}
+          {"  "}dashflow.dev{"      "}
           <span className={styles.crtOk}>[available]</span>
           {"\n"}
-          {"  "}calmbox.app{"       "}
+          {"  "}dashflow.app{"      "}
           <span className={styles.crtOk}>[available]</span>
           {"\n"}
-          {"  "}calmbox.ai{"        "}
+          {"  "}dashflow.ai{"       "}
           <span className={styles.crtTaken}>[taken]</span>
           {"\n"}
-          {"  "}calmbox.co{"        "}
+          {"  "}dashflow.co{"       "}
           <span className={styles.crtOk}>[available]</span>
           {"\n"}
-          {"  "}calmbox.sh{"        "}
+          {"  "}dashflow.sh{"       "}
           <span className={styles.crtOk}>[available]</span>
           {"\n\n"}
           <span className={styles.crtMuted}>

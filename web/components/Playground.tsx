@@ -91,7 +91,7 @@ export default function Playground() {
             Type a <em>name.</em> Hit enter.
           </h3>
           <p>
-            Try <em>calmbox</em>, <em>dashflow</em>, or <em>wellbi</em>.{" "}
+            Try <em>dashflow</em>, <em>wellbi</em>, or <em>nimbus</em>.{" "}
             {TLDS.length} TLDs resolve in the browser with simulated data.
           </p>
           <p className={styles.muted}>
@@ -136,7 +136,7 @@ export default function Playground() {
                 </span>
                 {"\n"}
                 <span className={styles.mu}>
-                  type a name and hit enter (try: calmbox, dashflow, wellbi)
+                  type a name and hit enter (try: dashflow, wellbi, nimbus)
                 </span>
                 {"\n\n"}
                 <Prompt />
