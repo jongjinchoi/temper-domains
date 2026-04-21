@@ -182,7 +182,7 @@
   overflow: hidden;
   position: relative;
   border: 3px solid var(--fg);
-  box-shadow: 8px 8px 0 var(--navy);
+  box-shadow: 8px 8px 0 var(--flame);
   transform: rotate(1.5deg);
   min-height: 320px;
 }
