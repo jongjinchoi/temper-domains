@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-dark.png">
-    <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-light.png" alt="temper — Never leave your terminal to find a domain.">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-dark.png?v=2">
+    <img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/logo/header-light.png?v=2" alt="temper — Never leave your terminal to find a domain.">
   </picture>
 </p>
 <p align="center">
