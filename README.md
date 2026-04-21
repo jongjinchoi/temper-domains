@@ -96,7 +96,7 @@ temper search myproject --tld-preset tech         # preset: tech, popular, start
 temper search myproject -a                        # available only
 temper search myproject -t 5                      # 5s timeout (default: 3)
 temper search myproject --format json             # JSON output for piping
-temper search localhoston dashflow calmbox             # multiple keywords
+temper search havenforge nimbuscraft lumengrove        # multiple keywords
 ```
 
 Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit.

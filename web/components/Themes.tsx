@@ -22,19 +22,19 @@ export default function Themes() {
                 className={styles.snapPreview}
                 style={{ background: bg, color: fg }}
               >
-                <span style={{ color: accent }}>$</span> temper search dashflow
+                <span style={{ color: accent }}>$</span> temper search havenforge
                 {"\n"}
-                <span style={{ color: mu }}>{"  "}15 TLDs · 1.2s</span>
+                <span style={{ color: mu }}>{"  "}15 TLDs · 1.5s</span>
                 {"\n\n"}
-                <span style={{ color: tk }}>{"  "}dashflow.com  ✗</span>
+                <span style={{ color: tk }}>{"  "}havenforge.com  ✗</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}dashflow.io   ✓</span>
+                <span style={{ color: ok }}>{"  "}havenforge.io   ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}dashflow.dev  ✓</span>
+                <span style={{ color: ok }}>{"  "}havenforge.dev  ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}dashflow.app  ✓</span>
+                <span style={{ color: ok }}>{"  "}havenforge.app  ✓</span>
                 {"\n"}
-                <span style={{ color: mu }}>{"  "}─ 13 · 2 taken</span>
+                <span style={{ color: mu }}>{"  "}─ 11 · 4 taken</span>
               </div>
               <div className={styles.snapLabel}>
                 <strong>{theme.label}</strong>
