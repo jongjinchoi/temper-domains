@@ -7,6 +7,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 3;
 }
 
 .sticker {
@@ -32,14 +33,14 @@
 }
 
 .s1 {
-  top: 12px;
-  right: 80px;
+  top: -10px;
+  right: 40px;
   transform: rotate(6deg);
 }
 
 .s2 {
-  top: 40px;
-  left: 10px;
+  top: -12px;
+  left: 40%;
   transform: rotate(-8deg);
 }
 
