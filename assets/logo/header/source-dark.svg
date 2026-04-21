@@ -33,15 +33,18 @@
     <text x="325" y="52" font-family="JetBrains Mono" font-size="17" font-weight="400" fill="#9a8d75">/ domains</text>
   </g>
 
-  <!-- Headline -->
-  <text x="70" y="270" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.9" fill="#f3ead3">Never leave your terminal</text>
-  <text x="70" y="334" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.9" fill="#f3ead3">to find a <tspan font-style="italic" fill="#ff6a3a">domain.</tspan></text>
+  <!-- Headline (uppercase, 3 lines) -->
+  <text x="70" y="252" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.2" fill="#f3ead3">NEVER LEAVE YOUR</text>
+  <text x="70" y="313" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.2" fill="#f3ead3">TERMINAL TO FIND A</text>
+  <text x="70" y="374" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.2" font-style="italic" fill="#ff6a3a">DOMAIN.</text>
 
-  <!-- Tagline -->
+  <!-- Tagline (2 lines, with flame highlight on "30 TLDs") -->
   <g font-family="JetBrains Mono" font-size="15" fill="#f3ead3">
-    <text x="70" y="450">A terminal-first domain search.</text>
-    <text x="70" y="478"><tspan fill="#ff6a3a" font-weight="700">30 TLDs</tspan> in under 2 seconds.</text>
-    <text x="70" y="506">MCP-native for Claude and Cursor.</text>
+    <text x="70" y="470">A terminal-first domain search.</text>
+    <rect x="66" y="485" width="82" height="22" fill="#ff6a3a"/>
+    <text x="70" y="501" font-weight="700" fill="#1a1612">30 TLDs</text>
+    <text x="156" y="501"> in under 2 seconds. MCP-</text>
+    <text x="70" y="526">native for Claude and Cursor.</text>
   </g>
 
   <!-- ═══════ RIGHT COLUMN — CRT ═══════ -->
