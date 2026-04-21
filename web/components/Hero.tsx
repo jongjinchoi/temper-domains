@@ -30,9 +30,9 @@ export default function Hero() {
       <div className={styles.heroGrid}>
         <div>
           <div className={styles.issueBar}>
-            <span>Vol. 01</span>
-            <span>The Domain Issue</span>
-            <span>Spring 2026</span>
+            <span>v{version}</span>
+            <span>{DEFAULT_TLDS_COUNT} TLDs</span>
+            <span>Apache 2.0</span>
           </div>
           <h1 className={styles.headline}>
             Never{" "}
