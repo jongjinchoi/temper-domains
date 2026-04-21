@@ -22,19 +22,19 @@ export default function Themes() {
                 className={styles.snapPreview}
                 style={{ background: bg, color: fg }}
               >
-                <span style={{ color: accent }}>$</span> temper search havenforge
+                <span style={{ color: accent }}>$</span> temper search localhoston
                 {"\n"}
                 <span style={{ color: mu }}>{"  "}15 TLDs · 1.5s</span>
                 {"\n\n"}
-                <span style={{ color: tk }}>{"  "}havenforge.com  ✗</span>
+                <span style={{ color: tk }}>{"  "}localhoston.com  ✗</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}havenforge.io   ✓</span>
+                <span style={{ color: ok }}>{"  "}localhoston.io   ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}havenforge.dev  ✓</span>
+                <span style={{ color: ok }}>{"  "}localhoston.dev  ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}havenforge.app  ✓</span>
+                <span style={{ color: ok }}>{"  "}localhoston.app  ✓</span>
                 {"\n"}
-                <span style={{ color: mu }}>{"  "}─ 11 · 4 taken</span>
+                <span style={{ color: mu }}>{"  "}─ 12 · 3 taken</span>
               </div>
               <div className={styles.snapLabel}>
                 <strong>{theme.label}</strong>

@@ -22,7 +22,7 @@ export const PLAYGROUND_TLDS = [
 
 // Hero CRT demo: the 7 TLDs rendered in the header CRT. Must remain a subset
 // of EXTENDED_TLDS; the Hero runs a live /api/check on mount with these.
-export const HERO_DEMO_NAME = "havenforge";
+export const HERO_DEMO_NAME = "localhoston";
 export const HERO_DEMO_TLDS = [
   "com", "io", "dev", "app", "ai", "co", "sh",
 ] as const;
@@ -106,13 +106,13 @@ export const COMMANDS: Command[] = [
     slot: "CMD / 01",
     sig: { cmd: "search", arg: "<name>" },
     desc: "Check 30 TLDs (59 with --extended). Navigate with j/k. Enter to buy.",
-    example: "$ temper search havenforge --tlds com,dev,io",
+    example: "$ temper search localhoston --tlds com,dev,io",
   },
   {
     slot: "CMD / 02",
     sig: { cmd: "suggest", arg: "<name>" },
     desc: "Generate prefix/suffix combinations. get·, try·, ·app, ·hq.",
-    example: "$ temper suggest havenforge -p get,use -s app,hq",
+    example: "$ temper suggest localhoston -p get,use -s app,hq",
   },
   {
     slot: "CMD / 03",
@@ -124,7 +124,7 @@ export const COMMANDS: Command[] = [
     slot: "CMD / 04",
     sig: { cmd: "watch", arg: "<domain>" },
     desc: "Track availability. `temper list` shows the watchlist.",
-    example: "$ temper watch havenforge.com",
+    example: "$ temper watch localhoston.com",
   },
   {
     slot: "CMD / 05",
