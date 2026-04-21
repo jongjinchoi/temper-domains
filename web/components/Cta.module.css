@@ -48,7 +48,7 @@
 
 .btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--flame);
+  box-shadow: 4px 4px 0 var(--navy);
 }
 
 .primary {
@@ -59,8 +59,4 @@
 .ghost {
   background: transparent;
   color: var(--fg);
-}
-
-.ghost:hover {
-  box-shadow: 4px 4px 0 var(--navy);
 }
