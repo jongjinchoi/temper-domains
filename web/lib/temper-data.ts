@@ -89,13 +89,13 @@ export const COMMANDS: Command[] = [
     slot: "CMD / 01",
     sig: { cmd: "search", arg: "<name>" },
     desc: "Check 30 TLDs (59 with --extended). Navigate with j/k. Enter to buy.",
-    example: "$ temper search calmbox --tlds com,dev,io",
+    example: "$ temper search dashflow --tlds com,dev,io",
   },
   {
     slot: "CMD / 02",
     sig: { cmd: "suggest", arg: "<name>" },
     desc: "Generate prefix/suffix combinations. get·, try·, ·app, ·hq.",
-    example: "$ temper suggest calmbox -p get,use -s app,hq",
+    example: "$ temper suggest dashflow -p get,use -s app,hq",
   },
   {
     slot: "CMD / 03",
@@ -107,7 +107,7 @@ export const COMMANDS: Command[] = [
     slot: "CMD / 04",
     sig: { cmd: "watch", arg: "<domain>" },
     desc: "Track availability. `temper list` shows the watchlist.",
-    example: "$ temper watch calmbox.com",
+    example: "$ temper watch dashflow.com",
   },
   {
     slot: "CMD / 05",

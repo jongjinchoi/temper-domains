@@ -22,17 +22,17 @@ export default function Themes() {
                 className={styles.snapPreview}
                 style={{ background: bg, color: fg }}
               >
-                <span style={{ color: accent }}>$</span> temper search calmbox
+                <span style={{ color: accent }}>$</span> temper search dashflow
                 {"\n"}
                 <span style={{ color: mu }}>{"  "}15 TLDs · 1.2s</span>
                 {"\n\n"}
-                <span style={{ color: tk }}>{"  "}calmbox.com   ✗</span>
+                <span style={{ color: tk }}>{"  "}dashflow.com  ✗</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}calmbox.io    ✓</span>
+                <span style={{ color: ok }}>{"  "}dashflow.io   ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}calmbox.dev   ✓</span>
+                <span style={{ color: ok }}>{"  "}dashflow.dev  ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}calmbox.app   ✓</span>
+                <span style={{ color: ok }}>{"  "}dashflow.app  ✓</span>
                 {"\n"}
                 <span style={{ color: mu }}>{"  "}─ 13 · 2 taken</span>
               </div>
