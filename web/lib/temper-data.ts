@@ -10,6 +10,14 @@
 export const DEFAULT_TLDS_COUNT = 30;
 export const EXTENDED_TLDS_COUNT = 59;
 
+// Playground-only subset. Not synced with the CLI's DEFAULT_TLDS — this is
+// tuned for what fits the CRT body without scrolling. All entries must
+// remain a subset of EXTENDED_TLDS (enforced in __tests__/temper-data.test.ts).
+export const PLAYGROUND_TLDS = [
+  "com", "io", "dev", "app", "ai", "co", "xyz", "net",
+  "sh", "org", "me", "so", "gg", "cloud", "tech",
+] as const;
+
 export interface Theme {
   key: string;
   label: string;
