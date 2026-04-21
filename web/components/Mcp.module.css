@@ -91,7 +91,8 @@
 .mcpCode {
   padding: 20px 22px;
   background: var(--screen);
-  color: var(--surface);
+  /* Screen text must stay light in both themes — --surface is dark in dark mode. */
+  color: #f3ead3;
   font-family: var(--mono);
   font-size: 13px;
   line-height: 1.7;
