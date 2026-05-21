@@ -295,7 +295,7 @@ configCmd
 // --- mcp ---
 program
   .command("mcp")
-  .description("Start MCP server for Claude Code/Desktop")
+  .description("Start MCP server over stdio")
   .action(async () => {
     const config = await loadConfig();
     setTheme(config.theme);

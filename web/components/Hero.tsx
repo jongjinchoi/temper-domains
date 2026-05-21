@@ -99,9 +99,9 @@ export default function Hero() {
           </h1>
           <p className={styles.lede}>
             temper is a terminal-first domain search CLI —{" "}
-            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> in under 2 seconds, all
-            private. Also an MCP server, so Claude and Cursor can search on
-            your behalf.
+            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> by default with a 3s
+            timeout and no telemetry in the CLI/MCP flow. Also an MCP server,
+            so Codex, Claude, and Cursor can search on your behalf.
           </p>
           <button
             type="button"

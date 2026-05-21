@@ -10,7 +10,7 @@
 </p>
 <p align="center">
   Search domains, check availability, and open purchase pages — all from your terminal.<br>
-  Works as a CLI, or as an MCP server so Claude and Cursor can search domains for you.
+  Works as a CLI, or as an MCP server so Codex, Claude, and Cursor can search domains for you.
 </p>
 <p align="center">
   <a href="#install">Install</a> ·
@@ -31,9 +31,9 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 
 ## Features
 
-- **Private** — all queries run on your machine. No server, no logs, no tracking.
-- **Fast** — 30 TLDs in under 2 seconds. 59 with `--extended`.
-- **MCP native** — Claude Code, Claude Desktop, and Cursor can search domains directly.
+- **Private** — CLI and MCP queries run on your machine. No tracking, no telemetry. The hosted web demo uses a server-side API route for live checks.
+- **Fast** — checks 30 TLDs by default with a 3s timeout. 59 with `--extended`.
+- **MCP native** — Codex, Claude Code, Claude Desktop, and Cursor can search domains directly.
 - **Keyboard-first** — vim-style navigation, single-key registrar selection.
 - **Pipe-friendly** — `--format json` for scripting and automation.
 - **Themeable** — 7 built-in themes (5 dark + 2 light).
@@ -68,7 +68,7 @@ Commands:
   list                           Show watchlist with current availability
   show-presets                   Show available TLD presets
   config                         Manage temper configuration
-  mcp                            Start MCP server for Claude Code/Desktop
+  mcp                            Start MCP server over stdio
 ```
 
 ### Keyboard shortcuts
@@ -186,6 +186,24 @@ temper config theme --list            # list themes
 temper runs as a local MCP server. Your AI assistant searches domains without you switching context.
 
 > **Prerequisite:** Install temper first — `brew install jongjinchoi/temper-domains/temper`
+
+### Codex
+
+Codex stores MCP server configuration in `~/.codex/config.toml` and shares it between the Codex CLI and IDE extension. Add temper with:
+
+```bash
+codex mcp add temper -- temper mcp
+```
+
+In the Codex TUI, run `/mcp` to confirm the server is active.
+
+You can also edit `~/.codex/config.toml` directly:
+
+```toml
+[mcp_servers.temper]
+command = "temper"
+args = ["mcp"]
+```
 
 ### Claude Code
 
@@ -312,7 +330,7 @@ Claude: [calls open_registrar]
         Done. Cloudflare opened in your browser.
 ```
 
-All queries run locally. No data leaves your machine.
+When temper runs as a local CLI or MCP server, queries run on your machine. The hosted website demo uses its own API route for live checks.
 
 <h2 id="themes">Themes</h2>
 

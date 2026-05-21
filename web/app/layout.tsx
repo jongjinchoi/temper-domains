@@ -116,11 +116,11 @@ const JSON_LD = {
   featureList: [
     "30 TLDs checked per search (59 with --extended)",
     "RDAP with WHOIS fallback",
-    "MCP server for Claude and Cursor",
+    "MCP server for Codex, Claude, and Cursor",
     "Interactive TUI with vim-style navigation",
     "JSON output for shell piping",
     "7 built-in themes",
-    "Runs locally with zero telemetry",
+    "CLI/MCP runs locally with zero telemetry",
   ],
   sameAs: [GITHUB_URL],
 };
@@ -166,7 +166,7 @@ const JSON_LD_FAQ = {
       name: "What is MCP and how does temper use it?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "MCP (Model Context Protocol) lets AI assistants like Claude and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing five tools: search_domain, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
+        text: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing five tools: search_domain, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
       },
     },
   ],

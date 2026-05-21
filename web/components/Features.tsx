@@ -17,14 +17,14 @@ const FEATURES: Feature[] = [
   {
     badge: "№ 01 / PRIVACY",
     title: "Private by default.",
-    body: "Every query runs on your machine. No server, no logs, no tracking. Ever.",
+    body: "CLI and MCP queries run on your machine. No tracking, no telemetry. The hosted demo uses a server-side API route for live checks.",
   },
   {
     badge: "№ 02 / SPEED",
     title: "Fast.",
     body: (
       <>
-        30 TLDs in under 2 seconds. {EXTENDED_TLDS_COUNT} with{" "}
+        Checks 30 TLDs by default with a 3s timeout. {EXTENDED_TLDS_COUNT} with{" "}
         <code>--extended</code>.
       </>
     ),
@@ -32,7 +32,7 @@ const FEATURES: Feature[] = [
   {
     badge: "№ 03 / AI",
     title: "MCP native.",
-    body: "Claude Code, Claude Desktop, Cursor — query temper directly.",
+    body: "Codex, Claude Code, Claude Desktop, Cursor — query temper directly.",
   },
   {
     badge: "№ 04 / INPUT",

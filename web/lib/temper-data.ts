@@ -135,7 +135,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 06",
     sig: { cmd: "mcp" },
-    desc: "Start the MCP server over stdio. For Claude/Cursor configs.",
+    desc: "Start the MCP server over stdio. For Codex/Claude/Cursor configs.",
     example: "$ temper mcp",
   },
 ];
@@ -173,9 +173,9 @@ export const SITE_URL = "https://temper-domains.vercel.app";
 export const SITE_TITLE = "temper — terminal-first domain search";
 export const SITE_TAGLINE = "terminal-first domain search";
 export const SITE_DESCRIPTION =
-  "Never leave your terminal to find a domain. 30 TLDs, under 2 seconds, " +
-  "all private. Also an MCP server — so Claude and Cursor can search on " +
-  "your behalf.";
+  "Never leave your terminal to find a domain. 30 TLDs by default with a " +
+  "3s timeout, no telemetry in the CLI/MCP flow. Also an MCP server — so " +
+  "Codex, Claude, and Cursor can search on your behalf.";
 
 // ─── Colophon ──────────────────────────────────────────────────────────────
 // Imprint data for the "judge the craft" block that sits between Cta and

@@ -1,10 +1,10 @@
 # temper
 
-> A terminal-first CLI for checking domain availability across 30 TLDs in under 2 seconds. MCP-native so Claude, Cursor, and other AI assistants can search on your behalf.
+> A terminal-first CLI for checking domain availability across 30 TLDs by default with a 3s timeout. MCP-native so Codex, Claude, Cursor, and other AI assistants can search on your behalf.
 
 ## What it is
 
-temper is an open-source command-line tool that queries RDAP (with WHOIS fallback) to check domain availability. It runs entirely on the user's machine with zero telemetry and no server dependencies.
+temper is an open-source command-line tool that queries RDAP (with WHOIS fallback) to check domain availability. The CLI and MCP server run on the user's machine with zero telemetry and no temper-hosted query proxy. The hosted web demo uses a server-side API route for live checks.
 
 - License: Apache 2.0
 - Language: TypeScript, built on the Bun runtime
@@ -18,10 +18,10 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 
 - 30 TLDs per search by default (59 with `--extended`, custom list via `--tlds`, or presets: `tech`, `popular`, `startup`, `cheap`)
 - Interactive TUI (Ink + React) with vim-style navigation (j/k, /, a, s, h)
-- MCP server mode for Claude Desktop, Claude Code, Cursor, Windsurf, and Cline
+- MCP server mode for Codex CLI/IDE, Claude Desktop, Claude Code, Cursor, Windsurf, and Cline
 - JSON output for shell piping (`--format json`)
 - 7 built-in themes (5 dark, 2 light)
-- Private by default — all queries run locally, no telemetry, no logs
+- Private by default for CLI/MCP — no telemetry and no temper-hosted query proxy
 
 ## MCP tools
 

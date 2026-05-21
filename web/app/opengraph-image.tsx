@@ -120,7 +120,7 @@ export default async function OpengraphImage() {
             {DEFAULT_TLDS_COUNT} TLDs
           </span>
           <span style={{ marginLeft: 14 }}>
-            · under 2 seconds · MCP-native for Claude and Cursor
+            · 3s timeout · MCP-native for Codex, Claude, Cursor
           </span>
         </div>
 
