@@ -3,9 +3,7 @@ import { Command } from "commander";
 import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
-
-declare const PKG_VERSION: string;
-const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
+import { VERSION } from "./version.ts";
 
 function exitWithError(message: string): never {
   console.error(`Error: ${message}`);

@@ -10,9 +10,7 @@ import { whoisLookup } from "../checker/whois.ts";
 import { getTld } from "../utils/domain.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
-
-declare const PKG_VERSION: string;
-const VERSION = typeof PKG_VERSION !== "undefined" ? PKG_VERSION : "0.1.0";
+import { VERSION } from "../version.ts";
 
 const server = new McpServer(
   { name: "temper", version: VERSION },

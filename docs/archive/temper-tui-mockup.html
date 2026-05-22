@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="temper-forge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temper TUI Mockup</title>
+<style>
+    /* Theme Palettes */
+
+    /* Catppuccin Mocha (dark) — https://catppuccin.com */
+    [data-theme="catppuccin-mocha"] {
+        --base:       #1e1e2e;
+        --mantle:     #181825;
+        --crust:      #11111b;
+        --surface0:   #313244;
+        --surface1:   #45475a;
+        --surface2:   #585b70;
+        --overlay0:   #6c7086;
+        --overlay1:   #7f849c;
+        --subtext0:   #a6adc8;
+        --subtext1:   #bac2de;
+        --text:       #cdd6f4;
+        --lavender:   #b4befe;
+        --blue:       #89b4fa;
+        --sapphire:   #74c7ec;
+        --teal:       #94e2d5;
+        --green:      #a6e3a1;
+        --yellow:     #f9e2af;
+        --peach:      #fab387;
+        --maroon:     #eba0ac;
+        --red:        #f38ba8;
+        --mauve:      #cba6f7;
+    }
+
+    /* Catppuccin Latte (light) */
+    [data-theme="catppuccin-latte"] {
+        --base:       #eff1f5;
+        --mantle:     #e6e9ef;
+        --crust:      #dce0e8;
+        --surface0:   #ccd0da;
+        --surface1:   #bcc0cc;
+        --surface2:   #acb0be;
+        --overlay0:   #9ca0b0;
+        --overlay1:   #8c8fa1;
+        --subtext0:   #6c6f85;
+        --subtext1:   #5c5f77;
+        --text:       #4c4f69;
+        --lavender:   #7287fd;
+        --blue:       #1e66f5;
+        --sapphire:   #209fb5;
+        --teal:       #179299;
+        --green:      #40a02b;
+        --yellow:     #df8e1d;
+        --peach:      #fe640b;
+        --maroon:     #e64553;
+        --red:        #d20f39;
+        --mauve:      #8839ef;
+    }
+
+    /* Dracula (dark) — https://draculatheme.com */
+    [data-theme="dracula"] {
+        --base:       #282a36;
+        --mantle:     #21222c;
+        --crust:      #191a21;
+        --surface0:   #44475a;
+        --surface1:   #4e516e;
+        --surface2:   #6272a4;
+        --overlay0:   #6272a4;
+        --overlay1:   #8b92ba;
+        --subtext0:   #bdc1cf;
+        --subtext1:   #cfd2dd;
+        --text:       #f8f8f2;
+        --lavender:   #bd93f9;
+        --blue:       #6272a4;
+        --sapphire:   #8be9fd;
+        --teal:       #8be9fd;
+        --green:      #50fa7b;
+        --yellow:     #f1fa8c;
+        --peach:      #ffb86c;
+        --maroon:     #ff79c6;
+        --red:        #ff5555;
+        --mauve:      #bd93f9;
+    }
+
+    /* Tokyo Night (dark) — https://github.com/folke/tokyonight.nvim */
+    [data-theme="tokyo-night"] {
+        --base:       #1a1b26;
+        --mantle:     #16161e;
+        --crust:      #13131a;
+        --surface0:   #24283b;
+        --surface1:   #2a2f41;
+        --surface2:   #343b58;
+        --overlay0:   #565f89;
+        --overlay1:   #6b738e;
+        --subtext0:   #a9b1d6;
+        --subtext1:   #b4bcd6;
+        --text:       #c0caf5;
+        --lavender:   #bb9af7;
+        --blue:       #7aa2f7;
+        --sapphire:   #7dcfff;
+        --teal:       #1abc9c;
+        --green:      #9ece6a;
+        --yellow:     #e0af68;
+        --peach:      #ff9e64;
+        --maroon:     #f7768e;
+        --red:        #f7768e;
+        --mauve:      #bb9af7;
+    }
+
+    /* Temper Forge (dark) — 담금질 컨셉: 불 × 쇠 × 식힘 */
+    [data-theme="temper-forge"] {
+        --base:       #1a1d23;
+        --mantle:     #14161b;
+        --crust:      #0f1014;
+        --surface0:   #2a2e36;
+        --surface1:   #3a3f4a;
+        --surface2:   #4b5260;
+        --overlay0:   #6b7280;
+        --overlay1:   #8b94a5;
+        --subtext0:   #b4b0a8;
+        --subtext1:   #c8c4bc;
+        --text:       #e8e6e3;
+        --lavender:   #9ba5c4;
+        --blue:       #7a8fc4;
+        --sapphire:   #6a9cc4;
+        --teal:       #5ab89a;
+        --green:      #64c896;
+        --yellow:     #ffbf47;
+        --peach:      #ff9566;
+        --maroon:     #d66565;
+        --red:        #e64545;
+        --mauve:      #ff7a45;
+    }
+
+    /* Seoul Night (dark) — 서울의 밤 네온 × 한강 */
+    [data-theme="seoul-night"] {
+        --base:       #14141f;
+        --mantle:     #0f0f18;
+        --crust:      #0a0a12;
+        --surface0:   #252538;
+        --surface1:   #35354a;
+        --surface2:   #454563;
+        --overlay0:   #5a5775;
+        --overlay1:   #6e6b85;
+        --subtext0:   #9892ad;
+        --subtext1:   #b8b4cc;
+        --text:       #e8e3f0;
+        --lavender:   #a89eff;
+        --blue:       #5b8cff;
+        --sapphire:   #67b7ff;
+        --teal:       #4dd4bc;
+        --green:      #7ee787;
+        --yellow:     #ffb84d;
+        --peach:      #ff8a5c;
+        --maroon:     #ff8aa5;
+        --red:        #ff5e62;
+        --mauve:      #ff4d8d;
+    }
+
+    /* Default (basic terminal colors) */
+    [data-theme="default"] {
+        --base:       #000000;
+        --mantle:     #0a0a0a;
+        --crust:      #050505;
+        --surface0:   #262626;
+        --surface1:   #3a3a3a;
+        --surface2:   #4e4e4e;
+        --overlay0:   #666666;
+        --overlay1:   #808080;
+        --subtext0:   #cccccc;
+        --subtext1:   #e0e0e0;
+        --text:       #ffffff;
+        --lavender:   #af87ff;
+        --blue:       #5f87ff;
+        --sapphire:   #00afff;
+        --teal:       #00afaf;
+        --green:      #00af00;
+        --yellow:     #ffff00;
+        --peach:      #ff8700;
+        --maroon:     #ff5f5f;
+        --red:        #ff0000;
+        --mauve:      #af87ff;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--crust) 0%, var(--mantle) 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: var(--text);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .terminal,
+    .titlebar,
+    .terminal-body,
+    .screen-label,
+    .legend,
+    .design-notes,
+    .header,
+    .theme-switcher {
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Theme Switcher */
+    .theme-switcher {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 0 0 30px 0;
+        padding: 12px 16px;
+        background: var(--mantle);
+        border-radius: 10px;
+        border: 1px solid var(--surface0);
+    }
+
+    .theme-switcher .label {
+        color: var(--subtext0);
+        font-size: 0.8rem;
+        font-family: 'SF Mono', Menlo, monospace;
+        display: flex;
+        align-items: center;
+        margin-right: 4px;
+    }
+
+    .theme-btn {
+        background: var(--surface0);
+        color: var(--text);
+        border: 1px solid var(--surface1);
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-family: 'SF Mono', Menlo, monospace;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .theme-btn:hover {
+        background: var(--surface1);
+        border-color: var(--mauve);
+    }
+
+    .theme-btn.active {
+        background: var(--mauve);
+        color: var(--base);
+        border-color: var(--mauve);
+        font-weight: 600;
+    }
+
+    .theme-btn .swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid var(--surface2);
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--surface0);
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--mauve) 0%, var(--blue) 50%, var(--green) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .header p {
+        color: var(--subtext0);
+        font-size: 1rem;
+    }
+
+    .header .badge {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 4px 12px;
+        background: var(--surface0);
+        border: 1px solid var(--surface1);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--mauve);
+        font-family: 'SF Mono', Menlo, monospace;
+    }
+
+    .screen-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 40px 0 12px 0;
+        padding: 8px 16px;
+        background: var(--surface0);
+        border-left: 3px solid var(--mauve);
+        border-radius: 4px;
+    }
+
+    .screen-label .number {
+        background: var(--mauve);
+        color: var(--base);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .screen-label .title {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text);
+    }
+
+    .screen-label .caption {
+        color: var(--subtext0);
+        font-size: 0.85rem;
+        margin-left: auto;
+    }
+
+    .terminal {
+        background: var(--base);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            0 0 0 1px var(--surface0);
+        margin-bottom: 12px;
+    }
+
+    .titlebar {
+        background: var(--mantle);
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--surface0);
+    }
+
+    .titlebar .buttons {
+        display: flex;
+        gap: 6px;
+    }
+
+    .titlebar .buttons span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: block;
+    }
+
+    .titlebar .buttons .close { background: #ff5f57; }
+    .titlebar .buttons .minimize { background: #febc2e; }
+    .titlebar .buttons .maximize { background: #28c840; }
+
+    .titlebar .title-text {
+        flex: 1;
+        text-align: center;
+        color: var(--subtext0);
+        font-size: 0.8rem;
+        font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
+    }
+
+    .terminal-body {
+        padding: 16px 18px;
+        font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text);
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    /* Border & structure */
+    .border { color: var(--surface2); }
+    .label { color: var(--overlay1); }
+    .dim { color: var(--overlay0); }
+    .title-accent { color: var(--mauve); font-weight: 600; }
+    .subtle-accent { color: var(--lavender); }
+
+    /* Status colors */
+    .status-available { color: var(--green); }
+    .status-taken { color: var(--red); }
+    .status-premium { color: var(--peach); }
+    .status-reserved { color: var(--sapphire); }
+    .status-loading { color: var(--overlay1); }
+    .status-slow { color: var(--yellow); }
+    .status-aftermarket { color: var(--mauve); }
+
+    /* Selection */
+    .selected-row {
+        background: var(--surface0);
+        display: inline-block;
+        padding: 0 4px;
+        margin: 0 -4px;
+        border-left: 2px solid var(--mauve);
+        padding-left: 4px;
+    }
+
+    .huh-selected {
+        color: var(--mauve);
+        font-weight: 600;
+    }
+
+    /* Keys */
+    .key-hint {
+        color: var(--blue);
+        font-weight: 600;
+    }
+
+    .key-action {
+        color: var(--subtext1);
+    }
+
+    .command-prompt {
+        color: var(--green);
+        font-weight: 600;
+    }
+
+    /* Spinner animation */
+    .spinner {
+        display: inline-block;
+        color: var(--mauve);
+    }
+
+    .spinner::before {
+        content: '⠋';
+        animation: spin 0.8s steps(10) infinite;
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0%   { content: '⠋'; }
+        10%  { content: '⠙'; }
+        20%  { content: '⠹'; }
+        30%  { content: '⠸'; }
+        40%  { content: '⠼'; }
+        50%  { content: '⠴'; }
+        60%  { content: '⠦'; }
+        70%  { content: '⠧'; }
+        80%  { content: '⠇'; }
+        90%  { content: '⠏'; }
+        100% { content: '⠋'; }
+    }
+
+    /* Cursor */
+    .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 14px;
+        background: var(--mauve);
+        animation: blink 1s step-end infinite;
+        vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
+
+    /* Progress bar gradient (Bubbles style) */
+    .progress-gradient {
+        background: linear-gradient(90deg, var(--mauve) 0%, var(--blue) 50%, var(--teal) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .footer {
+        margin-top: 60px;
+        padding-top: 30px;
+        border-top: 1px solid var(--surface0);
+        text-align: center;
+        color: var(--subtext0);
+        font-size: 0.85rem;
+    }
+
+    .footer code {
+        background: var(--surface0);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: 'SF Mono', Menlo, monospace;
+        color: var(--blue);
+    }
+
+    .footer .theme-link {
+        color: var(--mauve);
+        text-decoration: none;
+        border-bottom: 1px dashed var(--surface2);
+    }
+
+    /* Legend */
+    .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0 40px 0;
+        padding: 16px 20px;
+        background: var(--mantle);
+        border-radius: 8px;
+        border: 1px solid var(--surface0);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-family: 'SF Mono', Menlo, monospace;
+    }
+
+    .legend-item .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    /* Design notes */
+    .design-notes {
+        margin: 12px 0 0 0;
+        padding: 12px 16px;
+        background: var(--mantle);
+        border-left: 2px solid var(--blue);
+        border-radius: 0 4px 4px 0;
+        font-size: 0.85rem;
+        color: var(--subtext0);
+        line-height: 1.6;
+    }
+
+    .design-notes strong {
+        color: var(--blue);
+        font-weight: 600;
+    }
+
+    .design-notes code {
+        background: var(--surface0);
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-family: 'SF Mono', Menlo, monospace;
+        color: var(--peach);
+        font-size: 0.8rem;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Temper TUI Mockup</h1>
+        <p>Bubbletea v2 · Bubbles · Huh · Lip Gloss</p>
+        <span class="badge" id="current-theme-badge">🔥 Temper Forge</span>
+    </div>
+
+    <div class="theme-switcher">
+        <span class="label">theme:</span>
+        <button class="theme-btn active" data-set-theme="temper-forge">
+            <span class="swatch" style="background:#ff7a45"></span>
+            Temper Forge ⭐
+        </button>
+        <button class="theme-btn" data-set-theme="seoul-night">
+            <span class="swatch" style="background:#ff4d8d"></span>
+            Seoul Night ⭐
+        </button>
+        <button class="theme-btn" data-set-theme="catppuccin-mocha">
+            <span class="swatch" style="background:#cba6f7"></span>
+            Catppuccin Mocha
+        </button>
+        <button class="theme-btn" data-set-theme="dracula">
+            <span class="swatch" style="background:#bd93f9"></span>
+            Dracula
+        </button>
+        <button class="theme-btn" data-set-theme="default">
+            <span class="swatch" style="background:#af87ff"></span>
+            Default
+        </button>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><span class="dot" style="background:#a6e3a1"></span><span style="color:#a6e3a1">available</span></div>
+        <div class="legend-item"><span class="dot" style="background:#f38ba8"></span><span style="color:#f38ba8">taken</span></div>
+        <div class="legend-item"><span class="dot" style="background:#fab387"></span><span style="color:#fab387">premium</span></div>
+        <div class="legend-item"><span class="dot" style="background:#74c7ec"></span><span style="color:#74c7ec">reserved</span></div>
+        <div class="legend-item"><span class="dot" style="background:#cba6f7"></span><span style="color:#cba6f7">aftermarket</span></div>
+        <div class="legend-item"><span class="dot" style="background:#6c7086"></span><span style="color:#6c7086">checking</span></div>
+        <div class="legend-item"><span class="dot" style="background:#f9e2af"></span><span style="color:#f9e2af">slow</span></div>
+    </div>
+
+    <!-- Screen 1: temper init (Huh form) -->
+    <div class="screen-label">
+        <span class="number">1</span>
+        <span class="title">temper init — 첫 설정 (Huh 폼)</span>
+        <span class="caption">Charm Huh 라이브러리 기반 multi-step form</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — init</div>
+        </div>
+        <div class="terminal-body"><span class="border">┌─</span> <span class="title-accent">Welcome to temper</span> <span class="border">─────────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>   <span class="subtle-accent">Step 1 of 3</span>  <span class="dim">·</span>  <span class="label">터미널에서 도메인 찾기를 시작합니다</span>        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>   <span class="label">선호 레지스트라를 선택하세요</span>                              <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>     <span class="huh-selected">● Cloudflare</span>     <span class="label">도매가, 개발자 1순위</span>              <span class="border">│</span>
+<span class="border">│</span>     <span class="dim">○ Porkbun</span>        <span class="dim">업셀 없음, 투명한 가격</span>            <span class="border">│</span>
+<span class="border">│</span>     <span class="dim">○ Namecheap</span>      <span class="dim">입문자 친화</span>                        <span class="border">│</span>
+<span class="border">│</span>     <span class="dim">○ Vercel</span>         <span class="dim">배포까지 한 번에</span>                   <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">j/k</span> <span class="key-action">up/down</span> <span class="dim">·</span> <span class="key-hint">enter</span> <span class="key-action">next</span> <span class="dim">·</span> <span class="key-hint">esc</span> <span class="key-action">cancel</span>           <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>Huh 적용</strong>: Charm의 공식 폼 라이브러리. <code>Select</code> 필드로 4개 옵션 표시. Vim 스타일 <code>j/k</code> 네비게이션. 다음 단계: "기본 TLD 설정" → "테마 선택".
+    </div>
+
+    <!-- Screen 2: Progressive Search -->
+    <div class="screen-label">
+        <span class="number">2</span>
+        <span class="title">검색 중 — Progressive Rendering</span>
+        <span class="caption">0.7초 경과, Bubbles spinner + gradient progress</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — search keycove</div>
+        </div>
+        <div class="terminal-body"><span class="border">┌─</span> <span class="title-accent">temper search keycove</span> <span class="border">──────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="spinner"></span> <span class="label">Searching 30 TLDs...</span>  <span class="subtle-accent">18/30</span>  <span class="dim">(0.7s elapsed)</span>      <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>    keycove.com    <span class="status-taken">✗ taken</span>         <span class="dim">(0.54s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.net    <span class="status-available">✓ available</span>     <span class="dim">(0.63s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.org    <span class="status-available">✓ available</span>     <span class="dim">(0.75s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.ai     <span class="status-available">✓ available</span>     <span class="dim">(0.62s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.io     <span class="status-available">✓ available</span>     <span class="dim">(0.80s, whois)</span>       <span class="border">│</span>
+<span class="border">│</span>    keycove.app    <span class="status-available">✓ available</span>     <span class="dim">(0.44s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.dev    <span class="status-available">✓ available</span>     <span class="dim">(0.47s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.shop   <span class="status-available">✓ available</span>     <span class="dim">(0.09s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.info   <span class="status-available">✓ available</span>     <span class="dim">(0.55s)</span>              <span class="border">│</span>
+<span class="border">│</span>    keycove.xyz    <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.co     <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.store  <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.site   <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.online <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.tech   <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    keycove.pro    <span class="status-loading">… checking</span>                             <span class="border">│</span>
+<span class="border">│</span>    <span class="dim">...</span>                                                  <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="progress-gradient">████████████░░░░░░░░</span>  <span class="subtle-accent">60%</span>                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">ctrl+c</span> <span class="key-action">cancel</span> <span class="dim">·</span> <span class="key-hint">esc</span> <span class="key-action">back</span>                          <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>Bubbles 컴포넌트</strong>: <code>spinner</code> (Braille 문자 회전), <code>progress</code> (gradient), <code>list</code> (30개 TLD 스크롤). <strong>Progressive rendering</strong>: channel로 goroutine 결과가 도착하는 대로 UI 즉시 업데이트.
+    </div>
+
+    <!-- Screen 3: Search Complete + Selection -->
+    <div class="screen-label">
+        <span class="number">3</span>
+        <span class="title">검색 완료 + 도메인 선택</span>
+        <span class="caption">Vim 네비게이션 (j/k), / 필터, gg/G 점프</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — search keycove</div>
+        </div>
+        <div class="terminal-body"><span class="border">┌─</span> <span class="title-accent">temper search keycove</span> <span class="border">──────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="status-available">✓</span> <span class="label">Search complete</span>  <span class="subtle-accent">29/30</span>  <span class="dim">(1.4s)</span>                      <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>    keycove.com    <span class="status-taken">✗ taken</span>                                <span class="border">│</span>
+<span class="border">│</span>    keycove.net    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.org    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.ai     <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>  <span class="selected-row"><span class="subtle-accent">▸</span>  keycove.io     <span class="status-available">✓ available</span></span>                           <span class="border">│</span>
+<span class="border">│</span>    keycove.xyz    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.app    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.shop   <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.info   <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.co     <span class="status-taken">✗ taken</span>                                <span class="border">│</span>
+<span class="border">│</span>    keycove.store  <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.site   <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.online <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.dev    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.tech   <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    keycove.pro    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>    <span class="dim">...</span>                                                  <span class="border">│</span>
+<span class="border">│</span>    keycove.top    <span class="status-slow">⚠ slow (timeout)</span>                       <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">j/k</span> <span class="key-action">move</span> <span class="dim">·</span> <span class="key-hint">/</span> <span class="key-action">filter</span> <span class="dim">·</span> <span class="key-hint">enter</span> <span class="key-action">buy</span> <span class="dim">·</span> <span class="key-hint">w</span> <span class="key-action">watch</span> <span class="dim">·</span> <span class="key-hint">q</span> <span class="key-action">quit</span>  <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>Vim 네비게이션</strong>: <code>j/k</code> 이동, <code>/</code> 필터, <code>gg/G</code> 맨위/맨아래, <code>q</code> 종료. <strong>gh-dash 참고</strong>: 선택 행 좌측 accent bar + surface 배경. <strong>Flow 깨지 않음</strong>: 상세는 우측 패널이 아닌 인라인 확장.
+    </div>
+
+    <!-- Screen 4: Filter Mode -->
+    <div class="screen-label">
+        <span class="number">4</span>
+        <span class="title">필터 모드 — `/` 누름</span>
+        <span class="caption">Bubbles list 내장 fuzzy filter</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — search keycove (filter)</div>
+        </div>
+        <div class="terminal-body"><span class="border">┌─</span> <span class="title-accent">temper search keycove</span> <span class="border">──────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="key-hint">/</span> <span class="label">Filter:</span> <span class="subtle-accent">dev</span><span class="cursor"></span>                                       <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>    keycove.<span class="subtle-accent">dev</span>    <span class="status-available">✓ available</span>                            <span class="border">│</span>
+<span class="border">│</span>  <span class="selected-row"><span class="subtle-accent">▸</span>  keycove.<span class="subtle-accent">dev</span>eloper <span class="status-available">✓ available</span></span>                        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">1 of 2 matches</span>                                        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">esc</span> <span class="key-action">clear</span> <span class="dim">·</span> <span class="key-hint">enter</span> <span class="key-action">confirm</span>                           <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>Bubbles list의 fuzzy filter</strong>: <code>/</code> 키로 활성화, 실시간 매칭, 일치 부분 강조. <strong>gh-dash 스타일</strong>: filter 활성 시 결과 개수 표시. <code>esc</code>로 초기화.
+    </div>
+
+    <!-- Screen 5: Registrar Selection -->
+    <div class="screen-label">
+        <span class="number">5</span>
+        <span class="title">레지스트라 선택 (lazygit 스타일 팝업)</span>
+        <span class="caption">모달 메뉴, c/p/n/v 단일키 선택</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — search keycove</div>
+        </div>
+        <div class="terminal-body"><span class="border">┌─</span> <span class="title-accent">temper search keycove</span> <span class="border">──────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="label">Selected:</span>  <span class="status-available">keycove.io</span>  <span class="status-available">✓ available</span>                    <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="border">╭─ Where to buy? ────────────────────────────────╮</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>                                                <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>   <span class="key-hint">[c]</span> <span style="color:#fab387">Cloudflare</span>    <span class="label">도매가, 개발자 1순위</span>     <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>   <span class="key-hint">[p]</span> <span style="color:#eba0ac">Porkbun</span>       <span class="label">업셀 없음, 투명한 가격</span>   <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>   <span class="key-hint">[n]</span> <span style="color:#f38ba8">Namecheap</span>     <span class="label">입문자 친화</span>              <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>   <span class="key-hint">[v]</span> <span style="color:#cdd6f4">Vercel</span>        <span class="label">배포까지 한 번에</span>         <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>                                                <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">│</span>   <span class="dim">기본: Cloudflare</span>  <span class="dim">(~/.temper/config.json)</span>   <span class="border">│</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="border">╰────────────────────────────────────────────────╯</span>    <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">c/p/n/v</span> <span class="key-action">select</span> <span class="dim">·</span> <span class="key-hint">esc</span> <span class="key-action">cancel</span>                       <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span>
+
+<span class="label">→ c 키 누름:</span>
+<span class="status-available">✓</span> <span class="label">Opening Cloudflare in your browser...</span>
+   <span style="color:#89b4fa">https://domains.cloudflare.com/?domainToCheck=keycove.io</span>
+
+<span class="command-prompt">$</span> <span class="cursor"></span></div>
+    </div>
+    <div class="design-notes">
+        <strong>lazygit 팝업 패턴</strong>: 라운드 모서리 (<code>╭╮╰╯</code>) 모달, 단일키 액션. <strong>브랜드 컬러</strong>: Cloudflare peach, Porkbun maroon, Namecheap red, Vercel text. <strong>기본값 표시</strong>: config에서 설정한 레지스트라 하단 안내.
+    </div>
+
+    <!-- Screen 6: History -->
+    <div class="screen-label">
+        <span class="number">6</span>
+        <span class="title">검색 히스토리 (temper history)</span>
+        <span class="caption">Bubbles table 컴포넌트</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — history</div>
+        </div>
+        <div class="terminal-body"><span class="command-prompt">$</span> temper history
+
+<span class="border">┌─</span> <span class="title-accent">Recent searches</span> <span class="border">─────────────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="label">DATE              QUERY       TLDs     RESULT</span>           <span class="border">│</span>
+<span class="border">│</span>  <span class="border">─────────────────────────────────────────────────</span>      <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-06 14:32</span>  <span class="text">keycove</span>     <span class="subtle-accent">30</span>      <span class="status-available">28 avail</span>         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-06 10:15</span>  <span class="text">vaultly</span>     <span class="subtle-accent">18</span>      <span class="status-available">9 avail</span>          <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-05 22:04</span>  <span class="text">safekit</span>     <span class="subtle-accent">30</span>      <span class="status-available">27 avail</span>         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-05 15:48</span>  <span class="text">lockpath</span>    <span class="subtle-accent">30</span>      <span class="status-available">25 avail</span>         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-04 09:21</span>  <span class="text">keynest</span>     <span class="subtle-accent">30</span>      <span class="status-available">30 avail</span>         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-03 18:07</span>  <span class="text">jotbox</span>      <span class="subtle-accent">30</span>      <span class="status-available">22 avail</span>         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">2026-04-03 11:32</span>  <span class="text">pinkit</span>      <span class="subtle-accent">30</span>      <span class="status-available">19 avail</span>         <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">Total: 7 searches · ~/.temper/history.json</span>            <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">j/k</span> <span class="key-action">move</span> <span class="dim">·</span> <span class="key-hint">enter</span> <span class="key-action">re-search</span> <span class="dim">·</span> <span class="key-hint">d</span> <span class="key-action">delete</span> <span class="dim">·</span> <span class="key-hint">q</span> <span class="key-action">quit</span>        <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>Bubbles table</strong>: 열 헤더 + 구분선. <code>enter</code>로 재검색 (이전 쿼리 재실행). 로컬 저장 위치 하단 표시.
+    </div>
+
+    <!-- Screen 7: Watchlist -->
+    <div class="screen-label">
+        <span class="number">7</span>
+        <span class="title">Watchlist (temper list)</span>
+        <span class="caption">premium/aftermarket 상태 포함</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — list</div>
+        </div>
+        <div class="terminal-body"><span class="command-prompt">$</span> temper list
+
+<span class="border">┌─</span> <span class="title-accent">Watchlist</span> <span class="border">───────────────────────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="text">lockpath.io</span>     <span class="status-premium">◆ premium</span>       <span class="peach">$2,500</span>    <span class="dim">2d ago</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="text">vaultly.com</span>     <span class="status-aftermarket">◈ aftermarket</span>   <span class="peach">$850</span>      <span class="dim">1d ago</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="text">keycove.com</span>     <span class="status-taken">✗ taken</span>         <span class="dim">—</span>         <span class="dim">1d ago</span>    <span class="border">│</span>
+<span class="border">│</span>  <span class="text">safekit.io</span>      <span class="status-reserved">◉ reserved</span>      <span class="dim">—</span>         <span class="dim">3h ago</span>    <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">4 watched · ~/.temper/watchlist.json</span>                  <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">j/k</span> <span class="key-action">move</span> <span class="dim">·</span> <span class="key-hint">r</span> <span class="key-action">refresh</span> <span class="dim">·</span> <span class="key-hint">d</span> <span class="key-action">remove</span> <span class="dim">·</span> <span class="key-hint">q</span> <span class="key-action">quit</span>            <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>상태 아이콘 통일</strong>: <code>◆ premium</code>, <code>◈ aftermarket</code>, <code>◉ reserved</code>. <strong>이모지 대신 기하학 기호</strong>: 터미널 호환성 + 시각적 일관성 (Catppuccin 팔레트와 조화).
+    </div>
+
+    <!-- Screen 8: Suggest -->
+    <div class="screen-label">
+        <span class="number">8</span>
+        <span class="title">조합어 생성 (temper suggest)</span>
+        <span class="caption">접두사/접미사 그룹별 정렬</span>
+    </div>
+    <div class="terminal">
+        <div class="titlebar">
+            <div class="buttons">
+                <span class="close"></span>
+                <span class="minimize"></span>
+                <span class="maximize"></span>
+            </div>
+            <div class="title-text">temper — suggest keycove</div>
+        </div>
+        <div class="terminal-body"><span class="command-prompt">$</span> temper suggest keycove
+
+<span class="border">┌─</span> <span class="title-accent">Suggestions for "keycove"</span> <span class="border">───────────────────────────────┐</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="subtle-accent">BASE</span>                                                    <span class="border">│</span>
+<span class="border">│</span>    keycove            <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="subtle-accent">PREFIX</span>                                                  <span class="border">│</span>
+<span class="border">│</span>    getkeycove         <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>    usekeycove         <span class="status-taken">✗ taken</span>                            <span class="border">│</span>
+<span class="border">│</span>    mykeycove          <span class="status-taken">✗ taken</span>                            <span class="border">│</span>
+<span class="border">│</span>    trykeycove         <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="subtle-accent">SUFFIX</span>                                                  <span class="border">│</span>
+<span class="border">│</span>    keycoveapp         <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>    keycovely          <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>    keycovehq          <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>    keycovelabs        <span class="status-available">✓ available</span>                        <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">│</span>  <span class="dim">Summary:</span> <span class="status-available">7 available</span> <span class="dim">·</span> <span class="status-taken">2 taken</span>                    <span class="border">│</span>
+<span class="border">│</span>                                                         <span class="border">│</span>
+<span class="border">├─────────────────────────────────────────────────────────┤</span>
+<span class="border">│</span> <span class="key-hint">j/k</span> <span class="key-action">move</span> <span class="dim">·</span> <span class="key-hint">enter</span> <span class="key-action">check all TLDs</span> <span class="dim">·</span> <span class="key-hint">q</span> <span class="key-action">quit</span>            <span class="border">│</span>
+<span class="border">└─────────────────────────────────────────────────────────┘</span></div>
+    </div>
+    <div class="design-notes">
+        <strong>그룹 헤더</strong>: BASE / PREFIX / SUFFIX 대문자 라벨 (lavender 색). <strong>인라인 요약</strong>: 맨 아래 dim 색상으로. <code>enter</code>로 선택 도메인의 30개 TLD 전체 조회.
+    </div>
+
+    <div class="footer">
+        <p><strong>Temper TUI Mockup v2</strong> · Bubbletea v2 + Bubbles + Huh + Lip Gloss</p>
+        <p style="margin-top: 8px">5개 테마 지원 · 다크/라이트 자동 감지 (<code>glow</code> 스타일) · <code>temper-domains-prd.md v1.0</code></p>
+        <p style="margin-top: 8px">실제 구현: progressive rendering, Vim 네비게이션, fuzzy filter, gradient progress bar</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const THEME_NAMES = {
+            'temper-forge': '🔥 Temper Forge',
+            'seoul-night': '🌃 Seoul Night',
+            'catppuccin-mocha': '🎨 Catppuccin Mocha',
+            'dracula': '🧛 Dracula',
+            'default': '⚫ Default'
+        };
+
+        const html = document.documentElement;
+        const badge = document.getElementById('current-theme-badge');
+        const buttons = document.querySelectorAll('.theme-btn[data-set-theme]');
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            badge.textContent = THEME_NAMES[theme] || theme;
+            buttons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.setTheme === theme);
+            });
+            // Persist selection
+            try { localStorage.setItem('temper-mockup-theme', theme); } catch (e) {}
+        }
+
+        // Restore saved theme
+        try {
+            const saved = localStorage.getItem('temper-mockup-theme');
+            if (saved && THEME_NAMES[saved]) setTheme(saved);
+        } catch (e) {}
+
+        // Wire up buttons
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => setTheme(btn.dataset.setTheme));
+        });
+
+        // Keyboard shortcut: 1-5 to switch themes
+        const themeList = Object.keys(THEME_NAMES);
+        document.addEventListener('keydown', (e) => {
+            const num = parseInt(e.key, 10);
+            if (num >= 1 && num <= themeList.length) {
+                setTheme(themeList[num - 1]);
+            }
+        });
+    })();
+</script>
+</body>
+</html>
