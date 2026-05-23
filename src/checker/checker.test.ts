@@ -5,7 +5,7 @@ const originalFetch = globalThis.fetch;
 
 describe("checkFullDomains", () => {
   beforeEach(() => {
-    globalThis.fetch = async (input) => {
+    globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
       const url = String(input);
       if (url.includes("/domain/available.com")) {
         return new Response(null, { status: 404 });
@@ -14,7 +14,7 @@ describe("checkFullDomains", () => {
         return new Response(null, { status: 200 });
       }
       return new Response(null, { status: 500 });
-    };
+    }) as unknown as typeof fetch;
   });
 
   afterEach(() => {
@@ -38,10 +38,10 @@ describe("checkFullDomains", () => {
 
   test("returns error for invalid full domains before network lookup", async () => {
     let calls = 0;
-    globalThis.fetch = async () => {
+    globalThis.fetch = (async () => {
       calls++;
       return new Response(null, { status: 200 });
-    };
+    }) as unknown as typeof fetch;
 
     const results = [];
     const rdapUrls = new Map([["com", "https://rdap.test"]]);
