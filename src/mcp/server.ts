@@ -1,13 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { getBootstrap, getRdapUrl } from "../checker/bootstrap.ts";
-import { checkDomains } from "../checker/checker.ts";
-import { getServerLimit, pLimit } from "../checker/limiter.ts";
-import { rdapLookup } from "../checker/rdap.ts";
+import { checkDomains, checkFullDomains } from "../checker/checker.ts";
+import { pLimit } from "../checker/limiter.ts";
 import type { DomainResult } from "../checker/types.ts";
-import { whoisLookup } from "../checker/whois.ts";
-import { getTld } from "../utils/domain.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 import { VERSION } from "../version.ts";
@@ -166,7 +162,7 @@ server.registerTool("suggest_domain", {
 });
 
 server.registerTool("check_domain_availability", {
-  description: "Check availability for a list of full domain names. Uses DNS fast-check then RDAP verification for accuracy. Max 100 domains.",
+  description: "Check availability for a list of full domain names using RDAP/WHOIS authoritative lookup. Max 100 domains.",
   inputSchema: {
     domains: z
       .array(z.string())
@@ -175,51 +171,20 @@ server.registerTool("check_domain_availability", {
   },
 }, async ({ domains }) => {
   try {
-    const { dnsCheck } = await import("../checker/dns.ts");
-
-    await getBootstrap();
-    const limit = pLimit(30);
-
-    const dnsResults = new Map<string, string>();
-    await Promise.allSettled(
-      domains.map((domain) =>
-        limit(async () => {
-          const status = await dnsCheck(domain);
-          dnsResults.set(domain, status);
-        }),
-      ),
-    );
-
-    const needsVerify = domains.filter((d) => dnsResults.get(d) === "available");
-    const verifyLimit = pLimit(10);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
-    await Promise.allSettled(
-      needsVerify.map((domain) =>
-        verifyLimit(async () => {
-          const tld = getTld(domain);
-          const rdapUrl = getRdapUrl(tld);
-          if (!rdapUrl) return;
-          const serverLimit = getServerLimit(rdapUrl);
-          const r = await serverLimit(() =>
-            rdapLookup(domain, rdapUrl, controller.signal),
-          );
-          if (r.status === "taken") dnsResults.set(domain, "taken");
-        }),
-      ),
-    );
-
-    clearTimeout(timeout);
-
-    const lines = ["Domain availability check:\n"];
-    for (const domain of domains) {
-      const status = dnsResults.get(domain) ?? "error";
-      const icon = status === "available" ? "✓" : "✗";
-      lines.push(`${icon} ${domain.padEnd(30)} ${status}`);
+    const results: DomainResult[] = [];
+    for await (const result of checkFullDomains(domains, { concurrency: 30, timeoutMs: 5000 })) {
+      results.push(result);
     }
 
-    const available = [...dnsResults.values()].filter((s) => s === "available").length;
+    const lines = ["Domain availability check:\n"];
+    for (const result of results) {
+      const status = result.status;
+      const icon = status === "available" ? "✓" : "✗";
+      const method = result.method === "whois" ? "  (whois)" : "";
+      lines.push(`${icon} ${result.domain.padEnd(30)} ${status}${method}`);
+    }
+
+    const available = results.filter((r) => r.status === "available").length;
     lines.push(`\n${available}/${domains.length} available`);
 
     return { content: [{ type: "text" as const, text: lines.join("\n") }] };
