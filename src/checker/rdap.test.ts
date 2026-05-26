@@ -122,11 +122,11 @@ describe("parseRdapResponse", () => {
 
 describe("rdapLookup", () => {
   test("sends RDAP accept and user-agent headers", async () => {
-    let headers: HeadersInit | undefined;
-    globalThis.fetch = (async (_input, init) => {
+    let headers: unknown;
+    globalThis.fetch = (async (_input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
       headers = init?.headers;
       return new Response(null, { status: 404 });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
 
@@ -145,7 +145,7 @@ describe("rdapLookup", () => {
         return new Response(null, { status: 503, headers: { "retry-after": "0" } });
       }
       return new Response(null, { status: 404 });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
 
@@ -155,7 +155,7 @@ describe("rdapLookup", () => {
 
   test("keeps HTTP reason when RDAP remains rate limited", async () => {
     globalThis.fetch = (async () =>
-      new Response(null, { status: 429, headers: { "retry-after": "0" } })) as typeof fetch;
+      new Response(null, { status: 429, headers: { "retry-after": "0" } })) as unknown as typeof fetch;
 
     const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
 
@@ -164,7 +164,7 @@ describe("rdapLookup", () => {
   });
 
   test("keeps HTTP reason for unexpected RDAP errors", async () => {
-    globalThis.fetch = (async () => new Response(null, { status: 403 })) as typeof fetch;
+    globalThis.fetch = (async () => new Response(null, { status: 403 })) as unknown as typeof fetch;
 
     const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
 
