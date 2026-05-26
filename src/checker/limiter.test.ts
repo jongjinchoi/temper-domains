@@ -1,5 +1,5 @@
 import { test, expect, describe } from "bun:test";
-import { pLimit, pThrottle } from "./limiter.ts";
+import { applyServerBackoff, getServerLimit, pLimit, pThrottle } from "./limiter.ts";
 
 describe("pLimit", () => {
   test("executes all tasks", async () => {
@@ -83,5 +83,51 @@ describe("pThrottle", () => {
       const diff = (timestamps[i] ?? 0) - (timestamps[i - 1] ?? 0);
       expect(diff).toBeGreaterThanOrEqual(40); // allow 10ms margin
     }
+  });
+
+  test("waits for additional backoff before starting the next task", async () => {
+    let backoffUntil = 0;
+    const throttle = pThrottle(1, 0, () => Math.max(0, backoffUntil - Date.now()));
+    const timestamps: number[] = [];
+
+    await throttle(async () => {
+      timestamps.push(Date.now());
+      backoffUntil = Date.now() + 80;
+    });
+    await throttle(async () => { timestamps.push(Date.now()); });
+
+    const diff = (timestamps[1] ?? 0) - (timestamps[0] ?? 0);
+    expect(diff).toBeGreaterThanOrEqual(70); // allow 10ms margin
+  });
+
+  test("preserves start spacing after additional backoff when concurrency is greater than 1", async () => {
+    const backoffUntil = Date.now() + 80;
+    const throttle = pThrottle(2, 50, () => Math.max(0, backoffUntil - Date.now()));
+    const timestamps: number[] = [];
+
+    await Promise.all([
+      throttle(async () => { timestamps.push(Date.now()); }),
+      throttle(async () => { timestamps.push(Date.now()); }),
+    ]);
+
+    const diff = (timestamps[1] ?? 0) - (timestamps[0] ?? 0);
+    expect(diff).toBeGreaterThanOrEqual(40); // allow 10ms margin
+  });
+});
+
+describe("getServerLimit", () => {
+  test("applies server backoff to later tasks for the same RDAP server", async () => {
+    const serverUrl = `https://rdap-backoff-${Date.now()}.test`;
+    const limit = getServerLimit(serverUrl);
+    const timestamps: number[] = [];
+
+    await limit(async () => {
+      timestamps.push(Date.now());
+      applyServerBackoff(serverUrl, 500);
+    });
+    await limit(async () => { timestamps.push(Date.now()); });
+
+    const diff = (timestamps[1] ?? 0) - (timestamps[0] ?? 0);
+    expect(diff).toBeGreaterThanOrEqual(450); // allow 50ms margin
   });
 });

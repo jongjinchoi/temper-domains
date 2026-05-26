@@ -1,4 +1,5 @@
 import type { DomainDetail, DomainResult } from "./types.ts";
+import { applyServerBackoff } from "./limiter.ts";
 import { getTld } from "../utils/domain.ts";
 
 const RDAP_HEADERS = {
@@ -33,12 +34,17 @@ async function delay(ms: number, signal: AbortSignal): Promise<void> {
   });
 }
 
-async function fetchRdap(url: string, signal: AbortSignal): Promise<Response> {
+async function fetchRdap(url: string, rdapBaseUrl: string, signal: AbortSignal): Promise<Response> {
   let res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
   if (res.status !== 429 && res.status !== 503) return res;
 
-  await delay(parseRetryAfter(res.headers.get("retry-after")), signal);
+  const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"));
+  applyServerBackoff(rdapBaseUrl, retryAfterMs);
+  await delay(retryAfterMs, signal);
   res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
+  if (res.status === 429 || res.status === 503) {
+    applyServerBackoff(rdapBaseUrl, parseRetryAfter(res.headers.get("retry-after")));
+  }
   return res;
 }
 
@@ -52,7 +58,7 @@ export async function rdapLookup(
   const start = performance.now();
 
   try {
-    const res = await fetchRdap(url, signal);
+    const res = await fetchRdap(url, rdapBaseUrl, signal);
     const responseTime = Math.round(performance.now() - start);
 
     if (res.status === 404) {
@@ -182,7 +188,7 @@ export async function rdapDetail(
   const start = performance.now();
 
   try {
-    const res = await fetchRdap(url, signal);
+    const res = await fetchRdap(url, rdapBaseUrl, signal);
     const responseTime = Math.round(performance.now() - start);
 
     if (res.status === 404) {

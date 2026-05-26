@@ -86,11 +86,18 @@ describe("getStatusStyle", () => {
   test("slow returns warning", () => {
     const style = getStatusStyle("slow");
     expect(style.icon).toBe("⚠");
+    expect(style.color).toBe(theme.yellow);
   });
 
-  test("error returns red cross", () => {
+  test("error returns warning", () => {
     const style = getStatusStyle("error");
-    expect(style.icon).toBe("✗");
-    expect(style.color).toBe(theme.red);
+    expect(style.icon).toBe("⚠");
+    expect(style.color).toBe(theme.yellow);
+  });
+
+  test("rate_limited returns warning", () => {
+    const style = getStatusStyle("rate_limited");
+    expect(style.icon).toBe("⚠");
+    expect(style.color).toBe(theme.yellow);
   });
 });

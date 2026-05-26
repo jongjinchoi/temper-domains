@@ -86,7 +86,7 @@ export function getStatusStyle(status: DomainStatus): StatusStyle {
     reserved: { icon: "◉", color: theme.sapphire },
     rate_limited: { icon: "⚠", color: theme.yellow },
     slow: { icon: "⚠", color: theme.yellow },
-    error: { icon: "✗", color: theme.red },
+    error: { icon: "⚠", color: theme.yellow },
   };
   return styles[status];
 }

@@ -22,6 +22,7 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
 
   const { icon, color } = getStatusStyle(result.status);
   const time = showTime ? `(${(result.responseTime / 1000).toFixed(2)}s${result.method === "whois" ? ", whois" : ""})` : "";
+  const error = result.error ? `  ${result.error}` : "";
 
   return (
     <Text wrap="truncate-end" backgroundColor={isSelected ? theme.surface : undefined}>
@@ -29,6 +30,7 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
       <Text color={isSelected ? theme.text : theme.text}>{domain.padEnd(20)}</Text>
       <Text color={color}>  {icon} {result.status.padEnd(12)}</Text>
       {showTime && <Text color={theme.dim}>  {time}</Text>}
+      {result.error && <Text color={theme.dim}>{error}</Text>}
     </Text>
   );
 }

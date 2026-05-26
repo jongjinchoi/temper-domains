@@ -7,6 +7,7 @@ import { DEFAULT_TLDS } from "../checker/types.ts";
 import type { DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
+import { sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
 
 const server = new McpServer(
@@ -93,6 +94,66 @@ export function formatResults(
 
   lines.push(
     `\nSummary: ${available} available, ${taken} taken${other > 0 ? `, ${other} other` : ""} (${results.length} checked in ${(totalTime / 1000).toFixed(1)}s)`,
+  );
+
+  return lines.join("\n");
+}
+
+function getStatusIcon(status: DomainResult["status"]): string {
+  if (status === "available") return "✓";
+  if (status === "taken") return "✗";
+  return "⚠";
+}
+
+function orderResultsByInput(
+  requestedDomains: readonly string[],
+  results: readonly DomainResult[],
+): DomainResult[] {
+  const remainingByDomain = new Map<string, DomainResult[]>();
+
+  for (const result of results) {
+    const bucket = remainingByDomain.get(result.domain) ?? [];
+    bucket.push(result);
+    remainingByDomain.set(result.domain, bucket);
+  }
+
+  const ordered: DomainResult[] = [];
+  for (const domain of requestedDomains) {
+    const key = sanitizeDomain(domain).toLowerCase();
+    const bucket = remainingByDomain.get(key);
+    const result = bucket?.shift();
+    if (result) ordered.push(result);
+    if (bucket?.length === 0) remainingByDomain.delete(key);
+  }
+
+  for (const bucket of remainingByDomain.values()) {
+    ordered.push(...bucket);
+  }
+
+  return ordered;
+}
+
+export function formatFullDomainResults(
+  requestedDomains: readonly string[],
+  results: readonly DomainResult[],
+): string {
+  const lines = ["Domain availability check:\n"];
+  const orderedResults = orderResultsByInput(requestedDomains, results);
+
+  for (const result of orderedResults) {
+    const icon = getStatusIcon(result.status);
+    const error = result.error ? `  ${result.error}` : "";
+    lines.push(
+      `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${error}`,
+    );
+  }
+
+  const available = results.filter((r) => r.status === "available").length;
+  const taken = results.filter((r) => r.status === "taken").length;
+  const needReview = results.length - available - taken;
+
+  lines.push(
+    `\nSummary: ${available} available, ${taken} taken${needReview > 0 ? `, ${needReview} to review` : ""} (${requestedDomains.length} checked)`,
   );
 
   return lines.join("\n");
@@ -206,18 +267,7 @@ server.registerTool("check_domain_availability", {
       results.push(result);
     }
 
-    const lines = ["Domain availability check:\n"];
-    for (const result of results) {
-      const status = result.status;
-      const icon = status === "available" ? "✓" : "✗";
-      const method = result.method === "whois" ? "  (whois)" : "";
-      lines.push(`${icon} ${result.domain.padEnd(30)} ${status}${method}`);
-    }
-
-    const available = results.filter((r) => r.status === "available").length;
-    lines.push(`\n${available}/${domains.length} available`);
-
-    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+    return { content: [{ type: "text" as const, text: formatFullDomainResults(domains, results) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
