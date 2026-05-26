@@ -1,6 +1,47 @@
 import type { DomainDetail, DomainResult } from "./types.ts";
 import { getTld } from "../utils/domain.ts";
 
+const RDAP_HEADERS = {
+  Accept: "application/rdap+json, application/json",
+  "User-Agent": "temper-domains",
+};
+const MAX_RETRY_AFTER_MS = 1000;
+const FALLBACK_RETRY_MS = 500;
+
+function parseRetryAfter(value: string | null): number {
+  if (!value) return FALLBACK_RETRY_MS;
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) {
+    return Math.min(Math.max(seconds * 1000, 0), MAX_RETRY_AFTER_MS);
+  }
+
+  const dateMs = Date.parse(value);
+  if (Number.isNaN(dateMs)) return FALLBACK_RETRY_MS;
+
+  return Math.min(Math.max(dateMs - Date.now(), 0), MAX_RETRY_AFTER_MS);
+}
+
+async function delay(ms: number, signal: AbortSignal): Promise<void> {
+  if (ms <= 0) return;
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    }, { once: true });
+  });
+}
+
+async function fetchRdap(url: string, signal: AbortSignal): Promise<Response> {
+  let res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
+  if (res.status !== 429 && res.status !== 503) return res;
+
+  await delay(parseRetryAfter(res.headers.get("retry-after")), signal);
+  res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
+  return res;
+}
+
 export async function rdapLookup(
   domain: string,
   rdapBaseUrl: string,
@@ -11,7 +52,7 @@ export async function rdapLookup(
   const start = performance.now();
 
   try {
-    const res = await fetch(url, { signal, redirect: "follow" });
+    const res = await fetchRdap(url, signal);
     const responseTime = Math.round(performance.now() - start);
 
     if (res.status === 404) {
@@ -21,12 +62,12 @@ export async function rdapLookup(
       return { domain, tld, status: "taken", method: "rdap", responseTime };
     }
     if (res.status === 429 || res.status === 503) {
-      return { domain, tld, status: "rate_limited", method: "rdap", responseTime };
+      return { domain, tld, status: "rate_limited", method: "rdap", responseTime, error: `HTTP ${res.status}` };
     }
 
     return {
       domain, tld, status: "error", method: "rdap", responseTime,
-      error: `Unexpected HTTP ${res.status}`,
+      error: `HTTP ${res.status}`,
     };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
@@ -141,14 +182,14 @@ export async function rdapDetail(
   const start = performance.now();
 
   try {
-    const res = await fetch(url, { signal, redirect: "follow" });
+    const res = await fetchRdap(url, signal);
     const responseTime = Math.round(performance.now() - start);
 
     if (res.status === 404) {
       return { domain, status: "available", method: "rdap", responseTime };
     }
     if (res.status === 429 || res.status === 503) {
-      return { domain, status: "rate_limited", method: "rdap", responseTime };
+      return { domain, status: "rate_limited", method: "rdap", responseTime, error: `HTTP ${res.status}` };
     }
     if (res.status !== 200) {
       return { domain, status: "error", method: "rdap", responseTime, error: `HTTP ${res.status}` };

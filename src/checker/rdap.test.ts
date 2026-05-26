@@ -1,5 +1,11 @@
-import { test, expect, describe } from "bun:test";
-import { parseRdapResponse } from "./rdap.ts";
+import { afterEach, describe, expect, test } from "bun:test";
+import { parseRdapResponse, rdapLookup } from "./rdap.ts";
+
+const originalFetch = globalThis.fetch;
+
+afterEach(() => {
+  globalThis.fetch = originalFetch;
+});
 
 describe("parseRdapResponse", () => {
   test("parses events into date fields", () => {
@@ -111,5 +117,58 @@ describe("parseRdapResponse", () => {
     };
     const result = parseRdapResponse(json);
     expect(result.registrar).toBeUndefined();
+  });
+});
+
+describe("rdapLookup", () => {
+  test("sends RDAP accept and user-agent headers", async () => {
+    let headers: HeadersInit | undefined;
+    globalThis.fetch = (async (_input, init) => {
+      headers = init?.headers;
+      return new Response(null, { status: 404 });
+    }) as typeof fetch;
+
+    const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
+
+    expect(result.status).toBe("available");
+    expect(headers).toEqual({
+      Accept: "application/rdap+json, application/json",
+      "User-Agent": "temper-domains",
+    });
+  });
+
+  test("retries one rate-limited RDAP response", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      if (calls === 1) {
+        return new Response(null, { status: 503, headers: { "retry-after": "0" } });
+      }
+      return new Response(null, { status: 404 });
+    }) as typeof fetch;
+
+    const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
+
+    expect(calls).toBe(2);
+    expect(result.status).toBe("available");
+  });
+
+  test("keeps HTTP reason when RDAP remains rate limited", async () => {
+    globalThis.fetch = (async () =>
+      new Response(null, { status: 429, headers: { "retry-after": "0" } })) as typeof fetch;
+
+    const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
+
+    expect(result.status).toBe("rate_limited");
+    expect(result.error).toBe("HTTP 429");
+  });
+
+  test("keeps HTTP reason for unexpected RDAP errors", async () => {
+    globalThis.fetch = (async () => new Response(null, { status: 403 })) as typeof fetch;
+
+    const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
+
+    expect(result.status).toBe("error");
+    expect(result.error).toBe("HTTP 403");
   });
 });

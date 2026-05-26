@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { checkDomains, checkFullDomains } from "../checker/checker.ts";
 import { pLimit } from "../checker/limiter.ts";
+import { DEFAULT_TLDS } from "../checker/types.ts";
 import type { DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
@@ -45,15 +46,44 @@ const server = new McpServer(
   },
 );
 
-function formatResults(name: string, results: DomainResult[]): string {
-  const lines: string[] = [`Domain availability for "${name}":\n`];
+function formatResultLine(r: DomainResult): string {
+  const icon = r.status === "available" ? "✓" : r.status === "taken" ? "✗" : "⚠";
+  const method = r.method === "whois" ? "  (whois)" : "";
+  const error = r.error ? `  ${r.error}` : "";
+  return `${icon} ${r.domain.padEnd(22)} ${r.status.padEnd(14)} ${String(r.responseTime).padStart(4)}ms${method}${error}`;
+}
 
-  for (const r of results) {
-    const icon = r.status === "available" ? "✓" : r.status === "taken" ? "✗" : "⚠";
-    const method = r.method === "whois" ? "  (whois)" : "";
-    lines.push(
-      `${icon} ${r.domain.padEnd(22)} ${r.status.padEnd(14)} ${String(r.responseTime).padStart(4)}ms${method}`,
-    );
+export function formatResults(
+  name: string,
+  results: DomainResult[],
+  tlds: readonly string[] = DEFAULT_TLDS,
+): string {
+  const lines: string[] = [`Domain availability for "${name}":\n`];
+  const byTld = new Map(results.map((r) => [r.tld, r]));
+  const orderedResults = tlds
+    .map((tld) => byTld.get(tld))
+    .filter((r): r is DomainResult => !!r);
+  const orderedTlds = new Set(orderedResults.map((r) => r.tld));
+  const unorderedResults = results.filter((r) => !orderedTlds.has(r.tld));
+  const displayResults = [...orderedResults, ...unorderedResults];
+
+  const defaultTldSet = new Set<string>(DEFAULT_TLDS);
+  const hasExtendedTlds = tlds.some((tld) => !defaultTldSet.has(tld));
+
+  if (hasExtendedTlds) {
+    lines.push("Default TLDs:");
+  }
+
+  for (const r of displayResults.filter((r) => defaultTldSet.has(r.tld))) {
+    lines.push(formatResultLine(r));
+  }
+
+  const extendedResults = displayResults.filter((r) => !defaultTldSet.has(r.tld));
+  if (extendedResults.length > 0) {
+    lines.push("\nExtended TLDs:");
+    for (const r of extendedResults) {
+      lines.push(formatResultLine(r));
+    }
   }
 
   const available = results.filter((r) => r.status === "available").length;
@@ -82,7 +112,7 @@ server.registerTool("search_domain", {
     for await (const result of checkDomains(name, tlds)) {
       results.push(result);
     }
-    const text = formatResults(name, results);
+    const text = formatResults(name, results, tlds);
     return { content: [{ type: "text" as const, text }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

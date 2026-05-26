@@ -20,14 +20,15 @@ export function pLimit(concurrency: number) {
 // Rate-limited concurrency: max N concurrent + minimum interval between starts
 export function pThrottle(concurrency: number, minIntervalMs: number) {
   const limit = pLimit(concurrency);
-  let lastStart = 0;
+  let nextStart = 0;
 
   return <T>(fn: () => Promise<T>): Promise<T> => {
     return limit(async () => {
       const now = Date.now();
-      const wait = Math.max(0, minIntervalMs - (now - lastStart));
+      const scheduledStart = Math.max(now, nextStart);
+      nextStart = scheduledStart + minIntervalMs;
+      const wait = Math.max(0, scheduledStart - now);
       if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-      lastStart = Date.now();
       return fn();
     });
   };

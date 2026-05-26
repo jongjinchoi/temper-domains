@@ -67,4 +67,21 @@ describe("pThrottle", () => {
       expect(diff).toBeGreaterThanOrEqual(90); // allow 10ms margin
     }
   });
+
+  test("reserves start slots before waiting when concurrency is greater than 1", async () => {
+    const throttle = pThrottle(2, 50);
+    const timestamps: number[] = [];
+
+    await Promise.all([
+      throttle(async () => { timestamps.push(Date.now()); }),
+      throttle(async () => { timestamps.push(Date.now()); }),
+      throttle(async () => { timestamps.push(Date.now()); }),
+    ]);
+
+    expect(timestamps).toHaveLength(3);
+    for (let i = 1; i < timestamps.length; i++) {
+      const diff = (timestamps[i] ?? 0) - (timestamps[i - 1] ?? 0);
+      expect(diff).toBeGreaterThanOrEqual(40); // allow 10ms margin
+    }
+  });
 });
