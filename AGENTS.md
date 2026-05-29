@@ -41,8 +41,8 @@ When README, website copy, or `llms.txt` describes runtime behavior, verify it a
 
 ## Documentation Rules
 
-- Keep README, `web/lib/temper-data.ts`, web components, metadata, OG image text, and `web/public/llms.txt` aligned when changing public-facing claims.
-- When changing MCP guidance, check whether README, `web/components/Mcp.tsx`, `web/lib/temper-data.ts`, `web/app/layout.tsx`, and `web/public/llms.txt` also need updates.
+- Keep README, `web/lib/temper-data.ts`, web components, metadata, OG image text, and `web/app/llms.txt/route.ts` aligned when changing public-facing claims.
+- When changing MCP guidance, check whether README, `web/components/Mcp.tsx`, `web/lib/temper-data.ts`, `web/app/layout.tsx`, and `web/app/llms.txt/route.ts` also need updates.
 - For Codex-specific guidance, verify against official OpenAI Codex documentation first.
 - Do not claim hosted web demo queries run locally. The hosted demo uses the Next.js `/api/check/` route.
 - CLI/MCP local privacy claims apply to local CLI and local MCP server flows, not the hosted web demo.

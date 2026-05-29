@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../../src/checker/types.ts";
 import { THEME_NAMES } from "../../../src/tui/theme.ts";
@@ -61,5 +61,17 @@ describe("temper-data sync", () => {
       const pattern = new RegExp(`\\.command\\("${cmd.sig.cmd}"\\)`);
       expect(cliSource).toMatch(pattern);
     }
+  });
+
+  test("llms.txt is rendered by an app route with dynamic version data", () => {
+    const staticLlmsPath = join(import.meta.dir, "../../public/llms.txt");
+    const routeSource = readFileSync(
+      join(import.meta.dir, "../../app/llms.txt/route.ts"),
+      "utf-8",
+    );
+
+    expect(existsSync(staticLlmsPath)).toBe(false);
+    expect(routeSource).toContain("getVersion()");
+    expect(routeSource).not.toMatch(/Current version:\s+0\.\d+\.\d+/);
   });
 });

@@ -58,7 +58,7 @@ When public behavior changes, check whether these files also need updates:
 - `web/components/Mcp.tsx`
 - `web/app/layout.tsx`
 - `web/app/opengraph-image.tsx`
-- `web/public/llms.txt`
+- `web/app/llms.txt/route.ts`
 
 Use `rg` to confirm stale claims are gone after copy updates.
 
