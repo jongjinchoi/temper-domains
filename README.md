@@ -278,9 +278,10 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 
 | Tool | Description |
 |------|-------------|
-| `search_domain` | Check 30 or 59 TLDs for a name |
+| `search_domain` | Check 30 or 59 TLDs for one bare name |
+| `search_names` | Check up to 8 bare name candidates across default or extended TLDs |
 | `suggest_domain` | 15 name combinations × 5 TLDs |
-| `check_domain_availability` | Verify a list of domains (up to 100) |
+| `check_domain_availability` | Verify explicit full domains only (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
 
@@ -290,7 +291,7 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 You:    "I'm building a health management app. Suggest domain names."
 
 Claude: [generates candidates: wellbi, vitalo, medra, healix, ...]
-        [calls search_domain for each]
+        [calls search_names for generated bare names]
         [calls suggest_domain for top picks]
 
         Top Pick: wellbi.app
@@ -310,6 +311,10 @@ Claude: [calls search_domain]
         localhoston.com is taken, but these are available:
         - localhoston.dev, localhoston.app, localhoston.io
 ```
+
+For names without a TLD, temper checks the default 30 TLDs first and treats
+`.com` as the first result to interpret. Use extended search only when the
+default set is not enough.
 
 **Example: Check specific domains**
 

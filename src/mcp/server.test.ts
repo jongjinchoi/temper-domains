@@ -1,5 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { formatFullDomainResults, formatResults } from "./server.ts";
+import {
+  CHECK_DOMAIN_AVAILABILITY_DESCRIPTION,
+  MCP_INSTRUCTIONS,
+  SEARCH_NAMES_DESCRIPTION,
+  findBareDomainInputs,
+  formatBareDomainInputError,
+  formatFullDomainResults,
+  formatResults,
+  formatSearchNamesResults,
+} from "./server.ts";
 import type { DomainResult } from "../checker/types.ts";
 
 const result = (
@@ -131,5 +140,49 @@ describe("formatFullDomainResults", () => {
     );
 
     expect(text).toContain("Summary: 1 available, 1 taken, 1 to review (3 checked)");
+  });
+});
+
+describe("MCP bare-name routing", () => {
+  test("instructions route bare names to search tools before full-domain checks", () => {
+    expect(MCP_INSTRUCTIONS).toContain("Bare names");
+    expect(MCP_INSTRUCTIONS).toContain("search_domain or search_names");
+    expect(MCP_INSTRUCTIONS).toContain("default 30 TLDs first");
+    expect(MCP_INSTRUCTIONS).toContain("Do not infer, append, or choose TLDs");
+  });
+
+  test("check_domain_availability description forbids inferred TLDs", () => {
+    expect(CHECK_DOMAIN_AVAILABILITY_DESCRIPTION).toContain("explicitly provided by the user");
+    expect(CHECK_DOMAIN_AVAILABILITY_DESCRIPTION).toContain("Do not infer, append, or choose TLDs");
+    expect(CHECK_DOMAIN_AVAILABILITY_DESCRIPTION).toContain("search_domain or search_names");
+  });
+
+  test("search_names description is for bare generated names", () => {
+    expect(SEARCH_NAMES_DESCRIPTION).toContain("bare name candidates");
+    expect(SEARCH_NAMES_DESCRIPTION).toContain("Default 30 TLDs first");
+  });
+
+  test("detects bare names passed to full-domain checks", () => {
+    expect(findBareDomainInputs(["lockway", "lockway.com", " hatchway "])).toEqual(["lockway", "hatchway"]);
+    expect(formatBareDomainInputError(["lockway"])).toContain("Use search_domain for one bare name");
+  });
+
+  test("summarizes search_names output with .com first and default options before extended options", () => {
+    const text = formatSearchNamesResults(
+      [{
+        name: "lockway",
+        results: [
+          result("lockway.dev", "dev"),
+          result("lockway.one", "one"),
+          result("lockway.com", "com", "taken"),
+          result("lockway.app", "app"),
+        ],
+      }],
+      ["com", "dev", "app", "one"],
+    );
+
+    expect(text.indexOf(".com")).toBeLessThan(text.indexOf("Available default options"));
+    expect(text).toContain("Available default options: lockway.dev, lockway.app");
+    expect(text).toContain("Available extended options: lockway.one");
   });
 });

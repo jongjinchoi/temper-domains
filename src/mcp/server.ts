@@ -3,17 +3,23 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { checkDomains, checkFullDomains } from "../checker/checker.ts";
 import { pLimit } from "../checker/limiter.ts";
-import { DEFAULT_TLDS } from "../checker/types.ts";
+import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES, DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
 import type { DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
-import { sanitizeDomain } from "../utils/validate.ts";
+import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
 
-const server = new McpServer(
-  { name: "temper", version: VERSION },
-  {
-    instructions: `temper is a domain availability search tool. When a user asks for domain name suggestions without a specific name:
+export const MCP_INSTRUCTIONS = `temper is a domain availability search tool.
+
+TOOL ROUTING RULES:
+- Bare names such as "lockway", "flume", or AI-generated name candidates must use search_domain or search_names.
+- Always check the default 30 TLDs first for bare names. Treat .com as the first result to interpret.
+- Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
+- Use check_domain_availability only for full domains explicitly provided by the user, such as "lockway.com".
+- Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
+
+When a user asks for domain name suggestions without a specific name:
 
 1. GENERATE NAMES FIRST using these rules:
    - 4-8 characters, 1-3 syllables ideal
@@ -22,7 +28,7 @@ const server = new McpServer(
    - Brandable and unique — avoid generic industry keywords
    - Consider these naming types: descriptive (PayPal), invented (Spotify), real-word reuse (Stripe, Slack), or metaphor (Amazon)
 
-2. CHECK AVAILABILITY using search_domain for each candidate
+2. CHECK AVAILABILITY using search_names for multiple candidates, or search_domain for one candidate
 
 3. SUGGEST ALTERNATIVES using suggest_domain for the best candidates (adds prefixes like get/try/use and suffixes like app/hub/dev)
 
@@ -43,8 +49,20 @@ const server = new McpServer(
    - International meaning: If a suggested name has negative connotations in other languages, warn the user
    - Trademark risk: If a name is very similar to a well-known brand, note the potential conflict
    - Google the top picks to check if the name is already used by another product or company
-   - Remind user to verify: social media handle (@username) availability on major platforms`,
-  },
+   - Remind user to verify: social media handle (@username) availability on major platforms`;
+
+export const SEARCH_DOMAIN_DESCRIPTION =
+  "Check one bare name across TLDs. Use this for names without a TLD, e.g. 'lockway'. Default 30 TLDs first; 59 with extended=true.";
+
+export const SEARCH_NAMES_DESCRIPTION =
+  "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 59 with extended=true.";
+
+export const CHECK_DOMAIN_AVAILABILITY_DESCRIPTION =
+  "Check availability for full domain names explicitly provided by the user using RDAP/WHOIS. Max 100 domains. Do not infer, append, or choose TLDs; use search_domain or search_names for bare names.";
+
+const server = new McpServer(
+  { name: "temper", version: VERSION },
+  { instructions: MCP_INSTRUCTIONS },
 );
 
 function formatResultLine(r: DomainResult): string {
@@ -159,15 +177,106 @@ export function formatFullDomainResults(
   return lines.join("\n");
 }
 
+export interface NameSearchResultGroup {
+  name: string;
+  results: DomainResult[];
+}
+
+function formatCompactResult(result: DomainResult): string {
+  const icon = getStatusIcon(result.status);
+  const error = result.error ? `  ${result.error}` : "";
+  return `  ${icon} .${result.tld.padEnd(8)} ${result.status.padEnd(14)} ${String(result.responseTime).padStart(4)}ms${error}`;
+}
+
+function formatDomainList(results: readonly DomainResult[]): string {
+  return results.map((result) => result.domain).join(", ");
+}
+
+export function formatSearchNamesResults(
+  groups: readonly NameSearchResultGroup[],
+  tlds: readonly string[] = DEFAULT_TLDS,
+): string {
+  const defaultTldSet = new Set<string>(DEFAULT_TLDS);
+  const hasExtendedTlds = tlds.some((tld) => !defaultTldSet.has(tld));
+  const mode = hasExtendedTlds ? `extended ${tlds.length} TLDs` : `default ${tlds.length} TLDs`;
+  const lines = [`Domain search for ${groups.length} names (${mode}):`];
+
+  for (const group of groups) {
+    const byTld = new Map(group.results.map((result) => [result.tld, result]));
+    const orderedResults = tlds
+      .map((tld) => byTld.get(tld))
+      .filter((result): result is DomainResult => !!result);
+    const available = orderedResults.filter((result) => result.status === "available");
+    const taken = orderedResults.filter((result) => result.status === "taken");
+    const review = orderedResults.length - available.length - taken.length;
+    const comResult = byTld.get("com");
+    const availableDefaults = available.filter((result) => defaultTldSet.has(result.tld)).slice(0, 5);
+    const availableExtended = available.filter((result) => !defaultTldSet.has(result.tld)).slice(0, 5);
+
+    lines.push(`\n${group.name}`);
+    if (comResult) {
+      lines.push(formatCompactResult(comResult));
+    }
+
+    if (availableDefaults.length > 0) {
+      lines.push(`  Available default options: ${formatDomainList(availableDefaults)}`);
+    } else {
+      lines.push("  Available default options: none found");
+    }
+
+    if (availableExtended.length > 0) {
+      lines.push(`  Available extended options: ${formatDomainList(availableExtended)}`);
+    }
+
+    lines.push(
+      `  Summary: ${available.length} available, ${taken.length} taken${review > 0 ? `, ${review} to review` : ""}`,
+    );
+  }
+
+  if (!hasExtendedTlds) {
+    lines.push("\nNext: use search_names with extended=true if default TLDs are not enough.");
+  }
+
+  return lines.join("\n");
+}
+
+function normalizeBareNames(names: readonly string[]): { names: string[]; errors: string[] } {
+  const normalized: string[] = [];
+  const errors: string[] = [];
+
+  for (const rawName of names) {
+    const name = sanitizeDomain(rawName).toLowerCase();
+    if (name.includes(".")) {
+      errors.push(`${rawName} is a full domain. Use check_domain_availability for explicit full domains.`);
+    } else if (!isValidDomainLabel(name)) {
+      errors.push(`${rawName} is not a valid bare domain name.`);
+    } else {
+      normalized.push(name);
+    }
+  }
+
+  return { names: [...new Set(normalized)], errors };
+}
+
+export function findBareDomainInputs(domains: readonly string[]): string[] {
+  return domains
+    .map((domain) => sanitizeDomain(domain))
+    .filter((domain) => domain.length > 0 && !domain.includes("."));
+}
+
+export function formatBareDomainInputError(bareDomains: readonly string[]): string {
+  const names = bareDomains.map((domain) => `"${domain}"`).join(", ");
+  return `Error: ${names} ${bareDomains.length === 1 ? "is" : "are"} bare domain ${bareDomains.length === 1 ? "name" : "names"}. Use search_domain for one bare name or search_names for multiple bare names. check_domain_availability only accepts full domains explicitly provided by the user.`;
+}
+
 server.registerTool("search_domain", {
-  description: "Check domain availability across TLDs. Default 30 TLDs, or 59 with extended=true.",
+  description: SEARCH_DOMAIN_DESCRIPTION,
   inputSchema: {
     name: z.string().describe("Domain name without TLD, e.g. 'localhoston'"),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
   },
 }, async ({ name, extended }) => {
   try {
-    const { DEFAULT_TLDS, EXTENDED_TLDS } = await import("../checker/types.ts");
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
     for await (const result of checkDomains(name, tlds)) {
@@ -175,6 +284,47 @@ server.registerTool("search_domain", {
     }
     const text = formatResults(name, results, tlds);
     return { content: [{ type: "text" as const, text }] };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
+  }
+});
+
+server.registerTool("search_names", {
+  description: SEARCH_NAMES_DESCRIPTION,
+  inputSchema: {
+    names: z
+      .array(z.string())
+      .min(1)
+      .max(8)
+      .describe("Bare domain names without TLDs, e.g. ['lockway', 'hatchway']. Do not include .com or any other TLD."),
+    extended: z.boolean().optional().describe("Check 59 TLDs instead of the default 30"),
+  },
+}, async ({ names, extended }) => {
+  try {
+    const normalized = normalizeBareNames(names);
+    if (normalized.errors.length > 0) {
+      return {
+        content: [{ type: "text" as const, text: `Error:\n${normalized.errors.map((error) => `- ${error}`).join("\n")}` }],
+        isError: true,
+      };
+    }
+
+    const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    const nameLimit = pLimit(2);
+    const groups = await Promise.all(
+      normalized.names.map((name) =>
+        nameLimit(async () => {
+          const results: DomainResult[] = [];
+          for await (const result of checkDomains(name, tlds, { concurrency: 10, timeoutMs: 5000 })) {
+            results.push(result);
+          }
+          return { name, results };
+        }),
+      ),
+    );
+
+    return { content: [{ type: "text" as const, text: formatSearchNamesResults(groups, tlds) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -202,7 +352,6 @@ server.registerTool("open_registrar", {
   }
 });
 
-import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.registerTool("suggest_domain", {
@@ -253,15 +402,23 @@ server.registerTool("suggest_domain", {
 });
 
 server.registerTool("check_domain_availability", {
-  description: "Check availability for a list of full domain names using RDAP/WHOIS authoritative lookup. Max 100 domains.",
+  description: CHECK_DOMAIN_AVAILABILITY_DESCRIPTION,
   inputSchema: {
     domains: z
       .array(z.string())
       .max(100)
-      .describe("List of full domain names, e.g. ['localhoston.com', 'getlocalhoston.dev']"),
+      .describe("List of full domain names explicitly provided by the user, e.g. ['localhoston.com', 'getlocalhoston.dev']. Do not append or infer TLDs."),
   },
 }, async ({ domains }) => {
   try {
+    const bareDomains = findBareDomainInputs(domains);
+    if (bareDomains.length > 0) {
+      return {
+        content: [{ type: "text" as const, text: formatBareDomainInputError(bareDomains) }],
+        isError: true,
+      };
+    }
+
     const results: DomainResult[] = [];
     for await (const result of checkFullDomains(domains, { concurrency: 30, timeoutMs: 5000 })) {
       results.push(result);

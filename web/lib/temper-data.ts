@@ -88,6 +88,7 @@ export const THEMES: Theme[] = [
 
 export const MCP_TOOLS = [
   "search_domain",
+  "search_names",
   "suggest_domain",
   "check_domain_availability",
   "whois_domain",
