@@ -127,7 +127,7 @@ export default function Playground() {
           Try it <em>here.</em>
         </h2>
         <div className="dek">
-          // live RDAP + WHOIS, streamed as they resolve — the real CLI in a browser
+          // live domain availability checks, streamed as they finish
         </div>
       </div>
 
@@ -138,24 +138,24 @@ export default function Playground() {
           </h3>
           <p>
             Try any name — <em>vercel</em>, <em>nimbus</em>, or your own.{" "}
-            {PLAYGROUND_TLDS.length} TLDs resolve live via IANA RDAP (WHOIS
-            fallback for .io/.co/.me/.sh/.so/.gg).
+            The browser demo checks {PLAYGROUND_TLDS.length} popular TLDs in
+            real time.
           </p>
           <p className={styles.muted}>
-            Same checker as the CLI. Names are queried in real time; nothing is
-            stored.
+            Uses the same availability logic as the CLI, with a smaller TLD set
+            for this web demo. Searches are not saved by temper.
           </p>
 
           <div className={styles.playSteps}>
             <div className={styles.step}>
               <span className={styles.stepNum}>01</span>
-              <span>Type a name (any length).</span>
+              <span>Type a valid name.</span>
             </div>
             <div className={styles.step}>
               <span className={styles.stepNum}>02</span>
               <span>
                 Press <strong>enter</strong> — {PLAYGROUND_TLDS.length} TLDs
-                resolve.
+                are checked.
               </span>
             </div>
             <div className={styles.step}>
