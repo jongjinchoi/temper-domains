@@ -1,9 +1,8 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useMemo, useState } from "react";
-import { dnsCheck } from "../checker/dns.ts";
-import { pLimit } from "../checker/limiter.ts";
+import { checkSuggestionMatrix } from "../checker/checker.ts";
 import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
-import type { DomainStatus } from "../checker/types.ts";
+import type { DomainResult } from "../checker/types.ts";
 import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
 import Spinner from "./Spinner.tsx";
@@ -37,7 +36,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
     [groups],
   );
 
-  const [results, setResults] = useState<Map<string, DomainStatus>>(new Map());
+  const [results, setResults] = useState<Map<string, DomainResult>>(new Map());
   const [done, setDone] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [cursor, setCursor] = useState(0);
@@ -45,34 +44,51 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
 
   useEffect(() => {
     let cancelled = false;
+    const abortController = new AbortController();
     const startTime = performance.now();
     const timer = setInterval(() => {
       if (!cancelled) setElapsed(Math.round(performance.now() - startTime));
     }, 100);
 
-    const limit = pLimit(30);
-
     (async () => {
-      const tasks = allNames.map((name) =>
-        limit(async () => {
-          const domain = `${name}.${CHECK_TLD}`;
-          const status = await dnsCheck(domain);
-          if (!cancelled) {
-            setResults((prev) => new Map(prev).set(name, status));
-          }
-        }),
-      );
-
-      await Promise.allSettled(tasks);
-      if (!cancelled) {
-        clearInterval(timer);
-        setElapsed(Math.round(performance.now() - startTime));
-        setDone(true);
+      try {
+        await checkSuggestionMatrix(allNames, [CHECK_TLD], {
+          concurrency: 6,
+          timeoutMs: 6000,
+          signal: abortController.signal,
+          onResult: (name, result) => {
+            if (!cancelled) {
+              setResults((prev) => new Map(prev).set(name, result));
+            }
+          },
+        });
+      } catch (err) {
+        if (!cancelled) {
+          const error = err instanceof Error ? err.message : String(err);
+          setResults(new Map(allNames.map((name) => [
+            name,
+            {
+              domain: `${name}.${CHECK_TLD}`,
+              tld: CHECK_TLD,
+              status: "error",
+              method: "rdap",
+              responseTime: 0,
+              error,
+            },
+          ])));
+        }
+      } finally {
+        if (!cancelled) {
+          clearInterval(timer);
+          setElapsed(Math.round(performance.now() - startTime));
+          setDone(true);
+        }
       }
     })();
 
     return () => {
       cancelled = true;
+      abortController.abort();
       clearInterval(timer);
     };
   }, [allNames]);
@@ -93,8 +109,9 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
   );
 
   const elapsedSec = (elapsed / 1000).toFixed(1);
-  const available = [...results.values()].filter((s) => s === "available").length;
-  const taken = [...results.values()].filter((s) => s === "taken").length;
+  const available = [...results.values()].filter((r) => r.status === "available").length;
+  const taken = [...results.values()].filter((r) => r.status === "taken").length;
+  const review = results.size - available - taken;
 
   const hints = onBack
     ? [
@@ -116,18 +133,19 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       </Box>
       {names.map((name, i) => {
         const globalIdx = offset + i;
-        const status = results.get(name);
+        const result = results.get(name);
         const isSelected = globalIdx === cursor;
-        const style = status ? getStatusStyle(status) : null;
+        const style = result ? getStatusStyle(result.status) : null;
+        const detail = result?.error ? ` ${result.error}` : "";
 
         return (
           <Box key={name}>
             {isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}
             <Text color={theme.text}>{name.padEnd(20)}</Text>
-            {status == null ? (
+            {result == null ? (
               <Text color={theme.dim}>… checking</Text>
             ) : (
-              <Text color={style!.color}>{style!.icon} {status}</Text>
+              <Text color={style!.color}>{style!.icon} {result.status}{detail}</Text>
             )}
           </Box>
         );
@@ -171,6 +189,12 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
           <Text color={theme.green}>{available} available</Text>
           <Text color={theme.dim}> · </Text>
           <Text color={theme.red}>{taken} taken</Text>
+          {review > 0 && (
+            <>
+              <Text color={theme.dim}> · </Text>
+              <Text color={theme.yellow}>{review} review</Text>
+            </>
+          )}
         </Text>
       )}
     </FrameBox>

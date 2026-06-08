@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { checkFullDomains } from "./checker.ts";
+import { checkFullDomains, checkSuggestionMatrix } from "./checker.ts";
 
 const originalFetch = globalThis.fetch;
 
@@ -54,5 +54,22 @@ describe("checkFullDomains", () => {
     expect(results[0]?.status).toBe("error");
     expect(results[0]?.error).toBe("Invalid domain");
     expect(calls).toBe(0);
+  });
+
+  test("checks suggestion names through RDAP/WHOIS full-domain lookup", async () => {
+    const groups = await checkSuggestionMatrix(
+      ["caulder", "lockway"],
+      ["com", "dev"],
+      { rdapUrls: new Map([["com", "https://rdap.test"], ["dev", "https://rdap.test"]]) },
+    );
+
+    const caulder = groups.find((group) => group.name === "caulder");
+    const lockway = groups.find((group) => group.name === "lockway");
+
+    expect(caulder?.results).toHaveLength(2);
+    expect(lockway?.results).toHaveLength(2);
+    expect(caulder?.results.map((result) => result.domain)).toEqual(["caulder.com", "caulder.dev"]);
+    expect(lockway?.results.map((result) => result.domain)).toEqual(["lockway.com", "lockway.dev"]);
+    expect(caulder?.results.every((result) => result.method === "rdap")).toBe(true);
   });
 });

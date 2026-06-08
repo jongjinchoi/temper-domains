@@ -40,7 +40,7 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 
 - \`search_domain\` - query one bare name across default or extended TLDs
 - \`search_names\` - query multiple bare name candidates, default TLDs first
-- \`suggest_domain\` - generate prefix/suffix combinations
+- \`suggest_domain\` - generate prefix/suffix combinations and check them with RDAP/WHOIS
 - \`check_domain_availability\` - explicit full-domain check only
 - \`whois_domain\` - registrar, expiry, nameserver lookup
 - \`open_registrar\` - open purchase page in the browser

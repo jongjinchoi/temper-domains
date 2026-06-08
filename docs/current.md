@@ -41,6 +41,9 @@ documents live in `docs/archive/`.
 - Default search checks 30 TLDs.
 - Extended search checks 59 TLDs.
 - CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
+- TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
+- MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
+- Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - `temper mcp` starts a local stdio MCP server.

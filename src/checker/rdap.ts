@@ -6,21 +6,22 @@ const RDAP_HEADERS = {
   Accept: "application/rdap+json, application/json",
   "User-Agent": "temper-domains",
 };
-const MAX_RETRY_AFTER_MS = 1000;
+const MAX_ACTIVE_RETRY_AFTER_MS = 1000;
+const MAX_SERVER_BACKOFF_MS = 30_000;
 const FALLBACK_RETRY_MS = 500;
 
-function parseRetryAfter(value: string | null): number {
+function parseRetryAfter(value: string | null, maxMs: number): number {
   if (!value) return FALLBACK_RETRY_MS;
 
   const seconds = Number(value);
   if (Number.isFinite(seconds)) {
-    return Math.min(Math.max(seconds * 1000, 0), MAX_RETRY_AFTER_MS);
+    return Math.min(Math.max(seconds * 1000, 0), maxMs);
   }
 
   const dateMs = Date.parse(value);
   if (Number.isNaN(dateMs)) return FALLBACK_RETRY_MS;
 
-  return Math.min(Math.max(dateMs - Date.now(), 0), MAX_RETRY_AFTER_MS);
+  return Math.min(Math.max(dateMs - Date.now(), 0), maxMs);
 }
 
 async function delay(ms: number, signal: AbortSignal): Promise<void> {
@@ -38,12 +39,12 @@ async function fetchRdap(url: string, rdapBaseUrl: string, signal: AbortSignal):
   let res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
   if (res.status !== 429 && res.status !== 503) return res;
 
-  const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"));
+  const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"), MAX_SERVER_BACKOFF_MS);
   applyServerBackoff(rdapBaseUrl, retryAfterMs);
-  await delay(retryAfterMs, signal);
+  await delay(Math.min(retryAfterMs, MAX_ACTIVE_RETRY_AFTER_MS), signal);
   res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
   if (res.status === 429 || res.status === 503) {
-    applyServerBackoff(rdapBaseUrl, parseRetryAfter(res.headers.get("retry-after")));
+    applyServerBackoff(rdapBaseUrl, parseRetryAfter(res.headers.get("retry-after"), MAX_SERVER_BACKOFF_MS));
   }
   return res;
 }

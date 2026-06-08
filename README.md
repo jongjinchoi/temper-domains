@@ -280,7 +280,7 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 |------|-------------|
 | `search_domain` | Check 30 or 59 TLDs for one bare name |
 | `search_names` | Check up to 8 bare name candidates across default or extended TLDs |
-| `suggest_domain` | 15 name combinations × 5 TLDs |
+| `suggest_domain` | 15 name combinations × 5 TLDs using RDAP/WHOIS |
 | `check_domain_availability` | Verify explicit full domains only (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
+import { getServerLimit } from "./limiter.ts";
 import { parseRdapResponse, rdapLookup } from "./rdap.ts";
 
 const originalFetch = globalThis.fetch;
@@ -170,5 +171,23 @@ describe("rdapLookup", () => {
 
     expect(result.status).toBe("error");
     expect(result.error).toBe("HTTP 403");
+  });
+
+  test("keeps server backoff longer than the active retry wait", async () => {
+    const rdapUrl = `https://rdap-backoff-${Date.now()}.test`;
+    globalThis.fetch = (async () =>
+      new Response(null, { status: 429, headers: { "retry-after": "2" } })) as unknown as typeof fetch;
+
+    const start = Date.now();
+    const result = await rdapLookup("example.com", rdapUrl, new AbortController().signal);
+    const afterLookup = Date.now();
+    const limit = getServerLimit(rdapUrl);
+    await limit(async () => {});
+    const afterBackoff = Date.now();
+
+    expect(result.status).toBe("rate_limited");
+    expect(afterLookup - start).toBeGreaterThanOrEqual(900);
+    expect(afterLookup - start).toBeLessThan(1700);
+    expect(afterBackoff - start).toBeGreaterThanOrEqual(1800);
   });
 });

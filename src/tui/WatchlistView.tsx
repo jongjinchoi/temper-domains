@@ -1,12 +1,14 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useRef, useState } from "react";
-import { dnsCheck } from "../checker/dns.ts";
+import { checkFullDomains } from "../checker/checker.ts";
+import type { DomainResult, DomainStatus } from "../checker/types.ts";
 import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist.ts";
 import FrameBox from "./FrameBox.tsx";
-import { theme } from "./theme.ts";
+import { getStatusStyle, theme } from "./theme.ts";
 
 interface WatchItem extends WatchEntry {
-  status: "available" | "taken" | "error" | "checking";
+  status: DomainStatus | "checking";
+  result?: DomainResult;
 }
 
 interface Props {
@@ -20,30 +22,62 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const cancelledRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const runIdRef = useRef(0);
 
   const checkAll = async () => {
+    abortRef.current?.abort();
+    const runId = ++runIdRef.current;
+    const abortController = new AbortController();
+    abortRef.current = abortController;
     const watchlist = await loadWatchlist();
-    if (cancelledRef.current) return;
+    if (cancelledRef.current || runId !== runIdRef.current) return;
     const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
     setItems(initial);
     setLoaded(true);
 
-    for (let i = 0; i < watchlist.length; i++) {
-      if (cancelledRef.current) return;
-      const status = await dnsCheck(watchlist[i]!.domain);
-      if (cancelledRef.current) return;
-      setItems((prev) => {
-        const next = [...prev];
-        next[i] = { ...next[i]!, status };
-        return next;
-      });
+    try {
+      for await (const result of checkFullDomains(
+        watchlist.map((entry) => entry.domain),
+        { concurrency: 10, timeoutMs: 8000, signal: abortController.signal },
+      )) {
+        if (cancelledRef.current || runId !== runIdRef.current) return;
+        setItems((prev) => {
+          const idx = prev.findIndex((item) => item.domain === result.domain);
+          if (idx < 0) return prev;
+          const next = [...prev];
+          next[idx] = { ...next[idx]!, status: result.status, result };
+          return next;
+        });
+      }
+    } catch (err) {
+      if (cancelledRef.current || runId !== runIdRef.current) return;
+      const error = err instanceof Error ? err.message : String(err);
+      setItems((prev) => prev.map((item) => item.status === "checking"
+        ? {
+            ...item,
+            status: "error",
+            result: {
+              domain: item.domain,
+              tld: item.domain.split(".").pop() ?? "",
+              status: "error",
+              method: "rdap",
+              responseTime: 0,
+              error,
+            },
+          }
+        : item,
+      ));
     }
   };
 
   useEffect(() => {
     cancelledRef.current = false;
     checkAll();
-    return () => { cancelledRef.current = true; };
+    return () => {
+      cancelledRef.current = true;
+      abortRef.current?.abort();
+    };
   }, []);
 
   useInput(
@@ -99,27 +133,24 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     );
   }
 
-  const statusIcon = (status: string) => {
-    switch (status) {
-      case "available": return { icon: "✓", color: theme.green };
-      case "taken": return { icon: "✗", color: theme.red };
-      case "checking": return { icon: "…", color: theme.dim };
-      default: return { icon: "✗", color: theme.red };
-    }
-  };
-
   return (
     <FrameBox title="Watchlist" hints={hints}>
       {items.map((item, i) => {
         const isSelected = i === cursor;
-        const { icon, color } = statusIcon(item.status);
+        const { icon, color } = item.status === "checking"
+          ? { icon: "…", color: theme.dim }
+          : getStatusStyle(item.status);
         const addedAgo = formatAgo(item.addedAt);
+        const detail = item.result
+          ? ` ${item.result.method} ${item.result.responseTime}ms${item.result.error ? ` ${item.result.error}` : ""}`
+          : "";
 
         return (
           <Box key={item.domain}>
             {isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}
             <Text color={theme.text}>{item.domain.padEnd(22)}</Text>
             <Text color={color}>{icon} {item.status.padEnd(12)}</Text>
+            {detail && <Text color={theme.dim}>{detail.padEnd(18)}</Text>}
             <Text color={theme.dim}>{addedAgo}</Text>
           </Box>
         );

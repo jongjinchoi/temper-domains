@@ -13,6 +13,16 @@ interface CheckOptions {
   signal?: AbortSignal;
 }
 
+export interface SuggestionResultGroup {
+  name: string;
+  results: DomainResult[];
+}
+
+interface SuggestionMatrixOptions extends CheckOptions {
+  rdapUrls?: Map<string, string>;
+  onResult?: (name: string, result: DomainResult) => void;
+}
+
 export async function* checkDomains(
   name: string,
   tlds: readonly string[] = DEFAULT_TLDS,
@@ -170,4 +180,39 @@ export async function* checkFullDomains(
     clearTimeout(timeout);
     controller.abort();
   }
+}
+
+export async function checkSuggestionMatrix(
+  names: readonly string[],
+  tlds: readonly string[],
+  options: SuggestionMatrixOptions = {},
+): Promise<SuggestionResultGroup[]> {
+  const { onResult, ...checkOptions } = options;
+  const domainToName = new Map<string, string>();
+  const domains = names.flatMap((name) => {
+    const safeName = sanitizeDomain(name).toLowerCase();
+    return tlds.map((tld) => {
+      const domain = `${safeName}.${tld}`;
+      domainToName.set(domain, safeName);
+      return domain;
+    });
+  });
+  const results: DomainResult[] = [];
+
+  for await (const result of checkFullDomains(domains, checkOptions)) {
+    results.push(result);
+    const name = domainToName.get(result.domain);
+    if (name) onResult?.(name, result);
+  }
+
+  const byDomain = new Map(results.map((result) => [result.domain, result]));
+  return names.map((rawName) => {
+    const name = sanitizeDomain(rawName).toLowerCase();
+    return {
+      name,
+      results: tlds
+        .map((tld) => byDomain.get(`${name}.${tld}`))
+        .filter((result): result is DomainResult => !!result),
+    };
+  });
 }

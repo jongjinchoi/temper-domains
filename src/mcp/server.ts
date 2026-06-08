@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { checkDomains, checkFullDomains } from "../checker/checker.ts";
+import { checkDomains, checkFullDomains, checkSuggestionMatrix } from "../checker/checker.ts";
 import { pLimit } from "../checker/limiter.ts";
 import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES, DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
 import type { DomainResult } from "../checker/types.ts";
@@ -192,6 +192,50 @@ function formatDomainList(results: readonly DomainResult[]): string {
   return results.map((result) => result.domain).join(", ");
 }
 
+function formatSuggestionMatrixCell(result: DomainResult | undefined): string {
+  if (!result) return "?".padEnd(8);
+  if (result.status === "available") return "✓".padEnd(8);
+  if (result.status === "taken") return "✗".padEnd(8);
+  return "⚠".padEnd(8);
+}
+
+export function formatSuggestDomainResults(
+  groups: readonly NameSearchResultGroup[],
+  tlds: readonly string[],
+): string {
+  const header = `${"name".padEnd(20)} ${tlds.map((tld) => `.${tld}`.padEnd(8)).join("")}`;
+  const lines = [header];
+  const reviewResults: DomainResult[] = [];
+
+  for (const group of groups) {
+    const byTld = new Map(group.results.map((result) => [result.tld, result]));
+    const cols = tlds.map((tld) => {
+      const result = byTld.get(tld);
+      if (result && result.status !== "available" && result.status !== "taken") {
+        reviewResults.push(result);
+      }
+      return formatSuggestionMatrixCell(result);
+    }).join("");
+    lines.push(`${group.name.padEnd(20)} ${cols}`);
+  }
+
+  const allResults = groups.flatMap((group) => group.results);
+  const available = allResults.filter((result) => result.status === "available").length;
+  const taken = allResults.filter((result) => result.status === "taken").length;
+  const review = allResults.length - available - taken;
+  lines.push(`\n${available}/${allResults.length} available, ${taken} taken${review > 0 ? `, ${review} to review` : ""}`);
+
+  if (reviewResults.length > 0) {
+    lines.push("\nReview:");
+    for (const result of reviewResults) {
+      const error = result.error ? `  ${result.error}` : "";
+      lines.push(`⚠ ${result.domain} ${result.status}${error}`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
 export function formatSearchNamesResults(
   groups: readonly NameSearchResultGroup[],
   tlds: readonly string[] = DEFAULT_TLDS,
@@ -355,46 +399,20 @@ server.registerTool("open_registrar", {
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.registerTool("suggest_domain", {
-  description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using DNS.",
+  description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using RDAP/WHOIS.",
   inputSchema: { name: z.string().describe("Base name, e.g. 'localhoston'") },
 }, async ({ name }) => {
   try {
-    const { dnsCheck } = await import("../checker/dns.ts");
     const combinations = [name];
     for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${name}`);
     for (const s of DEFAULT_SUFFIXES) combinations.push(`${name}${s}`);
 
-    const limit = pLimit(30);
-    const resultMap = new Map<string, string>();
+    const groups = await checkSuggestionMatrix(combinations, SUGGEST_TLDS, {
+      concurrency: 10,
+      timeoutMs: 8000,
+    });
 
-    const tasks = combinations.flatMap((n) =>
-      SUGGEST_TLDS.map((tld) =>
-        limit(async () => {
-          const status = await dnsCheck(`${n}.${tld}`);
-          resultMap.set(`${n}:${tld}`, status);
-        }),
-      ),
-    );
-
-    await Promise.allSettled(tasks);
-
-    const header = `${"name".padEnd(20)} ${SUGGEST_TLDS.map((t) => `.${t}`.padEnd(8)).join("")}`;
-    const lines = [header];
-
-    for (const n of combinations) {
-      const cols = SUGGEST_TLDS.map((tld) => {
-        const status = resultMap.get(`${n}:${tld}`) ?? "error";
-        const icon = status === "available" ? "✓" : "✗";
-        return icon.padEnd(8);
-      }).join("");
-      lines.push(`${n.padEnd(20)} ${cols}`);
-    }
-
-    const available = [...resultMap.values()].filter((s) => s === "available").length;
-    const total = resultMap.size;
-    lines.push(`\n${available}/${total} available`);
-
-    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+    return { content: [{ type: "text" as const, text: formatSuggestDomainResults(groups, SUGGEST_TLDS) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };

@@ -7,6 +7,7 @@ import {
   formatBareDomainInputError,
   formatFullDomainResults,
   formatResults,
+  formatSuggestDomainResults,
   formatSearchNamesResults,
 } from "./server.ts";
 import type { DomainResult } from "../checker/types.ts";
@@ -184,5 +185,25 @@ describe("MCP bare-name routing", () => {
     expect(text.indexOf(".com")).toBeLessThan(text.indexOf("Available default options"));
     expect(text).toContain("Available default options: lockway.dev, lockway.app");
     expect(text).toContain("Available extended options: lockway.one");
+  });
+
+  test("formats suggest_domain review states without marking them as taken", () => {
+    const text = formatSuggestDomainResults(
+      [{
+        name: "lockway",
+        results: [
+          result("lockway.com", "com", "taken"),
+          result("lockway.dev", "dev", "rate_limited", 1000, "HTTP 429"),
+          result("lockway.io", "io", "slow", 5000),
+        ],
+      }],
+      ["com", "dev", "io"],
+    );
+
+    expect(text).toContain("✗");
+    expect(text).toContain("⚠");
+    expect(text).toContain("1 taken, 2 to review");
+    expect(text).toContain("⚠ lockway.dev rate_limited  HTTP 429");
+    expect(text).toContain("⚠ lockway.io slow");
   });
 });
