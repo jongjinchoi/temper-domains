@@ -1,5 +1,5 @@
 import type { DomainResult, ResultConfidence } from "./types.ts";
-import { parseDomain } from "../utils/domain.ts";
+import { parseDomain, type ParsedDomain } from "../utils/domain.ts";
 
 export interface DomainMetadata {
   tld: string;
@@ -23,7 +23,10 @@ const RDAP_NOT_FOUND_REASON =
   "RDAP returned no domain object; confirm final purchase availability with a registrar";
 
 export function getDomainMetadata(domain: string, rdapKey?: string): DomainMetadata {
-  const parsed = parseDomain(domain);
+  return getDomainMetadataFromParsed(parseDomain(domain), rdapKey);
+}
+
+function getDomainMetadataFromParsed(parsed: ParsedDomain, rdapKey?: string): DomainMetadata {
   return {
     tld: parsed.tld,
     rdapKey,
@@ -69,9 +72,9 @@ function getAvailabilityPolicy(result: DomainResult): AvailabilityPolicy {
 }
 
 export function enrichDomainResult(result: DomainResult, rdapKey?: string): DomainResult {
-  const metadata = getDomainMetadata(result.domain, rdapKey);
-  const policy = getAvailabilityPolicy({ ...result, ...metadata });
   const parsed = parseDomain(result.domain);
+  const metadata = getDomainMetadataFromParsed(parsed, rdapKey);
+  const policy = getAvailabilityPolicy({ ...result, ...metadata });
   const reason = parsed.isPrivate
     ? [PRIVATE_SUFFIX_REASON, policy.reason].filter(Boolean).join("; ")
     : policy.reason;

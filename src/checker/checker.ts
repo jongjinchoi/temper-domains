@@ -1,4 +1,4 @@
-import { getBootstrap, getRdapMatch, getRdapUrl } from "./bootstrap.ts";
+import { getBootstrap, getRdapMatch } from "./bootstrap.ts";
 import { lookupDomainAvailability } from "./lookup.ts";
 import { enrichDomainResult, getDomainInputError } from "./policy.ts";
 import { streamDomainResults, type CheckOptions } from "./stream.ts";
@@ -61,7 +61,7 @@ export async function* checkFullDomains(
     const match = rdapUrls
       ? getInjectedRdapMatch(domain, rdapUrls)
       : getRdapMatch(domain);
-    const rdapUrl = match.rdapUrl ?? getRdapUrl(tld);
+    const rdapUrl = match.rdapUrl;
     const inputError = getDomainInputError(domain);
 
     if (!isValidDomain(domain) || inputError) {

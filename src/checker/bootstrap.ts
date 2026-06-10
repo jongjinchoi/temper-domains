@@ -82,10 +82,6 @@ export async function getBootstrap(): Promise<Map<string, string>> {
   return bootstrapMap;
 }
 
-export function getRdapUrl(tld: string): string | null {
-  return bootstrapMap?.get(tld.toLowerCase()) ?? null;
-}
-
 export interface RdapBootstrapMatch {
   rdapKey: string;
   rdapUrl: string | null;

@@ -147,6 +147,30 @@ describe("checker", () => {
     expect(calls).toBe(0);
   });
 
+  test("keeps injected RDAP URLs isolated from the global bootstrap fallback", async () => {
+    const rdapCalls: string[] = [];
+    globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
+      const url = String(input);
+      if (url === "https://data.iana.org/rdap/dns.json") {
+        return Response.json({
+          services: [[["com"], ["https://global-rdap.test/"]]],
+        });
+      }
+      rdapCalls.push(url);
+      return new Response(null, { status: 404 });
+    }) as unknown as typeof fetch;
+
+    await collectResults(checkFullDomains(["seed.com"]));
+    rdapCalls.length = 0;
+
+    const results = await collectResults(checkFullDomains(["bad_domain.com"], { rdapUrls: new Map() }));
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.status).toBe("error");
+    expect(results[0]?.method).toBe("whois");
+    expect(rdapCalls).toEqual([]);
+  });
+
   test("uses longest RDAP bootstrap key and exposes PSL metadata", async () => {
     let requestedUrl = "";
     globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
