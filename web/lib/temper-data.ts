@@ -131,7 +131,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 05",
     sig: { cmd: "history" },
-    desc: "Interactive search history. Re-run, remove, jump to whois.",
+    desc: "Interactive search history. Re-run or remove previous searches.",
     example: "$ temper history",
   },
   {

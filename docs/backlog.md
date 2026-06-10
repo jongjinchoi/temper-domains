@@ -1,10 +1,10 @@
 # temper Backlog
 
 ## 배포
-- [ ] npm publish (`npm publish --access public`)
-- [ ] brew 바이너리 재빌드 + Release 업데이트 (dist 경로 변경됨)
-- [ ] README Install 섹션에 `npm i -g temper-domains` 추가
-- [ ] README MCP 섹션에 `npx temper-domains mcp` 방식 추가
+- [x] npm publish 자동화 및 `temper-domains@0.3.3` 게시
+- [x] GitHub Release 바이너리 5종 생성 및 Homebrew tap formula 업데이트
+- [x] README Install 섹션에 Homebrew, npm global, npx, source 실행 경로 정리
+- [x] README MCP 섹션에 global install과 npx command/args 방식 정리
 
 ## 기능 개선
 - [ ] search 화면에서 `e` 키로 extended TLD 전환 (30 ↔ 59)
@@ -13,7 +13,7 @@
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
 
 ## 코드 품질
-- [x] 테스트 작성 (bun test) — 93개 테스트 통과
+- [x] 테스트 작성 (bun test) — 136개 테스트 통과
 - [x] 보안: 도메인 입력 검증 (sanitizeDomain, encodeURIComponent)
 - [x] 보안: readJson JSON.parse try-catch
 - [x] 보안: bootstrap fetch 5초 타임아웃
@@ -39,7 +39,7 @@
 ## 문서
 - [ ] README: About description 설정 완료 확인
 - [ ] README: topics 설정 완료 확인
-- [ ] GitHub Pages 또는 별도 랜딩 페이지
+- [x] Next.js landing/live demo site (`web/`) 구축
 
 ## 배포 채널 확장
 - [ ] homebrew-core 제출 (Stars 225+ 달성 시)
@@ -49,8 +49,8 @@
 
 ## 향후 확장 — 기능
 - [x] WHOIS/RDAP 상세 조회 (`temper whois <domain>`) — 만료일, 등록자, 네임서버 등 표시. CLI + TUI(`i` 키) + MCP tool `whois_domain`. RFC 9083 준수
-- [ ] 만료일 기반 워치리스트 강화 — 위 WHOIS 상세 조회로 expirationDate를 가져와 watchlist에 표시. 만료 30일 이내 하이라이트. `--format json`과 결합해 크론탭/슬랙 알림 파이프 가능
-- [ ] DNS 레코드 조회 (`temper dns <domain>`) — A, AAAA, MX, TXT, CNAME, NS 조회. dns.ts의 resolve() 확장. MCP tool `dns_lookup` 추가. `--format json` 지원
+- [ ] 만료일 기반 워치리스트 강화 — 위 WHOIS 상세 조회로 `expiryDate`를 가져와 watchlist에 표시. 만료 30일 이내 하이라이트. `--format json`과 결합해 크론탭/슬랙 알림 파이프 가능
+- [ ] DNS 레코드 조회 (`temper dns <domain>`) — A, AAAA, MX, TXT, CNAME, NS 조회. MCP tool `dns_lookup` 추가. `--format json` 지원
 
 ## 향후 확장 — 플랫폼
 - [ ] GUI 데스크톱 앱 (메뉴바 tray) — CLI를 안 쓰는 사용자/비개발 직군 대상. 사용자 수요 확인 후 진행. Tauri 또는 Electron 검토

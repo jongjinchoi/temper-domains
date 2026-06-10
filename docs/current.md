@@ -28,6 +28,10 @@ documents live in `docs/archive/`.
 - RDAP bootstrap and cache: `src/checker/bootstrap.ts`
 - RDAP lookup and parsing: `src/checker/rdap.ts`
 - WHOIS fallback and parsing: `src/checker/whois.ts`
+- Shared checker streaming scheduler: `src/checker/stream.ts`
+- Single-domain RDAP/WHOIS lookup wrapper: `src/checker/lookup.ts`
+- Availability metadata and input policy: `src/checker/policy.ts`
+- PSL/IDN domain parsing: `src/utils/domain.ts`
 - MCP tools: `src/mcp/server.ts`
 - TUI screens: `src/tui/`
 - Persistent CLI state: `src/config/`
@@ -40,6 +44,9 @@ documents live in `docs/archive/`.
 
 - Default search checks 30 TLDs.
 - Extended search checks 59 TLDs.
+- npm package version is sourced from `package.json`; source and bundled CLI version output should match.
+- npm installs expose the `temper` binary and require Node.js >= 18.
+- Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
 - CLI search defaults to a 5s timeout; hosted web demo checks use the API route's 3s timeout.
 - CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
 - RDAP server selection uses RFC 9224-style label-wise longest match, not only the final label.

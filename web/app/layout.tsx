@@ -100,7 +100,7 @@ const JSON_LD = {
   name: "temper",
   description: SITE_DESCRIPTION,
   applicationCategory: "DeveloperApplication",
-  operatingSystem: "macOS, Linux",
+  operatingSystem: "macOS, Linux, Windows",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   author: {
     "@type": "Person",
@@ -134,7 +134,7 @@ const JSON_LD_FAQ = {
       name: "How do I install temper?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "On macOS and Linux, run: brew install jongjinchoi/temper-domains/temper",
+        text: "On macOS and Linux, run: brew install jongjinchoi/temper-domains/temper. On any platform with Node.js 18 or newer, run: npm i -g temper-domains.",
       },
     },
     {
@@ -142,7 +142,7 @@ const JSON_LD_FAQ = {
       name: "What operating systems does temper support?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "temper runs on macOS and Linux.",
+        text: "temper runs on macOS, Linux, and Windows through release binaries or npm. Homebrew installation supports macOS and Linux.",
       },
     },
     {

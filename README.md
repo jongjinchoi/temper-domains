@@ -45,7 +45,14 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 # Homebrew (macOS/Linux) — no runtime needed
 brew install jongjinchoi/temper-domains/temper
 
-# Or run from source (requires Bun or Node.js >= 18)
+# npm (Node.js >= 18)
+npm i -g temper-domains
+temper search <name>
+
+# One-off npm run without global install
+npx -y temper-domains search <name>
+
+# Or run from source (requires Bun)
 bun install && bun run src/index.ts search <name>
 ```
 
@@ -96,10 +103,10 @@ temper search myproject --tld-preset tech         # preset: tech, popular, start
 temper search myproject -a                        # available only
 temper search myproject -t 8                      # 8s timeout (default: 5)
 temper search myproject --format json             # JSON output for piping
-temper search localhoston writeholt tightship     # multiple keywords
+temper search localhoston writeholt --format json # multiple keywords in JSON mode
 ```
 
-Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit.
+Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
 
 <p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/search.png" width="600" /></p>
 
@@ -117,7 +124,7 @@ temper show-presets
 #### JSON output
 
 ```bash
-temper search localhoston --format json | jq '.[] | select(.status == "available") | .domain'
+temper search localhoston --format json | jq '.[] | select(.status == "available" and .confidence != "low") | .domain'
 ```
 
 Availability rows can include `confidence`, `reason`, `rdapKey`,
@@ -189,7 +196,7 @@ temper config theme --list            # list themes
 
 temper runs as a local MCP server. Your AI assistant searches domains without you switching context.
 
-> **Prerequisite:** Install temper first — `brew install jongjinchoi/temper-domains/temper`
+> **Prerequisite:** Install temper first — `brew install jongjinchoi/temper-domains/temper` or `npm i -g temper-domains`.
 
 ### Codex
 
@@ -208,6 +215,8 @@ You can also edit `~/.codex/config.toml` directly:
 command = "temper"
 args = ["mcp"]
 ```
+
+If you prefer not to install globally, use `npx` as the command and pass `["-y", "temper-domains", "mcp"]` as args in MCP clients that support explicit command/args configuration.
 
 ### Claude Code
 

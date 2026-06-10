@@ -22,8 +22,8 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 
 - License: Apache 2.0
 - Language: TypeScript, built on the Bun runtime
-- Platforms: macOS, Linux
-- Install: \`${INSTALL_CMD}\`
+- Platforms: macOS, Linux, Windows
+- Install: \`${INSTALL_CMD}\` or \`npm i -g temper-domains\`
 - Current version: ${version}
 - Source: https://github.com/jongjinchoi/temper-domains
 - Author: Jongjin Choi (https://jongjinchoi.com)
