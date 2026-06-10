@@ -27,11 +27,19 @@ function parseRetryAfter(value: string | null, maxMs: number): number {
 async function delay(ms: number, signal: AbortSignal): Promise<void> {
   if (ms <= 0) return;
   await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(resolve, ms);
-    signal.addEventListener("abort", () => {
+    const cleanup = () => {
       clearTimeout(timer);
+      signal.removeEventListener("abort", onAbort);
+    };
+    const onAbort = () => {
+      cleanup();
       reject(new DOMException("Aborted", "AbortError"));
-    }, { once: true });
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      resolve();
+    }, ms);
+    signal.addEventListener("abort", onAbort, { once: true });
   });
 }
 

@@ -15,16 +15,51 @@ async function whoisRaw(
   host: string,
   domain: string,
   timeoutMs: number,
+  signal: AbortSignal,
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+
     let data = "";
-    const timer = setTimeout(() => {
-      socket.destroy();
-      reject(new Error("whois timeout"));
+    let settled = false;
+    let socket: ReturnType<typeof createConnection> | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const cleanup = () => {
+      if (timer) clearTimeout(timer);
+      signal.removeEventListener("abort", onAbort);
+    };
+
+    const fail = (err: Error | DOMException) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      socket?.destroy();
+      reject(err);
+    };
+
+    const succeed = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(data);
+    };
+
+    const onAbort = () => {
+      fail(new DOMException("Aborted", "AbortError"));
+    };
+
+    signal.addEventListener("abort", onAbort, { once: true });
+
+    timer = setTimeout(() => {
+      fail(new Error("whois timeout"));
     }, timeoutMs);
 
-    const socket = createConnection(43, host, () => {
-      socket.write(`${domain}\r\n`);
+    socket = createConnection(43, host, () => {
+      socket?.write(`${domain}\r\n`);
     });
 
     socket.on("data", (chunk) => {
@@ -32,13 +67,11 @@ async function whoisRaw(
     });
 
     socket.on("end", () => {
-      clearTimeout(timer);
-      resolve(data);
+      succeed();
     });
 
     socket.on("error", (err) => {
-      clearTimeout(timer);
-      reject(err);
+      fail(err);
     });
   });
 }
@@ -108,14 +141,7 @@ export async function whoisLookup(
   const start = performance.now();
 
   try {
-    const raw = await Promise.race([
-      whoisRaw(host, domain, timeoutMs),
-      new Promise<never>((_, reject) => {
-        signal.addEventListener("abort", () =>
-          reject(new DOMException("Aborted", "AbortError")),
-        );
-      }),
-    ]);
+    const raw = await whoisRaw(host, domain, timeoutMs, signal);
 
     const responseTime = Math.round(performance.now() - start);
     const status = detectStatus(raw);
@@ -225,14 +251,7 @@ export async function whoisDetail(
   const start = performance.now();
 
   try {
-    const raw = await Promise.race([
-      whoisRaw(host, domain, timeoutMs),
-      new Promise<never>((_, reject) => {
-        signal.addEventListener("abort", () =>
-          reject(new DOMException("Aborted", "AbortError")),
-        );
-      }),
-    ]);
+    const raw = await whoisRaw(host, domain, timeoutMs, signal);
 
     const responseTime = Math.round(performance.now() - start);
     const status = detectStatus(raw);

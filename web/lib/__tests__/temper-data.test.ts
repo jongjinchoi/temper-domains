@@ -5,6 +5,7 @@ import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../../src/checker/types.ts";
 import { THEME_NAMES } from "../../../src/tui/theme.ts";
 import {
   COMMANDS,
+  DEFAULT_SEARCH_TIMEOUT_SECONDS,
   DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
   HERO_DEMO_TLDS,
@@ -61,6 +62,16 @@ describe("temper-data sync", () => {
       const pattern = new RegExp(`\\.command\\("${cmd.sig.cmd}"\\)`);
       expect(cliSource).toMatch(pattern);
     }
+  });
+
+  test("DEFAULT_SEARCH_TIMEOUT_SECONDS matches the CLI search option default", () => {
+    const cliSource = readFileSync(
+      join(import.meta.dir, "../../../src/index.ts"),
+      "utf-8",
+    );
+
+    expect(cliSource).toContain(`const DEFAULT_SEARCH_TIMEOUT_SECONDS = ${DEFAULT_SEARCH_TIMEOUT_SECONDS}`);
+    expect(cliSource).toContain("String(DEFAULT_SEARCH_TIMEOUT_SECONDS)");
   });
 
   test("llms.txt is rendered by an app route with dynamic version data", () => {

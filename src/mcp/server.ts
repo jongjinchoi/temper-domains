@@ -302,6 +302,12 @@ function normalizeBareNames(names: readonly string[]): { names: string[]; errors
   return { names: [...new Set(normalized)], errors };
 }
 
+export function normalizeSearchDomainInput(name: string): { name?: string; error?: string } {
+  const normalized = normalizeBareNames([name]);
+  if (normalized.errors.length > 0) return { error: normalized.errors[0] };
+  return { name: normalized.names[0] };
+}
+
 export function findBareDomainInputs(domains: readonly string[]): string[] {
   return domains
     .map((domain) => sanitizeDomain(domain))
@@ -321,12 +327,20 @@ server.registerTool("search_domain", {
   },
 }, async ({ name, extended }) => {
   try {
+    const normalized = normalizeSearchDomainInput(name);
+    if (normalized.error || !normalized.name) {
+      return {
+        content: [{ type: "text" as const, text: `Error: ${normalized.error ?? "Invalid bare domain name."}` }],
+        isError: true,
+      };
+    }
+
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     const results: DomainResult[] = [];
-    for await (const result of checkDomains(name, tlds)) {
+    for await (const result of checkDomains(normalized.name, tlds)) {
       results.push(result);
     }
-    const text = formatResults(name, results, tlds);
+    const text = formatResults(normalized.name, results, tlds);
     return { content: [{ type: "text" as const, text }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

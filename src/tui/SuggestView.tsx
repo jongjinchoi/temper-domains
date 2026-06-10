@@ -65,17 +65,21 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       } catch (err) {
         if (!cancelled) {
           const error = err instanceof Error ? err.message : String(err);
-          setResults(new Map(allNames.map((name) => [
-            name,
-            {
-              domain: `${name}.${CHECK_TLD}`,
-              tld: CHECK_TLD,
-              status: "error",
-              method: "rdap",
-              responseTime: 0,
-              error,
-            },
-          ])));
+          setResults((prev) => {
+            const next = new Map(prev);
+            for (const name of allNames) {
+              if (next.has(name)) continue;
+              next.set(name, {
+                domain: `${name}.${CHECK_TLD}`,
+                tld: CHECK_TLD,
+                status: "error",
+                method: "rdap",
+                responseTime: 0,
+                error,
+              });
+            }
+            return next;
+          });
         }
       } finally {
         if (!cancelled) {

@@ -1,5 +1,5 @@
 import { test, expect, describe } from "bun:test";
-import { detectStatus, parseWhoisRaw } from "./whois.ts";
+import { detectStatus, parseWhoisRaw, whoisDetail, whoisLookup } from "./whois.ts";
 
 describe("detectStatus", () => {
   test("returns 'taken' when Domain Name header present", () => {
@@ -172,5 +172,29 @@ describe("parseWhoisRaw", () => {
     const raw = "paid-till: 2026-03-15";
     const result = parseWhoisRaw(raw);
     expect(result.expiryDate).toBeDefined();
+  });
+});
+
+describe("WHOIS cancellation", () => {
+  test("whoisLookup returns slow immediately for an already aborted signal", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const start = Date.now();
+
+    const result = await whoisLookup("example.io", controller.signal, 10_000);
+
+    expect(result.status).toBe("slow");
+    expect(Date.now() - start).toBeLessThan(200);
+  });
+
+  test("whoisDetail returns slow immediately for an already aborted signal", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const start = Date.now();
+
+    const result = await whoisDetail("example.io", controller.signal, 10_000);
+
+    expect(result.status).toBe("slow");
+    expect(Date.now() - start).toBeLessThan(200);
   });
 });

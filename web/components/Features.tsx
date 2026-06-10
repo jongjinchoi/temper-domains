@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import {
+  DEFAULT_SEARCH_TIMEOUT_SECONDS,
+  DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
   INSTALL_CMD,
   THEMES,
@@ -24,8 +26,8 @@ const FEATURES: Feature[] = [
     title: "Fast.",
     body: (
       <>
-        Checks 30 TLDs by default with a 3s timeout. {EXTENDED_TLDS_COUNT} with{" "}
-        <code>--extended</code>.
+        Checks {DEFAULT_TLDS_COUNT} TLDs by default with a {DEFAULT_SEARCH_TIMEOUT_SECONDS}s
+        timeout. {EXTENDED_TLDS_COUNT} with <code>--extended</code>.
       </>
     ),
   },

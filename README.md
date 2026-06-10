@@ -27,12 +27,12 @@
 
 AI coding tools can't check if a domain is available. Claude suggests a name, you open a browser, search manually, come back — the flow breaks every time.
 
-**temper fixes this.** One command. 30 TLDs. Under 2 seconds.
+**temper fixes this.** One command. 30 TLDs. Fast enough to stay in flow.
 
 ## Features
 
 - **Private** — CLI and MCP queries run on your machine. No tracking, no telemetry. The hosted web demo uses a server-side API route for live checks.
-- **Fast** — checks 30 TLDs by default with a 3s timeout. 59 with `--extended`.
+- **Fast** — checks 30 TLDs by default with a 5s timeout. 59 with `--extended`.
 - **MCP native** — Codex, Claude Code, Claude Desktop, and Cursor can search domains directly.
 - **Keyboard-first** — vim-style navigation, single-key registrar selection.
 - **Pipe-friendly** — `--format json` for scripting and automation.
@@ -94,7 +94,7 @@ temper search myproject --extended               # 59 TLDs
 temper search myproject --tlds com,dev,io         # specific TLDs
 temper search myproject --tld-preset tech         # preset: tech, popular, startup, cheap
 temper search myproject -a                        # available only
-temper search myproject -t 5                      # 5s timeout (default: 3)
+temper search myproject -t 8                      # 8s timeout (default: 5)
 temper search myproject --format json             # JSON output for piping
 temper search localhoston writeholt tightship     # multiple keywords
 ```

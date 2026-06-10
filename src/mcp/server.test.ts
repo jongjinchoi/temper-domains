@@ -9,6 +9,7 @@ import {
   formatResults,
   formatSuggestDomainResults,
   formatSearchNamesResults,
+  normalizeSearchDomainInput,
 } from "./server.ts";
 import type { DomainResult } from "../checker/types.ts";
 
@@ -166,6 +167,12 @@ describe("MCP bare-name routing", () => {
   test("detects bare names passed to full-domain checks", () => {
     expect(findBareDomainInputs(["lockway", "lockway.com", " hatchway "])).toEqual(["lockway", "hatchway"]);
     expect(formatBareDomainInputError(["lockway"])).toContain("Use search_domain for one bare name");
+  });
+
+  test("validates search_domain input as one bare name", () => {
+    expect(normalizeSearchDomainInput(" LockWay ")).toEqual({ name: "lockway" });
+    expect(normalizeSearchDomainInput("lockway.com").error).toContain("Use check_domain_availability");
+    expect(normalizeSearchDomainInput("bad_name").error).toContain("not a valid bare domain name");
   });
 
   test("summarizes search_names output with .com first and default options before extended options", () => {

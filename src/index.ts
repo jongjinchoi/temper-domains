@@ -5,6 +5,9 @@ import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
 
+const DEFAULT_SEARCH_TIMEOUT_SECONDS = 5;
+const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
+
 function exitWithError(message: string): never {
   console.error(`Error: ${message}`);
   process.exit(1);
@@ -30,6 +33,33 @@ function validateDomainOrExit(domain: string, argName: string): string {
   return clean;
 }
 
+function validateTldsOrExit(rawTlds: string): string[] {
+  const tlds = rawTlds
+    .split(",")
+    .map((tld) => tld.replace(/^\./, "").trim().toLowerCase())
+    .filter(Boolean);
+
+  if (tlds.length === 0) {
+    exitWithError("invalid --tlds value. Provide one or more comma-separated TLDs.");
+  }
+
+  for (const tld of tlds) {
+    if (!isValidDomainLabel(tld)) {
+      exitWithError(`invalid TLD '${tld}'. Expected a single label like 'com', 'dev', or 'io'.`);
+    }
+  }
+
+  return [...new Set(tlds)];
+}
+
+function parseTimeoutMsOrExit(value: string, argName: string): number {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    exitWithError(`invalid ${argName} '${value}'. Expected a positive number of seconds.`);
+  }
+  return Math.round(seconds * 1000);
+}
+
 const program = new Command();
 
 program
@@ -46,7 +76,7 @@ program
   .option("--extended", "Check 59 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
-  .option("-t, --timeout <seconds>", "Timeout in seconds (default: 3)", "3")
+  .option("-t, --timeout <seconds>", "Timeout in seconds", String(DEFAULT_SEARCH_TIMEOUT_SECONDS))
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
     queries = queries.map((q) => validateLabelOrExit(q, "query"));
@@ -57,7 +87,7 @@ program
     // Resolve TLDs: --tlds > --tld-preset > --extended > default
     let tlds: string[] | undefined;
     if (opts.tlds) {
-      tlds = opts.tlds.split(",").map((t: string) => t.replace(/^\./, "").trim());
+      tlds = validateTldsOrExit(opts.tlds);
     } else if (opts.tldPreset) {
       const { TLD_PRESETS } = await import("./checker/types.ts");
       const preset = TLD_PRESETS[opts.tldPreset as string];
@@ -72,8 +102,7 @@ program
       tlds = [...EXTENDED_TLDS];
     }
 
-    const parsed = parseInt(opts.timeout, 10);
-    const timeoutMs = Number.isNaN(parsed) ? 3000 : parsed * 1000;
+    const timeoutMs = parseTimeoutMsOrExit(opts.timeout, "--timeout");
 
     // JSON output mode — no Ink
     if (opts.format === "json") {
@@ -201,7 +230,7 @@ program
   .command("whois")
   .argument("<domain>")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
-  .option("-t, --timeout <seconds>", "Timeout in seconds (default: 10)", "10")
+  .option("-t, --timeout <seconds>", "Timeout in seconds", String(DEFAULT_WHOIS_TIMEOUT_SECONDS))
   .description("Show detailed WHOIS/RDAP info for a domain")
   .action(async (domain: string, opts) => {
     domain = validateDomainOrExit(domain, "domain");
@@ -209,8 +238,7 @@ program
     const config = await loadConfig();
     setTheme(config.theme);
 
-    const parsed = parseInt(opts.timeout, 10);
-    const timeoutMs = Number.isNaN(parsed) ? 10000 : parsed * 1000;
+    const timeoutMs = parseTimeoutMsOrExit(opts.timeout, "--timeout");
 
     if (opts.format === "json") {
       const { domainDetail } = await import("./checker/detail.ts");

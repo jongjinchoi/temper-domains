@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  DEFAULT_SEARCH_TIMEOUT_SECONDS,
   DEFAULT_TLDS_COUNT,
   HERO_DEMO_NAME,
   HERO_DEMO_TLDS,
@@ -99,7 +100,7 @@ export default function Hero() {
           </h1>
           <p className={styles.lede}>
             temper is a terminal-first domain search CLI —{" "}
-            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> by default with a 3s
+            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> by default with a {DEFAULT_SEARCH_TIMEOUT_SECONDS}s
             timeout and no telemetry in the CLI/MCP flow. Also an MCP server,
             so Codex, Claude, and Cursor can search on your behalf.
           </p>

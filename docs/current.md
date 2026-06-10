@@ -40,6 +40,7 @@ documents live in `docs/archive/`.
 
 - Default search checks 30 TLDs.
 - Extended search checks 59 TLDs.
+- CLI search defaults to a 5s timeout; hosted web demo checks use the API route's 3s timeout.
 - CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.

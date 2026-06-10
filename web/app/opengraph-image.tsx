@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { DEFAULT_TLDS_COUNT, SITE_TITLE } from "@/lib/temper-data";
+import { DEFAULT_SEARCH_TIMEOUT_SECONDS, DEFAULT_TLDS_COUNT, SITE_TITLE } from "@/lib/temper-data";
 
 export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
@@ -120,7 +120,7 @@ export default async function OpengraphImage() {
             {DEFAULT_TLDS_COUNT} TLDs
           </span>
           <span style={{ marginLeft: 14 }}>
-            · 3s timeout · MCP-native for Codex, Claude, Cursor
+            · {DEFAULT_SEARCH_TIMEOUT_SECONDS}s timeout · MCP-native for Codex, Claude, Cursor
           </span>
         </div>
 
