@@ -8,13 +8,19 @@ export type DomainStatus =
   | "slow";
 
 export type CheckMethod = "rdap" | "whois";
+export type ResultConfidence = "high" | "medium" | "low";
 
 export interface DomainResult {
   domain: string;
   tld: string;
+  rdapKey?: string;
+  publicSuffix?: string;
+  registrableDomain?: string;
   status: DomainStatus;
   method: CheckMethod;
   responseTime: number;
+  confidence?: ResultConfidence;
+  reason?: string;
   error?: string;
 }
 

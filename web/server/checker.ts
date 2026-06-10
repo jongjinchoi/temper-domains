@@ -6,9 +6,8 @@
 import { lookupDomainAvailability } from "../../src/checker/lookup.ts";
 import { streamDomainResults } from "../../src/checker/stream.ts";
 import type { DomainResult } from "../../src/checker/types.ts";
-import { getTld } from "../../src/utils/domain.ts";
 import { sanitizeDomain } from "../../src/utils/validate.ts";
-import { getBootstrap, getRdapUrl } from "./bootstrap.ts";
+import { getBootstrap, getRdapMatch } from "./bootstrap.ts";
 
 export interface CheckOptions {
   concurrency?: number;
@@ -29,8 +28,7 @@ export async function* checkDomains(
   const safeName = sanitizeDomain(name);
   const domains = tlds.map((tld) => `${safeName}.${tld}`);
   yield* streamDomainResults(domains, checkOptions, async (domain, signal) => {
-    const tld = getTld(domain);
-    const rdapUrl = getRdapUrl(bootstrap, tld);
-    return lookupDomainAvailability(domain, rdapUrl, signal, timeoutMs);
+    const match = getRdapMatch(bootstrap, domain);
+    return lookupDomainAvailability(domain, match.rdapUrl, signal, timeoutMs, match.rdapKey);
   });
 }

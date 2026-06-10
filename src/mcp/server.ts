@@ -66,10 +66,11 @@ const server = new McpServer(
 );
 
 function formatResultLine(r: DomainResult): string {
-  const icon = r.status === "available" ? "✓" : r.status === "taken" ? "✗" : "⚠";
+  const icon = getResultIcon(r);
   const method = r.method === "whois" ? "  (whois)" : "";
   const error = r.error ? `  ${r.error}` : "";
-  return `${icon} ${r.domain.padEnd(22)} ${r.status.padEnd(14)} ${String(r.responseTime).padStart(4)}ms${method}${error}`;
+  const confidence = formatConfidence(r);
+  return `${icon} ${r.domain.padEnd(22)} ${r.status.padEnd(14)} ${String(r.responseTime).padStart(4)}ms${method}${confidence}${error}`;
 }
 
 export function formatResults(
@@ -105,7 +106,7 @@ export function formatResults(
     }
   }
 
-  const available = results.filter((r) => r.status === "available").length;
+  const available = results.filter(isAvailableResult).length;
   const taken = results.filter((r) => r.status === "taken").length;
   const other = results.length - available - taken;
   const totalTime = Math.max(...results.map((r) => r.responseTime));
@@ -121,6 +122,21 @@ function getStatusIcon(status: DomainResult["status"]): string {
   if (status === "available") return "✓";
   if (status === "taken") return "✗";
   return "⚠";
+}
+
+function getResultIcon(result: DomainResult): string {
+  if (result.status === "available" && result.confidence === "low") return "⚠";
+  return getStatusIcon(result.status);
+}
+
+function formatConfidence(result: DomainResult): string {
+  if (!result.confidence || result.confidence === "high") return "";
+  const reason = result.reason ? `; ${result.reason}` : "";
+  return `  ${result.confidence} confidence${reason}`;
+}
+
+function isAvailableResult(result: DomainResult): boolean {
+  return result.status === "available" && result.confidence !== "low";
 }
 
 function orderResultsByInput(
@@ -159,14 +175,15 @@ export function formatFullDomainResults(
   const orderedResults = orderResultsByInput(requestedDomains, results);
 
   for (const result of orderedResults) {
-    const icon = getStatusIcon(result.status);
+    const icon = getResultIcon(result);
     const error = result.error ? `  ${result.error}` : "";
+    const confidence = formatConfidence(result);
     lines.push(
-      `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${error}`,
+      `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`,
     );
   }
 
-  const available = results.filter((r) => r.status === "available").length;
+  const available = results.filter(isAvailableResult).length;
   const taken = results.filter((r) => r.status === "taken").length;
   const needReview = results.length - available - taken;
 
@@ -183,9 +200,10 @@ export interface NameSearchResultGroup {
 }
 
 function formatCompactResult(result: DomainResult): string {
-  const icon = getStatusIcon(result.status);
+  const icon = getResultIcon(result);
   const error = result.error ? `  ${result.error}` : "";
-  return `  ${icon} .${result.tld.padEnd(8)} ${result.status.padEnd(14)} ${String(result.responseTime).padStart(4)}ms${error}`;
+  const confidence = formatConfidence(result);
+  return `  ${icon} .${result.tld.padEnd(8)} ${result.status.padEnd(14)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`;
 }
 
 function formatDomainList(results: readonly DomainResult[]): string {
@@ -194,7 +212,7 @@ function formatDomainList(results: readonly DomainResult[]): string {
 
 function formatSuggestionMatrixCell(result: DomainResult | undefined): string {
   if (!result) return "?".padEnd(8);
-  if (result.status === "available") return "✓".padEnd(8);
+  if (isAvailableResult(result)) return "✓".padEnd(8);
   if (result.status === "taken") return "✗".padEnd(8);
   return "⚠".padEnd(8);
 }
@@ -211,7 +229,7 @@ export function formatSuggestDomainResults(
     const byTld = new Map(group.results.map((result) => [result.tld, result]));
     const cols = tlds.map((tld) => {
       const result = byTld.get(tld);
-      if (result && result.status !== "available" && result.status !== "taken") {
+      if (result && !isAvailableResult(result) && result.status !== "taken") {
         reviewResults.push(result);
       }
       return formatSuggestionMatrixCell(result);
@@ -220,7 +238,7 @@ export function formatSuggestDomainResults(
   }
 
   const allResults = groups.flatMap((group) => group.results);
-  const available = allResults.filter((result) => result.status === "available").length;
+  const available = allResults.filter(isAvailableResult).length;
   const taken = allResults.filter((result) => result.status === "taken").length;
   const review = allResults.length - available - taken;
   lines.push(`\n${available}/${allResults.length} available, ${taken} taken${review > 0 ? `, ${review} to review` : ""}`);
@@ -229,7 +247,8 @@ export function formatSuggestDomainResults(
     lines.push("\nReview:");
     for (const result of reviewResults) {
       const error = result.error ? `  ${result.error}` : "";
-      lines.push(`⚠ ${result.domain} ${result.status}${error}`);
+      const confidence = formatConfidence(result);
+      lines.push(`⚠ ${result.domain} ${result.status}${confidence}${error}`);
     }
   }
 
@@ -250,7 +269,7 @@ export function formatSearchNamesResults(
     const orderedResults = tlds
       .map((tld) => byTld.get(tld))
       .filter((result): result is DomainResult => !!result);
-    const available = orderedResults.filter((result) => result.status === "available");
+    const available = orderedResults.filter(isAvailableResult);
     const taken = orderedResults.filter((result) => result.status === "taken");
     const review = orderedResults.length - available.length - taken.length;
     const comResult = byTld.get("com");

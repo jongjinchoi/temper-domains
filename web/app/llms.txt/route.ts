@@ -34,6 +34,7 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 - Interactive TUI (Ink + React) with vim-style navigation (j/k, /, a, s, h)
 - MCP server mode for Codex CLI/IDE, Claude Desktop, Claude Code, Cursor, Windsurf, and Cline
 - JSON output for shell piping (\`--format json\`)
+- Availability metadata can include confidence, reason, RDAP key, public suffix, and registrable domain; low-confidence availability needs registrar review
 - 7 built-in themes (5 dark, 2 light)
 - Private by default for CLI/MCP - no telemetry and no temper-hosted query proxy
 

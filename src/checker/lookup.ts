@@ -1,4 +1,5 @@
 import { getServerLimit } from "./limiter.ts";
+import { enrichDomainResult } from "./policy.ts";
 import { rdapLookup } from "./rdap.ts";
 import type { DomainResult } from "./types.ts";
 import { whoisLookup } from "./whois.ts";
@@ -9,23 +10,25 @@ export async function lookupDomainAvailability(
   rdapUrl: string | null,
   signal: AbortSignal,
   timeoutMs: number,
+  rdapKey?: string,
 ): Promise<DomainResult> {
   const tld = getTld(domain);
 
   try {
     if (rdapUrl) {
       const serverLimit = getServerLimit(rdapUrl);
-      return await serverLimit(() => rdapLookup(domain, rdapUrl, signal));
+      const result = await serverLimit(() => rdapLookup(domain, rdapUrl, signal));
+      return enrichDomainResult(result, rdapKey);
     }
-    return await whoisLookup(domain, signal, timeoutMs);
+    return enrichDomainResult(await whoisLookup(domain, signal, timeoutMs), rdapKey);
   } catch (err) {
-    return {
+    return enrichDomainResult({
       domain,
       tld,
       status: signal.aborted ? "slow" : "error",
       method: rdapUrl ? "rdap" : "whois",
       responseTime: 0,
       error: err instanceof Error ? err.message : String(err),
-    };
+    }, rdapKey);
   }
 }

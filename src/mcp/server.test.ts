@@ -91,6 +91,21 @@ describe("formatResults", () => {
     expect(text).toContain("caulder.tv");
     expect(text).toContain("HTTP 403");
   });
+
+  test("includes confidence when availability needs confirmation", () => {
+    const text = formatResults(
+      "caulder",
+      [{
+        ...result("caulder.xyz", "xyz"),
+        confidence: "medium",
+        reason: "RDAP returned no domain object",
+      }],
+      ["xyz"],
+    );
+
+    expect(text).toContain("medium confidence");
+    expect(text).toContain("RDAP returned no domain object");
+  });
 });
 
 describe("formatFullDomainResults", () => {
@@ -142,6 +157,24 @@ describe("formatFullDomainResults", () => {
     );
 
     expect(text).toContain("Summary: 1 available, 1 taken, 1 to review (3 checked)");
+  });
+
+  test("counts low-confidence available results as review", () => {
+    const text = formatFullDomainResults(
+      ["caulder.com", "caulder.xyz"],
+      [
+        result("caulder.com", "com"),
+        {
+          ...result("caulder.xyz", "xyz"),
+          confidence: "low",
+          reason: "Registry policy requires review",
+        },
+      ],
+    );
+
+    expect(text).toContain("⚠ caulder.xyz");
+    expect(text).toContain("low confidence");
+    expect(text).toContain("Summary: 1 available, 0 taken, 1 to review (2 checked)");
   });
 });
 

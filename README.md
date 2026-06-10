@@ -120,6 +120,10 @@ temper show-presets
 temper search localhoston --format json | jq '.[] | select(.status == "available") | .domain'
 ```
 
+Availability rows can include `confidence`, `reason`, `rdapKey`,
+`publicSuffix`, and `registrableDomain` fields. A low-confidence available
+result should be reviewed with a registrar before treating it as purchasable.
+
 ### Whois
 
 Look up detailed WHOIS/RDAP information for any domain. In search view, press `i` on any domain.
@@ -284,6 +288,9 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 | `check_domain_availability` | Verify explicit full domains only (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
+
+MCP output keeps uncertain results visible. Low-confidence availability is
+reported as review instead of a final recommendation.
 
 **Example: Brainstorm from scratch**
 

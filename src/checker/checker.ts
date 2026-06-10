@@ -1,9 +1,10 @@
-import { getBootstrap, getRdapUrl } from "./bootstrap.ts";
+import { getBootstrap, getRdapMatch, getRdapUrl } from "./bootstrap.ts";
 import { lookupDomainAvailability } from "./lookup.ts";
+import { enrichDomainResult, getDomainInputError } from "./policy.ts";
 import { streamDomainResults, type CheckOptions } from "./stream.ts";
 import type { DomainResult } from "./types.ts";
 import { DEFAULT_TLDS } from "./types.ts";
-import { getTld } from "../utils/domain.ts";
+import { findRdapBootstrapKey, getTld } from "../utils/domain.ts";
 import { isValidDomain, sanitizeDomain } from "../utils/validate.ts";
 
 export interface SuggestionResultGroup {
@@ -20,6 +21,14 @@ interface DomainSearchOptions extends CheckOptions {
   rdapUrls?: Map<string, string>;
 }
 
+function getInjectedRdapMatch(domain: string, rdapUrls: Map<string, string>): { rdapKey: string; rdapUrl: string | null } {
+  const rdapKey = findRdapBootstrapKey(domain, (key) => rdapUrls.has(key.toLowerCase()));
+  return {
+    rdapKey,
+    rdapUrl: rdapUrls.get(rdapKey.toLowerCase()) ?? null,
+  };
+}
+
 export async function* checkDomains(
   name: string,
   tlds: readonly string[] = DEFAULT_TLDS,
@@ -32,9 +41,8 @@ export async function* checkDomains(
   const safeName = sanitizeDomain(name);
   const domains = tlds.map((tld) => `${safeName}.${tld}`);
   yield* streamDomainResults(domains, checkOptions, async (domain, signal) => {
-    const tld = getTld(domain);
-    const rdapUrl = rdapUrls?.get(tld.toLowerCase()) ?? getRdapUrl(tld);
-    return lookupDomainAvailability(domain, rdapUrl, signal, timeoutMs);
+    const match = rdapUrls ? getInjectedRdapMatch(domain, rdapUrls) : getRdapMatch(domain);
+    return lookupDomainAvailability(domain, match.rdapUrl, signal, timeoutMs, match.rdapKey);
   });
 }
 
@@ -50,20 +58,24 @@ export async function* checkFullDomains(
   const safeDomains = domains.map((domain) => sanitizeDomain(domain).toLowerCase());
   yield* streamDomainResults(safeDomains, checkOptions, async (domain, signal) => {
     const tld = getTld(domain);
-    const rdapUrl = rdapUrls?.get(tld.toLowerCase()) ?? getRdapUrl(tld);
+    const match = rdapUrls
+      ? getInjectedRdapMatch(domain, rdapUrls)
+      : getRdapMatch(domain);
+    const rdapUrl = match.rdapUrl ?? getRdapUrl(tld);
+    const inputError = getDomainInputError(domain);
 
-    if (!isValidDomain(domain)) {
-      return {
+    if (!isValidDomain(domain) || inputError) {
+      return enrichDomainResult({
         domain,
         tld,
         status: "error",
         method: rdapUrl ? "rdap" : "whois",
         responseTime: 0,
-        error: "Invalid domain",
-      };
+        error: inputError ?? "Invalid domain",
+      }, match.rdapKey);
     }
 
-    return lookupDomainAvailability(domain, rdapUrl, signal, timeoutMs);
+    return lookupDomainAvailability(domain, rdapUrl, signal, timeoutMs, match.rdapKey);
   });
 }
 

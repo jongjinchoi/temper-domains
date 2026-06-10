@@ -147,6 +147,52 @@ describe("checker", () => {
     expect(calls).toBe(0);
   });
 
+  test("uses longest RDAP bootstrap key and exposes PSL metadata", async () => {
+    let requestedUrl = "";
+    globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
+      requestedUrl = String(input);
+      return new Response(null, { status: 404 });
+    }) as unknown as typeof fetch;
+
+    const results = [];
+    const rdapUrls = new Map([
+      ["uk", "https://rdap-uk.test"],
+      ["co.uk", "https://rdap-co-uk.test"],
+    ]);
+
+    for await (const result of checkFullDomains(["sample.co.uk"], { rdapUrls })) {
+      results.push(result);
+    }
+
+    expect(requestedUrl.startsWith("https://rdap-co-uk.test/")).toBe(true);
+    expect(results[0]?.tld).toBe("uk");
+    expect(results[0]?.rdapKey).toBe("co.uk");
+    expect(results[0]?.publicSuffix).toBe("co.uk");
+    expect(results[0]?.registrableDomain).toBe("sample.co.uk");
+    expect(results[0]?.confidence).toBe("medium");
+    expect(results[0]?.reason).toContain("RDAP returned no domain object");
+  });
+
+  test("rejects public suffix inputs before network lookup", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response(null, { status: 404 });
+    }) as unknown as typeof fetch;
+
+    const results = [];
+    const rdapUrls = new Map([["co.uk", "https://rdap-co-uk.test"]]);
+
+    for await (const result of checkFullDomains(["co.uk"], { rdapUrls })) {
+      results.push(result);
+    }
+
+    expect(results[0]?.status).toBe("error");
+    expect(results[0]?.confidence).toBe("low");
+    expect(results[0]?.error).toContain("public suffix");
+    expect(calls).toBe(0);
+  });
+
   test("checks suggestion names through RDAP/WHOIS full-domain lookup", async () => {
     const groups = await checkSuggestionMatrix(
       ["caulder", "lockway"],

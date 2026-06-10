@@ -62,13 +62,20 @@ export default function Hero() {
 
   const availableCount =
     state.kind === "done"
-      ? state.rows.filter((r) => r?.status === "available").length
+      ? state.rows.filter((r) => r?.status === "available" && r.confidence !== "low").length
       : 0;
   const resolvedCount =
     state.kind === "done"
       ? state.rows.filter((r): r is LiveResult => r !== null).length
       : 0;
-  const takenCount = resolvedCount - availableCount;
+  const takenCount =
+    state.kind === "done"
+      ? state.rows.filter((r) => r?.status === "taken").length
+      : 0;
+  const reviewCount =
+    state.kind === "done"
+      ? resolvedCount - availableCount - takenCount
+      : 0;
 
   return (
     <header className={styles.hero}>
@@ -160,6 +167,12 @@ export default function Hero() {
               <span className={styles.crtOk}>{availableCount} available</span>
               <span className={styles.crtMuted}> · </span>
               <span className={styles.crtTaken}>{takenCount} taken</span>
+              {reviewCount > 0 && (
+                <>
+                  <span className={styles.crtMuted}> · </span>
+                  <span className={styles.crtPending}>{reviewCount} review</span>
+                </>
+              )}
             </>
           )}
           <span className={styles.caret} />
@@ -191,16 +204,19 @@ function HeroRow({ tld, row, muted }: HeroRowProps) {
       </span>
     );
   }
-  const available = row.status === "available";
+  const available = row.status === "available" && row.confidence !== "low";
+  const review = row.status === "available" && row.confidence === "low";
   const errored = row.status === "error" || row.status === "rate_limited";
   const label = available
     ? "[available]"
-    : errored || row.status === "slow"
+    : review
+      ? "[review]"
+      : errored || row.status === "slow"
       ? "[---]"
       : "[taken]";
   const cls = available
     ? styles.crtOk
-    : errored || row.status === "slow"
+    : errored || row.status === "slow" || review
       ? styles.crtPending
       : styles.crtTaken;
   return (

@@ -12,13 +12,19 @@ export type LiveStatus =
   | "slow";
 
 export type LiveMethod = "rdap" | "whois";
+export type LiveConfidence = "high" | "medium" | "low";
 
 export interface LiveResult {
   domain: string;
   tld: string;
+  rdapKey?: string;
+  publicSuffix?: string;
+  registrableDomain?: string;
   status: LiveStatus;
   method: LiveMethod;
   responseTime: number;
+  confidence?: LiveConfidence;
+  reason?: string;
   error?: string;
 }
 

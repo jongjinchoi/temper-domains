@@ -1,3 +1,5 @@
+import { findRdapBootstrapKey } from "../../src/utils/domain.ts";
+
 // Serverless-friendly IANA RDAP bootstrap cache. The CLI version writes to
 // ~/.temper/cache which is unusable on Vercel; this keeps the registry in
 // module scope and refetches once per TTL.
@@ -52,4 +54,17 @@ function parseBootstrap(data: BootstrapData): Map<string, string> {
 
 export function getRdapUrl(map: Map<string, string>, tld: string): string | null {
   return map.get(tld.toLowerCase()) ?? null;
+}
+
+export interface RdapBootstrapMatch {
+  rdapKey: string;
+  rdapUrl: string | null;
+}
+
+export function getRdapMatch(map: Map<string, string>, domain: string): RdapBootstrapMatch {
+  const rdapKey = findRdapBootstrapKey(domain, (key) => map.has(key.toLowerCase()));
+  return {
+    rdapKey,
+    rdapUrl: map.get(rdapKey.toLowerCase()) ?? null,
+  };
 }

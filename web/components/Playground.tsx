@@ -113,11 +113,15 @@ export default function Playground() {
 
   const availableCount =
     state.kind === "loading" || state.kind === "done" || state.kind === "error"
-      ? state.rows.filter((r) => r.status === "available").length
+      ? state.rows.filter((r) => r.status === "available" && r.confidence !== "low").length
       : 0;
   const takenCount =
     state.kind === "loading" || state.kind === "done" || state.kind === "error"
-      ? state.rows.filter((r) => r.status !== "available").length
+      ? state.rows.filter((r) => r.status === "taken").length
+      : 0;
+  const reviewCount =
+    state.kind === "loading" || state.kind === "done" || state.kind === "error"
+      ? state.rows.length - availableCount - takenCount
       : 0;
 
   return (
@@ -224,6 +228,12 @@ export default function Playground() {
                     </span>
                     <span className={styles.mu}> · </span>
                     <span className={styles.tk}>{takenCount} taken</span>
+                    {reviewCount > 0 && (
+                      <>
+                        <span className={styles.mu}> · </span>
+                        <span className={styles.k}>{reviewCount} review</span>
+                      </>
+                    )}
                     {"\n\n"}
                     <Prompt />
                     <InputLine
@@ -267,17 +277,20 @@ export default function Playground() {
 }
 
 function ResultRow({ row }: { row: LiveResult }) {
-  const available = row.status === "available";
+  const available = row.status === "available" && row.confidence !== "low";
+  const review = row.status === "available" && row.confidence === "low";
   const slow = row.status === "slow";
   const errored = row.status === "error" || row.status === "rate_limited";
   const label = available
     ? "[available]"
-    : slow
+    : review
+      ? "[review]"
+      : slow
       ? "[slow]"
       : errored
         ? `[${row.status}]`
         : "[taken]";
-  const labelCls = available ? styles.ok : errored || slow ? styles.k : styles.tk;
+  const labelCls = available ? styles.ok : errored || slow || review ? styles.k : styles.tk;
 
   return (
     <span>

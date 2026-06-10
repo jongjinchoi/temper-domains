@@ -21,8 +21,10 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
   }
 
   const { icon, color } = getStatusStyle(result.status);
-  const time = showTime ? `(${(result.responseTime / 1000).toFixed(2)}s${result.method === "whois" ? ", whois" : ""})` : "";
+  const confidence = result.confidence && result.confidence !== "high" ? `, ${result.confidence}` : "";
+  const time = showTime ? `(${(result.responseTime / 1000).toFixed(2)}s${result.method === "whois" ? ", whois" : ""}${confidence})` : "";
   const error = result.error ? `  ${result.error}` : "";
+  const reason = result.reason && result.confidence === "low" ? `  ${result.reason}` : "";
 
   return (
     <Text wrap="truncate-end" backgroundColor={isSelected ? theme.surface : undefined}>
@@ -31,6 +33,7 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
       <Text color={color}>  {icon} {result.status.padEnd(12)}</Text>
       {showTime && <Text color={theme.dim}>  {time}</Text>}
       {result.error && <Text color={theme.dim}>{error}</Text>}
+      {reason && <Text color={theme.dim}>{reason}</Text>}
     </Text>
   );
 }

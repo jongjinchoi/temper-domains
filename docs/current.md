@@ -42,6 +42,9 @@ documents live in `docs/archive/`.
 - Extended search checks 59 TLDs.
 - CLI search defaults to a 5s timeout; hosted web demo checks use the API route's 3s timeout.
 - CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
+- RDAP server selection uses RFC 9224-style label-wise longest match, not only the final label.
+- Availability results may include `confidence`, `reason`, `rdapKey`, `publicSuffix`, and `registrableDomain` metadata.
+- Low-confidence available results are treated as review in MCP and web demo summaries.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.

@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { fileExists, fileStat, readJson, writeJson } from "../utils/fs.ts";
+import { findRdapBootstrapKey } from "../utils/domain.ts";
 
 const BOOTSTRAP_URL = "https://data.iana.org/rdap/dns.json";
 const CACHE_DIR = join(homedir(), ".temper", "cache");
@@ -83,4 +84,19 @@ export async function getBootstrap(): Promise<Map<string, string>> {
 
 export function getRdapUrl(tld: string): string | null {
   return bootstrapMap?.get(tld.toLowerCase()) ?? null;
+}
+
+export interface RdapBootstrapMatch {
+  rdapKey: string;
+  rdapUrl: string | null;
+}
+
+export function getRdapMatch(domain: string): RdapBootstrapMatch {
+  const map = bootstrapMap;
+  if (!map) return { rdapKey: "", rdapUrl: null };
+  const rdapKey = findRdapBootstrapKey(domain, (key) => map.has(key.toLowerCase()));
+  return {
+    rdapKey,
+    rdapUrl: map.get(rdapKey.toLowerCase()) ?? null,
+  };
 }
