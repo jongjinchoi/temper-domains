@@ -17,9 +17,9 @@ documents live in `docs/archive/`.
 - npm package build: `bun run build:npm`
 - Binary build script: `bun run build.ts`
 - CLI help check: `bun run src/index.ts --help`
-- Web dev: `cd web && npm run dev`
-- Web typecheck: `cd web && npm run typecheck`
-- Web build: `cd web && npm run build`
+- Web dev: `bun run web:dev`
+- Web typecheck: `bun run web:typecheck`
+- Web build: `bun run web:build`
 
 ## Source Of Truth
 

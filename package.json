@@ -4,6 +4,8 @@
   "description": "Search domain availability from your terminal",
   "main": "dist/npm/index.js",
   "type": "module",
+  "packageManager": "bun@1.3.13",
+  "workspaces": ["web"],
   "bin": {
     "temper": "./dist/npm/index.js"
   },
@@ -19,6 +21,9 @@
   "files": ["dist/npm", "README.md", "LICENSE"],
   "scripts": {
     "build:npm": "bun run build-npm.ts",
+    "web:dev": "bun run --cwd web dev",
+    "web:typecheck": "bun run --cwd web typecheck",
+    "web:build": "bun run --cwd web build",
     "prepack": "bun run build-npm.ts"
   },
   "devDependencies": {

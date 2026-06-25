@@ -19,9 +19,9 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 
 - Root tests: `bun test`
 - npm package build: `bun run build:npm`
-- Web dev: `cd web && npm run dev`
-- Web typecheck: `cd web && npm run typecheck`
-- Web build: `cd web && npm run build`
+- Web dev: `bun run web:dev`
+- Web typecheck: `bun run web:typecheck`
+- Web build: `bun run web:build`
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
 
@@ -52,7 +52,7 @@ When README, website copy, or `llms.txt` describes runtime behavior, verify it a
 ## Verification
 
 - Run `bun test` after changing shared data, checker behavior, MCP tools, README sync points, or `web/lib/temper-data.ts`.
-- Run `cd web && npm run typecheck` after changing web TypeScript or TSX files.
+- Run `bun run web:typecheck` after changing web TypeScript or TSX files.
 - Run `bun run src/index.ts --help` after changing CLI descriptions or command registration.
 - Use `rg` to confirm stale public claims are gone after documentation or marketing copy updates.
 
