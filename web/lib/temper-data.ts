@@ -192,8 +192,9 @@ export interface SideProject {
 }
 
 export const AUTHOR_PRODUCTS: readonly SideProject[] = [
-  { name: "localhoston", url: "https://localhoston.com" },
-  { name: "writeholt", url: "https://writeholt.com" },
+  { name: "Decker", url: "https://rundecker.com" },
+  { name: "Holt", url: "https://writeholt.com" },
+  { name: "Halden", url: "https://gethalden.com" },
 ] as const;
 
 export const AUTHOR_OSS: readonly SideProject[] = [
