@@ -13,7 +13,7 @@ Hide
 Type "temper config theme temper-forge"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s
@@ -27,7 +27,7 @@ Hide
 Type "temper config theme seoul-night"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s
@@ -41,7 +41,7 @@ Hide
 Type "temper config theme catppuccin-mocha"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s
@@ -55,7 +55,7 @@ Hide
 Type "temper config theme dracula"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s
@@ -69,7 +69,7 @@ Hide
 Type "temper config theme default"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s

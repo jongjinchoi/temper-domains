@@ -341,7 +341,7 @@ export function formatBareDomainInputError(bareDomains: readonly string[]): stri
 server.registerTool("search_domain", {
   description: SEARCH_DOMAIN_DESCRIPTION,
   inputSchema: {
-    name: z.string().describe("Domain name without TLD, e.g. 'localhoston'"),
+    name: z.string().describe("Domain name without TLD, e.g. 'gethalden'"),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
   },
 }, async ({ name, extended }) => {
@@ -411,7 +411,7 @@ server.registerTool("search_names", {
 server.registerTool("open_registrar", {
   description: "Open a domain purchase page in the default browser. Choose from cloudflare, porkbun, namecheap, or vercel.",
   inputSchema: {
-    domain: z.string().describe("Full domain name, e.g. 'localhoston.app'"),
+    domain: z.string().describe("Full domain name, e.g. 'gethalden.app'"),
     registrar: z
       .enum(Object.keys(REGISTRAR_URLS) as [string, ...string[]])
       .describe("Registrar to open purchase page"),
@@ -433,7 +433,7 @@ const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.registerTool("suggest_domain", {
   description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using RDAP/WHOIS.",
-  inputSchema: { name: z.string().describe("Base name, e.g. 'localhoston'") },
+  inputSchema: { name: z.string().describe("Base name, e.g. 'gethalden'") },
 }, async ({ name }) => {
   try {
     const combinations = [name];
@@ -458,7 +458,7 @@ server.registerTool("check_domain_availability", {
     domains: z
       .array(z.string())
       .max(100)
-      .describe("List of full domain names explicitly provided by the user, e.g. ['localhoston.com', 'getlocalhoston.dev']. Do not append or infer TLDs."),
+      .describe("List of full domain names explicitly provided by the user, e.g. ['gethalden.com', 'usegethalden.dev']. Do not append or infer TLDs."),
   },
 }, async ({ domains }) => {
   try {

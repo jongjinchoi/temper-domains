@@ -9,7 +9,7 @@ Set Height 700
 Set Padding 20
 
 Hide
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s

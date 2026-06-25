@@ -103,7 +103,7 @@ temper search myproject --tld-preset tech         # preset: tech, popular, start
 temper search myproject -a                        # available only
 temper search myproject -t 8                      # 8s timeout (default: 5)
 temper search myproject --format json             # JSON output for piping
-temper search localhoston writeholt --format json # multiple keywords in JSON mode
+temper search gethalden writeholt --format json   # multiple keywords in JSON mode
 ```
 
 Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
@@ -124,7 +124,7 @@ temper show-presets
 #### JSON output
 
 ```bash
-temper search localhoston --format json | jq '.[] | select(.status == "available" and .confidence != "low") | .domain'
+temper search gethalden --format json | jq '.[] | select(.status == "available" and .confidence != "low") | .domain'
 ```
 
 Availability rows can include `confidence`, `reason`, `rdapKey`,
@@ -147,23 +147,23 @@ Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP 
 Generate name combinations and check `.com` availability. Press `Enter` on any name to check all 30 TLDs.
 
 ```bash
-temper suggest localhoston                            # default prefixes + suffixes
-temper suggest localhoston -p super,mega -s io,lab    # custom prefixes/suffixes
+temper suggest gethalden                            # default prefixes + suffixes
+temper suggest gethalden -p use,try -s app,hq       # custom prefixes/suffixes
 ```
 
 ```
   BASE
-    localhoston          ✗ taken
+    gethalden            ✗ taken
 
   PREFIX
-    getlocalhoston       ✓ available
-    uselocalhoston       ✓ available
-    trylocalhoston       ✓ available
+    usegethalden         ✓ available
+    trygethalden         ✓ available
+    mygethalden          ✓ available
     ...
 
   SUFFIX
-    localhostonapp       ✓ available
-    localhostonlabs      ✓ available
+    gethaldenapp         ✓ available
+    gethaldenlabs        ✓ available
     ...
 
   Summary: 13 available · 2 taken
@@ -179,7 +179,7 @@ Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 ```bash
 temper history                # interactive search history (re-search, remove)
 temper list                   # interactive watchlist (refresh, remove)
-temper watch localhoston.com  # add a domain to watchlist from CLI
+temper watch gethalden.com    # add a domain to watchlist from CLI
 ```
 
 In search view, press `a` to add a domain to your watchlist, `h` to view history, `w` to view watchlist.
@@ -321,11 +321,11 @@ Claude: [generates candidates: wellbi, vitalo, medra, healix, ...]
 **Example: Search with a name**
 
 ```
-You:    "Find domains for localhoston"
+You:    "Find domains for gethalden"
 
 Claude: [calls search_domain]
-        localhoston.com is taken, but these are available:
-        - localhoston.dev, localhoston.app, localhoston.io
+        gethalden.com is taken, but these are available:
+        - gethalden.dev, gethalden.app, gethalden.io
 ```
 
 For names without a TLD, temper checks the default 30 TLDs first and treats
@@ -335,17 +335,17 @@ default set is not enough.
 **Example: Check specific domains**
 
 ```
-You:    "Check getlocalhoston.com and trylocalhoston.com"
+You:    "Check usegethalden.com and trygethalden.com"
 
 Claude: [calls check_domain_availability]
-        ✓ getlocalhoston.com — available
-        ✓ trylocalhoston.com — available
+        ✓ usegethalden.com — available
+        ✓ trygethalden.com — available
 ```
 
 **Example: Buy a domain**
 
 ```
-You:    "Open Cloudflare for getlocalhoston.com"
+You:    "Open Cloudflare for usegethalden.com"
 
 Claude: [calls open_registrar]
         Done. Cloudflare opened in your browser.

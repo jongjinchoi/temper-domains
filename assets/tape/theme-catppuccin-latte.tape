@@ -13,7 +13,7 @@ Hide
 Type "temper config theme catppuccin-latte"
 Enter
 Sleep 500ms
-Type "temper search localhoston"
+Type "temper search gethalden"
 Enter
 Show
 Sleep 5s

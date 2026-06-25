@@ -1,4 +1,4 @@
-import { THEMES } from "@/lib/temper-data";
+import { HERO_DEMO_NAME, THEMES } from "@/lib/temper-data";
 import styles from "./Themes.module.css";
 
 export default function Themes() {
@@ -22,17 +22,17 @@ export default function Themes() {
                 className={styles.snapPreview}
                 style={{ background: bg, color: fg }}
               >
-                <span style={{ color: accent }}>$</span> temper search localhoston
+                <span style={{ color: accent }}>$</span> temper search {HERO_DEMO_NAME}
                 {"\n"}
                 <span style={{ color: mu }}>{"  "}15 TLDs · 1.5s</span>
                 {"\n\n"}
-                <span style={{ color: tk }}>{"  "}localhoston.com  ✗</span>
+                <span style={{ color: tk }}>{"  "}{HERO_DEMO_NAME}.com  ✗</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}localhoston.io   ✓</span>
+                <span style={{ color: ok }}>{"  "}{HERO_DEMO_NAME}.io   ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}localhoston.dev  ✓</span>
+                <span style={{ color: ok }}>{"  "}{HERO_DEMO_NAME}.dev  ✓</span>
                 {"\n"}
-                <span style={{ color: ok }}>{"  "}localhoston.app  ✓</span>
+                <span style={{ color: ok }}>{"  "}{HERO_DEMO_NAME}.app  ✓</span>
                 {"\n"}
                 <span style={{ color: mu }}>{"  "}─ 12 · 3 taken</span>
               </div>

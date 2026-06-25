@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-// Past demo names that were fully replaced by `localhoston`. If any slip
-// back into the source tree (website, SVG banners, README), this test
-// fails — catches the class of bug where an asset (like the old
-// og-image.png) silently kept a dashflow reference while the site moved on.
+// Past demo names that were fully replaced by the current demo name. If any slip
+// back into the website or SVG banner sources, this test fails — catches the
+// class of bug where an asset silently kept an old demo name while the site
+// moved on.
 
-const STALE_DEMO_NAMES = ["dashflow", "havenforge", "calmbox", "wellbi"];
+const STALE_DEMO_NAMES = ["dashflow", "havenforge", "calmbox", "wellbi", "localhoston"];
 
 const REPO_ROOT = join(import.meta.dir, "../../..");
 

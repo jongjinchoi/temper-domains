@@ -59,16 +59,16 @@
 
     <!-- Terminal text -->
     <g font-family="VT323" font-size="24" fill="#ff7a3d">
-      <text x="26" y="46"><tspan fill="#e8461a" font-weight="700">&gt;</tspan> temper search localhoston</text>
+      <text x="26" y="46"><tspan fill="#e8461a" font-weight="700">&gt;</tspan> temper search gethalden</text>
       <text x="26" y="78" fill="#8a7a5c">  15 TLDs · 1.5s</text>
 
-      <text x="26" y="140">  localhoston.com   <tspan fill="#ff7070">[taken]</tspan></text>
-      <text x="26" y="170">  localhoston.io    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="200">  localhoston.dev   <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="230">  localhoston.app   <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="260">  localhoston.ai    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="290">  localhoston.co    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="320">  localhoston.sh    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="140">  gethalden.com   <tspan fill="#ff7070">[taken]</tspan></text>
+      <text x="26" y="170">  gethalden.io    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="200">  gethalden.dev   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="230">  gethalden.app   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="260">  gethalden.ai    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="290">  gethalden.co    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="320">  gethalden.sh    <tspan fill="#c5e860">[available]</tspan></text>
 
       <text x="26" y="360" fill="#8a7a5c">  ── 12 available · 3 taken</text>
     </g>

@@ -8,7 +8,7 @@ Set Width 1200
 Set Height 700
 Set Padding 20
 
-Type "temper search localhoston"
+Type "temper search gethalden"
 Sleep 500ms
 Enter
 Sleep 5s
