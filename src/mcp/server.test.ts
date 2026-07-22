@@ -5,13 +5,15 @@ import {
   SEARCH_NAMES_DESCRIPTION,
   findBareDomainInputs,
   formatBareDomainInputError,
+  formatDomainDetail,
   formatFullDomainResults,
   formatResults,
   formatSuggestDomainResults,
   formatSearchNamesResults,
   normalizeSearchDomainInput,
+  normalizeFullDomainInput,
 } from "./server.ts";
-import type { DomainResult } from "../checker/types.ts";
+import type { DomainDetail, DomainResult } from "../checker/types.ts";
 
 const result = (
   domain: string,
@@ -206,6 +208,14 @@ describe("MCP bare-name routing", () => {
     expect(normalizeSearchDomainInput(" LockWay ")).toEqual({ name: "lockway" });
     expect(normalizeSearchDomainInput("lockway.com").error).toContain("Use check_domain_availability");
     expect(normalizeSearchDomainInput("bad_name").error).toContain("not a valid bare domain name");
+    expect(normalizeSearchDomainInput("foo.").error).toContain("not a valid bare domain name");
+  });
+
+  test("validates and normalizes full-domain inputs", () => {
+    expect(normalizeFullDomainInput(" Example.COM ")).toEqual({ domain: "example.com" });
+    expect(normalizeFullDomainInput("bad_domain.com").error).toContain("Invalid domain");
+    expect(normalizeFullDomainInput("example..com").error).toContain("Invalid domain");
+    expect(normalizeFullDomainInput("com").error).toContain("Invalid domain");
   });
 
   test("summarizes search_names output with .com first and default options before extended options", () => {
@@ -245,5 +255,41 @@ describe("MCP bare-name routing", () => {
     expect(text).toContain("1 taken, 2 to review");
     expect(text).toContain("⚠ lockway.dev rate_limited  HTTP 429");
     expect(text).toContain("⚠ lockway.io slow");
+  });
+});
+
+describe("formatDomainDetail", () => {
+  test("presents RDAP not-found as a reviewable result, not guaranteed registration availability", () => {
+    const detail: DomainDetail = {
+      domain: "example.dev",
+      status: "available",
+      method: "rdap",
+      responseTime: 12,
+      confidence: "medium",
+      reason: "RDAP returned no domain object; confirm final purchase availability with a registrar",
+    };
+
+    const text = formatDomainDetail(detail);
+
+    expect(text).toContain("Confidence: medium");
+    expect(text).toContain("No RDAP/WHOIS registration record was found.");
+    expect(text).toContain("Review: RDAP returned no domain object");
+    expect(text).not.toContain("available for registration");
+  });
+
+  test("keeps taken-domain details", () => {
+    const text = formatDomainDetail({
+      domain: "example.com",
+      status: "taken",
+      method: "rdap",
+      responseTime: 18,
+      confidence: "high",
+      registrar: "Example Registrar",
+      nameServers: ["ns1.example.com"],
+    });
+
+    expect(text).toContain("Registrar: Example Registrar");
+    expect(text).toContain("Name Servers: ns1.example.com");
+    expect(text).not.toContain("Confidence: high");
   });
 });

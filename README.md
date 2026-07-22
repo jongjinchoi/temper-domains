@@ -140,7 +140,7 @@ temper whois example.com                         # TUI view
 temper whois example.com --format json           # JSON output
 ```
 
-Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Uses RDAP (RFC 9083) when available, falls back to WHOIS.
+Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Uses RDAP (RFC 9083) when available, falls back to WHOIS. Detailed results also include confidence and review reasons; a missing registration record is not presented as guaranteed purchase availability.
 
 ### Suggest
 

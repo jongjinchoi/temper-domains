@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../../src/checker/types.ts";
 import { THEME_NAMES } from "../../../src/tui/theme.ts";
+import { getLiveDisplayStatus, type LiveResult } from "../playground-client.ts";
 import {
   COMMANDS,
   DEFAULT_SEARCH_TIMEOUT_SECONDS,
@@ -84,5 +85,26 @@ describe("temper-data sync", () => {
     expect(existsSync(staticLlmsPath)).toBe(false);
     expect(routeSource).toContain("getVersion()");
     expect(routeSource).not.toMatch(/Current version:\s+0\.\d+\.\d+/);
+  });
+});
+
+describe("live result display status", () => {
+  const liveResult = (status: LiveResult["status"], confidence?: LiveResult["confidence"]): LiveResult => ({
+    domain: "example.test",
+    tld: "test",
+    status,
+    method: "rdap",
+    responseTime: 10,
+    confidence,
+  });
+
+  test("preserves premium and reserved statuses", () => {
+    expect(getLiveDisplayStatus(liveResult("premium"))).toBe("premium");
+    expect(getLiveDisplayStatus(liveResult("reserved"))).toBe("reserved");
+  });
+
+  test("maps only low-confidence available results to review", () => {
+    expect(getLiveDisplayStatus(liveResult("available", "low"))).toBe("review");
+    expect(getLiveDisplayStatus(liveResult("available", "medium"))).toBe("available");
   });
 });

@@ -23,6 +23,14 @@ describe("domain parsing", () => {
     expect(isValidDomainLabel("bücher")).toBe(true);
   });
 
+  test("rejects dots in bare labels and empty labels in full domains", () => {
+    expect(isValidDomainLabel("foo.")).toBe(false);
+    expect(isValidDomainLabel("foo.bar")).toBe(false);
+    expect(isValidDomain("foo..bar")).toBe(false);
+    expect(isValidDomain("example.com.")).toBe(false);
+    expect(isValidDomain(".example.com")).toBe(false);
+  });
+
   test("finds the longest RDAP bootstrap key by label", () => {
     const keys = new Set(["uk", "co.uk"]);
 

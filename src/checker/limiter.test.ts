@@ -113,6 +113,25 @@ describe("pThrottle", () => {
     const diff = (timestamps[1] ?? 0) - (timestamps[0] ?? 0);
     expect(diff).toBeGreaterThanOrEqual(40); // allow 10ms margin
   });
+
+  test("aborts an interval wait before the task starts", async () => {
+    const throttle = pThrottle(1, 200);
+    const controller = new AbortController();
+    let started = false;
+
+    await throttle(async () => {});
+    const startedAt = Date.now();
+    const pending = throttle(async () => { started = true; }, controller.signal);
+    setTimeout(() => controller.abort(), 20);
+
+    await expect(pending).rejects.toThrow("Aborted");
+    expect(started).toBe(false);
+    expect(Date.now() - startedAt).toBeLessThan(120);
+
+    await throttle(async () => { started = true; });
+    expect(started).toBe(true);
+    expect(Date.now() - startedAt).toBeLessThan(320);
+  });
 });
 
 describe("getServerLimit", () => {
@@ -129,5 +148,21 @@ describe("getServerLimit", () => {
 
     const diff = (timestamps[1] ?? 0) - (timestamps[0] ?? 0);
     expect(diff).toBeGreaterThanOrEqual(450); // allow 50ms margin
+  });
+
+  test("aborts a server backoff wait before the task starts", async () => {
+    const serverUrl = `https://rdap-abort-backoff-${Date.now()}.test`;
+    const limit = getServerLimit(serverUrl);
+    const controller = new AbortController();
+    let started = false;
+
+    applyServerBackoff(serverUrl, 500);
+    const startedAt = Date.now();
+    const pending = limit(async () => { started = true; }, controller.signal);
+    setTimeout(() => controller.abort(), 20);
+
+    await expect(pending).rejects.toThrow("Aborted");
+    expect(started).toBe(false);
+    expect(Date.now() - startedAt).toBeLessThan(200);
   });
 });

@@ -13,7 +13,7 @@
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
 
 ## 코드 품질
-- [x] 테스트 작성 (bun test) — 136개 테스트 통과
+- [x] 테스트 작성 및 `bun test` 통과
 - [x] 보안: 도메인 입력 검증 (sanitizeDomain, encodeURIComponent)
 - [x] 보안: readJson JSON.parse try-catch
 - [x] 보안: bootstrap fetch 5초 타임아웃

@@ -3,8 +3,9 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { checkDomains, checkFullDomains, checkSuggestionMatrix } from "../checker/checker.ts";
 import { pLimit } from "../checker/limiter.ts";
+import { getDomainInputError } from "../checker/policy.ts";
 import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES, DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
-import type { DomainResult } from "../checker/types.ts";
+import type { DomainDetail, DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
@@ -309,7 +310,7 @@ function normalizeBareNames(names: readonly string[]): { names: string[]; errors
 
   for (const rawName of names) {
     const name = sanitizeDomain(rawName).toLowerCase();
-    if (name.includes(".")) {
+    if (name.includes(".") && !getDomainInputError(name)) {
       errors.push(`${rawName} is a full domain. Use check_domain_availability for explicit full domains.`);
     } else if (!isValidDomainLabel(name)) {
       errors.push(`${rawName} is not a valid bare domain name.`);
@@ -325,6 +326,47 @@ export function normalizeSearchDomainInput(name: string): { name?: string; error
   const normalized = normalizeBareNames([name]);
   if (normalized.errors.length > 0) return { error: normalized.errors[0] };
   return { name: normalized.names[0] };
+}
+
+export function normalizeFullDomainInput(domain: string): { domain?: string; error?: string } {
+  const normalized = sanitizeDomain(domain).toLowerCase();
+  const error = getDomainInputError(normalized);
+  if (error) return { error: `${domain} is not a valid registrable domain: ${error}.` };
+  return { domain: normalized };
+}
+
+export function formatDomainDetail(detail: DomainDetail): string {
+  const lines: string[] = [`WHOIS/RDAP info for ${detail.domain}:\n`];
+  lines.push(`Status: ${detail.status} (via ${detail.method}, ${detail.responseTime}ms)`);
+
+  if (detail.confidence && detail.confidence !== "high") {
+    lines.push(`Confidence: ${detail.confidence}`);
+  }
+
+  if (detail.status === "taken") {
+    if (detail.registrar) lines.push(`Registrar: ${detail.registrar}`);
+    if (detail.registrant) lines.push(`Registrant: ${detail.registrant}`);
+    if (detail.createdDate) lines.push(`Created: ${detail.createdDate}`);
+    if (detail.updatedDate) lines.push(`Updated: ${detail.updatedDate}`);
+    if (detail.expiryDate) lines.push(`Expires: ${detail.expiryDate}`);
+    if (detail.dnssec != null) lines.push(`DNSSEC: ${detail.dnssec ? "signed" : "unsigned"}`);
+    if (detail.nameServers?.length) lines.push(`Name Servers: ${detail.nameServers.join(", ")}`);
+    if (detail.statusCodes?.length) lines.push(`Status Codes: ${detail.statusCodes.join(", ")}`);
+  }
+
+  if (detail.status === "available") {
+    lines.push("\nNo RDAP/WHOIS registration record was found.");
+  }
+
+  if (detail.reason && detail.confidence !== "high") {
+    lines.push(`Review: ${detail.reason}`);
+  }
+
+  if (detail.error) {
+    lines.push(`\nError: ${detail.error}`);
+  }
+
+  return lines.join("\n");
 }
 
 export function findBareDomainInputs(domains: readonly string[]): string[] {
@@ -418,10 +460,17 @@ server.registerTool("open_registrar", {
   },
 }, async ({ domain, registrar }) => {
   try {
-    const url = buildURL(registrar as Registrar, domain);
+    const normalized = normalizeFullDomainInput(domain);
+    if (normalized.error || !normalized.domain) {
+      return {
+        content: [{ type: "text" as const, text: `Error: ${normalized.error ?? "Invalid domain."}` }],
+        isError: true,
+      };
+    }
+    const url = buildURL(registrar as Registrar, normalized.domain);
     openBrowser(url);
     return {
-      content: [{ type: "text" as const, text: `Opened ${registrar} for ${domain}: ${url}` }],
+      content: [{ type: "text" as const, text: `Opened ${registrar} for ${normalized.domain}: ${url}` }],
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -436,9 +485,16 @@ server.registerTool("suggest_domain", {
   inputSchema: { name: z.string().describe("Base name, e.g. 'gethalden'") },
 }, async ({ name }) => {
   try {
-    const combinations = [name];
-    for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${name}`);
-    for (const s of DEFAULT_SUFFIXES) combinations.push(`${name}${s}`);
+    const normalized = normalizeSearchDomainInput(name);
+    if (normalized.error || !normalized.name) {
+      return {
+        content: [{ type: "text" as const, text: `Error: ${normalized.error ?? "Invalid bare domain name."}` }],
+        isError: true,
+      };
+    }
+    const combinations = [normalized.name];
+    for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${normalized.name}`);
+    for (const s of DEFAULT_SUFFIXES) combinations.push(`${normalized.name}${s}`);
 
     const groups = await checkSuggestionMatrix(combinations, SUGGEST_TLDS, {
       concurrency: 10,
@@ -489,32 +545,16 @@ server.registerTool("whois_domain", {
   },
 }, async ({ domain }) => {
   try {
+    const normalized = normalizeFullDomainInput(domain);
+    if (normalized.error || !normalized.domain) {
+      return {
+        content: [{ type: "text" as const, text: `Error: ${normalized.error ?? "Invalid domain."}` }],
+        isError: true,
+      };
+    }
     const { domainDetail } = await import("../checker/detail.ts");
-    const detail = await domainDetail(domain, { timeoutMs: 10000 });
-
-    const lines: string[] = [`WHOIS/RDAP info for ${domain}:\n`];
-    lines.push(`Status: ${detail.status} (via ${detail.method}, ${detail.responseTime}ms)`);
-
-    if (detail.status === "taken") {
-      if (detail.registrar) lines.push(`Registrar: ${detail.registrar}`);
-      if (detail.registrant) lines.push(`Registrant: ${detail.registrant}`);
-      if (detail.createdDate) lines.push(`Created: ${detail.createdDate}`);
-      if (detail.updatedDate) lines.push(`Updated: ${detail.updatedDate}`);
-      if (detail.expiryDate) lines.push(`Expires: ${detail.expiryDate}`);
-      if (detail.dnssec != null) lines.push(`DNSSEC: ${detail.dnssec ? "signed" : "unsigned"}`);
-      if (detail.nameServers?.length) lines.push(`Name Servers: ${detail.nameServers.join(", ")}`);
-      if (detail.statusCodes?.length) lines.push(`Status Codes: ${detail.statusCodes.join(", ")}`);
-    }
-
-    if (detail.status === "available") {
-      lines.push(`\nThis domain is available for registration!`);
-    }
-
-    if (detail.error) {
-      lines.push(`\nError: ${detail.error}`);
-    }
-
-    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+    const detail = await domainDetail(normalized.domain, { timeoutMs: 10000 });
+    return { content: [{ type: "text" as const, text: formatDomainDetail(detail) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };

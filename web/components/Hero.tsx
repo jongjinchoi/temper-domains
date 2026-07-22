@@ -9,7 +9,7 @@ import {
   INSTALL_CMD,
   getVersion,
 } from "@/lib/temper-data";
-import { type LiveResult, runLiveSearch } from "@/lib/playground-client";
+import { type LiveResult, getLiveDisplayStatus, runLiveSearch } from "@/lib/playground-client";
 import styles from "./Hero.module.css";
 
 type HeroState =
@@ -204,19 +204,12 @@ function HeroRow({ tld, row, muted }: HeroRowProps) {
       </span>
     );
   }
-  const available = row.status === "available" && row.confidence !== "low";
-  const review = row.status === "available" && row.confidence === "low";
-  const errored = row.status === "error" || row.status === "rate_limited";
-  const label = available
-    ? "[available]"
-    : review
-      ? "[review]"
-      : errored || row.status === "slow"
-      ? "[---]"
-      : "[taken]";
-  const cls = available
+  const displayStatus = getLiveDisplayStatus(row);
+  const unavailable = displayStatus === "error" || displayStatus === "rate_limited" || displayStatus === "slow";
+  const label = unavailable ? "[---]" : `[${displayStatus}]`;
+  const cls = displayStatus === "available"
     ? styles.crtOk
-    : errored || row.status === "slow" || review
+    : unavailable || displayStatus === "review"
       ? styles.crtPending
       : styles.crtTaken;
   return (

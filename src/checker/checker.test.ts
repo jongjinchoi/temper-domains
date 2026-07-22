@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { checkDomains, checkFullDomains, checkSuggestionMatrix } from "./checker.ts";
+import { domainDetail } from "./detail.ts";
+import { enrichDomainDetail } from "./policy.ts";
 import type { DomainResult } from "./types.ts";
 
 const originalFetch = globalThis.fetch;
@@ -147,6 +149,64 @@ describe("checker", () => {
     expect(calls).toBe(0);
   });
 
+  test("rejects empty-label full domains before network lookup", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response(null, { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const results = await collectResults(checkFullDomains(
+      ["foo..bar.com", "example.com."],
+      { rdapUrls: new Map([["com", "https://rdap.test"]]) },
+    ));
+
+    expect(results).toHaveLength(2);
+    expect(results.every((result) => result.status === "error")).toBe(true);
+    expect(results.every((result) => result.error === "Invalid domain")).toBe(true);
+    expect(calls).toBe(0);
+  });
+
+  test("rejects malformed bare names before bootstrap or lookup", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response(null, { status: 200 });
+    }) as unknown as typeof fetch;
+
+    await expect(collectResults(checkDomains("foo.", ["com"], {
+      rdapUrls: new Map([["com", "https://rdap.test"]]),
+    }))).rejects.toThrow("Invalid domain label");
+    expect(calls).toBe(0);
+  });
+
+  test("rejects malformed detail input before bootstrap or lookup", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response(null, { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const detail = await domainDetail("bad_domain.com");
+
+    expect(detail.status).toBe("error");
+    expect(detail.error).toBe("Invalid domain");
+    expect(calls).toBe(0);
+  });
+
+  test("applies availability confidence policy to detail results", () => {
+    const detail = enrichDomainDetail({
+      domain: "example.dev",
+      status: "available",
+      method: "rdap",
+      responseTime: 12,
+    }, "dev");
+
+    expect(detail.confidence).toBe("medium");
+    expect(detail.reason).toContain("confirm final purchase availability with a registrar");
+    expect(detail.registrableDomain).toBe("example.dev");
+  });
+
   test("keeps injected RDAP URLs isolated from the global bootstrap fallback", async () => {
     const rdapCalls: string[] = [];
     globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
@@ -277,6 +337,25 @@ describe("checker", () => {
     const byDomain = new Map(results.map((result) => [result.domain, result]));
     expect(byDomain.get("sample.com")?.status).toBe("available");
     expect(byDomain.get("sample.net")?.status).toBe("slow");
+  });
+
+  test("does not wait for same-server throttle slots after timeout abort", async () => {
+    const tlds = ["com", "net", "org", "dev", "io"] as const;
+    const serverUrl = `https://rdap-shared-timeout-${Date.now()}.test`;
+    const rdapUrls = new Map(tlds.map((tld) => [tld, serverUrl]));
+    installControlledFetch();
+
+    const started = Date.now();
+    const results = await collectResults(checkDomains("sample", tlds, {
+      rdapUrls,
+      concurrency: tlds.length,
+      timeoutMs: 50,
+    }));
+    const elapsed = Date.now() - started;
+
+    expect(results).toHaveLength(tlds.length);
+    expect(results.every((result) => result.status === "slow")).toBe(true);
+    expect(elapsed).toBeLessThan(250);
   });
 
   test("external abort marks pending checkDomains results as slow", async () => {

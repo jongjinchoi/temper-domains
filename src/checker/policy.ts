@@ -1,5 +1,6 @@
-import type { DomainResult, ResultConfidence } from "./types.ts";
+import type { DomainDetail, DomainResult, ResultConfidence } from "./types.ts";
 import { parseDomain, type ParsedDomain } from "../utils/domain.ts";
+import { isValidDomain } from "../utils/validate.ts";
 
 export interface DomainMetadata {
   tld: string;
@@ -36,8 +37,8 @@ function getDomainMetadataFromParsed(parsed: ParsedDomain, rdapKey?: string): Do
 }
 
 export function getDomainInputError(domain: string): string | null {
+  if (!isValidDomain(domain)) return "Invalid domain";
   const parsed = parseDomain(domain);
-  if (!parsed.asciiDomain || parsed.labels.length < 2) return "Invalid domain";
   if (!parsed.registrableDomain) return PUBLIC_SUFFIX_REASON;
   if (parsed.registrableDomain !== parsed.asciiDomain) return "Subdomain availability is not a registrable-domain check";
   return null;
@@ -84,5 +85,25 @@ export function enrichDomainResult(result: DomainResult, rdapKey?: string): Doma
     ...metadata,
     confidence: result.confidence ?? policy.confidence,
     reason: result.reason ?? reason,
+  };
+}
+
+export function enrichDomainDetail(detail: DomainDetail, rdapKey?: string): DomainDetail {
+  const enriched = enrichDomainResult({
+    domain: detail.domain,
+    tld: parseDomain(detail.domain).tld,
+    status: detail.status,
+    method: detail.method,
+    responseTime: detail.responseTime,
+    error: detail.error,
+  }, rdapKey);
+
+  return {
+    ...detail,
+    rdapKey: enriched.rdapKey,
+    publicSuffix: enriched.publicSuffix,
+    registrableDomain: enriched.registrableDomain,
+    confidence: enriched.confidence,
+    reason: enriched.reason,
   };
 }

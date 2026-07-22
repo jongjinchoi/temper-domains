@@ -5,7 +5,7 @@ import { streamDomainResults, type CheckOptions } from "./stream.ts";
 import type { DomainResult } from "./types.ts";
 import { DEFAULT_TLDS } from "./types.ts";
 import { findRdapBootstrapKey, getTld } from "../utils/domain.ts";
-import { isValidDomain, sanitizeDomain } from "../utils/validate.ts";
+import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 
 export interface SuggestionResultGroup {
   name: string;
@@ -36,9 +36,12 @@ export async function* checkDomains(
 ): AsyncGenerator<DomainResult> {
   const { rdapUrls, ...checkOptions } = options;
   const { timeoutMs = 3000 } = checkOptions;
+  const safeName = sanitizeDomain(name).toLowerCase();
+  if (!isValidDomainLabel(safeName)) {
+    throw new Error("Invalid domain label");
+  }
   if (!rdapUrls) await getBootstrap();
 
-  const safeName = sanitizeDomain(name);
   const domains = tlds.map((tld) => `${safeName}.${tld}`);
   yield* streamDomainResults(domains, checkOptions, async (domain, signal) => {
     const match = rdapUrls ? getInjectedRdapMatch(domain, rdapUrls) : getRdapMatch(domain);
@@ -52,10 +55,12 @@ export async function* checkFullDomains(
 ): AsyncGenerator<DomainResult> {
   const { rdapUrls, ...checkOptions } = options;
   const { timeoutMs = 3000 } = checkOptions;
-
-  if (!rdapUrls) await getBootstrap();
-
   const safeDomains = domains.map((domain) => sanitizeDomain(domain).toLowerCase());
+
+  if (!rdapUrls && safeDomains.some((domain) => !getDomainInputError(domain))) {
+    await getBootstrap();
+  }
+
   yield* streamDomainResults(safeDomains, checkOptions, async (domain, signal) => {
     const tld = getTld(domain);
     const match = rdapUrls
@@ -64,7 +69,7 @@ export async function* checkFullDomains(
     const rdapUrl = match.rdapUrl;
     const inputError = getDomainInputError(domain);
 
-    if (!isValidDomain(domain) || inputError) {
+    if (inputError) {
       return enrichDomainResult({
         domain,
         tld,

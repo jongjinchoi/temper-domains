@@ -109,6 +109,9 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
       <Box marginBottom={1}>
         <Text color={color}>{icon} {detail.status}</Text>
         <Text color={theme.dim}>  via {detail.method}  ({detail.responseTime}ms)</Text>
+        {detail.confidence && detail.confidence !== "high" && (
+          <Text color={theme.yellow}>  {detail.confidence} confidence</Text>
+        )}
       </Box>
 
       {/* Detail fields */}
@@ -145,7 +148,10 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
 
       {/* Available */}
       {detail.status === "available" && (
-        <Text color={theme.green}>This domain is available for registration.</Text>
+        <Box flexDirection="column">
+          <Text color={theme.yellow}>No RDAP/WHOIS registration record was found.</Text>
+          {detail.reason && <Text color={theme.dim}>Review: {detail.reason}</Text>}
+        </Box>
       )}
 
       {/* Error */}

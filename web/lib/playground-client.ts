@@ -13,6 +13,7 @@ export type LiveStatus =
 
 export type LiveMethod = "rdap" | "whois";
 export type LiveConfidence = "high" | "medium" | "low";
+export type LiveDisplayStatus = LiveStatus | "review";
 
 export interface LiveResult {
   domain: string;
@@ -32,6 +33,11 @@ export interface SearchCallbacks {
   onRow: (row: LiveResult) => void;
   onDone: (elapsedMs: number) => void;
   onError: (message: string) => void;
+}
+
+export function getLiveDisplayStatus(result: LiveResult): LiveDisplayStatus {
+  if (result.status === "available" && result.confidence === "low") return "review";
+  return result.status;
 }
 
 // next.config sets trailingSlash: true, so use /api/check/ directly to

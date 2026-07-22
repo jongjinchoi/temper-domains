@@ -10,6 +10,7 @@ import {
 import { getVersion, PLAYGROUND_TLDS } from "@/lib/temper-data";
 import {
   type LiveResult,
+  getLiveDisplayStatus,
   runLiveSearch,
 } from "@/lib/playground-client";
 import styles from "./Playground.module.css";
@@ -277,26 +278,18 @@ export default function Playground() {
 }
 
 function ResultRow({ row }: { row: LiveResult }) {
-  const available = row.status === "available" && row.confidence !== "low";
-  const review = row.status === "available" && row.confidence === "low";
-  const slow = row.status === "slow";
-  const errored = row.status === "error" || row.status === "rate_limited";
-  const label = available
-    ? "[available]"
-    : review
-      ? "[review]"
-      : slow
-      ? "[slow]"
-      : errored
-        ? `[${row.status}]`
-        : "[taken]";
-  const labelCls = available ? styles.ok : errored || slow || review ? styles.k : styles.tk;
+  const displayStatus = getLiveDisplayStatus(row);
+  const labelCls = displayStatus === "available"
+    ? styles.ok
+    : displayStatus === "taken"
+      ? styles.tk
+      : styles.k;
 
   return (
     <span>
       {"  "}
       {padTo(row.domain, PAD)}
-      <span className={labelCls}>{label}</span>
+      <span className={labelCls}>[{displayStatus}]</span>
       <span className={styles.mu}>
         {"  "}
         [{row.method}] {row.responseTime}ms

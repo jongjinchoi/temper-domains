@@ -17,7 +17,7 @@ export async function lookupDomainAvailability(
   try {
     if (rdapUrl) {
       const serverLimit = getServerLimit(rdapUrl);
-      const result = await serverLimit(() => rdapLookup(domain, rdapUrl, signal));
+      const result = await serverLimit(() => rdapLookup(domain, rdapUrl, signal), signal);
       return enrichDomainResult(result, rdapKey);
     }
     return enrichDomainResult(await whoisLookup(domain, signal, timeoutMs), rdapKey);

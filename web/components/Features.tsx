@@ -53,7 +53,7 @@ const FEATURES: Feature[] = [
   {
     badge: "№ 06 / STYLE",
     title: "Themeable.",
-    body: `${THEMES.length} built-in themes — 5 dark, 2 light. Or write your own.`,
+    body: `${THEMES.length} built-in themes — 5 dark, 2 light.`,
   },
   {
     badge: "№ 07 / LICENSE",

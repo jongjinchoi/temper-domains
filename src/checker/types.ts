@@ -52,6 +52,11 @@ export interface DomainDetail {
   status: DomainStatus;
   method: CheckMethod;
   responseTime: number;
+  rdapKey?: string;
+  publicSuffix?: string;
+  registrableDomain?: string;
+  confidence?: ResultConfidence;
+  reason?: string;
   registrar?: string;
   registrant?: string;
   createdDate?: string;
