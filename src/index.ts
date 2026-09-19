@@ -330,4 +330,6 @@ program
     await startMcpServer();
   });
 
-program.parseAsync();
+program.parseAsync().catch((error: unknown) => {
+  exitWithError(error instanceof Error ? error.message : String(error));
+});

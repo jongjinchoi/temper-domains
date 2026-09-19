@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { ensureConfigDir, readJson, writeJson } from "../utils/fs.ts";
+import { ensureConfigDir, readValidatedJson, writeJson } from "../utils/fs.ts";
 
 const CONFIG_FILE = join(homedir(), ".temper", "config.json");
 
@@ -15,7 +15,12 @@ const DEFAULTS: TemperConfig = {
 };
 
 export async function loadConfig(): Promise<TemperConfig> {
-  const data = await readJson<Partial<TemperConfig>>(CONFIG_FILE);
+  const data = await readValidatedJson(CONFIG_FILE, (value): value is Partial<TemperConfig> => {
+    if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+    const config = value as Record<string, unknown>;
+    return (config.theme === undefined || typeof config.theme === "string") &&
+      (config.registrar === undefined || typeof config.registrar === "string");
+  });
   if (!data) return { ...DEFAULTS };
   return { ...DEFAULTS, ...data };
 }

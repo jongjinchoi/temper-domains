@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { ensureConfigDir, readJson, writeJson } from "../utils/fs.ts";
+import { ensureConfigDir, readValidatedJson, writeJson } from "../utils/fs.ts";
 
 const HISTORY_FILE = join(homedir(), ".temper", "history.json");
 const MAX_ENTRIES = 100;
@@ -13,7 +13,15 @@ export interface HistoryEntry {
 }
 
 export async function loadHistory(): Promise<HistoryEntry[]> {
-  return (await readJson<HistoryEntry[]>(HISTORY_FILE)) ?? [];
+  return (await readValidatedJson(HISTORY_FILE, (value): value is HistoryEntry[] =>
+    Array.isArray(value) && value.every((entry) =>
+      entry !== null && typeof entry === "object" &&
+      typeof entry.query === "string" &&
+      typeof entry.timestamp === "string" && Number.isFinite(Date.parse(entry.timestamp)) &&
+      Number.isInteger(entry.available) && entry.available >= 0 &&
+      Number.isInteger(entry.total) && entry.total >= entry.available
+    ),
+  )) ?? [];
 }
 
 export async function addHistory(entry: HistoryEntry): Promise<void> {

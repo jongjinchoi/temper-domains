@@ -32,6 +32,24 @@ export async function writeJson(path: string, data: unknown): Promise<void> {
   await writeFile(path, JSON.stringify(data, null, 2) + "\n", "utf-8");
 }
 
+// User data must not silently become an empty/default value on parse failure.
+export async function readValidatedJson<T>(path: string, validate: (value: unknown) => value is T): Promise<T | null> {
+  let raw: string;
+  try {
+    raw = await readFile(path, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+  try {
+    const data: unknown = JSON.parse(raw);
+    if (!validate(data)) throw new Error("Invalid structure");
+    return data;
+  } catch {
+    throw new Error(`Invalid data in ${path}. Back up and repair this file before retrying; it has not been overwritten.`);
+  }
+}
+
 export async function fileStat(path: string) {
   return fsStat(path);
 }

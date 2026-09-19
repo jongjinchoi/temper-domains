@@ -14,6 +14,7 @@
 
 ## 코드 품질
 - [x] 승인된 안정 버전 의존성 갱신, Bun/Node 버전 고정 및 Node 최소 버전 명시 (2026-09-19, 로컬 검증)
+- [x] watchlist 동시 갱신 보호와 손상된 config/history/watchlist 원본 보존
 - [x] 테스트 작성 및 `bun test` 통과
 - [x] 보안: 도메인 입력 검증 (sanitizeDomain, encodeURIComponent)
 - [x] 보안: readJson JSON.parse try-catch

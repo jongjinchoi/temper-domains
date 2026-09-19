@@ -61,6 +61,14 @@ workspaces so root typechecking does not download a separate compiler.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
+- Watchlist updates serialize the full read/modify/write operation with an
+  exclusive local lock and replace the data file only after a temporary file
+  is written and synced. Domain keys are case-insensitive.
+- A lock waits up to 5s. A crashed writer may leave `watchlist.json.lock`;
+  it is never deleted automatically while another writer might own it. After
+  confirming no temper commands are running, remove only that lock and retry.
+- Invalid config/history/watchlist files produce a repair message and are not
+  silently overwritten with defaults. Back up the file before repairing it.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at

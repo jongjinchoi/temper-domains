@@ -1,0 +1,24 @@
+import { expect, test } from "bun:test";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+async function scenario(name: string) {
+  const home = await mkdtemp(join(tmpdir(), "temper-tui-"));
+  try {
+    const child = Bun.spawn([process.execPath, "tests/helpers/tui-worker.tsx", name], {
+      cwd: import.meta.dir + "/../..", env: { ...process.env, TEMPER_TEST_HOME: home },
+      stdout: "pipe", stderr: "pipe",
+    });
+    const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+    expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+    return JSON.parse(stdout);
+  } finally { await rm(home, { recursive: true, force: true }); }
+}
+
+test.each(["watch-corrupt", "history-corrupt"])("%s shows a repair message instead of rejecting outside the UI", async (name) => {
+  const result = await scenario(name);
+  expect(result.unhandled).toEqual([]);
+  expect(result.frame).toContain("repair");
+  expect(result.frame).toContain("not been overwritten");
+});

@@ -21,6 +21,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const [items, setItems] = useState<WatchItem[]>([]);
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const cancelledRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const runIdRef = useRef(0);
@@ -30,13 +31,15 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     const runId = ++runIdRef.current;
     const abortController = new AbortController();
     abortRef.current = abortController;
-    const watchlist = await loadWatchlist();
-    if (cancelledRef.current || runId !== runIdRef.current) return;
-    const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
-    setItems(initial);
-    setLoaded(true);
-
+    let entriesLoaded = false;
     try {
+      setLoadError(null);
+      const watchlist = await loadWatchlist();
+      if (cancelledRef.current || runId !== runIdRef.current) return;
+      const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
+      setItems(initial);
+      setLoaded(true);
+      entriesLoaded = true;
       for await (const result of checkFullDomains(
         watchlist.map((entry) => entry.domain),
         { concurrency: 10, timeoutMs: 8000, signal: abortController.signal },
@@ -53,6 +56,8 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     } catch (err) {
       if (cancelledRef.current || runId !== runIdRef.current) return;
       const error = err instanceof Error ? err.message : String(err);
+      if (!entriesLoaded) setLoadError(error);
+      setLoaded(true);
       setItems((prev) => prev.map((item) => item.status === "checking"
         ? {
             ...item,
@@ -91,7 +96,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       } else if (input === "r") {
         cancelledRef.current = false;
         checkAll();
-      } else if (input === "d") {
+      } else if (input === "d" && !loadError) {
         const item = items[cursor];
         if (item) {
           const idx = cursor;
@@ -99,8 +104,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
           const next = items.filter((_, i) => i !== idx);
           setItems(next);
           setCursor((prev) => Math.min(prev, next.length - 1));
-          removeWatch(item.domain).catch(() => {
+          removeWatch(item.domain).catch((error: unknown) => {
             setItems(original);
+            setLoadError(error instanceof Error ? error.message : String(error));
           });
         }
       }
@@ -124,6 +130,10 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       ];
 
   if (!loaded) return null;
+
+  if (loadError) {
+    return <FrameBox title="Watchlist" hints={hints}><Text color={theme.red}>{loadError}</Text></FrameBox>;
+  }
 
   if (items.length === 0) {
     return (

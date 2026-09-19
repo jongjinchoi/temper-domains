@@ -15,13 +15,21 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedQuery, setSelectedQuery] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     loadHistory().then((h) => {
+      if (cancelled) return;
       setHistory(h);
       setLoaded(true);
+    }).catch((error: unknown) => {
+      if (cancelled) return;
+      setLoadError(error instanceof Error ? error.message : String(error));
+      setLoaded(true);
     });
+    return () => { cancelled = true; };
   }, []);
 
   useInput(
@@ -64,6 +72,10 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
       ];
 
   if (!loaded) return null;
+
+  if (loadError) {
+    return <FrameBox title="Recent searches" hints={hints}><Text color={theme.red}>{loadError}</Text></FrameBox>;
+  }
 
   if (selectedQuery) {
     return <SearchView query={selectedQuery} onBack={() => setSelectedQuery(null)} />;
