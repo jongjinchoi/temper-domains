@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { checkDomains } from "../../checker/checker.ts";
 import type { DomainResult } from "../../checker/types.ts";
 import { DEFAULT_TLDS } from "../../checker/types.ts";
@@ -9,6 +9,7 @@ interface SearchExecutionResult {
   count: number;
   elapsed: number;
   done: boolean;
+  error: string | null;
 }
 
 export function useSearchExecution(
@@ -19,13 +20,14 @@ export function useSearchExecution(
   const [results, setResults] = useState<Map<string, DomainResult>>(new Map());
   const [elapsed, setElapsed] = useState(0);
   const [done, setDone] = useState(false);
-  const cancelledRef = useRef(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    cancelledRef.current = false;
+    let cancelled = false;
     setResults(new Map());
     setElapsed(0);
     setDone(false);
+    setError(null);
 
     const abortController = new AbortController();
     const startTime = performance.now();
@@ -34,31 +36,38 @@ export function useSearchExecution(
     }, 100);
 
     (async () => {
-      const collected: DomainResult[] = [];
-      for await (const result of checkDomains(query, tlds, { timeoutMs, signal: abortController.signal })) {
-        if (cancelledRef.current) break;
-        collected.push(result);
-        setResults((prev) => new Map(prev).set(result.domain, result));
-      }
-      clearInterval(timer);
-      setElapsed(Math.round(performance.now() - startTime));
-      if (!cancelledRef.current) {
-        setDone(true);
-        addHistory({
-          query,
-          timestamp: new Date().toISOString(),
-          available: collected.filter((r) => r.status === "available").length,
-          total: tlds.length,
-        }).catch(() => {});
+      try {
+        const collected: DomainResult[] = [];
+        for await (const result of checkDomains(query, tlds, { timeoutMs, signal: abortController.signal })) {
+          if (cancelled) return;
+          collected.push(result);
+          setResults((prev) => new Map(prev).set(result.domain, result));
+        }
+        if (!cancelled) {
+          await addHistory({
+            query,
+            timestamp: new Date().toISOString(),
+            available: collected.filter((r) => r.status === "available").length,
+            total: tlds.length,
+          }).catch(() => {});
+        }
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        clearInterval(timer);
+        if (!cancelled) {
+          setElapsed(Math.round(performance.now() - startTime));
+          setDone(true);
+        }
       }
     })();
 
     return () => {
-      cancelledRef.current = true;
+      cancelled = true;
       abortController.abort();
       clearInterval(timer);
     };
   }, [query, tlds, timeoutMs]);
 
-  return { results, count: results.size, elapsed, done };
+  return { results, count: results.size, elapsed, done, error };
 }

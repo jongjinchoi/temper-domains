@@ -16,6 +16,29 @@ async function scenario(name: string) {
   } finally { await rm(home, { recursive: true, force: true }); }
 }
 
+test("uppercase search renders the completed domain status", async () => {
+  const result = await scenario("uppercase");
+  expect(result.frame).toContain("acme.com");
+  expect(result.frame).toContain("available");
+  expect(result.frame).not.toContain("checking");
+});
+
+test("bootstrap failure becomes an error screen without a successful history entry", async () => {
+  const result = await scenario("bootstrap");
+  expect(result.unhandled).toEqual([]);
+  expect(result.frame).toContain("Search failed");
+  expect(result.frame).toContain("test bootstrap unavailable");
+  expect(result.frame).not.toContain("Search complete");
+  expect(result.history).toEqual([]);
+});
+
+test("escape from a suggestion search returns only to the suggestion list", async () => {
+  const result = await scenario("suggest");
+  expect(result.back).toBe(0);
+  expect(result.frame).not.toContain("temper search");
+  expect(result.frame).toContain("acme");
+});
+
 test.each(["watch-corrupt", "history-corrupt"])("%s shows a repair message instead of rejecting outside the UI", async (name) => {
   const result = await scenario(name);
   expect(result.unhandled).toEqual([]);

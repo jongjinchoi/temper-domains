@@ -69,6 +69,9 @@ workspaces so root typechecking does not download a separate compiler.
   confirming no temper commands are running, remove only that lock and retry.
 - Invalid config/history/watchlist files produce a repair message and are not
   silently overwritten with defaults. Back up the file before repairing it.
+- TUI searches use lowercase result keys, show bootstrap failures as errors,
+  and do not record a failed bootstrap as a successful search. Suggestion parent
+  input is disabled while its child search is active.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at

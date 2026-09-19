@@ -13,7 +13,7 @@ import Spinner from "./Spinner.tsx";
 import WhoisView from "./WhoisView.tsx";
 import { theme } from "./theme.ts";
 
-type ScreenState = "searching" | "selecting" | "filtering" | "registrar" | "detail";
+type ScreenState = "searching" | "failed" | "selecting" | "filtering" | "registrar" | "detail";
 
 interface Props {
   query: string;
@@ -31,7 +31,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
-  const allDomains = useMemo(() => tlds.map((tld) => `${query}.${tld}`), [query, tlds]);
+  const allDomains = useMemo(() => tlds.map((tld) => `${query}.${tld}`.toLowerCase()), [query, tlds]);
 
   useEffect(() => {
     const onResize = () => setTermRows(stdout.rows ?? 40);
@@ -39,7 +39,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     return () => { stdout.off("resize", onResize); };
   }, [stdout]);
 
-  const { results, count, elapsed, done } = useSearchExecution(query, tlds, timeoutMs);
+  const { results, count, elapsed, done, error } = useSearchExecution(query, tlds, timeoutMs);
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [cursor, setCursor] = useState(0);
@@ -50,8 +50,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const visibleCount = Math.min(maxVisible, allDomains.length);
 
   useEffect(() => {
-    if (done) setScreenState("selecting");
-  }, [done]);
+    setScreenState(done ? (error ? "failed" : "selecting") : "searching");
+  }, [done, error]);
 
   useEffect(() => {
     if (cursor < viewOffset) {
@@ -69,6 +69,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   if (filterText) {
     displayDomains = displayDomains.filter((d) => d.includes(filterText));
   }
+  if (error) displayDomains = displayDomains.filter((domain) => results.has(domain));
 
   useInput(
     (input, key) => {
@@ -209,6 +210,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     { key: "q", action: "quit" },
   ];
   const currentHints =
+    screenState === "failed" ? [{ key: "esc", action: "back" }, { key: "q", action: "quit" }] :
     screenState === "searching" ? searchingHints :
     screenState === "filtering" ? filteringHints :
     screenState === "registrar" ? registrarHints :
@@ -219,7 +221,9 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     <FrameBox title={`temper search ${query}`} hints={currentHints}>
       {/* Header */}
       <Box marginBottom={1}>
-        {screenState === "searching" ? (
+        {error ? (
+          <Text color={theme.red}>Search failed: {error}</Text>
+        ) : screenState === "searching" ? (
           <Text>
             <Spinner />
             <Text color={theme.text}> Searching {total} TLDs...  </Text>

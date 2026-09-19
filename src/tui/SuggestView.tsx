@@ -109,7 +109,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
         setSelectedName(allNames[cursor]!);
       }
     },
-    { isActive: process.stdin.isTTY === true },
+    { isActive: !selectedName && process.stdin.isTTY === true },
   );
 
   const elapsedSec = (elapsed / 1000).toFixed(1);
