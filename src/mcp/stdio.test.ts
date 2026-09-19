@@ -52,3 +52,22 @@ test("all six stdio tools preserve their successful results", async () => {
   }
   expect(await readFile(join(home, "opened-url"), "utf8")).toBe("https://porkbun.com/checkout/search?q=acme.com");
 }, 20000);
+
+
+test("MCP cancellation reaches the lookup without cancelling another request", async () => {
+  const controller = new AbortController();
+  const pending = client.callTool({ name: "check_domain_availability", arguments: { domains: ["hold.com"] } }, undefined, { signal: controller.signal });
+  const rejected = pending.catch(() => undefined);
+  const deadline = Date.now() + 2000;
+  while (Date.now() < deadline) {
+    if (await readFile(join(home, "lookup-started"), "utf8").catch(() => "")) break;
+    await Bun.sleep(10);
+  }
+  expect(await readFile(join(home, "lookup-started"), "utf8")).toBe("yes");
+  const other = client.callTool({ name: "check_domain_availability", arguments: { domains: ["other.com"] } });
+  controller.abort();
+  await rejected;
+  const response = await other;
+  expect(JSON.stringify(response.content)).toContain("1 available");
+  expect(await readFile(join(home, "lookup-cancelled"), "utf8")).toBe("yes");
+});

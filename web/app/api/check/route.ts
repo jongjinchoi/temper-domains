@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
-import { EXTENDED_TLDS } from "../../../../src/checker/types.ts";
+import { EXTENDED_TLDS, type CheckSummary } from "../../../../src/checker/types.ts";
 import { isValidDomainLabel } from "../../../../src/utils/validate.ts";
-import { checkDomains } from "@/server/checker";
-import { PLAYGROUND_TLDS } from "@/lib/temper-data";
+import { checkDomains } from "../../../server/checker";
+import { PLAYGROUND_TLDS } from "../../../lib/temper-data";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,25 +58,32 @@ export async function GET(req: NextRequest) {
   const start = performance.now();
   const encoder = new TextEncoder();
 
+  const abort = new AbortController();
+  const signal = AbortSignal.any([req.signal, abort.signal]);
+  let closed = false;
+  let summary: CheckSummary | undefined;
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const write = (obj: unknown) =>
-        controller.enqueue(encoder.encode(`${JSON.stringify(obj)}\n`));
+      const write = (obj: unknown) => {
+        if (!closed && !signal.aborted) controller.enqueue(encoder.encode(`${JSON.stringify(obj)}\n`));
+      };
       try {
         for await (const row of checkDomains(name, tldsToQuery, {
           concurrency: tldsToQuery.length,
           timeoutMs: 3000,
-          signal: req.signal,
+          signal,
+          onSummary: value => { summary = value; },
         })) {
           write(row);
         }
-        write({ done: true, elapsed: Math.round(performance.now() - start) });
+        write({ done: true, elapsed: Math.round(performance.now() - start), summary });
       } catch (err) {
         write({ error: err instanceof Error ? err.message : String(err) });
       } finally {
-        controller.close();
+        if (!closed) { closed = true; controller.close(); }
       }
     },
+    cancel() { closed = true; abort.abort(); },
   });
 
   return new Response(stream, {

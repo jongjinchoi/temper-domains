@@ -5,7 +5,6 @@ import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
 
-const DEFAULT_SEARCH_TIMEOUT_SECONDS = 5;
 const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
 
 function exitWithError(message: string): never {
@@ -76,7 +75,7 @@ program
   .option("--extended", "Check 59 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
-  .option("-t, --timeout <seconds>", "Timeout in seconds", String(DEFAULT_SEARCH_TIMEOUT_SECONDS))
+  .option("-t, --timeout <seconds>", "Whole-search timeout including bootstrap (default: automatic 5–30s)")
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
     queries = queries.map((q) => validateLabelOrExit(q, "query"));
@@ -102,7 +101,7 @@ program
       tlds = [...EXTENDED_TLDS];
     }
 
-    const timeoutMs = parseTimeoutMsOrExit(opts.timeout, "--timeout");
+    const timeoutMs = opts.timeout === undefined ? undefined : parseTimeoutMsOrExit(opts.timeout, "--timeout");
 
     // JSON output mode — no Ink
     if (opts.format === "json") {

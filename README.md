@@ -32,7 +32,7 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 ## Features
 
 - **Private** — CLI and MCP queries run on your machine. No tracking, no telemetry. The hosted web demo uses a server-side API route for live checks.
-- **Fast** — checks 30 TLDs by default with a 5s timeout. 59 with `--extended`.
+- **Fast** — checks 30 TLDs by default with an automatic 5–30s search budget. 59 with `--extended`.
 - **MCP native** — Codex, Claude Code, Claude Desktop, and Cursor can search domains directly.
 - **Keyboard-first** — vim-style navigation, single-key registrar selection.
 - **Pipe-friendly** — `--format json` for scripting and automation.
@@ -104,7 +104,7 @@ temper search myproject --extended               # 59 TLDs
 temper search myproject --tlds com,dev,io         # specific TLDs
 temper search myproject --tld-preset tech         # preset: tech, popular, startup, cheap
 temper search myproject -a                        # available only
-temper search myproject -t 8                      # 8s timeout (default: 5)
+temper search myproject -t 8                      # 8s whole-search limit, including bootstrap
 temper search myproject --format json             # JSON output for piping
 temper search gethalden writeholt --format json   # multiple keywords in JSON mode
 ```
@@ -133,6 +133,24 @@ temper search gethalden --format json | jq '.[] | select(.status == "available" 
 Availability rows can include `confidence`, `reason`, `rdapKey`,
 `publicSuffix`, and `registrableDomain` fields. A low-confidence available
 result should be reviewed with a registrar before treating it as purchasable.
+
+#### Lookup limits and partial results
+
+CLI/MCP searches choose a 5–30s total budget based on the current server queue.
+This is a client policy, not a promise that every registry will answer. An explicit
+`search --timeout` sets a strict whole-search limit, including bootstrap loading.
+Each network request has up to 5s after dispatch, within the remaining total time;
+detailed lookups retain a 10s total limit. The hosted demo keeps a 3s total limit.
+
+Results keep the existing status values and JSON array format. Optional
+`attempts`, `queueTimeMs`, `terminationReason`, and `retryAt` fields distinguish a
+request that never started, a timeout, cancellation, and server rate limits.
+RDAP `responseTime` includes queueing and retry waits; `queueTimeMs` isolates
+the queue portion.
+MCP summaries separate requested, attempted, answered, and unresolved domains
+and show actual elapsed time. A completed stream can contain unresolved results.
+`available` means no registration record was found; confirm purchase availability,
+premium pricing, and restrictions with a registrar.
 
 ### Whois
 

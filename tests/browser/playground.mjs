@@ -10,6 +10,11 @@ let held;
 await page.route('**/api/check/**', async route => {
   const name = new URL(route.request().url()).searchParams.get('name');
   if (name === 'hold') { held = route; return; }
+  if (name === 'partial') return route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: [
+    { domain: 'partial.com', tld: 'com', status: 'available', method: 'rdap', responseTime: 10 },
+    { domain: 'partial.net', tld: 'net', status: 'slow', method: 'rdap', responseTime: 3000, confidence: 'low', reason: 'Time limit reached before this domain could be queried' },
+    { done: true, elapsed: 3000, summary: { requested: 15, attempted: 1, answered: 1, unresolved: 14, elapsedMs: 3000 } },
+  ].map(row => JSON.stringify(row)).join('\n') + '\n' });
   return route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: name === 'eof' ? result.split('\n')[0] + '\n' : result });
 });
 try {
@@ -35,10 +40,16 @@ try {
   await page.waitForFunction(() => document.querySelector('#play input') === document.activeElement);
   assert.equal(await input.evaluate(el => el === document.activeElement), true, 'completion must restore focus');
   assert.equal(await input.getAttribute('aria-label'), 'Domain name');
+  await input.fill('partial'); await input.press('Enter');
+  await page.waitForFunction(() => document.querySelector('#play').textContent.includes('14 unresolved'));
+  assert.match(await region.textContent(), /1\/15 answered/);
+  assert.match(await region.textContent(), /14 not queried/);
+  assert.match(await region.textContent(), /before this domain could be queried/);
+  assert.match(await region.textContent(), /Confirm purchase availability/);
   await input.fill('eof'); await input.press('Enter');
   await page.waitForFunction(() => document.querySelector('#play').textContent.includes('incomplete'));
   await page.waitForFunction(() => document.querySelector('#play input') === document.activeElement);
   assert.equal(await input.evaluate(el => el === document.activeElement), true, 'failure must restore focus');
   assert.deepEqual(errors, []);
-  console.log('PASS: pending Escape, stale response, completion/error focus, accessible name, incomplete stream');
+  console.log('PASS: pending Escape, stale response, completion/error focus, accessible name, incomplete stream, partial coverage and reason');
 } finally { await browser.close(); }

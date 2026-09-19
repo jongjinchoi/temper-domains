@@ -1,5 +1,5 @@
 import {
-  DEFAULT_SEARCH_TIMEOUT_SECONDS,
+  SEARCH_TIMEOUT_DESCRIPTION,
   DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
   getVersion,
@@ -14,7 +14,7 @@ function renderLlmsTxt(): string {
 
   return `# temper
 
-> A terminal-first CLI for checking domain availability across ${DEFAULT_TLDS_COUNT} TLDs by default with a ${DEFAULT_SEARCH_TIMEOUT_SECONDS}s timeout. MCP-native so Codex, Claude, Cursor, and other AI assistants can search on your behalf.
+> A terminal-first CLI for checking domain availability across ${DEFAULT_TLDS_COUNT} TLDs by default with an ${SEARCH_TIMEOUT_DESCRIPTION}. MCP-native so Codex, Claude, Cursor, and other AI assistants can search on your behalf.
 
 ## What it is
 

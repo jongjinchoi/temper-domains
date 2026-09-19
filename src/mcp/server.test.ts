@@ -158,7 +158,7 @@ describe("formatFullDomainResults", () => {
       ],
     );
 
-    expect(text).toContain("Summary: 1 available, 1 taken, 1 to review (3 checked)");
+    expect(text).toContain("Summary: 1 available, 1 taken, 1 to review (3 requested)");
   });
 
   test("counts low-confidence available results as review", () => {
@@ -176,7 +176,7 @@ describe("formatFullDomainResults", () => {
 
     expect(text).toContain("⚠ caulder.xyz");
     expect(text).toContain("low confidence");
-    expect(text).toContain("Summary: 1 available, 0 taken, 1 to review (2 checked)");
+    expect(text).toContain("Summary: 1 available, 0 taken, 1 to review (2 requested)");
   });
 });
 
@@ -292,4 +292,12 @@ describe("formatDomainDetail", () => {
     expect(text).toContain("Name Servers: ns1.example.com");
     expect(text).not.toContain("Confidence: high");
   });
+});
+
+test("search summary uses measured whole-run elapsed time and coverage", () => {
+  const text = formatResults("sample", [{ domain: "sample.com", tld: "com", status: "available", method: "rdap", responseTime: 10 }], ["com"],
+    { requested: 1, attempted: 1, answered: 1, unresolved: 0, elapsedMs: 3100 });
+  expect(text).toContain("3.1s");
+  expect(text).toContain("1 requested");
+  expect(text).not.toContain("0.0s");
 });

@@ -10,6 +10,7 @@ import {
 import { getVersion, PLAYGROUND_TLDS } from "@/lib/temper-data";
 import {
   type LiveResult,
+  type CheckSummary,
   getLiveDisplayStatus,
   runLiveSearch,
 } from "@/lib/playground-client";
@@ -18,7 +19,7 @@ import styles from "./Playground.module.css";
 type State =
   | { kind: "initial" }
   | { kind: "loading"; name: string; rows: LiveResult[] }
-  | { kind: "done"; name: string; rows: LiveResult[]; elapsedMs: number }
+  | { kind: "done"; name: string; rows: LiveResult[]; elapsedMs: number; summary?: CheckSummary }
   | { kind: "error"; name: string; message: string; rows: LiveResult[] };
 
 const PAD = 20;
@@ -84,11 +85,11 @@ export default function Playground() {
             return { ...prev, rows: [...prev.rows, row] };
           });
         },
-        onDone: (elapsedMs) => {
+        onDone: (elapsedMs, summary) => {
           setState((prev) => {
             if (controller.signal.aborted || abortRef.current !== controller) return prev;
             if (prev.kind !== "loading" || prev.name !== clean) return prev;
-            return { kind: "done", name: clean, rows: prev.rows, elapsedMs };
+            return { kind: "done", name: clean, rows: prev.rows, elapsedMs, summary };
           });
         },
         onError: (message) => {
@@ -226,7 +227,7 @@ export default function Playground() {
                 <span className={styles.mu}>
                   {"  "}
                   {state.kind === "done"
-                    ? `${PLAYGROUND_TLDS.length} TLDs · ${formatElapsed(state.elapsedMs)}s`
+                    ? `${state.summary?.answered ?? state.rows.filter(row => ["available", "taken", "premium", "reserved"].includes(row.status)).length}/${PLAYGROUND_TLDS.length} answered · ${formatElapsed(state.elapsedMs)}s`
                     : state.kind === "error"
                       ? "error"
                       : `resolving ${PLAYGROUND_TLDS.length} TLDs...`}
@@ -250,6 +251,10 @@ export default function Playground() {
                         <span className={styles.k}>{reviewCount} review</span>
                       </>
                     )}
+                    {state.summary && state.summary.unresolved > 0 && (
+                      <span className={styles.k}>{"\n  "}{state.summary.unresolved} unresolved · {state.summary.requested - state.summary.attempted} not queried</span>
+                    )}
+                    <span className={styles.mu}>{"\n  "}Confirm purchase availability and pricing with a registrar.</span>
                     {"\n\n"}
                     <Prompt />
                     <InputLine
@@ -309,6 +314,7 @@ function ResultRow({ row }: { row: LiveResult }) {
         {"  "}
         [{row.method}] {row.responseTime}ms
       </span>
+      {row.reason && row.confidence === "low" && <span className={styles.k}>{"\n    "}{row.reason}</span>}
       {"\n"}
     </span>
   );

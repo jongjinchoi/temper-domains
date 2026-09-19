@@ -38,3 +38,11 @@ test("does not dispatch callbacks for an already cancelled request", async () =>
   controller.abort();
   expect(await stream([row + '\n{"done":true,"elapsed":1}\n'], controller.signal)).toEqual([]);
 });
+
+test("passes partial lookup coverage with the terminal event", async () => {
+  const summary = { requested: 15, attempted: 12, answered: 10, unresolved: 5, elapsedMs: 3000 };
+  globalThis.fetch = (async () => new Response(JSON.stringify({ done: true, elapsed: 3000, summary }) + "\n")) as unknown as typeof fetch;
+  let received: unknown;
+  await runLiveSearch("acme", { onRow() {}, onError() {}, onDone(_elapsed, coverage) { received = coverage; } }, new AbortController().signal);
+  expect(received).toEqual(summary);
+});

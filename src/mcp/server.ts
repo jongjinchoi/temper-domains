@@ -2,10 +2,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { checkDomains, checkFullDomains, checkSuggestionMatrix } from "../checker/checker.ts";
-import { pLimit } from "../checker/limiter.ts";
+import { summarizeResults } from "../checker/stream.ts";
 import { getDomainInputError } from "../checker/policy.ts";
 import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES, DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
-import type { DomainDetail, DomainResult } from "../checker/types.ts";
+import type { CheckSummary, DomainDetail, DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
@@ -78,6 +78,7 @@ export function formatResults(
   name: string,
   results: DomainResult[],
   tlds: readonly string[] = DEFAULT_TLDS,
+  summary?: CheckSummary,
 ): string {
   const lines: string[] = [`Domain availability for "${name}":\n`];
   const byTld = new Map(results.map((r) => [r.tld, r]));
@@ -110,13 +111,17 @@ export function formatResults(
   const available = results.filter(isAvailableResult).length;
   const taken = results.filter((r) => r.status === "taken").length;
   const other = results.length - available - taken;
-  const totalTime = Math.max(...results.map((r) => r.responseTime));
 
   lines.push(
-    `\nSummary: ${available} available, ${taken} taken${other > 0 ? `, ${other} other` : ""} (${results.length} checked in ${(totalTime / 1000).toFixed(1)}s)`,
+    `\nSummary: ${available} available, ${taken} taken${other > 0 ? `, ${other} other` : ""} (${results.length} results)`,
   );
 
+  if (summary) lines.push(formatCoverage(summary));
   return lines.join("\n");
+}
+
+function formatCoverage(summary: CheckSummary): string {
+  return `Coverage: ${summary.requested} requested, ${summary.attempted} attempted, ${summary.answered} answered, ${summary.unresolved} unresolved in ${(summary.elapsedMs / 1000).toFixed(1)}s`;
 }
 
 function getStatusIcon(status: DomainResult["status"]): string {
@@ -189,7 +194,7 @@ export function formatFullDomainResults(
   const needReview = results.length - available - taken;
 
   lines.push(
-    `\nSummary: ${available} available, ${taken} taken${needReview > 0 ? `, ${needReview} to review` : ""} (${requestedDomains.length} checked)`,
+    `\nSummary: ${available} available, ${taken} taken${needReview > 0 ? `, ${needReview} to review` : ""} (${requestedDomains.length} requested)`,
   );
 
   return lines.join("\n");
@@ -386,7 +391,7 @@ server.registerTool("search_domain", {
     name: z.string().describe("Domain name without TLD, e.g. 'gethalden'"),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
   },
-}, async ({ name, extended }) => {
+}, async ({ name, extended }, extra) => {
   try {
     const normalized = normalizeSearchDomainInput(name);
     if (normalized.error || !normalized.name) {
@@ -397,11 +402,12 @@ server.registerTool("search_domain", {
     }
 
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    let summary: CheckSummary | undefined;
     const results: DomainResult[] = [];
-    for await (const result of checkDomains(normalized.name, tlds)) {
+    for await (const result of checkDomains(normalized.name, tlds, { signal: extra.signal, onSummary: value => { summary = value; } })) {
       results.push(result);
     }
-    const text = formatResults(normalized.name, results, tlds);
+    const text = formatResults(normalized.name, results, tlds, summary);
     return { content: [{ type: "text" as const, text }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -419,7 +425,7 @@ server.registerTool("search_names", {
       .describe("Bare domain names without TLDs, e.g. ['lockway', 'hatchway']. Do not include .com or any other TLD."),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of the default 30"),
   },
-}, async ({ names, extended }) => {
+}, async ({ names, extended }, extra) => {
   try {
     const normalized = normalizeBareNames(names);
     if (normalized.errors.length > 0) {
@@ -430,20 +436,10 @@ server.registerTool("search_names", {
     }
 
     const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
-    const nameLimit = pLimit(2);
-    const groups = await Promise.all(
-      normalized.names.map((name) =>
-        nameLimit(async () => {
-          const results: DomainResult[] = [];
-          for await (const result of checkDomains(name, tlds, { concurrency: 10, timeoutMs: 5000 })) {
-            results.push(result);
-          }
-          return { name, results };
-        }),
-      ),
-    );
-
-    return { content: [{ type: "text" as const, text: formatSearchNamesResults(groups, tlds) }] };
+    const startedAt = performance.now();
+    const groups = await checkSuggestionMatrix(normalized.names, tlds, { concurrency: 20, signal: extra.signal });
+    const summary = summarizeResults(groups.flatMap(group => group.results), normalized.names.length * tlds.length, performance.now() - startedAt);
+    return { content: [{ type: "text" as const, text: formatSearchNamesResults(groups, tlds) + "\n" + formatCoverage(summary) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -483,7 +479,7 @@ const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 server.registerTool("suggest_domain", {
   description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using RDAP/WHOIS.",
   inputSchema: { name: z.string().describe("Base name, e.g. 'gethalden'") },
-}, async ({ name }) => {
+}, async ({ name }, extra) => {
   try {
     const normalized = normalizeSearchDomainInput(name);
     if (normalized.error || !normalized.name) {
@@ -496,12 +492,14 @@ server.registerTool("suggest_domain", {
     for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${normalized.name}`);
     for (const s of DEFAULT_SUFFIXES) combinations.push(`${normalized.name}${s}`);
 
+    let summary: CheckSummary | undefined;
     const groups = await checkSuggestionMatrix(combinations, SUGGEST_TLDS, {
       concurrency: 10,
-      timeoutMs: 8000,
+      signal: extra.signal,
+      onSummary: value => { summary = value; },
     });
 
-    return { content: [{ type: "text" as const, text: formatSuggestDomainResults(groups, SUGGEST_TLDS) }] };
+    return { content: [{ type: "text" as const, text: formatSuggestDomainResults(groups, SUGGEST_TLDS) + (summary ? "\n" + formatCoverage(summary) : "") }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -516,7 +514,7 @@ server.registerTool("check_domain_availability", {
       .max(100)
       .describe("List of full domain names explicitly provided by the user, e.g. ['gethalden.com', 'usegethalden.dev']. Do not append or infer TLDs."),
   },
-}, async ({ domains }) => {
+}, async ({ domains }, extra) => {
   try {
     const bareDomains = findBareDomainInputs(domains);
     if (bareDomains.length > 0) {
@@ -527,11 +525,12 @@ server.registerTool("check_domain_availability", {
     }
 
     const results: DomainResult[] = [];
-    for await (const result of checkFullDomains(domains, { concurrency: 30, timeoutMs: 5000 })) {
+    let summary: CheckSummary | undefined;
+    for await (const result of checkFullDomains(domains, { concurrency: 20, signal: extra.signal, onSummary: value => { summary = value; } })) {
       results.push(result);
     }
 
-    return { content: [{ type: "text" as const, text: formatFullDomainResults(domains, results) }] };
+    return { content: [{ type: "text" as const, text: formatFullDomainResults(domains, results) + (summary ? "\n" + formatCoverage(summary) : "") }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -543,7 +542,7 @@ server.registerTool("whois_domain", {
   inputSchema: {
     domain: z.string().describe("Full domain name, e.g. 'example.com'"),
   },
-}, async ({ domain }) => {
+}, async ({ domain }, extra) => {
   try {
     const normalized = normalizeFullDomainInput(domain);
     if (normalized.error || !normalized.domain) {
@@ -553,7 +552,7 @@ server.registerTool("whois_domain", {
       };
     }
     const { domainDetail } = await import("../checker/detail.ts");
-    const detail = await domainDetail(normalized.domain, { timeoutMs: 10000 });
+    const detail = await domainDetail(normalized.domain, { timeoutMs: 10000, signal: extra.signal });
     return { content: [{ type: "text" as const, text: formatDomainDetail(detail) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

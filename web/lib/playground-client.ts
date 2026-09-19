@@ -1,3 +1,6 @@
+import type { CheckSummary, LookupMetadata } from "../../src/checker/types.ts";
+export type { CheckSummary } from "../../src/checker/types.ts";
+
 // Browser-side streaming reader for /api/check. Parses NDJSON lines and
 // dispatches to callbacks so the Playground CRT can append rows as they
 // resolve, matching the CLI's AsyncGenerator feel.
@@ -15,7 +18,7 @@ export type LiveMethod = "rdap" | "whois";
 export type LiveConfidence = "high" | "medium" | "low";
 export type LiveDisplayStatus = LiveStatus | "review";
 
-export interface LiveResult {
+export interface LiveResult extends LookupMetadata {
   domain: string;
   tld: string;
   rdapKey?: string;
@@ -31,8 +34,15 @@ export interface LiveResult {
 
 export interface SearchCallbacks {
   onRow: (row: LiveResult) => void;
-  onDone: (elapsedMs: number) => void;
+  onDone: (elapsedMs: number, summary?: CheckSummary) => void;
   onError: (message: string) => void;
+}
+
+function readSummary(value: unknown): CheckSummary | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const summary = value as CheckSummary;
+  return [summary.requested, summary.attempted, summary.answered, summary.unresolved, summary.elapsedMs]
+    .every(n => typeof n === "number" && Number.isFinite(n) && n >= 0) ? summary : undefined;
 }
 
 export function getLiveDisplayStatus(result: LiveResult): LiveDisplayStatus {
@@ -77,7 +87,7 @@ export async function runLiveSearch(
     const msg = JSON.parse(line) as Record<string, unknown>;
     if (msg["done"] === true && typeof msg["elapsed"] === "number") {
       terminal = true;
-      callbacks.onDone(msg["elapsed"]);
+      callbacks.onDone(msg["elapsed"], readSummary(msg["summary"]));
     } else if (typeof msg["error"] === "string" && typeof msg["domain"] !== "string") {
       terminal = true;
       callbacks.onError(msg["error"]);

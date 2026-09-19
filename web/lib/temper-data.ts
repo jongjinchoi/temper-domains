@@ -11,7 +11,7 @@
 
 export const DEFAULT_TLDS_COUNT = 30;
 export const EXTENDED_TLDS_COUNT = 59;
-export const DEFAULT_SEARCH_TIMEOUT_SECONDS = 5;
+export const SEARCH_TIMEOUT_DESCRIPTION = "automatic 5–30s budget";
 
 // Playground-only subset. Not synced with the CLI's DEFAULT_TLDS — this is
 // tuned for what fits the CRT body without scrolling. All entries must
@@ -175,8 +175,8 @@ export const SITE_URL = "https://temper-domains.vercel.app";
 export const SITE_TITLE = "temper — terminal-first domain search";
 export const SITE_TAGLINE = "terminal-first domain search";
 export const SITE_DESCRIPTION =
-  "Never leave your terminal to find a domain. 30 TLDs by default with a " +
-  "5s timeout, no telemetry in the CLI/MCP flow. Also an MCP server — so " +
+  "Never leave your terminal to find a domain. 30 TLDs by default with an " +
+  "automatic 5–30s budget, no telemetry in the CLI/MCP flow. Also an MCP server — so " +
   "Codex, Claude, and Cursor can search on your behalf.";
 
 // ─── Colophon ──────────────────────────────────────────────────────────────

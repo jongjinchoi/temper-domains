@@ -1,5 +1,5 @@
 import { Box, Text, useApp, useInput } from "ink";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { DomainDetail } from "../checker/types.ts";
 import FrameBox from "./FrameBox.tsx";
 import Spinner from "./Spinner.tsx";
@@ -17,23 +17,23 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
   const [detail, setDetail] = useState<DomainDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [elapsed, setElapsed] = useState(0);
-  const cancelledRef = useRef(false);
 
   useEffect(() => {
-    cancelledRef.current = false;
+    let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setDetail(null);
     setElapsed(0);
 
     const startTime = performance.now();
     const timer = setInterval(() => {
-      if (!cancelledRef.current) setElapsed(Math.round(performance.now() - startTime));
+      if (!cancelled) setElapsed(Math.round(performance.now() - startTime));
     }, 100);
 
     (async () => {
       const { domainDetail } = await import("../checker/detail.ts");
-      const result = await domainDetail(domain, { timeoutMs });
-      if (!cancelledRef.current) {
+      const result = await domainDetail(domain, { timeoutMs, signal: controller.signal });
+      if (!cancelled) {
         setDetail(result);
         setLoading(false);
         clearInterval(timer);
@@ -42,7 +42,8 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
     })();
 
     return () => {
-      cancelledRef.current = true;
+      cancelled = true;
+      controller.abort();
       clearInterval(timer);
     };
   }, [domain, timeoutMs]);

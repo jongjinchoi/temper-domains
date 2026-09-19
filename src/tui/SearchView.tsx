@@ -163,6 +163,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   };
 
   const total = allDomains.length;
+  const answered = [...results.values()].filter(result => ["available", "taken", "premium", "reserved"].includes(result.status)).length;
+  const unresolved = total - answered;
   const elapsedSec = (elapsed / 1000).toFixed(1);
 
   const selectedDomain = displayDomains[cursor];
@@ -232,13 +234,15 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           </Text>
         ) : (
           <Text>
-            <Text color={theme.green}>✓</Text>
-            <Text color={theme.text}> Search complete  </Text>
-            <Text color={theme.lavender}>{count}/{total}</Text>
+            <Text color={unresolved ? theme.yellow : theme.green}>{unresolved ? "⚠" : "✓"}</Text>
+            <Text color={theme.text}> {unresolved ? "Partial results" : "Search complete"}  </Text>
+            <Text color={theme.lavender}>{answered}/{total} answered</Text>
             <Text color={theme.dim}>  ({elapsedSec}s)</Text>
           </Text>
         )}
       </Box>
+
+      {done && !error && <Text color={theme.dim}>Confirm purchase availability and pricing with a registrar.</Text>}
 
       {/* Filter input */}
       {screenState === "filtering" && (

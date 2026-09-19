@@ -30,10 +30,11 @@ workspaces so root typechecking does not download a separate compiler.
 
 - CLI commands and help: `src/index.ts`
 - Default and extended TLDs: `src/checker/types.ts`
-- RDAP bootstrap and cache: `src/checker/bootstrap.ts`
+- Shared HTTP bootstrap cache: `src/checker/bootstrap-cache.ts`; disk adapter: `src/checker/bootstrap.ts`
 - RDAP lookup and parsing: `src/checker/rdap.ts`
 - WHOIS fallback and parsing: `src/checker/whois.ts`
-- Shared checker streaming scheduler: `src/checker/stream.ts`
+- Shared batch lifecycle: `src/checker/batch.ts`, `src/checker/run.ts`
+- Server scheduler and streaming: `src/checker/scheduler.ts`, `src/checker/stream.ts`
 - Single-domain RDAP/WHOIS lookup wrapper: `src/checker/lookup.ts`
 - Availability metadata and input policy: `src/checker/policy.ts`
 - PSL/IDN domain parsing: `src/utils/domain.ts`
@@ -52,8 +53,34 @@ workspaces so root typechecking does not download a separate compiler.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.
 - npm installs expose the `temper` binary and require Node.js >= 22.12.0.
 - Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
-- CLI search defaults to a 5s timeout; hosted web demo checks use the API route's 3s timeout.
-- CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
+- CLI/MCP searches automatically budget 5–30s, including bootstrap, using queued
+  server start spacing plus a 5s request window. This estimate does not guarantee
+  completion under congestion, slow responses or new server cooldowns. Explicit
+  CLI search timeouts remain strict; detail uses 10s and hosted demo uses 3s.
+- Actual requests share a process-local scheduler: at most 20 active requests,
+  two per server origin and 300ms between starts. These are client policy values;
+  separate hosted instances do not share a distributed rate limit.
+- RDAP 429/503 retries re-enter the scheduler (at most two attempts). Retry-After
+  seconds and HTTP dates are honored without truncation. When waiting would
+  exceed the deadline, return the response with retryAt. HTTP 503 is a service
+  error, not a rate_limited result.
+- Search and detail validate HTTP 200 domain JSON, including identifier matching
+  when present. Optional fields and unknown extensions are permitted; 404 needs
+  no JSON body. These checks do not establish purchase or premium-sale status.
+- Results preserve the status enum and add optional attempts, queueTimeMs,
+  terminationReason and retryAt. MCP and web completion summaries report
+  requested/attempted/answered/unresolved and measured elapsed time. done marks
+  stream termination, not successful answers for every requested domain.
+- Caller cancellation reaches queued/running lookups. Cancelling one caller does
+  not cancel the shared bootstrap refresh or another caller's requests.
+- IANA bootstrap uses the same HTTP freshness policy in CLI/MCP disk+memory and
+  web memory-only adapters. Cache-Control, Age, Date and Expires determine
+  freshness on every access; ETag/Last-Modified allow conditional revalidation.
+  Expired entries are revalidated before use; failed refreshes do not serve stale
+  data. Validated snapshots atomically replace ~/.temper/cache/rdap-dns.json;
+  legacy raw JSON is accepted and revalidated. no-store removes persisted data.
+  Published alternate endpoints are retained; HTTPS is preferred. Automatic
+  endpoint failover is not used to bypass a server cooldown.
 - RDAP server selection uses RFC 9224-style label-wise longest match, not only the final label.
 - Availability and detailed lookup results may include `confidence`, `reason`, `rdapKey`, `publicSuffix`, and `registrableDomain` metadata.
 - Detailed lookup output describes a missing registration record and its review reason instead of claiming guaranteed purchase availability.
@@ -102,7 +129,7 @@ the repository, set `TEMPER_PLAYWRIGHT_MODULE` to its ESM entry point. The scrip
 intercepts API calls and checks Escape, input focus, accessible name, incomplete
 streams, and page width at 390px/1440px. It does not access a hosted service.
 
-### Local verification — 2026-09-19
+### Previous dependency-upgrade verification — 2026-09-19 (before RDAP changes)
 
 Commands ran from the repository root on macOS arm64 with Bun 1.4.2 and
 Node.js 24.21.0, except the explicit Node.js 22.12.0 compatibility checks.
@@ -129,6 +156,20 @@ Implementation references: [Node.js file operations](https://nodejs.org/docs/lat
 [Ink 7.1.1 input activation](https://github.com/vadimdemedes/ink/tree/v7.1.1#useinputinputhandler-options),
 [Next.js Edge runtime migration](https://nextjs.org/docs/messages/edge-runtime-deprecated),
 and [CSS Grid track sizing](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/grid-template-columns).
+
+### RDAP reliability verification — 2026-09-19 (local implementation)
+
+On `fix/rdap-reliability`, 203 tests / 549 assertions passed; root/web typechecks
+and npm/web builds passed. Node 22.12 and 24.21 compiled CLI/MCP checks verified
+all 59 results with a shared-server fixture, strict explicit deadlines and
+cancellation. The browser regression verified partial coverage and cancellation
+against a local built site. Real-network CLI checks separately returned 59/59
+results (53 RDAP, 6 WHOIS) in 7.127s for one random name, plus taken responses
+for example.com/net/org and detail for example.com. This does not establish
+purchase availability or deployed Production behavior.
+
+Execution scope, commands and evidence are recorded in
+[the RDAP implementation plan](superpowers/plans/2026-09-19-rdap-reliability.md).
 
 ## Documentation Sync
 
