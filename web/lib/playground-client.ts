@@ -50,6 +50,7 @@ export async function runLiveSearch(
   signal: AbortSignal,
   tlds?: readonly string[],
 ): Promise<void> {
+  if (signal.aborted) return;
   const qs = new URLSearchParams({ name });
   if (tlds && tlds.length > 0) qs.set("tlds", tlds.join(","));
   let res: Response;
@@ -69,28 +70,42 @@ export async function runLiveSearch(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buf = "";
+  let terminal = false;
+
+  const consume = (line: string) => {
+    if (terminal || signal.aborted || !line.trim()) return;
+    const msg = JSON.parse(line) as Record<string, unknown>;
+    if (msg["done"] === true && typeof msg["elapsed"] === "number") {
+      terminal = true;
+      callbacks.onDone(msg["elapsed"]);
+    } else if (typeof msg["error"] === "string" && typeof msg["domain"] !== "string") {
+      terminal = true;
+      callbacks.onError(msg["error"]);
+    } else if (typeof msg["domain"] === "string") {
+      callbacks.onRow(msg as unknown as LiveResult);
+    }
+  };
 
   try {
     while (true) {
       const { done, value } = await reader.read();
+      if (signal.aborted) return;
       if (done) break;
       buf += decoder.decode(value, { stream: true });
       const lines = buf.split("\n");
       buf = lines.pop() ?? "";
       for (const line of lines) {
-        if (!line.trim()) continue;
-        const msg = JSON.parse(line) as Record<string, unknown>;
-        if (msg["done"] === true && typeof msg["elapsed"] === "number") {
-          callbacks.onDone(msg["elapsed"]);
-        } else if (typeof msg["domain"] === "string") {
-          callbacks.onRow(msg as unknown as LiveResult);
-        } else if (typeof msg["error"] === "string") {
-          callbacks.onError(msg["error"]);
-        }
+        consume(line);
       }
+      if (terminal) return;
     }
+    consume(buf + decoder.decode());
+    if (!terminal && !signal.aborted) callbacks.onError("Search response was incomplete. Please try again.");
   } catch (err) {
-    if ((err as { name?: string })?.name === "AbortError") return;
-    callbacks.onError(err instanceof Error ? err.message : String(err));
+    if (signal.aborted || (err as { name?: string })?.name === "AbortError") return;
+    if (!terminal) callbacks.onError(err instanceof Error ? err.message : String(err));
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
   }
 }

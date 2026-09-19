@@ -36,6 +36,7 @@ export default function Playground() {
   const [state, setState] = useState<State>({ kind: "initial" });
   const [value, setValue] = useState("");
   const bodyRef = useRef<HTMLDivElement | null>(null);
+  const terminalRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -52,6 +53,11 @@ export default function Playground() {
   useEffect(() => {
     return () => abortRef.current?.abort();
   }, []);
+
+  useEffect(() => {
+    if (state.kind === "loading") terminalRef.current?.focus({ preventScroll: true });
+    else if (state.kind === "done" || state.kind === "error") focusInput();
+  }, [state.kind, focusInput]);
 
   const startSearch = (raw: string) => {
     const clean = raw
@@ -73,18 +79,21 @@ export default function Playground() {
       {
         onRow: (row) => {
           setState((prev) => {
+            if (controller.signal.aborted || abortRef.current !== controller) return prev;
             if (prev.kind !== "loading" || prev.name !== clean) return prev;
             return { ...prev, rows: [...prev.rows, row] };
           });
         },
         onDone: (elapsedMs) => {
           setState((prev) => {
+            if (controller.signal.aborted || abortRef.current !== controller) return prev;
             if (prev.kind !== "loading" || prev.name !== clean) return prev;
             return { kind: "done", name: clean, rows: prev.rows, elapsedMs };
           });
         },
         onError: (message) => {
           setState((prev) => {
+            if (controller.signal.aborted || abortRef.current !== controller) return prev;
             const rows = prev.kind === "loading" ? prev.rows : [];
             return { kind: "error", name: clean, message, rows };
           });
@@ -106,9 +115,6 @@ export default function Playground() {
     if (e.key === "Enter") {
       e.preventDefault();
       startSearch(value);
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      reset();
     }
   };
 
@@ -173,9 +179,18 @@ export default function Playground() {
         </div>
 
         <div
+          ref={terminalRef}
           className={styles.playTerm}
           onClick={focusInput}
-          role="presentation"
+          role="group"
+          aria-label="Domain search demo"
+          tabIndex={-1}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              reset();
+            }
+          }}
         >
           <div className={styles.playBar}>
             <span>temper · live demo</span>
@@ -312,6 +327,7 @@ function InputLine({ inputRef, value, onChange, onKeyDown }: InputLineProps) {
       <input
         ref={inputRef}
         type="text"
+        aria-label="Domain name"
         autoComplete="off"
         spellCheck={false}
         className={styles.input}

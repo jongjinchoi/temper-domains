@@ -32,7 +32,9 @@ Use Bun 1.4.2 (`packageManager`) and Node.js 24.21.0 (`.nvmrc`). Install with
 `bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary
 directory. Child-process regression tests also use temporary homes. RDAP calls
 are mocked in tests; these tests do not query Production or update real user
-configuration.
+configuration. The browser check in `tests/browser/playground.mjs` targets a
+local server and intercepts `/api/check/`; it requires an available Playwright
+installation and browser, not a new product dependency.
 
 ## Source Of Truth
 

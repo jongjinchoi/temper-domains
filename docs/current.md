@@ -74,11 +74,61 @@ workspaces so root typechecking does not download a separate compiler.
   input is disabled while its child search is active.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
+- The web demo supports Escape while searching, restores input focus after
+  completion/error, and reports a stream ending without a terminal event as
+  incomplete. Its input has an accessible name.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
 - MCP public copy should mention Codex, Claude, and Cursor when describing supported AI workflows.
 - Codex setup should follow official OpenAI Codex MCP docs: `codex mcp add temper -- temper mcp` or `[mcp_servers.temper]` in `~/.codex/config.toml`.
+
+## Regression Verification
+
+`bun test` uses temporary homes and controlled network responses. Tests cover
+concurrent watch updates, failed file replacement, damaged storage preservation,
+TUI case/error/navigation regressions, and NDJSON completion/cancellation.
+MCP tests exercise all six tools over stdio, including invalid inputs; registrar
+opening is captured as a URL without launching a real browser.
+
+For the browser check, start the locally built site, then run:
+
+```bash
+TEMPER_TEST_URL=http://127.0.0.1:3000 node tests/browser/playground.mjs
+```
+
+This check requires Playwright/Chromium to be available. If installed outside
+the repository, set `TEMPER_PLAYWRIGHT_MODULE` to its ESM entry point. The script
+intercepts API calls and checks Escape, input focus, accessible name, incomplete
+streams, and page width at 390px/1440px. It does not access a hosted service.
+
+### Local verification — 2026-09-19
+
+Commands ran from the repository root on macOS arm64 with Bun 1.4.2 and
+Node.js 24.21.0, except the explicit Node.js 22.12.0 compatibility checks.
+
+| Check | Observed result |
+| --- | --- |
+| `bun ci` in a clean temporary source copy | Passed; lockfile unchanged |
+| `bun test` | 173 passed, 0 failed, 475 assertions |
+| `bun run typecheck` / `bun run web:typecheck` | Both passed |
+| `bun run build:npm` / `bun run web:build` | Both passed |
+| `bun run build.ts` | All five target binaries built |
+| macOS arm64 binary `--help` | Passed |
+| Node.js 22.12.0 and 24.21.0, compiled CLI | Search, config, concurrent watch writes, damaged config handling, and interactive TUI passed |
+| `node tests/browser/playground.mjs` against the built local site | Escape, focus, accessible input, incomplete stream, and 390px/1440px page width passed |
+
+Network-dependent CLI, TUI, MCP, and browser cases used controlled responses.
+These results do not establish hosted Production behavior, live registry
+availability, or runtime compatibility of the other four binary targets.
+GitHub Actions and publication were not run. Full local command logs are in
+`/tmp/temper-implementation-20260919/` and are temporary verification artifacts.
+
+Implementation references: [Node.js file operations](https://nodejs.org/docs/latest-v24.x/api/fs.html),
+[React effect cleanup](https://react.dev/reference/react/useEffect),
+[Ink 7.1.1 input activation](https://github.com/vadimdemedes/ink/tree/v7.1.1#useinputinputhandler-options),
+[Next.js Edge runtime migration](https://nextjs.org/docs/messages/edge-runtime-deprecated),
+and [CSS Grid track sizing](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/grid-template-columns).
 
 ## Documentation Sync
 

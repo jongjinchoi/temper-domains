@@ -16,6 +16,8 @@
 - [x] 승인된 안정 버전 의존성 갱신, Bun/Node 버전 고정 및 Node 최소 버전 명시 (2026-09-19, 로컬 검증)
 - [x] watchlist 동시 갱신 보호와 손상된 config/history/watchlist 원본 보존
 - [x] TUI 대문자 검색·bootstrap 실패·suggest 하위 화면 Escape 처리 수정
+- [x] 웹 데모 검색 중 Escape·입력 포커스·접근성 이름·모바일 페이지 넘침 수정
+- [x] 웹 응답 완료 이벤트 누락 방어 및 OG/Twitter 이미지 Node.js runtime 전환
 - [x] 테스트 작성 및 `bun test` 통과
 - [x] 보안: 도메인 입력 검증 (sanitizeDomain, encodeURIComponent)
 - [x] 보안: readJson JSON.parse try-catch
