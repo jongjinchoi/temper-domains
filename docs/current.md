@@ -82,16 +82,20 @@ workspaces so root typechecking does not download a separate compiler.
   Published alternate endpoints are retained; HTTPS is preferred. Automatic
   endpoint failover is not used to bypass a server cooldown.
 - RDAP server selection uses RFC 9224-style label-wise longest match, not only the final label.
+- Input validation rejects URL syntax before IDN conversion, checks numeric
+  labels without interpreting them as IP addresses, and rejects empty labels
+  after conversion. CLI, MCP, hosted API and watchlist use the shared validators.
 - Availability and detailed lookup results may include `confidence`, `reason`, `rdapKey`, `publicSuffix`, and `registrableDomain` metadata.
 - Detailed lookup output describes a missing registration record and its review reason instead of claiming guaranteed purchase availability.
 - Low-confidence available results are treated as review in MCP and web demo summaries.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
-- Watchlist updates serialize the full read/modify/write operation with an
+- Watchlist and history updates serialize the full read/modify/write operation with an
   exclusive local lock and replace the data file only after a temporary file
-  is written and synced. Domain keys are case-insensitive.
-- A lock waits up to 5s. A crashed writer may leave `watchlist.json.lock`;
+  is written and synced. Watchlist domain keys are case-insensitive.
+- A lock waits up to 5s. A crashed writer may leave `watchlist.json.lock` or
+  `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
   confirming no temper commands are running, remove only that lock and retry.
 - Invalid config/history/watchlist files produce a repair message and are not
@@ -99,6 +103,10 @@ workspaces so root typechecking does not download a separate compiler.
 - TUI searches use lowercase result keys, show bootstrap failures as errors,
   and do not record a failed bootstrap as a successful search. Suggestion parent
   input is disabled while its child search is active.
+- Suggestions preserve display casing and share normalized result keys with the
+  checker, including error rows. History save failures are shown separately from
+  lookup results. History deletion checks the displayed snapshot under the lock;
+  a changed list is refreshed for reselection without deleting an entry.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - The web demo supports Escape while searching, restores input focus after
@@ -113,10 +121,29 @@ workspaces so root typechecking does not download a separate compiler.
 ## Regression Verification
 
 `bun test` uses temporary homes and controlled network responses. Tests cover
-concurrent watch updates, failed file replacement, damaged storage preservation,
+concurrent watch/history updates, stale history deletion, failed file replacement, damaged storage preservation,
 TUI case/error/navigation regressions, and NDJSON completion/cancellation.
 MCP tests exercise all six tools over stdio, including invalid inputs; registrar
 opening is captured as a URL without launching a real browser.
+
+Node compatibility CI is configured to run the built CLI and MCP, shared validation, and
+the web route with isolated homes and controlled RDAP responses on Node 22.12.0
+and 24.21.0. Run from the repository root:
+
+```bash
+bun run build:npm
+bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
+node --test tests/runtime/node-checks.mjs
+```
+
+These checks do not contact registries or modify real user configuration.
+
+Local verification on 2026-09-20 for input validation, history transactions and
+suggestion result keys (macOS arm64): Bun 1.4.2 `bun test` passed 221 tests / 658
+assertions; root/web typechecks and npm/web builds passed with Node 24.21.0.
+The Node runtime checks above passed all nine cases on both Node 22.12.0 and
+24.21.0, including concurrent history writers and suggestion rendering. This is
+local evidence; GitHub Actions, publication and hosted Production were not run.
 
 For the browser check, start the locally built site, then run:
 

@@ -37,4 +37,16 @@ describe("domain parsing", () => {
     expect(findRdapBootstrapKey("example.co.uk", (key) => keys.has(key))).toBe("co.uk");
     expect(findRdapBootstrapKey("example.org.uk", (key) => keys.has(key))).toBe("uk");
   });
+
+  test("validates numeric labels without interpreting them as IP addresses", () => {
+    for (const label of ["123", "１２３", "Acme", "bücher"]) expect(isValidDomainLabel(label)).toBe(true);
+    expect(isValidDomain("123.com")).toBe(true);
+  });
+
+  test("rejects URL syntax and empty labels introduced by IDN conversion", () => {
+    for (const domain of ["example.com/path", "example.com?x", "example.com#x", "example.com:443", "user@example.com", "%65xample.com", "example.com\\path", "example。com。", "foo。．com"]) {
+      expect(isValidDomain(domain)).toBe(false);
+    }
+    for (const label of ["acme/path", "acme?x", "acme#x", "foo。bar"]) expect(isValidDomainLabel(label)).toBe(false);
+  });
 });

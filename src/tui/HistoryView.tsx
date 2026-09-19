@@ -1,6 +1,6 @@
 import { Box, Text, useApp, useInput } from "ink";
-import { useEffect, useState } from "react";
-import { type HistoryEntry, loadHistory, removeHistoryAt } from "../config/history.ts";
+import { useEffect, useRef, useState } from "react";
+import { type HistoryEntry, HistoryConflictError, loadHistory, removeHistoryAt } from "../config/history.ts";
 import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
 import { theme } from "./theme.ts";
@@ -17,8 +17,13 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedQuery, setSelectedQuery] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletePending, setDeletePending] = useState(false);
+  const deleting = useRef(false);
+  const mounted = useRef(true);
 
   useEffect(() => {
+    mounted.current = true;
     let cancelled = false;
     loadHistory().then((h) => {
       if (cancelled) return;
@@ -29,25 +34,37 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
       setLoadError(error instanceof Error ? error.message : String(error));
       setLoaded(true);
     });
-    return () => { cancelled = true; };
+    return () => { cancelled = true; mounted.current = false; };
   }, []);
 
   useInput(
     (input, key) => {
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
+      if (deleting.current) return;
       if (key.downArrow || input === "j") {
         setCursor((prev) => Math.min(prev + 1, history.length - 1));
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (input === "d" && history[cursor]) {
         const idx = cursor;
-        const original = history;
-        const next = history.filter((_, i) => i !== idx);
-        setHistory(next);
-        setCursor((prev) => Math.min(prev, next.length - 1));
-        removeHistoryAt(idx).catch(() => {
-          setHistory(original);
+        deleting.current = true;
+        setDeletePending(true);
+        setDeleteError(null);
+        removeHistoryAt(idx, history).then((next) => {
+          if (!mounted.current) return;
+          setHistory(next);
+          setCursor(Math.max(0, Math.min(idx, next.length - 1)));
+        }).catch((error: unknown) => {
+          if (!mounted.current) return;
+          if (error instanceof HistoryConflictError) {
+            setHistory(error.current);
+            setCursor(0);
+          }
+          setDeleteError(error instanceof Error ? error.message : String(error));
+        }).finally(() => {
+          deleting.current = false;
+          if (mounted.current) setDeletePending(false);
         });
       } else if (key.return && history[cursor]) {
         setSelectedQuery(history[cursor]!.query);
@@ -84,6 +101,7 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
   if (history.length === 0) {
     return (
       <FrameBox title="Recent searches" hints={[{ key: "q", action: "quit" }]}>
+        {deleteError && <Text color={theme.red}>{deleteError}</Text>}
         <Text color={theme.dim}>No search history yet.</Text>
       </FrameBox>
     );
@@ -91,6 +109,8 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
 
   return (
     <FrameBox title="Recent searches" hints={hints}>
+      {deleteError && <Text color={theme.red}>{deleteError}</Text>}
+      {deletePending && <Text color={theme.dim}>Deleting history entry...</Text>}
       {/* Table header */}
       <Box marginBottom={0}>
         <Text color={theme.dim}>{"DATE".padEnd(18)}{"QUERY".padEnd(16)}{"TLDs".padEnd(8)}{"RESULT"}</Text>

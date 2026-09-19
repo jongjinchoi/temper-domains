@@ -1,6 +1,6 @@
 import "./home.ts";
 import { PassThrough, Writable } from "node:stream";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import React from "react";
 import { render } from "ink";
@@ -9,20 +9,37 @@ import SuggestView from "../../src/tui/SuggestView.tsx";
 import HistoryView from "../../src/tui/HistoryView.tsx";
 import WatchlistView from "../../src/tui/WatchlistView.tsx";
 import { EXTENDED_TLDS } from "../../src/checker/types.ts";
+import { addHistory } from "../../src/config/history.ts";
 
 const scenario = process.argv[2];
-if (scenario === "watch-corrupt" || scenario === "history-corrupt") {
+if (scenario === "watch-corrupt" || scenario === "history-corrupt" || scenario === "history-save-failure") {
   const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, scenario === "watch-corrupt" ? "watchlist.json" : "history.json"), "{}");
 }
+if (scenario?.startsWith("history-delete-")) {
+  await addHistory({ query: "older", timestamp: new Date().toISOString(), available: 1, total: 1 });
+  await addHistory({ query: "selected", timestamp: new Date().toISOString(), available: 1, total: 1 });
+}
 const unhandled: string[] = [];
 process.on("unhandledRejection", (error) => unhandled.push(String(error)));
 Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
-globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
+let started = 0;
+let aborted = 0;
+globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
   if (String(input) === "https://data.iana.org/rdap/dns.json") {
-    if (scenario === "bootstrap") throw new Error("test bootstrap unavailable");
+    if (scenario === "bootstrap" || scenario === "suggest-bootstrap") throw new Error("test bootstrap unavailable");
     return Response.json({ services: EXTENDED_TLDS.map((tld) => [[tld], [`https://${tld}.test/`]]) });
+  }
+  if (scenario === "suggest-cancel") {
+    started++;
+    return new Promise<Response>((_resolve, reject) => {
+      init!.signal!.addEventListener("abort", () => { aborted++; reject(init!.signal!.reason); }, { once: true });
+    });
+  }
+  if (scenario === "suggest-partial" && String(input).endsWith("/getacme.com")) return new Response(null, { status: 400 });
+  if (scenario === "suggest-uppercase" && String(input).endsWith("/acmeapp.com")) {
+    return Response.json({ objectClassName: "domain", ldhName: "acmeapp.com" });
   }
   return new Response(null, { status: 404 });
 }) as typeof fetch;
@@ -34,9 +51,10 @@ const input = new PassThrough();
 Object.assign(input, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
 let back = 0;
 const element = scenario === "suggest"
-  ? <SuggestView query="acme" prefixes={[]} suffixes={[]} onBack={() => back++} />
+  ? <SuggestView query="Acme" prefixes={[]} suffixes={[]} onBack={() => back++} />
   : scenario === "watch-corrupt" ? <WatchlistView />
-  : scenario === "history-corrupt" ? <HistoryView />
+  : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
+  : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
   : <SearchView query="Acme" tlds={["com"]} />;
 const view = render(element, {
   stdout: output as NodeJS.WriteStream, stderr: output as NodeJS.WriteStream,
@@ -54,11 +72,36 @@ try {
     await until(() => frame.includes("Search complete"));
     input.write("\x1b");
     await until(() => !frame.includes("temper search"));
+  } else if (scenario === "suggest-cancel") {
+    await until(() => started > 0);
+    view.unmount();
+    await until(() => aborted === started);
+  } else if (scenario?.startsWith("suggest-")) {
+    await until(() => frame.includes("3 names checked"));
+  } else if (scenario === "history-delete-conflict") {
+    await until(() => frame.includes("selected"));
+    await addHistory({ query: "new", timestamp: new Date().toISOString(), available: 1, total: 1 });
+    input.write("d");
+    await until(() => frame.includes("History changed"));
+  } else if (scenario === "history-delete-repeat") {
+    await until(() => frame.includes("selected"));
+    const lock = join(process.env.TEMPER_TEST_HOME!, ".temper/history.json.lock");
+    await writeFile(lock, "test owner");
+    input.write("d");
+    await until(() => frame.includes("Deleting history"));
+    input.write("d");
+    await unlink(lock);
+    await until(() => !frame.includes("selected") && !frame.includes("Deleting history"));
+  } else if (scenario === "history-delete-failure") {
+    await until(() => frame.includes("selected"));
+    await writeFile(join(process.env.TEMPER_TEST_HOME!, ".temper/history.json"), "{}");
+    input.write("d");
+    await until(() => frame.includes("repair"));
   } else {
     await until(() => frame.includes("Search complete") || frame.includes("Search failed") || frame.includes("repair") || unhandled.length > 0);
   }
   const history = await readFile(join(process.env.TEMPER_TEST_HOME!, ".temper/history.json"), "utf8").catch(() => "[]");
-  const result = { frame: frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, ""), back, unhandled, history: JSON.parse(history) };
+  const result = { frame: frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, ""), back, unhandled, history: JSON.parse(history), started, aborted };
   view.unmount();
   view.cleanup();
   console.log(JSON.stringify(result));

@@ -10,6 +10,7 @@ interface SearchExecutionResult {
   elapsed: number;
   done: boolean;
   error: string | null;
+  historyError: string | null;
 }
 
 export function useSearchExecution(
@@ -21,6 +22,7 @@ export function useSearchExecution(
   const [elapsed, setElapsed] = useState(0);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +30,7 @@ export function useSearchExecution(
     setElapsed(0);
     setDone(false);
     setError(null);
+    setHistoryError(null);
 
     const abortController = new AbortController();
     const startTime = performance.now();
@@ -53,7 +56,9 @@ export function useSearchExecution(
             timestamp: new Date().toISOString(),
             available: collected.filter((r) => r.status === "available").length,
             total: tlds.length,
-          }).catch(() => {});
+          }).catch((error: unknown) => {
+            if (!cancelled) setHistoryError(error instanceof Error ? error.message : String(error));
+          });
         }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : String(err));
@@ -73,5 +78,5 @@ export function useSearchExecution(
     };
   }, [query, tlds, timeoutMs]);
 
-  return { results, count: results.size, elapsed, done, error };
+  return { results, count: results.size, elapsed, done, error, historyError };
 }

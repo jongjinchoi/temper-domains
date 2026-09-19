@@ -39,7 +39,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     return () => { stdout.off("resize", onResize); };
   }, [stdout]);
 
-  const { results, count, elapsed, done, error } = useSearchExecution(query, tlds, timeoutMs);
+  const { results, count, elapsed, done, error, historyError } = useSearchExecution(query, tlds, timeoutMs);
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [cursor, setCursor] = useState(0);
@@ -243,6 +243,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       </Box>
 
       {done && !error && <Text color={theme.dim}>Confirm purchase availability and pricing with a registrar.</Text>}
+      {historyError && <Text color={theme.yellow}>History was not saved: {historyError}</Text>}
 
       {/* Filter input */}
       {screenState === "filtering" && (

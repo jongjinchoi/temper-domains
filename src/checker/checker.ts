@@ -2,7 +2,7 @@ import { getBootstrap } from "./bootstrap.ts";
 import { checkDomainBatch } from "./batch.ts";
 import type { CheckOptions } from "./stream.ts";
 import { DEFAULT_TLDS, type DomainResult } from "./types.ts";
-import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
+import { isValidDomainLabel, normalizeDomainKey } from "../utils/validate.ts";
 
 export interface SuggestionResultGroup {
   name: string;
@@ -20,14 +20,14 @@ interface DomainSearchOptions extends CheckOptions {
 
 export async function* checkDomains(name: string, tlds: readonly string[] = DEFAULT_TLDS,
   options: DomainSearchOptions = {}): AsyncGenerator<DomainResult> {
-  const safeName = sanitizeDomain(name).toLowerCase();
+  const safeName = normalizeDomainKey(name);
   if (!isValidDomainLabel(safeName)) throw new Error("Invalid domain label");
   yield* checkFullDomains(tlds.map(tld => `${safeName}.${tld}`), options);
 }
 
 export async function* checkFullDomains(domains: readonly string[], options: DomainSearchOptions = {}): AsyncGenerator<DomainResult> {
   const { rdapUrls, ...checkOptions } = options;
-  yield* checkDomainBatch(domains.map(domain => sanitizeDomain(domain).toLowerCase()), checkOptions,
+  yield* checkDomainBatch(domains.map(normalizeDomainKey), checkOptions,
     () => rdapUrls ? Promise.resolve(rdapUrls) : getBootstrap());
 }
 
@@ -39,7 +39,7 @@ export async function checkSuggestionMatrix(
   const { onResult, ...checkOptions } = options;
   const domainToName = new Map<string, string>();
   const domains = names.flatMap((name) => {
-    const safeName = sanitizeDomain(name).toLowerCase();
+    const safeName = normalizeDomainKey(name);
     return tlds.map((tld) => {
       const domain = `${safeName}.${tld}`;
       domainToName.set(domain, safeName);
@@ -56,7 +56,7 @@ export async function checkSuggestionMatrix(
 
   const byDomain = new Map(results.map((result) => [result.domain, result]));
   return names.map((rawName) => {
-    const name = sanitizeDomain(rawName).toLowerCase();
+    const name = normalizeDomainKey(rawName);
     return {
       name,
       results: tlds

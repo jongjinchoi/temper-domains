@@ -7,6 +7,7 @@ import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
 import Spinner from "./Spinner.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
+import { normalizeDomainKey } from "../utils/validate.ts";
 
 const CHECK_TLD = "com";
 
@@ -58,7 +59,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
           signal: abortController.signal,
           onResult: (name, result) => {
             if (!cancelled) {
-              setResults((prev) => new Map(prev).set(name, result));
+              setResults((prev) => new Map(prev).set(normalizeDomainKey(name), result));
             }
           },
         });
@@ -68,9 +69,10 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
           setResults((prev) => {
             const next = new Map(prev);
             for (const name of allNames) {
-              if (next.has(name)) continue;
-              next.set(name, {
-                domain: `${name}.${CHECK_TLD}`,
+              const key = normalizeDomainKey(name);
+              if (next.has(key)) continue;
+              next.set(key, {
+                domain: `${key}.${CHECK_TLD}`,
                 tld: CHECK_TLD,
                 status: "error",
                 method: "rdap",
@@ -137,7 +139,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       </Box>
       {names.map((name, i) => {
         const globalIdx = offset + i;
-        const result = results.get(name);
+        const result = results.get(normalizeDomainKey(name));
         const isSelected = globalIdx === cursor;
         const style = result ? getStatusStyle(result.status) : null;
         const detail = result?.error ? ` ${result.error}` : "";
