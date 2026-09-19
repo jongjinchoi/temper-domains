@@ -3,6 +3,12 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Existing release tag to recover npm publication (e.g. v0.4.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -12,9 +18,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
+      - name: Validate release source
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$RELEASE_TAG" = "v$(node -p 'JSON.parse(require("node:fs").readFileSync("package.json", "utf8")).version')"
+          git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            test "$GITHUB_REF" = "refs/heads/main"
+            git merge-base --is-ancestor "refs/tags/$RELEASE_TAG" HEAD
+            # Build the workflow commit so npm provenance names the actual source.
+            # Recovery permits only workflow/documentation changes after the tag.
+            git diff --exit-code "refs/tags/$RELEASE_TAG" HEAD -- . \
+              ':(exclude).github/workflows/release.yml' ':(exclude)docs/release.md'
+          fi
       - uses: oven-sh/setup-bun@v2
       - run: bun ci
       - run: bun test
@@ -22,6 +46,7 @@ jobs:
       - run: bun run build:npm
 
   build:
+    if: github.event_name == 'push'
     needs: verify
     strategy:
       matrix:
@@ -58,6 +83,7 @@ jobs:
           path: dist/temper-${{ matrix.target }}.tar.gz
 
   release:
+    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -73,6 +99,9 @@ jobs:
   npm:
     needs: verify
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
@@ -80,13 +109,13 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
       - run: bun ci
       - run: bun run build:npm
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   homebrew:
+    if: github.event_name == 'push'
     needs: release
     runs-on: ubuntu-latest
     steps:
