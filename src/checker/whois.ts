@@ -133,26 +133,27 @@ export async function whoisLookup(
   const host = WHOIS_SERVERS[tld];
   if (!host) {
     return {
-      domain, tld, status: "error", method: "whois", responseTime: 0,
+      domain, tld, status: "error", method: "whois", responseTime: 0, attempts: 0,
       error: `No whois server for .${tld}`,
     };
   }
 
   const start = performance.now();
+  const attempts = signal.aborted ? 0 : 1;
 
   try {
     const raw = await whoisRaw(host, domain, timeoutMs, signal);
 
     const responseTime = Math.round(performance.now() - start);
     const status = detectStatus(raw);
-    return { domain, tld, status, method: "whois", responseTime };
+    return { domain, tld, status, method: "whois", responseTime, attempts };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
     if (signal.aborted) {
-      return { domain, tld, status: "slow", method: "whois", responseTime };
+      return { domain, tld, status: "slow", method: "whois", responseTime, attempts };
     }
     return {
-      domain, tld, status: "error", method: "whois", responseTime,
+      domain, tld, status: "error", method: "whois", responseTime, attempts,
       error: err instanceof Error ? err.message : String(err),
     };
   }
@@ -243,12 +244,13 @@ export async function whoisDetail(
   const host = WHOIS_SERVERS[tld];
   if (!host) {
     return {
-      domain, status: "error", method: "whois", responseTime: 0,
+      domain, status: "error", method: "whois", responseTime: 0, attempts: 0,
       error: `No whois server for .${tld}`,
     };
   }
 
   const start = performance.now();
+  const attempts = signal.aborted ? 0 : 1;
 
   try {
     const raw = await whoisRaw(host, domain, timeoutMs, signal);
@@ -258,7 +260,7 @@ export async function whoisDetail(
     const parsed = status === "taken" ? parseWhoisRaw(raw) : {};
 
     return {
-      domain, status, method: "whois", responseTime,
+      domain, status, method: "whois", responseTime, attempts,
       ...parsed,
       rawWhois: raw,
     };
@@ -269,6 +271,7 @@ export async function whoisDetail(
       status: signal.aborted ? "slow" : "error",
       method: "whois",
       responseTime,
+      attempts,
       error: err instanceof Error ? err.message : String(err),
     };
   }

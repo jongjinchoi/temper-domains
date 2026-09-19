@@ -43,7 +43,11 @@ export function useSearchExecution(
           collected.push(result);
           setResults((prev) => new Map(prev).set(result.domain, result));
         }
-        if (!cancelled) {
+        if (!cancelled && collected.length > 0 && collected.every(result => result.terminationReason === "bootstrap_error")) {
+          setError(collected[0]?.error ?? "Could not load the domain lookup server directory");
+          return;
+        }
+        if (!cancelled && collected.some(result => (result.attempts ?? 0) > 0)) {
           await addHistory({
             query,
             timestamp: new Date().toISOString(),

@@ -173,7 +173,7 @@ describe("rdapLookup", () => {
     expect(result.error).toBe("HTTP 403");
   });
 
-  test("keeps server backoff longer than the active retry wait", async () => {
+  test("honors Retry-After before retrying and before subsequent work", async () => {
     const rdapUrl = `https://rdap-backoff-${Date.now()}.test`;
     globalThis.fetch = (async () =>
       new Response(null, { status: 429, headers: { "retry-after": "2" } })) as unknown as typeof fetch;
@@ -186,8 +186,8 @@ describe("rdapLookup", () => {
     const afterBackoff = Date.now();
 
     expect(result.status).toBe("rate_limited");
-    expect(afterLookup - start).toBeGreaterThanOrEqual(900);
-    expect(afterLookup - start).toBeLessThan(1700);
-    expect(afterBackoff - start).toBeGreaterThanOrEqual(1800);
+    expect(afterLookup - start).toBeGreaterThanOrEqual(1950);
+    expect(afterLookup - start).toBeLessThan(3000);
+    expect(afterBackoff - start).toBeGreaterThanOrEqual(3950);
   });
 });

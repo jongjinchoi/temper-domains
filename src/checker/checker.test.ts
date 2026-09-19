@@ -79,7 +79,7 @@ function installControlledFetch() {
 
       signal?.addEventListener("abort", onAbort, { once: true });
       pending.set(domain, {
-        resolve: (status = 404) => finish(() => resolve(new Response(null, { status }))),
+        resolve: (status = 404) => finish(() => resolve((status === 200 ? Response.json({ objectClassName: "domain", ldhName: domain }) : new Response(null, { status })))),
         reject: (err = new Error("fetch failed")) => finish(() => reject(err)),
       });
     });
@@ -104,7 +104,7 @@ describe("checker", () => {
         return new Response(null, { status: 404 });
       }
       if (url.includes("/domain/taken.com")) {
-        return new Response(null, { status: 200 });
+        return Response.json({ objectClassName: "domain", ldhName: "taken.com" });
       }
       return new Response(null, { status: 500 });
     }) as unknown as typeof fetch;
@@ -133,7 +133,7 @@ describe("checker", () => {
     let calls = 0;
     globalThis.fetch = (async () => {
       calls++;
-      return new Response(null, { status: 200 });
+      return Response.json({ objectClassName: "domain", ldhName: "taken.com" });
     }) as unknown as typeof fetch;
 
     const results = [];
@@ -153,7 +153,7 @@ describe("checker", () => {
     let calls = 0;
     globalThis.fetch = (async () => {
       calls++;
-      return new Response(null, { status: 200 });
+      return Response.json({ objectClassName: "domain", ldhName: "taken.com" });
     }) as unknown as typeof fetch;
 
     const results = await collectResults(checkFullDomains(
@@ -171,7 +171,7 @@ describe("checker", () => {
     let calls = 0;
     globalThis.fetch = (async () => {
       calls++;
-      return new Response(null, { status: 200 });
+      return Response.json({ objectClassName: "domain", ldhName: "taken.com" });
     }) as unknown as typeof fetch;
 
     await expect(collectResults(checkDomains("foo.", ["com"], {
@@ -184,7 +184,7 @@ describe("checker", () => {
     let calls = 0;
     globalThis.fetch = (async () => {
       calls++;
-      return new Response(null, { status: 200 });
+      return Response.json({ objectClassName: "domain", ldhName: "taken.com" });
     }) as unknown as typeof fetch;
 
     const detail = await domainDetail("bad_domain.com");

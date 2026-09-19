@@ -161,7 +161,7 @@ describe("getServerLimit", () => {
     const pending = limit(async () => { started = true; }, controller.signal);
     setTimeout(() => controller.abort(), 20);
 
-    await expect(pending).rejects.toThrow("Aborted");
+    await expect(pending).rejects.toMatchObject({ name: "AbortError" });
     expect(started).toBe(false);
     expect(Date.now() - startedAt).toBeLessThan(200);
   });

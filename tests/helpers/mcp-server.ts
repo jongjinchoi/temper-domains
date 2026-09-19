@@ -9,7 +9,7 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => {
     return Response.json({ services: EXTENDED_TLDS.map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
   return String(input).includes("/domain/taken.")
-    ? Response.json({ ldhName: "taken.com", status: ["active"] })
+    ? Response.json({ objectClassName: "domain", ldhName: decodeURIComponent(String(input).split("/domain/")[1]!), status: ["active"] })
     : new Response(null, { status: 404 });
 }) as typeof fetch;
 mock.module("../../src/registrar/browser.ts", () => ({

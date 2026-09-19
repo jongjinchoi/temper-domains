@@ -1,99 +1,120 @@
-import type { DomainDetail, DomainResult } from "./types.ts";
-import { applyServerBackoff } from "./limiter.ts";
-import { getTld } from "../utils/domain.ts";
+import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
+import { requestScheduler, serverKey } from "./scheduler.ts";
+import { createRun, abortReason, LookupAbort, type LookupContext } from "./run.ts";
+import { getTld, parseDomain } from "../utils/domain.ts";
 
 const RDAP_HEADERS = {
   Accept: "application/rdap+json, application/json",
   "User-Agent": "temper-domains",
 };
-const MAX_ACTIVE_RETRY_AFTER_MS = 1000;
-const MAX_SERVER_BACKOFF_MS = 30_000;
-const FALLBACK_RETRY_MS = 500;
 
-function parseRetryAfter(value: string | null, maxMs: number): number {
-  if (!value) return FALLBACK_RETRY_MS;
+export function parseRetryAfter(value: string | null, now = Date.now()): number {
+  if (!value) return 500;
+  if (/^\d+$/.test(value.trim())) return Math.min(Number(value) * 1000, 8.64e15 - now);
+  // A signed number is not an HTTP-date or a delay-seconds value.
+  if (/^[+-]?\d+(\.\d+)?$/.test(value.trim())) return 500;
+  const date = Date.parse(value);
+  return Number.isFinite(date) ? Math.max(0, date - now) : 500;
+}
 
-  const seconds = Number(value);
-  if (Number.isFinite(seconds)) {
-    return Math.min(Math.max(seconds * 1000, 0), maxMs);
+function validateDomainResponse(value: unknown, domain: string): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid RDAP domain object");
+  const data = value as Record<string, unknown>;
+  if (data.objectClassName !== "domain" || "errorCode" in data) throw new Error("Invalid RDAP domain object");
+  for (const field of ["ldhName", "unicodeName"]) {
+    if (data[field] === undefined) continue;
+    if (typeof data[field] !== "string" || !parseDomain(data[field]).asciiDomain ||
+      parseDomain(data[field]).asciiDomain !== parseDomain(domain).asciiDomain) {
+      throw new Error("RDAP response domain does not match the query");
+    }
   }
-
-  const dateMs = Date.parse(value);
-  if (Number.isNaN(dateMs)) return FALLBACK_RETRY_MS;
-
-  return Math.min(Math.max(dateMs - Date.now(), 0), maxMs);
+  return data;
 }
 
-async function delay(ms: number, signal: AbortSignal): Promise<void> {
-  if (ms <= 0) return;
-  await new Promise<void>((resolve, reject) => {
-    const cleanup = () => {
-      clearTimeout(timer);
-      signal.removeEventListener("abort", onAbort);
-    };
-    const onAbort = () => {
-      cleanup();
-      reject(new DOMException("Aborted", "AbortError"));
-    };
-    const timer = setTimeout(() => {
-      cleanup();
-      resolve();
-    }, ms);
-    signal.addEventListener("abort", onAbort, { once: true });
-  });
-}
-
-async function fetchRdap(url: string, rdapBaseUrl: string, signal: AbortSignal): Promise<Response> {
-  let res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
-  if (res.status !== 429 && res.status !== 503) return res;
-
-  const retryAfterMs = parseRetryAfter(res.headers.get("retry-after"), MAX_SERVER_BACKOFF_MS);
-  applyServerBackoff(rdapBaseUrl, retryAfterMs);
-  await delay(Math.min(retryAfterMs, MAX_ACTIVE_RETRY_AFTER_MS), signal);
-  res = await fetch(url, { signal, redirect: "follow", headers: RDAP_HEADERS });
-  if (res.status === 429 || res.status === 503) {
-    applyServerBackoff(rdapBaseUrl, parseRetryAfter(res.headers.get("retry-after"), MAX_SERVER_BACKOFF_MS));
+interface RdapAnswer { status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number }
+async function queryRdap(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
+  if (!context) {
+    const run = createRun(10000, signal);
+    try { return await queryRdap(domain, base, run.signal, run.context); }
+    finally { run.close(); }
   }
-  return res;
-}
-
-export async function rdapLookup(
-  domain: string,
-  rdapBaseUrl: string,
-  signal: AbortSignal,
-): Promise<DomainResult> {
-  const tld = getTld(domain);
-  const url = `${rdapBaseUrl.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
   const start = performance.now();
-
+  const ctx = context;
+  const key = serverKey(base);
+  const url = `${base.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
+  let attempts = 0;
+  let queueTimeMs = 0;
+  let queuedAt: number | undefined;
+  let terminationReason: TerminationReason | undefined;
+  let lastAnswer: RdapAnswer | undefined;
+  const row = (fields: Partial<DomainDetail>): DomainDetail => ({
+    domain, status: "error", method: "rdap", responseTime: Math.round(performance.now() - start),
+    attempts, queueTimeMs: Math.round(queueTimeMs), ...fields,
+  });
   try {
-    const res = await fetchRdap(url, rdapBaseUrl, signal);
-    const responseTime = Math.round(performance.now() - start);
-
-    if (res.status === 404) {
-      return { domain, tld, status: "available", method: "rdap", responseTime };
+    for (let attempt = 0; attempt < 2; attempt++) {
+      queuedAt = performance.now();
+      const answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
+        queueTimeMs += performance.now() - queuedAt!;
+        queuedAt = undefined;
+        signal.throwIfAborted();
+        if (Date.now() >= ctx.deadline) throw new LookupAbort(attempts ? "deadline" : "deadline_before_start");
+        attempts++;
+        const controller = new AbortController();
+        const remaining = ctx.deadline - Date.now();
+        const timeout = setTimeout(() => controller.abort(new LookupAbort(
+          remaining <= ctx.requestTimeoutMs ? "deadline" : "request_timeout",
+        )), Math.max(0, Math.min(ctx.requestTimeoutMs, remaining)));
+        const requestSignal = AbortSignal.any([signal, controller.signal]);
+        let response: Response | undefined;
+        try {
+          response = await fetch(url, { signal: requestSignal, redirect: "follow", headers: RDAP_HEADERS });
+          if (response.status === 429 || response.status === 503) {
+            const wait = parseRetryAfter(response.headers.get("retry-after"));
+            requestScheduler.backoff(key, wait);
+            return { status: response.status, retryAt: Date.now() + wait };
+          }
+          if (response.status !== 200) return { status: response.status };
+          try {
+            const json = validateDomainResponse(await response.json(), domain);
+            return { status: 200, json, parsed: parseRdapResponse(json) };
+          } catch (error) {
+            if (!requestSignal.aborted) terminationReason = "invalid_response";
+            throw error;
+          }
+        } catch (error) {
+          if (requestSignal.aborted) terminationReason = abortReason(requestSignal, attempts);
+          throw error;
+        } finally {
+          clearTimeout(timeout);
+          await response?.body?.cancel().catch(() => {});
+        }
+      }, signal);
+      lastAnswer = answer;
+      if (answer.status === 200) return row({ status: "taken", ...answer.parsed, rawRdap: answer.json });
+      if (answer.status === 404) return row({ status: "available" });
+      if (answer.status !== 429 && answer.status !== 503) return row({ error: `HTTP ${answer.status}`, terminationReason: "http_error" });
+      if (attempt === 1 || (answer.retryAt ?? 0) >= ctx.deadline) break;
     }
-    if (res.status === 200) {
-      return { domain, tld, status: "taken", method: "rdap", responseTime };
-    }
-    if (res.status === 429 || res.status === 503) {
-      return { domain, tld, status: "rate_limited", method: "rdap", responseTime, error: `HTTP ${res.status}` };
-    }
-
-    return {
-      domain, tld, status: "error", method: "rdap", responseTime,
-      error: `HTTP ${res.status}`,
-    };
-  } catch (err) {
-    const responseTime = Math.round(performance.now() - start);
-    if (signal.aborted) {
-      return { domain, tld, status: "slow", method: "rdap", responseTime };
-    }
-    return {
-      domain, tld, status: "error", method: "rdap", responseTime,
-      error: err instanceof Error ? err.message : String(err),
-    };
+    return row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
+      error: `HTTP ${lastAnswer?.status}`, terminationReason: lastAnswer?.status === 429 ? "rate_limited" : "service_unavailable",
+      retryAt: lastAnswer?.retryAt === undefined ? undefined : new Date(lastAnswer.retryAt).toISOString() });
+  } catch (error) {
+    if (queuedAt !== undefined) queueTimeMs += performance.now() - queuedAt;
+    const reason = terminationReason ?? (signal.aborted ? abortReason(signal, attempts)
+      : error instanceof LookupAbort ? error.reason : "network_error");
+    return row({ status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
+      terminationReason: reason, error: error instanceof Error ? error.message : String(error) });
   }
+}
+
+export async function rdapLookup(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainResult> {
+  const { rawRdap, registrar, registrant, createdDate, updatedDate, expiryDate, nameServers, dnssec, statusCodes, ...result } =
+    await queryRdap(domain, base, signal, context);
+  return { ...result, tld: getTld(domain) };
+}
+export async function rdapDetail(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
+  return queryRdap(domain, base, signal, context);
 }
 
 // --- Detail parsing (RFC 9083) ---
@@ -185,47 +206,4 @@ export function parseRdapResponse(data: Record<string, unknown>): Partial<Domain
   }
 
   return detail;
-}
-
-export async function rdapDetail(
-  domain: string,
-  rdapBaseUrl: string,
-  signal: AbortSignal,
-): Promise<DomainDetail> {
-  const tld = getTld(domain);
-  const url = `${rdapBaseUrl.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
-  const start = performance.now();
-
-  try {
-    const res = await fetchRdap(url, rdapBaseUrl, signal);
-    const responseTime = Math.round(performance.now() - start);
-
-    if (res.status === 404) {
-      return { domain, status: "available", method: "rdap", responseTime };
-    }
-    if (res.status === 429 || res.status === 503) {
-      return { domain, status: "rate_limited", method: "rdap", responseTime, error: `HTTP ${res.status}` };
-    }
-    if (res.status !== 200) {
-      return { domain, status: "error", method: "rdap", responseTime, error: `HTTP ${res.status}` };
-    }
-
-    const json = await res.json() as Record<string, unknown>;
-    const parsed = parseRdapResponse(json);
-
-    return {
-      domain, status: "taken", method: "rdap", responseTime,
-      ...parsed,
-      rawRdap: json,
-    };
-  } catch (err) {
-    const responseTime = Math.round(performance.now() - start);
-    return {
-      domain,
-      status: signal.aborted ? "slow" : "error",
-      method: "rdap",
-      responseTime,
-      error: err instanceof Error ? err.message : String(err),
-    };
-  }
 }

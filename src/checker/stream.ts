@@ -1,62 +1,41 @@
-import { pLimit } from "./limiter.ts";
-import type { DomainResult } from "./types.ts";
+import { getTld } from "../utils/domain.ts";
+import type { CheckSummary, DomainResult } from "./types.ts";
 
 export interface CheckOptions {
   concurrency?: number;
   timeoutMs?: number;
+  requestTimeoutMs?: number;
   signal?: AbortSignal;
+  onSummary?: (summary: CheckSummary) => void;
 }
-
+export function summarizeResults(results: readonly DomainResult[], requested: number, elapsedMs: number): CheckSummary {
+  const answered = results.filter(r => ["available", "taken", "premium", "reserved"].includes(r.status)).length;
+  return { requested, attempted: results.filter(r => (r.attempts ?? 0) > 0).length, answered,
+    unresolved: requested - answered, elapsedMs: Math.round(elapsedMs) };
+}
 export async function* streamDomainResults(
   domains: readonly string[],
   options: CheckOptions,
   checkDomain: (domain: string, signal: AbortSignal) => Promise<DomainResult>,
 ): AsyncGenerator<DomainResult> {
-  const { concurrency = 20, timeoutMs = 3000, signal: externalSignal } = options;
-  const globalLimit = pLimit(concurrency);
   const controller = new AbortController();
-  const { signal } = controller;
+  const signal = options.signal ? AbortSignal.any([options.signal, controller.signal]) : controller.signal;
   const results: DomainResult[] = [];
-  let resolveNext: (() => void) | null = null;
-
-  const onExternalAbort = () => {
-    controller.abort();
-  };
-
-  if (externalSignal) {
-    if (externalSignal.aborted) controller.abort();
-    else externalSignal.addEventListener("abort", onExternalAbort, { once: true });
-  }
-
-  const allDone = Promise.allSettled(
-    domains.map((domain) =>
-      globalLimit(async () => {
-        const result = await checkDomain(domain, signal);
-        results.push(result);
-        resolveNext?.();
-        return result;
-      }),
-    ),
-  );
-
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
+  let wake: (() => void) | undefined;
+  const tasks = domains.map(async domain => {
+    try { results.push(await checkDomain(domain, signal)); }
+    catch (error) {
+      results.push({ domain, tld: getTld(domain), status: "error", method: "rdap", responseTime: 0,
+        terminationReason: "network_error", error: error instanceof Error ? error.message : String(error) });
+    }
+    wake?.();
+  });
   try {
     let yielded = 0;
     while (yielded < domains.length) {
-      if (yielded < results.length) {
-        const result = results[yielded++];
-        if (result) yield result;
-      } else {
-        await new Promise<void>((r) => {
-          resolveNext = r;
-        });
-      }
+      if (yielded < results.length) yield results[yielded++]!;
+      else await new Promise<void>(resolve => { wake = resolve; });
     }
-    await allDone;
-  } finally {
-    clearTimeout(timeout);
-    if (externalSignal) externalSignal.removeEventListener("abort", onExternalAbort);
-    controller.abort();
-  }
+    await Promise.all(tasks);
+  } finally { controller.abort(); }
 }

@@ -1,4 +1,4 @@
-import type { DomainDetail, DomainResult, ResultConfidence } from "./types.ts";
+import type { DomainDetail, DomainResult, ResultConfidence, TerminationReason } from "./types.ts";
 import { parseDomain, type ParsedDomain } from "../utils/domain.ts";
 import { isValidDomain } from "../utils/validate.ts";
 
@@ -22,6 +22,20 @@ const PUBLIC_SUFFIX_REASON =
 
 const RDAP_NOT_FOUND_REASON =
   "RDAP returned no domain object; confirm final purchase availability with a registrar";
+
+const TERMINATION_MESSAGES: Record<TerminationReason, string> = {
+  deadline_before_start: "Time limit reached before this domain could be queried",
+  deadline: "Overall time limit reached while querying this domain",
+  request_timeout: "The lookup server did not respond within the request time limit",
+  cancelled: "Lookup cancelled",
+  rate_limited: "The lookup server asked us to wait before retrying",
+  service_unavailable: "The lookup service is temporarily unavailable",
+  invalid_response: "The server did not return a valid matching RDAP domain response",
+  network_error: "Could not complete the connection to the lookup server",
+  http_error: "The lookup server returned an HTTP error",
+  invalid_input: "Input is not a registrable domain",
+  bootstrap_error: "Could not load the domain lookup server directory",
+};
 
 export function getDomainMetadata(domain: string, rdapKey?: string): DomainMetadata {
   return getDomainMetadataFromParsed(parseDomain(domain), rdapKey);
@@ -84,7 +98,7 @@ export function enrichDomainResult(result: DomainResult, rdapKey?: string): Doma
     ...result,
     ...metadata,
     confidence: result.confidence ?? policy.confidence,
-    reason: result.reason ?? reason,
+    reason: result.reason ?? (result.terminationReason ? TERMINATION_MESSAGES[result.terminationReason] : reason),
   };
 }
 
@@ -96,6 +110,7 @@ export function enrichDomainDetail(detail: DomainDetail, rdapKey?: string): Doma
     method: detail.method,
     responseTime: detail.responseTime,
     error: detail.error,
+    terminationReason: detail.terminationReason,
   }, rdapKey);
 
   return {
