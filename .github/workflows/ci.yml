@@ -18,10 +18,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
       - uses: oven-sh/setup-bun@v2
       - run: bun ci
       - run: bun test
-      - run: bunx tsc --noEmit
+      - run: bun run typecheck
       - run: bun run build:npm
 
   web:
@@ -29,7 +32,27 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
       - uses: oven-sh/setup-bun@v2
       - run: bun ci
       - run: bun run web:typecheck
       - run: bun run web:build
+
+  node-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node: ["22.12.0", "24.21.0"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: oven-sh/setup-bun@v2
+      - run: bun ci
+      - run: bun run build:npm
+      - run: node dist/npm/index.js --help
+      - run: node dist/npm/index.js show-presets

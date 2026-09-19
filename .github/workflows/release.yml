@@ -12,10 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
       - uses: oven-sh/setup-bun@v2
       - run: bun ci
       - run: bun test
-      - run: bunx tsc --noEmit
+      - run: bun run typecheck
       - run: bun run build:npm
 
   build:
@@ -75,7 +78,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version-file: ".nvmrc"
           registry-url: "https://registry.npmjs.org"
       - run: bun ci
       - run: bun run build:npm

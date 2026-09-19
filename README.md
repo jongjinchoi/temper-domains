@@ -45,16 +45,19 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 # Homebrew (macOS/Linux) — no runtime needed
 brew install jongjinchoi/temper-domains/temper
 
-# npm (Node.js >= 18)
+# npm (Node.js >= 22.12.0)
 npm i -g temper-domains
 temper search <name>
 
 # One-off npm run without global install
 npx -y temper-domains search <name>
 
-# Or run from source (requires Bun)
-bun install && bun run src/index.ts search <name>
+# Or run from source (Bun 1.4.2)
+bun ci && bun run src/index.ts search <name>
 ```
+
+Development and CI use Node.js 24.21.0 LTS (`.nvmrc`). The npm package
+requires Node.js 22.12.0 or newer; standalone binaries do not require Node.js.
 
 ## Usage
 

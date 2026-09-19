@@ -13,6 +13,7 @@
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
 
 ## 코드 품질
+- [x] 승인된 안정 버전 의존성 갱신, Bun/Node 버전 고정 및 Node 최소 버전 명시 (2026-09-19, 로컬 검증)
 - [x] 테스트 작성 및 `bun test` 통과
 - [x] 보안: 도메인 입력 검증 (sanitizeDomain, encodeURIComponent)
 - [x] 보안: readJson JSON.parse try-catch

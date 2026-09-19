@@ -14,12 +14,17 @@ documents live in `docs/archive/`.
 ## Main Commands
 
 - Root tests: `bun test`
+- Root typecheck: `bun run typecheck`
 - npm package build: `bun run build:npm`
 - Binary build script: `bun run build.ts`
 - CLI help check: `bun run src/index.ts --help`
 - Web dev: `bun run web:dev`
 - Web typecheck: `bun run web:typecheck`
 - Web build: `bun run web:build`
+
+Install with `bun ci`; Bun 1.4.2 is pinned in `packageManager`. Development and
+CI use Node.js 24.21.0 from `.nvmrc`. TypeScript 7.0.2 is declared in both
+workspaces so root typechecking does not download a separate compiler.
 
 ## Source Of Truth
 
@@ -45,7 +50,7 @@ documents live in `docs/archive/`.
 - Default search checks 30 TLDs.
 - Extended search checks 59 TLDs.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.
-- npm installs expose the `temper` binary and require Node.js >= 18.
+- npm installs expose the `temper` binary and require Node.js >= 22.12.0.
 - Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
 - CLI search defaults to a 5s timeout; hosted web demo checks use the API route's 3s timeout.
 - CLI checker uses IANA RDAP bootstrap cached at `~/.temper/cache/rdap-dns.json` with a 7-day TTL.
@@ -58,6 +63,8 @@ documents live in `docs/archive/`.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
+- OG and Twitter images use the Node.js runtime; Next.js prerenders them at
+  build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
 - MCP public copy should mention Codex, Claude, and Cursor when describing supported AI workflows.
 - Codex setup should follow official OpenAI Codex MCP docs: `codex mcp add temper -- temper mcp` or `[mcp_servers.temper]` in `~/.codex/config.toml`.

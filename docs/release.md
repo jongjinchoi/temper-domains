@@ -2,6 +2,10 @@
 
 ## Prerequisites
 
+- Use Bun 1.4.2 (`packageManager`) and Node.js 24.21.0 (`.nvmrc`). Run `bun ci`.
+- The npm minimum is Node.js 22.12.0. Announce the increase from the previous
+  Node.js >= 18 declaration in the next release notes. Standalone binary users
+  do not need to install Node.js.
 - GitHub Secrets 설정 완료
   - `NPM_TOKEN`: npm Granular Access Token (Read/Write + 2FA bypass)
   - `HOMEBREW_TAP_TOKEN`: GitHub PAT (repo write, homebrew-temper-domains 접근)
@@ -23,7 +27,7 @@ git push origin main --tags
 
 태그 푸시 후 GitHub Actions가 자동 실행:
 
-1. **typecheck** - `bunx tsc --noEmit`
+1. **verify** - `bun test`, `bun run typecheck`, `bun run build:npm`
 2. **build** - 5개 플랫폼 바이너리 (`PKG_VERSION`은 태그 버전으로 주입)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { DEFAULT_SEARCH_TIMEOUT_SECONDS, DEFAULT_TLDS_COUNT, SITE_TITLE } from "@/lib/temper-data";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = SITE_TITLE;

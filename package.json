@@ -4,13 +4,13 @@
   "description": "Search domain availability from your terminal",
   "main": "dist/npm/index.js",
   "type": "module",
-  "packageManager": "bun@1.3.13",
+  "packageManager": "bun@1.4.2",
   "workspaces": ["web"],
   "bin": {
     "temper": "./dist/npm/index.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   },
   "license": "Apache-2.0",
   "repository": {
@@ -20,6 +20,7 @@
   "keywords": ["domain", "cli", "terminal", "tui", "mcp", "whois", "rdap"],
   "files": ["dist/npm", "README.md", "LICENSE"],
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build:npm": "bun run build-npm.ts",
     "web:dev": "bun run --cwd web dev",
     "web:typecheck": "bun run --cwd web typecheck",
@@ -27,16 +28,17 @@
     "prepack": "bun run build-npm.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/react": "^19.2.14",
-    "react-devtools-core": "^7.0.1"
+    "typescript": "7.0.2",
+    "@types/bun": "1.4.2",
+    "@types/react": "19.3.0",
+    "react-devtools-core": "8.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "commander": "^14.0.3",
-    "ink": "^6.8.0",
-    "react": "19.2.6",
-    "tldts": "^7.4.2",
-    "zod": "^4.3.6"
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "commander": "15.0.0",
+    "ink": "7.1.1",
+    "react": "19.3.0",
+    "tldts": "7.4.13",
+    "zod": "4.6.5"
   }
 }

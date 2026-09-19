@@ -18,12 +18,21 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 ## Commands
 
 - Root tests: `bun test`
+- Root typecheck: `bun run typecheck`
 - npm package build: `bun run build:npm`
 - Web dev: `bun run web:dev`
 - Web typecheck: `bun run web:typecheck`
 - Web build: `bun run web:build`
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
+
+Use Bun 1.4.2 (`packageManager`) and Node.js 24.21.0 (`.nvmrc`). Install with
+`bun ci`. The npm CLI supports Node.js >= 22.12.0.
+
+`bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary
+directory. Child-process regression tests also use temporary homes. RDAP calls
+are mocked in tests; these tests do not query Production or update real user
+configuration.
 
 ## Source Of Truth
 
