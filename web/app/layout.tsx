@@ -158,7 +158,7 @@ const JSON_LD_FAQ = {
       name: "How many TLDs does temper check?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "30 TLDs by default. Use --extended for 59, --tlds for a custom comma-separated list, or --tld-preset for curated sets (tech, popular, startup, cheap).",
+        text: "30 TLDs by default. Use --extended for 59, --tlds for chosen extensions including co.uk, or --category for an industry. Use temper extensions to browse the full supported catalog by industry, purpose and region.",
       },
     },
     {
@@ -166,7 +166,7 @@ const JSON_LD_FAQ = {
       name: "What is MCP and how does temper use it?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing six tools: search_domain, search_names, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
+        text: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing seven tools: list_supported_tlds, search_domain, search_names, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
       },
     },
   ],

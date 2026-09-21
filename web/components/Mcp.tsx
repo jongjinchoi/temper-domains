@@ -118,8 +118,8 @@ export default function Mcp() {
           </h3>
           <p>
             temper runs as a local MCP server. Your AI assistant searches
-            domains, checks availability, and opens purchase pages — without
-            you switching context once.
+            domains, discovers extensions by industry, purpose or region, and
+            checks only the extensions you choose. It can also open purchase pages.
           </p>
           <p className={styles.muted}>
             When invoked through your local MCP server, temper does not proxy

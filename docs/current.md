@@ -32,6 +32,8 @@ in both workspaces so root typechecking does not download a separate compiler.
 
 - CLI commands and help: `src/index.ts`
 - Default and extended TLDs: `src/checker/types.ts`
+- Extension catalog, classifications and selection: `src/extensions/`
+- Catalog snapshot maintenance: `scripts/update-extension-catalog.ts`
 - Shared HTTP bootstrap cache: `src/checker/bootstrap-cache.ts`; disk adapter: `src/checker/bootstrap.ts`
 - RDAP lookup and parsing: `src/checker/rdap.ts`
 - WHOIS fallback and parsing: `src/checker/whois.ts`
@@ -127,6 +129,17 @@ in both workspaces so root typechecking does not download a separate compiler.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
+- `list_supported_tlds` is offline. No arguments returns the 30/29/59 bundles
+  and full catalog count; view=extensions offers paged discovery (50 default,
+  100 maximum), view=categories exposes industry/purpose/region navigation.
+- `search_domain` and `search_names` accept explicit `tlds`, including composite
+  suffixes and supported IDNs. Selected searches never append defaults, reject
+  any simultaneous `extended` argument and preserve every requested result.
+  MCP selected searches and CLI `--category` cap name × suffix combinations at
+  472. Existing CLI explicit `--tlds` is not newly capped.
+- `temper extensions` exposes the same catalog and classification evidence.
+  The old named presets were immediately replaced without aliases. No-input
+  MCP discovery remains supported over stdio.
 - MCP public copy should mention Codex, Claude, and Cursor when describing supported AI workflows.
 - Codex setup should follow official OpenAI Codex MCP docs: `codex mcp add temper -- temper mcp` or `[mcp_servers.temper]` in `~/.codex/config.toml`.
 
@@ -136,7 +149,8 @@ in both workspaces so root typechecking does not download a separate compiler.
 concurrent config/watch/history updates, stale history deletion, failed file replacement, damaged storage preservation,
 Init save/retry/cleanup handling, TUI case/error/filter/resize/navigation regressions,
 and NDJSON completion/cancellation.
-MCP tests exercise all six tools over stdio, including invalid inputs; registrar
+MCP tests exercise all seven tools over stdio, including invalid inputs and
+network-free TLD catalog discovery; registrar
 opening is captured as a URL without launching a real browser.
 
 Node compatibility CI is configured to run the built CLI and MCP, shared validation, and
@@ -244,3 +258,59 @@ Use `rg` to confirm stale claims are gone after copy updates.
 - `docs/archive/`: historical PRDs, mockups, and design explorations.
 
 Historical docs are useful for product intent, but they are not the source of truth for current behavior.
+
+
+## Extension catalog maintenance
+
+The initial bundled catalog contains 756 offered extensions passing Temper's
+registration-boundary and route checks (741 RDAP, 15 WHOIS). These are static
+support checks, not 756 successful live registry calls or a worldwide total.
+The inputs combine 1,062 registration suffixes from Porkbun, Dynadot and Gandi.
+Default 30/extended 59 are approved quick-search bundles within this catalog.
+
+The runtime snapshot is `src/extensions/data/catalog.json`. It contains IANA/
+PSL boundary data, offering evidence and editorial classifications together.
+`commercial.json`, `overrides.json` and `regions.json` are maintenance inputs;
+runtime does not mix them into an independently updated snapshot. Each
+classification records its reason, source, evidence type and checked date.
+Entries without industry/purpose evidence remain explicitly unclassified.
+Registration qualification metadata is not collected, displayed or a search gate.
+
+Maintain a complete capture directory containing:
+
+- `roots.txt`: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
+- `public_suffix_list.dat`: https://publicsuffix.org/list/public_suffix_list.dat
+- `rdap.json`: https://data.iana.org/rdap/dns.json
+- `commercial.json`: reviewed complete offering lists from at least two providers,
+  using the checked-in schema (provider, source URL, actual checkedAt date,
+  normalized suffixes and optional sourceBySuffix for product-page evidence).
+- `overrides.json`, `regions.json`: reviewed classification and namespace evidence.
+
+Do not label a failed/partial capture as a complete provider list. Preserve
+individual source dates; refreshing boundaries does not reverify older offers.
+The initial sources are https://porkbun.com/products/domains,
+https://www.dynadot.com/domain/prices and https://www.gandi.net/en-US/domain/tld.
+Gandi umbrella products ck/jm/mm/np/pg are expanded into the actual suffixes
+shown on their product pages; retain those per-suffix evidence URLs.
+
+```sh
+bun run catalog:update /path/to/capture          # preview only
+bun run catalog:update /path/to/capture --apply  # explicitly replace the bundle
+```
+
+The command reads all saved inputs without network downloads, validates source
+and classification integrity, and previews additions/removals, route changes,
+unclassified entries and source counts. Invalid data, missing providers and
+unexpected large shrinkage fail without replacing the previous snapshot.
+A single temporary-file rename publishes all runtime evidence together.
+Review the preview and Git diff; normal builds, installs and catalog browsing
+never run this command. The existing RDAP bootstrap network cache is separate.
+Do not retrieve the PSL more than once per 24 hours. Preserve source attribution;
+PSL data is provided under Mozilla Public License 2.0 (https://publicsuffix.org/list/).
+Dependency/parser changes and new providers require their own scope review.
+
+Verification uses temporary homes and controlled RDAP responses: exhaustive
+756-entry paging and selection, 30/59 bundles, composite suffixes, invalid-input
+zero-lookups, the 472 boundary, partial results and snapshot failure preservation.
+Node CLI/MCP integration uses `tests/runtime/node-checks.mjs`; these tests do
+not make live registry calls or update the installed/connected MCP process.

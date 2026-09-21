@@ -30,7 +30,8 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 
 ## Features
 
-- ${DEFAULT_TLDS_COUNT} TLDs per search by default (${EXTENDED_TLDS_COUNT} with \`--extended\`, custom list via \`--tlds\`, or presets: \`tech\`, \`popular\`, \`startup\`, \`cheap\`)
+- ${DEFAULT_TLDS_COUNT} TLDs per search by default (${EXTENDED_TLDS_COUNT} with \`--extended\`, custom list via \`--tlds\`, or industry selection via \`--category\`)
+- Offline extension discovery by industry, purpose and region; default 50 per page, max 100. Catalog size is separate from page size and search bundles.
 - Interactive TUI (Ink + React) with vim-style navigation (j/k, /, a, s, h)
 - MCP server mode for Codex CLI/IDE, Claude Desktop, Claude Code, Cursor, Windsurf, and Cline
 - JSON output for shell piping (\`--format json\`)
@@ -40,8 +41,9 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 
 ## MCP tools
 
-- \`search_domain\` - query one bare name across default or extended TLDs
-- \`search_names\` - query multiple bare name candidates, default TLDs first
+- \`list_supported_tlds\` - offline discovery. No arguments returns default/additional/extended bundles plus full catalog count; view=extensions browses the catalog with cursor paging, view=categories lists classification facets (facet=industry|purpose|region for details).
+- \`search_domain\` - query one bare name across default or extended TLDs, or only suffixes supplied in tlds (including co.uk)
+- \`search_names\` - query up to 8 bare names across default, extended or selected suffixes; selected names × suffixes max 472. Do not combine tlds with extended, including false.
 - \`suggest_domain\` - generate prefix/suffix combinations and check them with RDAP/WHOIS
 - \`check_domain_availability\` - explicit full-domain check only
 - \`whois_domain\` - registrar, expiry, nameserver lookup
@@ -50,6 +52,10 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 ## Commands
 
 - \`temper search <name>\` - check ${DEFAULT_TLDS_COUNT} TLDs, Enter to buy
+- \`temper extensions --categories\` - browse industry, purpose and region classifications
+- \`temper extensions --limit 100\` - browse the full supported catalog, following the next cursor
+- \`temper search <name> --tlds com,co.uk\` - search only the selected suffixes
+- \`temper search <name> --category design-arts\` - search the industry selection (max 472 name × suffix combinations)
 - \`temper suggest <name>\` - prefix/suffix brainstorm
 - \`temper whois <domain>\` - RDAP-first registrar details
 - \`temper watch <domain>\` - track availability, \`temper list\` to review

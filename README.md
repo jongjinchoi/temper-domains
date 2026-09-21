@@ -77,7 +77,7 @@ Commands:
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
   list                           Show watchlist with current availability
-  show-presets                   Show available TLD presets
+  extensions [options]           Browse supported extensions and classifications
   config                         Manage temper configuration
   mcp                            Start MCP server over stdio
 ```
@@ -102,8 +102,8 @@ Commands:
 ```bash
 temper search myproject                          # 30 default TLDs
 temper search myproject --extended               # 59 TLDs
-temper search myproject --tlds com,dev,io         # specific TLDs
-temper search myproject --tld-preset tech         # preset: tech, popular, startup, cheap
+temper search myproject --tlds com,design,co.uk   # only selected extensions
+temper search myproject --category design-arts   # industry classification
 temper search myproject -a                        # available only
 temper search myproject -t 8                      # 8s whole-search limit, including bootstrap
 temper search myproject --format json             # JSON output for piping
@@ -114,16 +114,75 @@ Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to fil
 
 <p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/search.png" width="600" /></p>
 
-#### TLD Presets
+#### Discover extensions
+
+The bundled catalog contains **756 supported extensions** in the September 22,
+2026 snapshot. It combines offering evidence from Porkbun, Dynadot and Gandi
+with registration-boundary checks and known RDAP/WHOIS routes. This is not a
+claim that every registry has answered a live lookup or that every name can be
+purchased. Lookup results may differ from final purchase availability.
 
 ```bash
-temper show-presets
-
-  popular    com, net, org, io, co, app, dev, ai, me
-  tech       io, ai, dev, app, gg, sh, tech, cloud, digital
-  startup    com, io, co, ai, app, dev, xyz, so, gg
-  cheap      xyz, fun, lol, top, site, online, store, shop, club
+temper extensions                              # 50 per page; no domain lookup
+temper extensions --limit 100                  # max page size, not total catalog size
+temper extensions --limit 100 --cursor '<nextCursor>'
+temper extensions --categories                 # industry / purpose / region overview
+temper extensions --categories industry        # names, descriptions and counts
+temper extensions --categories purpose
+temper extensions --categories region
+temper extensions --category design-arts
+temper extensions --purpose store
+temper extensions --region GB
+temper extensions --query co.uk --format json
 ```
+
+Each classification has inclusion reasons and sources. Memberships can overlap;
+unclassified entries remain discoverable and selectable. Multiple IDs in one
+facet are ORed; different facets are ANDed. Region means geographic association.
+Registration eligibility is not collected, displayed or used to gate searches.
+
+Use `--tlds` to search chosen suffixes, including composite suffixes such as
+`co.uk` and supported IDNs. Direct selection outside the catalog is checked
+against known registration boundaries and lookup routes. A normal domain or a
+PRIVATE hosting suffix cannot be used as a registration extension. Unknown
+boundaries and unsupported routes have separate errors.
+
+`--category` searches only an industry's extensions, with a maximum of 472
+name × extension combinations. It cannot be combined with `--tlds` or
+`--extended`. Existing `--tlds` precedence over `--extended` is retained;
+the new category limit does not apply to existing explicit CLI `--tlds` searches.
+Requests are never silently shortened to fit. The previous named presets and
+their commands have been replaced; there are no compatibility aliases.
+
+The default 30 and extended 59 are quick-search bundles within the catalog.
+Extended includes all default entries plus 29 additions. They are curated search
+bundles, not a global search-popularity ranking.
+
+Default 30:
+
+```text
+.com .net .org .xyz .top
+.info .shop .online .store .site
+.vip .sbs .app .biz .pro
+.bond .lol .click .cfd .dev
+.live .space .asia .icu .ai
+.io .co .me .tv .cc
+```
+
+Additional 29 (extended = default + additional):
+
+```text
+.club .tech .cyou .cloud .life
+.world .fun .mobi .blog .digital
+.work .art .link .website .autos
+.one .help .buzz .lat .studio
+.skin .win .bet .run .today
+.makeup .beer .email .ink
+```
+
+Catalog browsing is offline and does not write user settings or search history.
+Maintainers explicitly refresh the bundled data; users do not download catalog
+updates while browsing. See [catalog maintenance](docs/current.md#extension-catalog-maintenance).
 
 #### JSON output
 
@@ -313,8 +372,9 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 
 | Tool | Description |
 |------|-------------|
-| `search_domain` | Check 30 or 59 TLDs for one bare name |
-| `search_names` | Check up to 8 bare name candidates across default or extended TLDs |
+| `list_supported_tlds` | Browse bundles, classifications and supported extensions offline |
+| `search_domain` | Check one bare name across 30, 59 or explicitly selected extensions |
+| `search_names` | Check up to 8 bare names across default, extended or selected extensions |
 | `suggest_domain` | 15 name combinations × 5 TLDs using RDAP/WHOIS |
 | `check_domain_availability` | Verify explicit full domains only (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
@@ -322,6 +382,32 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 
 MCP output keeps uncertain results visible. Low-confidence availability is
 reported as review instead of a final recommendation.
+
+**Example: Discover supported extensions**
+
+Ask "Which domain extensions do you support?" No arguments to
+`list_supported_tlds` returns the default 30, additional 29 and combined 59,
+plus the full catalog count and discovery guidance. Use
+`{"view":"extensions","limit":100}` for the full catalog, following `nextCursor`
+with the same filters. Pages default to 50, maximum 100. The initial 756 entries
+span eight 100-entry pages (last page: 56).
+
+Use `{"view":"categories"}` for facet navigation, or add
+`"facet":"industry"`, `"purpose"` or `"region"` for category descriptions and
+counts. Filter extension pages with `industries`, `purposes`, `regions` or
+`query`. These calls make no network requests or domain availability checks.
+
+For selected searches:
+
+```json
+{"name":"mybrand","tlds":["com","co.uk"]}
+```
+
+Use `search_names` with `names` for multiple names. Only the selected extensions
+are queried; defaults are not appended. Maximum selected combinations: 472.
+Do not combine `tlds` with `extended`, even `extended:false`. Invalid inputs and
+unknown options fail before lookup. Selected results retain every requested
+domain and any failures, timeouts or missing responses.
 
 **Example: Brainstorm from scratch**
 

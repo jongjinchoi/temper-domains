@@ -43,7 +43,8 @@ installation and browser, not a new product dependency.
 
 - Current project map: `docs/current.md`
 - CLI commands and help text: `src/index.ts`
-- Domain statuses, TLDs, presets, prefixes, suffixes: `src/checker/types.ts`
+- Domain statuses, default/extended TLDs, prefixes, suffixes: `src/checker/types.ts`
+- Extension discovery, classification, selection and bundled data: `src/extensions/`
 - RDAP/WHOIS lookup behavior: `src/checker/`
 - MCP tools and tool descriptions: `src/mcp/server.ts`
 - TUI themes: `src/tui/theme.ts`
