@@ -134,7 +134,7 @@ const JSON_LD_FAQ = {
       name: "How do I install temper?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "On macOS and Linux, run: brew install jongjinchoi/temper-domains/temper. On any platform with Node.js 18 or newer, run: npm i -g temper-domains.",
+        text: "On macOS and Linux, run: brew install jongjinchoi/temper-domains/temper. On any platform with Node.js 22.12.0 or newer, run: npm i -g temper-domains.",
       },
     },
     {
