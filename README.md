@@ -52,12 +52,13 @@ temper search <name>
 # One-off npm run without global install
 npx -y temper-domains search <name>
 
-# Or run from source (Bun 1.4.2)
+# Or run from source (requires Bun)
 bun ci && bun run src/index.ts search <name>
 ```
 
-Development and CI use Node.js 24.21.0 LTS (`.nvmrc`). The npm package
-requires Node.js 22.12.0 or newer; standalone binaries do not require Node.js.
+The npm package requires Node.js 22.12.0 or newer; standalone binaries do not
+require Node.js. Development does not require a specific Bun or Node.js version
+beyond the dependencies' runtime requirements.
 
 ## Usage
 

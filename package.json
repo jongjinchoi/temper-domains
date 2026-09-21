@@ -4,7 +4,6 @@
   "description": "Search domain availability from your terminal",
   "main": "dist/npm/index.js",
   "type": "module",
-  "packageManager": "bun@1.4.2",
   "workspaces": ["web"],
   "bin": {
     "temper": "./dist/npm/index.js"

@@ -22,9 +22,11 @@ documents live in `docs/archive/`.
 - Web typecheck: `bun run web:typecheck`
 - Web build: `bun run web:build`
 
-Install with `bun ci`; Bun 1.4.2 is pinned in `packageManager`. Development and
-CI use Node.js 24.21.0 from `.nvmrc`. TypeScript 7.0.2 is declared in both
-workspaces so root typechecking does not download a separate compiler.
+Install with `bun ci`. Development and local verification have no exact Bun or
+Node.js version requirement; the npm CLI requires Node.js >= 22.12.0. CI and
+release workflows select Bun `latest` and Node.js `lts/*`. Record the actual
+runtime versions used when reporting verification. TypeScript 7.0.2 is declared
+in both workspaces so root typechecking does not download a separate compiler.
 
 ## Source Of Truth
 
@@ -91,18 +93,28 @@ workspaces so root typechecking does not download a separate compiler.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
-- Watchlist and history updates serialize the full read/modify/write operation with an
+- Config, watchlist and history updates serialize the full read/modify/write operation with an
   exclusive local lock and replace the data file only after a temporary file
-  is written and synced. Watchlist domain keys are case-insensitive.
-- A lock waits up to 5s. A crashed writer may leave `watchlist.json.lock` or
-  `history.json.lock`;
+  is written, synced and closed. Watchlist domain keys are case-insensitive.
+  Config partial updates read the latest settings under the lock, preserving
+  other fields. Config symlinks retain the link and replace its resolved target;
+  the temporary file and lock are placed beside that target.
+- A lock waits up to 5s. A crashed writer may leave `config.json.lock`,
+  `watchlist.json.lock` or `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
   confirming no temper commands are running, remove only that lock and retry.
+- Config failures before replacement preserve the existing file. Failures while
+  cleaning up after replacement explicitly report that the settings were saved.
+  Init blocks duplicate saves, displays failures for retry, and keeps a post-save
+  cleanup warning visible. Exiting Init does not cancel an already started save.
 - Invalid config/history/watchlist files produce a repair message and are not
   silently overwritten with defaults. Back up the file before repairing it.
 - TUI searches use lowercase result keys, show bootstrap failures as errors,
   and do not record a failed bootstrap as a successful search. Suggestion parent
   input is disabled while its child search is active.
+- Search filtering resets selection and scroll position as text changes. Displayed
+  rows, keyboard actions and registrar targets use the same position normalized
+  against the filtered list and terminal height. Empty results have no selection.
 - Suggestions preserve display casing and share normalized result keys with the
   checker, including error rows. History save failures are shown separately from
   lookup results. History deletion checks the displayed snapshot under the lock;
@@ -121,14 +133,16 @@ workspaces so root typechecking does not download a separate compiler.
 ## Regression Verification
 
 `bun test` uses temporary homes and controlled network responses. Tests cover
-concurrent watch/history updates, stale history deletion, failed file replacement, damaged storage preservation,
-TUI case/error/navigation regressions, and NDJSON completion/cancellation.
+concurrent config/watch/history updates, stale history deletion, failed file replacement, damaged storage preservation,
+Init save/retry/cleanup handling, TUI case/error/filter/resize/navigation regressions,
+and NDJSON completion/cancellation.
 MCP tests exercise all six tools over stdio, including invalid inputs; registrar
 opening is captured as a URL without launching a real browser.
 
 Node compatibility CI is configured to run the built CLI and MCP, shared validation, and
-the web route with isolated homes and controlled RDAP responses on Node 22.12.0
-and 24.21.0. Run from the repository root:
+the web route, config concurrent writers/readers and SearchView filtering with isolated homes and controlled RDAP responses on the minimum
+supported Node.js 22.12.0 and the Node.js LTS selected by `lts/*`.
+Run from the repository root:
 
 ```bash
 bun run build:npm
@@ -137,6 +151,15 @@ node --test tests/runtime/node-checks.mjs
 ```
 
 These checks do not contact registries or modify real user configuration.
+
+Local verification on 2026-09-21 for config transactions and search filtering
+(macOS arm64): Bun 1.3.13 passed 248 tests / 803 assertions; root typecheck and
+npm build passed. Node 24.19.0 passed all 12 runtime cases. Real CLI config
+commands, in isolated homes, passed 60 concurrent pairs and 30 sequential pairs
+per runtime with no invalid final JSON or failed command. A separate Node CLI
+check used real RDAP responses and OS PTYs at 110×24 and 110×40; both answered
+30/30 domains and displayed the single filtered row before Enter after scrolling.
+This was not a manual GUI terminal check or remote CI/deployment verification.
 
 Local verification on 2026-09-20 for input validation, history transactions and
 suggestion result keys (macOS arm64): Bun 1.4.2 `bun test` passed 221 tests / 658

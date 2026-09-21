@@ -27,6 +27,18 @@ interface Props {
 
 const CHROME_LINES = 8;
 
+type Position = { cursor: number; offset: number };
+
+function normalizePosition(position: Position, count: number, capacity: number): Position {
+  if (count === 0) return { cursor: 0, offset: 0 };
+  const size = Math.min(capacity, count);
+  const cursor = Math.max(0, Math.min(position.cursor, count - 1));
+  let offset = Math.max(0, Math.min(position.offset, count - size));
+  if (cursor < offset) offset = cursor;
+  if (cursor >= offset + size) offset = cursor - size + 1;
+  return { cursor, offset };
+}
+
 export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, onBack, onNavigate, onQuit }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
@@ -42,24 +54,14 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const { results, count, elapsed, done, error, historyError } = useSearchExecution(query, tlds, timeoutMs);
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
-  const [cursor, setCursor] = useState(0);
-  const [viewOffset, setViewOffset] = useState(0);
+  const [position, setPosition] = useState<Position>({ cursor: 0, offset: 0 });
   const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean } | null>(null);
   const [filterText, setFilterText] = useState("");
   const maxVisible = Math.max(5, termRows - CHROME_LINES);
-  const visibleCount = Math.min(maxVisible, allDomains.length);
 
   useEffect(() => {
     setScreenState(done ? (error ? "failed" : "selecting") : "searching");
   }, [done, error]);
-
-  useEffect(() => {
-    if (cursor < viewOffset) {
-      setViewOffset(cursor);
-    } else if (cursor >= viewOffset + visibleCount) {
-      setViewOffset(cursor - visibleCount + 1);
-    }
-  }, [cursor, viewOffset, visibleCount]);
 
   // Filter domains early so keyboard handler can reference it
   let displayDomains = onlyAvailable && screenState !== "searching"
@@ -70,6 +72,14 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     displayDomains = displayDomains.filter((d) => d.includes(filterText));
   }
   if (error) displayDomains = displayDomains.filter((domain) => results.has(domain));
+  const { cursor, offset: viewOffset } = normalizePosition(position, displayDomains.length, maxVisible);
+  const visibleCount = Math.min(maxVisible, displayDomains.length);
+  const selectedDomain = displayDomains[cursor];
+
+  const move = (delta: number) => setPosition(previous => {
+    const current = normalizePosition(previous, displayDomains.length, maxVisible);
+    return normalizePosition({ ...current, cursor: current.cursor + delta }, displayDomains.length, maxVisible);
+  });
 
   useInput(
     (input, key) => {
@@ -79,14 +89,16 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         if (key.escape) {
           setFilterText("");
           setScreenState("selecting");
-          setCursor(0);
+          setPosition({ cursor: 0, offset: 0 });
         } else if (key.return) {
           setScreenState("selecting");
-          setCursor(0);
+          setPosition({ cursor: 0, offset: 0 });
         } else if (key.backspace || key.delete) {
           setFilterText((prev) => prev.slice(0, -1));
+          setPosition({ cursor: 0, offset: 0 });
         } else if (input && !key.ctrl && !key.meta) {
           setFilterText((prev) => prev + input);
+          setPosition({ cursor: 0, offset: 0 });
         }
         return;
       }
@@ -102,12 +114,13 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
       if (screenState === "selecting") {
         if (key.downArrow || input === "j") {
-          setCursor((prev) => Math.min(prev + 1, displayDomains.length - 1));
+          move(1);
         } else if (key.upArrow || input === "k") {
-          setCursor((prev) => Math.max(prev - 1, 0));
+          move(-1);
         } else if (input === "/" ) {
           setScreenState("filtering");
           setFilterText("");
+          setPosition({ cursor: 0, offset: 0 });
         } else if (input === "s" && onNavigate) {
           onNavigate("suggest");
         } else if (input === "h" && onNavigate) {
@@ -115,7 +128,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         } else if (input === "w" && onNavigate) {
           onNavigate("list");
         } else if (input === "a") {
-          const domain = displayDomains[cursor];
+          const domain = selectedDomain;
           if (domain) {
             addWatch(domain).then(
               () => {
@@ -130,12 +143,12 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
             );
           }
         } else if (input === "i") {
-          const domain = displayDomains[cursor];
+          const domain = selectedDomain;
           if (domain) {
             setScreenState("detail");
           }
         } else if (key.return) {
-          const domain = displayDomains[cursor];
+          const domain = selectedDomain;
           if (domain) {
             const result = results.get(domain);
             if (result && result.status === "available") {
@@ -149,7 +162,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   );
 
   const handleRegistrarSelect = (registrar: Registrar) => {
-    const domain = displayDomains[cursor];
+    const domain = selectedDomain;
     if (!domain) return;
     const url = buildURL(registrar, domain);
     openBrowser(url);
@@ -166,8 +179,6 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const answered = [...results.values()].filter(result => ["available", "taken", "premium", "reserved"].includes(result.status)).length;
   const unresolved = total - answered;
   const elapsedSec = (elapsed / 1000).toFixed(1);
-
-  const selectedDomain = displayDomains[cursor];
 
   const visibleDomains = displayDomains.slice(viewOffset, viewOffset + visibleCount);
   const hasMore = viewOffset + visibleCount < displayDomains.length;

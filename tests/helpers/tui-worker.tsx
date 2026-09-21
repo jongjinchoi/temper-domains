@@ -1,4 +1,5 @@
 import "./home.ts";
+import { mock } from "bun:test";
 import { PassThrough, Writable } from "node:stream";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -8,10 +9,12 @@ import SearchView from "../../src/tui/SearchView.tsx";
 import SuggestView from "../../src/tui/SuggestView.tsx";
 import HistoryView from "../../src/tui/HistoryView.tsx";
 import WatchlistView from "../../src/tui/WatchlistView.tsx";
-import { EXTENDED_TLDS } from "../../src/checker/types.ts";
+import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../src/checker/types.ts";
 import { addHistory } from "../../src/config/history.ts";
 
 const scenario = process.argv[2];
+const opened: string[] = [];
+mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: (url: string) => { opened.push(url); } }));
 if (scenario === "watch-corrupt" || scenario === "history-corrupt" || scenario === "history-save-failure") {
   const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
   await mkdir(dir, { recursive: true });
@@ -37,16 +40,22 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
       init!.signal!.addEventListener("abort", () => { aborted++; reject(init!.signal!.reason); }, { once: true });
     });
   }
+  if (scenario === "search-partial" && String(input).endsWith("/acme.dev")) return new Response(null, { status: 400 });
   if (scenario === "suggest-partial" && String(input).endsWith("/getacme.com")) return new Response(null, { status: 400 });
   if (scenario === "suggest-uppercase" && String(input).endsWith("/acmeapp.com")) {
     return Response.json({ objectClassName: "domain", ldhName: "acmeapp.com" });
+  }
+  if (scenario?.startsWith("search-available-")) {
+    const allowed = scenario.endsWith("none") ? [] : scenario.endsWith("one") ? ["acme.com"] : ["acme.com", "acme.dev", "acme.io"];
+    const domain = String(input).split("/").at(-1)!;
+    if (!allowed.includes(domain)) return Response.json({ objectClassName: "domain", ldhName: domain });
   }
   return new Response(null, { status: 404 });
 }) as typeof fetch;
 
 let frame = "";
 const output = new Writable({ write(chunk, _encoding, callback) { frame = String(chunk); callback(); } });
-Object.assign(output, { columns: 110, rows: 40, isTTY: true });
+Object.assign(output, { columns: 110, rows: scenario?.startsWith("search-") ? 24 : 40, isTTY: true });
 const input = new PassThrough();
 Object.assign(input, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
 let back = 0;
@@ -55,6 +64,7 @@ const element = scenario === "suggest"
   : scenario === "watch-corrupt" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
+  : scenario?.startsWith("search-") ? <SearchView query="Acme" tlds={DEFAULT_TLDS} onlyAvailable={scenario.startsWith("search-available-")} />
   : <SearchView query="Acme" tlds={["com"]} />;
 const view = render(element, {
   stdout: output as NodeJS.WriteStream, stderr: output as NodeJS.WriteStream,
@@ -65,8 +75,50 @@ async function until(predicate: () => boolean) {
   while (!predicate() && Date.now() < deadline) await Bun.sleep(10);
   if (!predicate()) throw new Error(`Timed out: ${frame}`);
 }
+const frames: Record<string, string> = {};
+const plain = () => frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+async function key(value: string) { input.write(value); await Bun.sleep(60); }
 try {
-  if (scenario === "suggest") {
+  if (scenario?.startsWith("search-")) {
+    await until(() => frame.includes("Search complete") || frame.includes("Partial results"));
+    if (scenario === "search-filter" || scenario === "search-resize") {
+      for (let i = 0; i < 20; i++) await key("j");
+      frames.scrolled = plain();
+    }
+    if (scenario === "search-resize") {
+      Object.assign(output, { rows: 40 }); output.emit("resize"); await Bun.sleep(80);
+      frames.expanded = plain();
+      Object.assign(output, { rows: 18 }); output.emit("resize"); await Bun.sleep(80);
+      frames.shrunk = plain();
+    } else if (scenario === "search-filter") {
+      await key("/"); await key("com");
+      frames.filtered = plain();
+      await key("z"); frames.empty = plain();
+      await key("\x7f"); frames.backspace = plain();
+      for (let i = 0; i < 3; i++) await key("\x7f");
+      frames.deleted = plain();
+      await key("com");
+      await key("z"); await key("\r");
+      for (const value of ["j", "k", "a", "i", "\r"]) await key(value);
+      frames.emptyActions = plain();
+      await key("/"); await key("com"); await key("\r");
+      frames.confirmed = plain();
+      await key("a"); await until(() => frame.includes("Added acme.com"));
+      await key("i"); await until(() => frame.includes("whois acme.com"));
+      frames.detail = plain();
+      await key("\x1b"); await key("\r");
+      await until(() => frame.includes("Where to buy?")); frames.registrar = plain();
+      await key("c");
+      await key("/"); await key("com"); await key("\x1b"); frames.cleared = plain();
+    } else {
+      frames.available = plain();
+      await key("j"); await key("k");
+      if (scenario.endsWith("none")) {
+        for (const value of ["a", "i", "\r"]) await key(value);
+      }
+      frames.afterNavigation = plain();
+    }
+  } else if (scenario === "suggest") {
     await until(() => frame.includes("1 names checked"));
     input.write("\r");
     await until(() => frame.includes("Search complete"));
@@ -101,7 +153,8 @@ try {
     await until(() => frame.includes("Search complete") || frame.includes("Search failed") || frame.includes("repair") || unhandled.length > 0);
   }
   const history = await readFile(join(process.env.TEMPER_TEST_HOME!, ".temper/history.json"), "utf8").catch(() => "[]");
-  const result = { frame: frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, ""), back, unhandled, history: JSON.parse(history), started, aborted };
+  const watch = await readFile(join(process.env.TEMPER_TEST_HOME!, ".temper/watchlist.json"), "utf8").catch(() => "[]");
+  const result = { frame: plain(), frames, opened, watch: JSON.parse(watch), back, unhandled, history: JSON.parse(history), started, aborted };
   view.unmount();
   view.cleanup();
   console.log(JSON.stringify(result));

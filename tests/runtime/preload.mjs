@@ -15,8 +15,9 @@ globalThis.fetch = async (input) => {
   if (url.startsWith("data:")) return nativeFetch(input);
   appendFileSync(join(home, "requests"), url + "\n");
   if (url === "https://data.iana.org/rdap/dns.json") {
-    return Response.json({ services: [[["com", "de", "uk"], ["https://registry.test/"]]] });
+    const { DEFAULT_TLDS } = await import("../../dist/test-runtime/entry.js");
+    return Response.json({ services: [...new Set([...DEFAULT_TLDS, "de", "uk"])].map(tld => [[tld], [`https://${tld}.registry.test/`]]) });
   }
-  if (url.startsWith("https://registry.test/domain/")) return new Response(null, { status: 404 });
+  if (/^https:\/\/[a-z]+\.registry\.test\/domain\//.test(url)) return new Response(null, { status: 404 });
   throw new Error(`Unexpected network request: ${url}`);
 };

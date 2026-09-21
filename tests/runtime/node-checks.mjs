@@ -13,7 +13,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const home = await mkdtemp(join(tmpdir(), "temper-node-"));
 process.env.TEMPER_TEST_HOME = home;
 await import("./preload.mjs");
-const { isValidDomain, isValidDomainLabel, checkFullDomains, GET, addHistory, loadHistory, removeHistoryAt, loadWatchlist, SuggestView } = await import("../../dist/test-runtime/entry.js");
+const { isValidDomain, isValidDomainLabel, checkFullDomains, GET, addHistory, loadHistory, removeHistoryAt, loadWatchlist, SuggestView, loadConfig, saveConfig, SearchView, DEFAULT_TLDS } = await import("../../dist/test-runtime/entry.js");
 after(() => rm(home, { recursive: true, force: true }));
 const invalid = ["example.com/path", "example.com?x", "example.com#x", "example.com:443", "user@example.com", "%65xample.com", "example.com\\path", "foo..com", "example.com.", "example。com。", "foo。．com"];
 const requests = () => readFile(join(home, "requests"), "utf8").catch(() => "");
@@ -146,4 +146,91 @@ test("Node renders uppercase suggestion rows after completion", async () => {
     for (const name of ["Acme", "GetAcme", "AcmeApp"]) assert.match(text, new RegExp(`${name}\\s+.*available`));
     assert.doesNotMatch(text, /checking/);
   } finally { view.unmount(); view.cleanup(); }
+});
+
+
+function configProcess(partial) {
+  return new Promise((done, reject) => {
+    const script = `import { saveConfig } from './dist/test-runtime/entry.js'; await saveConfig(${JSON.stringify(partial)});`;
+    const child = spawn(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "--input-type=module", "-e", script], { env: process.env, stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    child.stderr.on("data", chunk => { stderr += chunk; });
+    child.on("error", reject);
+    child.on("exit", code => code === 0 ? done() : reject(new Error(stderr)));
+  });
+}
+
+test("Node concurrent config updates preserve both fields while readers see complete settings", async () => {
+  const file = join(home, ".temper/config.json");
+  let reads = 0;
+  for (let round = 0; round < 5; round++) {
+    await writeFile(file, JSON.stringify({ theme: "temper-forge", registrar: "cloudflare", extra: "keep" }));
+    let finished = false;
+    const writers = Promise.all([configProcess({ theme: "dracula" }), configProcess({ registrar: "namecheap" })]);
+    const settled = writers.finally(() => { finished = true; });
+    try {
+      while (!finished) {
+        const config = await loadConfig();
+        assert.ok(["temper-forge", "dracula"].includes(config.theme));
+        assert.ok(["cloudflare", "namecheap"].includes(config.registrar));
+        assert.equal(config.extra, "keep");
+        reads++;
+        await new Promise(resolve => setTimeout(resolve, 1));
+      }
+    } finally { await settled; }
+    assert.deepEqual(await loadConfig(), { theme: "dracula", registrar: "namecheap", extra: "keep" });
+  }
+  assert.ok(reads > 0);
+  assert.equal(cli(["config", "theme", "--list"]).status, 0);
+  assert.equal(cli(["search", "acme", "--tlds", "com", "--format", "json"]).status, 0);
+  const client = new Client({ name: "temper-config-regression", version: "1.0.0" });
+  try {
+    await client.connect(new StdioClientTransport({ command: process.execPath, args: ["--import", resolve("tests/runtime/preload.mjs"), resolve("dist/npm/index.js"), "mcp"], env: process.env }));
+    assert.ok((await client.listTools()).tools.length > 0);
+  } finally { await client.close(); }
+});
+
+test("Node preserves malformed config on save failure", async () => {
+  const file = join(home, ".temper/config.json");
+  await writeFile(file, "{");
+  try {
+    await assert.rejects(saveConfig({ theme: "dracula" }), /repair/);
+    assert.equal(await readFile(file, "utf8"), "{");
+  } finally { await writeFile(file, JSON.stringify({ theme: "temper-forge", registrar: "cloudflare" })); }
+});
+
+test("Node SearchView shows a filtered match immediately after scrolling at 24 rows", async () => {
+  const tty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY");
+  Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
+  let frame = "";
+  const output = new Writable({ write(chunk, _encoding, callback) { frame = String(chunk); callback(); } });
+  Object.assign(output, { columns: 110, rows: 24, isTTY: true });
+  const input = new PassThrough();
+  Object.assign(input, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
+  const view = render(React.createElement(SearchView, { query: "Acme", tlds: DEFAULT_TLDS }), {
+    stdout: output, stderr: output, stdin: input, debug: true, patchConsole: false, exitOnCtrlC: false,
+  });
+  const text = () => frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+  const key = async value => { input.write(value); await new Promise(resolve => setTimeout(resolve, 60)); };
+  try {
+    const deadline = Date.now() + 5000;
+    while (!frame.includes("Search complete") && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10));
+    assert.match(text(), /30\/30 answered/);
+    for (let i = 0; i < 20; i++) await key("j");
+    assert.match(text(), /↑ 5 more/);
+    await key("/"); await key("com");
+    assert.match(text(), /1 of 30 matches/);
+    assert.match(text(), /acme\.com/);
+    assert.doesNotMatch(text(), /↑|↓/);
+    await key("\r");
+    assert.match(text(), /▸\s+acme\.com/);
+    await key("/"); await key("zzz");
+    assert.match(text(), /0 of 30 matches/);
+    await key("\r");
+    await key("j"); await key("k"); await key("\r");
+    assert.doesNotMatch(text(), /▸|Where to buy/);
+  } finally {
+    view.unmount(); view.cleanup();
+    if (tty) Object.defineProperty(process.stdin, "isTTY", tty); else delete process.stdin.isTTY;
+  }
 });

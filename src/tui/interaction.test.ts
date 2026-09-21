@@ -3,10 +3,10 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-async function scenario(name: string) {
+async function scenario(name: string, helper = "tui-worker.tsx") {
   const home = await mkdtemp(join(tmpdir(), "temper-tui-"));
   try {
-    const child = Bun.spawn([process.execPath, "tests/helpers/tui-worker.tsx", name], {
+    const child = Bun.spawn([process.execPath, `tests/helpers/${helper}`, name], {
       cwd: import.meta.dir + "/../..", env: { ...process.env, TEMPER_TEST_HOME: home },
       stdout: "pipe", stderr: "pipe",
     });
@@ -109,5 +109,101 @@ test("failed deletion leaves the displayed entries and damaged file intact", asy
   expect(result.frame).toContain("repair");
   expect(result.frame).toContain("selected");
   expect(result.frame).toContain("older");
+  expect(result.unhandled).toEqual([]);
+});
+
+test("init blocks repeated Enter while saving and commits the selected settings once", async () => {
+  const result = await scenario("init-repeat", "init-worker.tsx");
+  expect(result.pendingFrame).toContain("Saving");
+  expect(result.replacements).toBe(1);
+  expect(result.config).toEqual({ theme: "seoul-night", registrar: "cloudflare" });
+  expect(result.frame).toContain("Setup complete");
+  expect(result.unhandled).toEqual([]);
+});
+
+test("init displays a failed save and retries with the same selection", async () => {
+  const result = await scenario("init-retry", "init-worker.tsx");
+  expect(result.unhandled).toEqual([]);
+  expect(result.failureFrame).toContain("not saved");
+  expect(result.failureFrame).not.toContain("Setup complete");
+  expect(result.config.theme).toBe("seoul-night");
+  expect(result.frame).toContain("Setup complete");
+});
+
+test("init keeps a post-save cleanup warning visible instead of auto-exiting", async () => {
+  const result = await scenario("init-cleanup", "init-worker.tsx");
+  expect(result.unhandled).toEqual([]);
+  expect(result.config.theme).toBe("seoul-night");
+  expect(result.frame).toContain("saved");
+  expect(result.frame).toContain("cleanup failed");
+  expect(result.exited).toBe(false);
+});
+
+test("leaving init during a pending save allows storage cleanup without rejection", async () => {
+  const result = await scenario("init-leave", "init-worker.tsx");
+  expect(result.pendingFrame).toContain("Saving");
+  expect(result.config.theme).toBe("seoul-night");
+  expect(result.replacements).toBe(1);
+  expect(result.unhandled).toEqual([]);
+});
+
+test("scrolling then filtering shows the match immediately and actions use that domain", async () => {
+  const result = await scenario("search-filter");
+  expect(result.frames.scrolled).toContain("↑ 5 more");
+  expect(result.frames.filtered).toContain("1 of 30 matches");
+  expect(result.frames.filtered).toContain("acme.com");
+  expect(result.frames.filtered).not.toContain("↑");
+  expect(result.frames.empty).toContain("0 of 30 matches");
+  expect(result.frames.backspace).toContain("acme.com");
+  expect(result.frames.deleted).toContain("30 of 30 matches");
+  expect(result.frames.deleted).toContain("acme.com");
+  expect(result.frames.emptyActions).not.toContain("Where to buy?");
+  expect(result.frames.emptyActions).not.toContain("whois");
+  expect(result.frames.confirmed).toMatch(/▸\s+acme.com/);
+  expect(result.frames.detail).toContain("whois acme.com");
+  expect(result.frames.registrar).toMatch(/Selected:\s+acme.com/);
+  expect(result.opened).toHaveLength(1);
+  expect(result.opened[0]).toContain("acme.com");
+  expect(result.watch.map((entry: { domain: string }) => entry.domain)).toEqual(["acme.com"]);
+  expect(result.frames.cleared).toMatch(/▸\s+acme.com/);
+  expect(result.frames.cleared).toContain("↓ 14 more");
+  expect(result.unhandled).toEqual([]);
+}, 10000);
+
+test("resizing a scrolled list keeps selection visible and updates hidden counts", async () => {
+  const result = await scenario("search-resize");
+  const selected = result.frames.scrolled.match(/▸\s+(acme\.[a-z.]+)/)[1];
+  expect(result.frames.expanded).toContain(selected);
+  expect(result.frames.expanded).not.toContain("↑");
+  expect(result.frames.expanded).not.toContain("↓");
+  expect(result.frames.shrunk).toContain(selected);
+  expect(result.frames.shrunk).toContain("↑ 11 more");
+  expect(result.frames.shrunk).toContain("↓ 9 more");
+});
+
+test.each(["none", "one", "some"])("available-only completion keeps %s results selectable", async size => {
+  const result = await scenario(`search-available-${size}`);
+  if (size === "none") {
+    expect(result.frame).not.toContain("▸");
+    expect(result.frame).not.toContain("Where to buy?");
+    expect(result.frame).not.toContain("whois");
+    expect(result.watch).toEqual([]);
+  } else {
+    expect(result.frame).toMatch(/▸\s+acme.com/);
+    expect(result.frame).not.toContain("taken");
+  }
+  expect(result.frame).not.toContain("↑");
+  expect(result.frame).not.toContain("↓");
+  expect(result.unhandled).toEqual([]);
+});
+
+
+test("search retains answered rows and partial completion guidance on an unresolved result", async () => {
+  const result = await scenario("search-partial");
+  expect(result.frame).toContain("29/30 answered");
+  expect(result.frame).toContain("acme.com");
+  expect(result.frame).toContain("acme.dev");
+  expect(result.frame).toContain("Partial results");
+  expect(result.frame).toContain("HTTP 400");
   expect(result.unhandled).toEqual([]);
 });

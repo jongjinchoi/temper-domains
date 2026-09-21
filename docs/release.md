@@ -2,7 +2,9 @@
 
 ## Prerequisites
 
-- Use Bun 1.4.2 (`packageManager`) and Node.js 24.21.0 (`.nvmrc`). Run `bun ci`.
+- Run `bun ci`. No exact Bun or Node.js version is required for local
+  verification; record the versions used. Release workflows select Bun
+  `latest` and Node.js `lts/*`.
 - The npm minimum is Node.js 22.12.0. Announce the increase from the previous
   Node.js >= 18 declaration in the next release notes. Standalone binary users
   do not need to install Node.js.

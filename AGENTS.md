@@ -26,8 +26,11 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
 
-Use Bun 1.4.2 (`packageManager`) and Node.js 24.21.0 (`.nvmrc`). Install with
-`bun ci`. The npm CLI supports Node.js >= 22.12.0.
+Install with `bun ci`. Development and local verification do not require an
+exact Bun or Node.js version. The npm CLI requires Node.js >= 22.12.0.
+CI and release workflows select Bun `latest` and Node.js `lts/*`; compatibility
+CI also checks the minimum supported Node.js version. Record the actual runtime
+versions used for verification.
 
 `bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary
 directory. Child-process regression tests also use temporary homes. RDAP calls

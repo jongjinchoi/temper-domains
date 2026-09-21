@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
-          node-version-file: ".nvmrc"
+          node-version: "lts/*"
       - name: Validate release source
         env:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
@@ -40,6 +40,8 @@ jobs:
               ':(exclude).github/workflows/release.yml' ':(exclude)docs/release.md'
           fi
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - run: bun ci
       - run: bun test
       - run: bun run typecheck
@@ -65,6 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - run: bun ci
       - name: Build binary
         run: |
@@ -105,9 +109,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - uses: actions/setup-node@v5
         with:
-          node-version-file: ".nvmrc"
+          node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
       - run: bun ci

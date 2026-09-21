@@ -1,9 +1,9 @@
 import { Box, Text, useApp, useInput } from "ink";
-import { useState } from "react";
-import { saveConfig } from "../config/config.ts";
+import { useEffect, useRef, useState } from "react";
+import { ConfigSaveError, saveConfig } from "../config/config.ts";
 import { REGISTRAR_META } from "../registrar/urls.ts";
 import FrameBox from "./FrameBox.tsx";
-import { THEME_NAMES, setTheme, theme } from "./theme.ts";
+import { setTheme, theme } from "./theme.ts";
 
 type Step = "registrar" | "theme" | "done";
 
@@ -41,10 +41,29 @@ export default function InitView({ currentConfig }: Props) {
   const [cursor, setCursor] = useState(initialRegistrarIdx);
   const [selectedRegistrar, setSelectedRegistrar] = useState(currentConfig?.registrar ?? "");
   const [selectedTheme, setSelectedTheme] = useState("");
+  const [savePending, setSavePending] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const saving = useRef(false);
+  const mounted = useRef(true);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      clearTimeout(exitTimer.current);
+    };
+  }, []);
 
   useInput(
     (input, key) => {
-      if (step === "done") return;
+      if (input === "q" || key.escape) {
+        mounted.current = false;
+        clearTimeout(exitTimer.current);
+        exit();
+        return;
+      }
+      if (step === "done" || saving.current) return;
 
       const items = step === "registrar" ? REGISTRAR_META : THEME_META;
 
@@ -60,25 +79,39 @@ export default function InitView({ currentConfig }: Props) {
         } else if (step === "theme") {
           const themeName = THEME_META[cursor]!.name;
           const themeLabel = THEME_META[cursor]!.label;
+          saving.current = true;
+          setSavePending(true);
+          setSaveError(null);
           setSelectedTheme(themeLabel);
-          setTheme(themeName);
           saveConfig({ registrar: selectedRegistrar, theme: themeName }).then(() => {
+            if (!mounted.current) return;
+            setTheme(themeName);
             setStep("done");
-            setTimeout(() => exit({ registrar: selectedRegistrar, theme: themeLabel }), 2000);
+            exitTimer.current = setTimeout(() => {
+              if (mounted.current) exit({ registrar: selectedRegistrar, theme: themeLabel });
+            }, 2000);
+          }).catch((error: unknown) => {
+            if (!mounted.current) return;
+            if (error instanceof ConfigSaveError && error.committed) {
+              setTheme(themeName);
+              setStep("done");
+            }
+            setSaveError(error instanceof Error ? error.message : String(error));
+          }).finally(() => {
+            saving.current = false;
+            if (mounted.current) setSavePending(false);
           });
         }
-      } else if (input === "q" || key.escape) {
-        exit();
       }
     },
-    { isActive: step !== "done" && process.stdin.isTTY === true },
+    { isActive: process.stdin.isTTY === true },
   );
 
   const stepInfo = STEP_LABELS[step];
   const hints =
     step === "done"
       ? [{ key: "q", action: "quit" }]
-      : [
+      : savePending ? [{ key: "esc", action: "exit" }] : [
           { key: "j/k", action: "up/down" },
           { key: "enter", action: "next" },
           { key: "esc", action: "cancel" },
@@ -91,6 +124,9 @@ export default function InitView({ currentConfig }: Props) {
         <Text color={theme.dim}>  ·  </Text>
         <Text color={theme.dim}>{stepInfo.desc}</Text>
       </Box>
+
+      {savePending && <Text color={theme.dim}>Saving settings...</Text>}
+      {saveError && <Text color={step === "done" ? theme.yellow : theme.red}>{saveError}</Text>}
 
       {step === "registrar" && (
         <Box flexDirection="column">
