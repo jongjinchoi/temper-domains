@@ -1,11 +1,11 @@
 import { domainToASCII, domainToUnicode } from "node:url";
 import { hash } from "./inventory.ts";
-import { normalizeSuffix, lookupRoute } from "./boundary.ts";
+import { normalizeSuffix, lookupRoute, catalogLookupPlan } from "./boundary.ts";
 import { INDUSTRIES, PURPOSES } from "./taxonomy.ts";
 import type { CommercialSource, EditorialData, ExtensionEntry, Inventory } from "./types.ts";
 
 function validDate(value: string): boolean { return typeof value === "string" && Number.isFinite(Date.parse(value)); }
-function validSource(value: string): boolean { return typeof value === "string" && value.startsWith("https://"); }
+function validSource(value: string): boolean { return typeof value === "string" && /^https?:\/\//.test(value); }
 
 export function validateCommercialSources(sources: CommercialSource[]): void {
   if (!Array.isArray(sources) || sources.length < 2 || new Set(sources.map(s => s.provider)).size !== sources.length) throw new Error("Provide complete commercial snapshots from at least two distinct providers");
@@ -62,10 +62,11 @@ export function buildCatalogSnapshot(inventory: Inventory, sources: CommercialSo
       seen.add(key);
     }
   }
-  const snapshot: Inventory = { ...inventory, commercialSources: sources, entries: [...entries.values()].sort((a, b) => a.suffix < b.suffix ? -1 : a.suffix > b.suffix ? 1 : 0) };
+  const snapshot: Inventory = { ...inventory, lookupPlans: undefined, commercialSources: sources, entries: [...entries.values()].sort((a, b) => a.suffix < b.suffix ? -1 : a.suffix > b.suffix ? 1 : 0) };
   for (const entry of snapshot.entries) {
     try { normalizeSuffix(entry.suffix, snapshot); entry.boundaryState = "direct"; } catch { entry.boundaryState = "unknown"; }
   }
+  snapshot.lookupPlans = Object.fromEntries(snapshot.entries.map(entry => [entry.suffix, catalogLookupPlan(entry.suffix, snapshot)]));
   snapshot.version = hash(JSON.stringify({ sources: inventory.sources, commercial: sources, editorial })).slice(0, 16);
   return snapshot;
 }

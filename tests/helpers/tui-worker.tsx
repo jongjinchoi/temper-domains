@@ -1,3 +1,4 @@
+import "./mock-rdap-transport.ts";
 import "./home.ts";
 import { mock } from "bun:test";
 import { PassThrough, Writable } from "node:stream";

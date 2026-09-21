@@ -1,3 +1,7 @@
+import tls from "node:tls";
+import http2 from "node:http2";
+import { EventEmitter } from "node:events";
+import { PassThrough } from "node:stream";
 import os from "node:os";
 import net from "node:net";
 import { syncBuiltinESMExports } from "node:module";
@@ -21,3 +25,29 @@ globalThis.fetch = async (input) => {
   if (/^https:\/\/[a-z0-9-]+\.registry\.test\/domain\//.test(url)) return new Response(null, { status: 404 });
   throw new Error(`Unexpected network request: ${url}`);
 };
+
+// Controlled protocol boundary for Node CLI/MCP tests. Real TLS negotiation and
+// cancellation are covered by tests/transport/runner.mjs using both runtimes.
+tls.connect = () => {
+  const socket = new EventEmitter(); socket.alpnProtocol = "h2";
+  socket.destroy = () => {};
+  process.nextTick(() => socket.emit("secureConnect"));
+  return socket;
+};
+http2.connect = (origin) => {
+  const session = new EventEmitter(); session.destroy = () => {};
+  session.request = headers => {
+    const stream = new PassThrough();
+    const end = stream.end.bind(stream);
+    stream.end = () => {
+      void globalThis.fetch(origin + headers[":path"]).then(async response => {
+        stream.emit("response", { ":status": response.status, ...Object.fromEntries(response.headers) });
+        end(Buffer.from(await response.arrayBuffer()));
+      }).catch(error => stream.destroy(error));
+      return stream;
+    };
+    return stream;
+  };
+  return session;
+};
+syncBuiltinESMExports();

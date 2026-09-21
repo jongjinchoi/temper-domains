@@ -1,1053 +1,19 @@
 {
-  "dev": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'dev' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/dev.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "app": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'app' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/app.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "product",
-        "reason": "Editorial interpretation of the label 'app' for product; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/app.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "tech": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'tech' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/tech.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "cloud": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'cloud' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/cloud.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "digital": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'digital' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/digital.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "software": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'software' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/software.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "product",
-        "reason": "Editorial interpretation of the label 'software' for product; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/software.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "systems": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'systems' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/systems.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "computer": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'computer' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/computer.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "technology": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "technology",
-        "reason": "Editorial interpretation of the label 'technology' for technology; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/technology.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "design": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'design' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/design.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "studio": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'studio' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/studio.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "art": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'art' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/art.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "gallery": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'gallery' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/gallery.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "graphics": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'graphics' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/graphics.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "photography": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'photography' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/photography.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "personal-portfolio",
-        "reason": "Editorial interpretation of the label 'photography' for personal-portfolio; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/photography.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "photo": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'photo' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/photo.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "pictures": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "design-arts",
-        "reason": "Editorial interpretation of the label 'pictures' for design-arts; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/pictures.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "media": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'media' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/media.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "content",
-        "reason": "Editorial interpretation of the label 'media' for content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/media.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "blog": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'blog' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/blog.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "content",
-        "reason": "Editorial interpretation of the label 'blog' for content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/blog.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "news": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'news' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/news.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "content",
-        "reason": "Editorial interpretation of the label 'news' for content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/news.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "press": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'press' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/press.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "video": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'video' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/video.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "content",
-        "reason": "Editorial interpretation of the label 'video' for content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/video.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "audio": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'audio' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/audio.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "movie": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'movie' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/movie.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "film": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "media-content",
-        "reason": "Editorial interpretation of the label 'film' for media-content; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/film.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "shop": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'shop' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/shop.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "store",
-        "reason": "Editorial interpretation of the label 'shop' for store; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/shop.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "store": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'store' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/store.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "store",
-        "reason": "Editorial interpretation of the label 'store' for store; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/store.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "shopping": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'shopping' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/shopping.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      },
-      {
-        "facet": "purpose",
-        "id": "store",
-        "reason": "Editorial interpretation of the label 'shopping' for store; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/shopping.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "market": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'market' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/market.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "bargains": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'bargains' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/bargains.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "sale": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'sale' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/sale.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "deals": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "commerce",
-        "reason": "Editorial interpretation of the label 'deals' for commerce; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/deals.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "agency": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'agency' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/agency.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "consulting": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'consulting' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/consulting.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "services": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'services' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/services.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "lawyer": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'lawyer' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/lawyer.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "accountant": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'accountant' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/accountant.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "legal": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "professional-services",
-        "reason": "Editorial interpretation of the label 'legal' for professional-services; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/legal.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "education": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'education' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/education.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "academy": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'academy' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/academy.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "school": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'school' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/school.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "university": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'university' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/university.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "college": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'college' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/college.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "science": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "education-research",
-        "reason": "Editorial interpretation of the label 'science' for education-research; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/science.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "finance": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "finance-insurance",
-        "reason": "Editorial interpretation of the label 'finance' for finance-insurance; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/finance.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "financial": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "finance-insurance",
-        "reason": "Editorial interpretation of the label 'financial' for finance-insurance; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/financial.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "insurance": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "finance-insurance",
-        "reason": "Editorial interpretation of the label 'insurance' for finance-insurance; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/insurance.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "bank": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "finance-insurance",
-        "reason": "Editorial interpretation of the label 'bank' for finance-insurance; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/bank.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "health": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "health-medical",
-        "reason": "Editorial interpretation of the label 'health' for health-medical; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/health.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "healthcare": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "health-medical",
-        "reason": "Editorial interpretation of the label 'healthcare' for health-medical; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/healthcare.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "clinic": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "health-medical",
-        "reason": "Editorial interpretation of the label 'clinic' for health-medical; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/clinic.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "dental": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "health-medical",
-        "reason": "Editorial interpretation of the label 'dental' for health-medical; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/dental.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "doctor": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "health-medical",
-        "reason": "Editorial interpretation of the label 'doctor' for health-medical; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/doctor.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "food": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'food' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/food.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "restaurant": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'restaurant' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/restaurant.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "cafe": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'cafe' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/cafe.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "coffee": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'coffee' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/coffee.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "kitchen": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'kitchen' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/kitchen.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "pizza": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "food-dining",
-        "reason": "Editorial interpretation of the label 'pizza' for food-dining; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/pizza.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "travel": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "travel-hospitality",
-        "reason": "Editorial interpretation of the label 'travel' for travel-hospitality; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/travel.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "tours": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "travel-hospitality",
-        "reason": "Editorial interpretation of the label 'tours' for travel-hospitality; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/tours.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "holiday": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "travel-hospitality",
-        "reason": "Editorial interpretation of the label 'holiday' for travel-hospitality; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/holiday.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "vacations": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "travel-hospitality",
-        "reason": "Editorial interpretation of the label 'vacations' for travel-hospitality; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/vacations.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "flights": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "travel-hospitality",
-        "reason": "Editorial interpretation of the label 'flights' for travel-hospitality; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/flights.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "property": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'property' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/property.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "properties": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'properties' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/properties.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "estate": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'estate' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/estate.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "realty": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'realty' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/realty.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "construction": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'construction' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/construction.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "builders": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "property-construction",
-        "reason": "Editorial interpretation of the label 'builders' for property-construction; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/builders.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "games": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'games' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/games.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "game": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'game' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/game.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "sport": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'sport' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/sport.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "fitness": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'fitness' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/fitness.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "golf": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'golf' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/golf.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "football": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'football' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/football.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "toys": {
-    "assignments": [
-      {
-        "facet": "industry",
-        "id": "sports-games-hobbies",
-        "reason": "Editorial interpretation of the label 'toys' for sports-games-hobbies; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/toys.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "site": {
+  "arpa": {
+    "namespace": {
+      "reason": "Internet infrastructure namespace; not a general registration suffix.",
+      "source": "https://www.iana.org/domains/arpa"
+    }
+  },
+  "business": {
     "assignments": [
       {
         "facet": "purpose",
-        "id": "general",
-        "reason": "Editorial interpretation of the label 'site' for general; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/site.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "online": {
-    "assignments": [
-      {
-        "facet": "purpose",
-        "id": "general",
-        "reason": "Editorial interpretation of the label 'online' for general; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/online.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "website": {
-    "assignments": [
-      {
-        "facet": "purpose",
-        "id": "general",
-        "reason": "Editorial interpretation of the label 'website' for general; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/website.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
-      }
-    ]
-  },
-  "page": {
-    "assignments": [
-      {
-        "facet": "purpose",
-        "id": "general",
-        "reason": "Editorial interpretation of the label 'page' for general; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/page.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "id": "company",
+        "reason": "The registry lists .business under Business; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1056,22 +22,22 @@
       {
         "facet": "purpose",
         "id": "company",
-        "reason": "Editorial interpretation of the label 'company' for company; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/company.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .company under Business; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "business": {
+  "llc": {
     "assignments": [
       {
         "facet": "purpose",
         "id": "company",
-        "reason": "Editorial interpretation of the label 'business' for company; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/business.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .llc under Business; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1080,46 +46,1330 @@
       {
         "facet": "purpose",
         "id": "company",
-        "reason": "Editorial interpretation of the label 'ltd' for company; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/ltd.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .ltd under Business; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "me": {
+  "consulting": {
     "assignments": [
       {
-        "facet": "purpose",
-        "id": "personal-portfolio",
-        "reason": "Editorial interpretation of the label 'me' for personal-portfolio; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/me.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .consulting under Business; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "bio": {
+  "academy": {
     "assignments": [
       {
-        "facet": "purpose",
-        "id": "personal-portfolio",
-        "reason": "Editorial interpretation of the label 'bio' for personal-portfolio; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/bio.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .academy under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "club": {
+  "degree": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .degree under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "education": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .education under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "institute": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .institute under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "mba": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .mba under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "school": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .school under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "schule": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .schule under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "shiksha": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .shiksha under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "university": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry lists .university under Education; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "accountants": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .accountants under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "capital": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .capital under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "cash": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .cash under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "credit": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .credit under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "exchange": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .exchange under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "finance": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .finance under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fund": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .fund under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "investments": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .investments under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "money": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry lists .money under Financial; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "care": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .care under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "clinic": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .clinic under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "dental": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .dental under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "dentist": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .dentist under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "doctor": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .doctor under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "healthcare": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .healthcare under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "hospital": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .hospital under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "vet": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .vet under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "vision": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "The registry lists .vision under Healthcare; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "associates": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .associates under Legal; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "attorney": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .attorney under Legal; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "lawyer": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .lawyer under Legal; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "legal": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .legal under Legal; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "partners": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry lists .partners under Legal; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "builders": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .builders under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "construction": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .construction under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "contractors": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .contractors under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "parts": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .parts under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "repair": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .repair under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "supply": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .supply under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "tools": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .tools under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "works": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .works under Home & Construction; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "cruises": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "The registry lists .cruises under Travel; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "flights": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "The registry lists .flights under Travel; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "tours": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "The registry lists .tours under Travel; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "travel": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "The registry lists .travel under Travel; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "vacations": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "The registry lists .vacations under Travel; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "bike": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .bike under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "coach": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .coach under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fan": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .fan under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fitness": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .fitness under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "football": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .football under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "golf": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .golf under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "run": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .run under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "team": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .team under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "training": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .training under Sports; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "auction": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .auction under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "deals": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .deals under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "delivery": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .delivery under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "express": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .express under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "gifts": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .gifts under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "market": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .market under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "promo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .promo under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "sale": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry lists .sale under Retail; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "directory": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .directory under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fyi": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .fyi under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "info": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .info under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "news": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .news under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry lists .news under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "report": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .report under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry lists .report under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "reviews": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .reviews under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry lists .reviews under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "tips": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .tips under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "today": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .today under News; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "camera": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .camera under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "equipment": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .equipment under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "gallery": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .gallery under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "photography": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .photography under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "photos": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .photos under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "pictures": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .pictures under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "studio": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry lists .studio under Photography; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "apartments": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .apartments under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "forsale": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .forsale under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "house": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .house under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "land": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .land under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "lease": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .lease under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "mortgage": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .mortgage under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "properties": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .properties under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "rentals": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry lists .rentals under Real Estate; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "cafe": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .cafe under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "coffee": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .coffee under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "kitchen": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .kitchen under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "pizza": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .pizza under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "pub": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .pub under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "restaurant": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .restaurant under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "wine": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry lists .wine under Food & Beverage; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "codes": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .codes under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "digital": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .digital under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "mobi": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .mobi under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "software": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .software under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "systems": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .systems under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "technology": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry lists .technology under Tech; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "actor": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .actor under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "live": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .live under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "media": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .media under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "show": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .show under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "video": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry lists .video under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "bet": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .bet under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "games": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry lists .games under Entertainment; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "camp": {
     "assignments": [
       {
         "facet": "purpose",
         "id": "community",
-        "reason": "Editorial interpretation of the label 'club' for community; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/club.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .camp under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "church": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry lists .church under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1128,58 +1378,838 @@
       {
         "facet": "purpose",
         "id": "community",
-        "reason": "Editorial interpretation of the label 'community' for community; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/community.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .community under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "social": {
+  "family": {
     "assignments": [
       {
         "facet": "purpose",
         "id": "community",
-        "reason": "Editorial interpretation of the label 'social' for community; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/social.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .family under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "team": {
+  "lgbt": {
     "assignments": [
       {
         "facet": "purpose",
         "id": "community",
-        "reason": "Editorial interpretation of the label 'team' for community; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/team.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "reason": "The registry lists .lgbt under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "ngo": {
+  "network": {
     "assignments": [
       {
         "facet": "purpose",
-        "id": "nonprofit",
-        "reason": "Editorial interpretation of the label 'ngo' for nonprofit; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/ngo.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "id": "community",
+        "reason": "The registry lists .network under Communities & Identities; this documented use matches this activity or website purpose. Other uses are not excluded.",
+        "source": "https://identity.digital/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "charity": {
+  "dev": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Developer projects, tools and programming documentation.",
+        "source": "https://www.registry.google/domains/dev/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "app": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Applications and their product websites.",
+        "source": "https://www.registry.google/domains/app/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "Applications and their product websites.",
+        "source": "https://www.registry.google/domains/app/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "page": {
     "assignments": [
       {
         "facet": "purpose",
-        "id": "nonprofit",
-        "reason": "Editorial interpretation of the label 'charity' for nonprofit; not a registry eligibility or popularity claim.",
-        "source": "https://www.iana.org/domains/root/db/charity.html",
-        "evidenceType": "editorial",
-        "checkedAt": "2026-09-21"
+        "id": "general",
+        "reason": "Business sites, publishing, personal work and research presentations.",
+        "source": "https://www.registry.google/domains/page/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Business sites, publishing, personal work and research presentations.",
+        "source": "https://www.registry.google/domains/page/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Business sites, publishing, personal work and research presentations.",
+        "source": "https://www.registry.google/domains/page/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Business sites, publishing, personal work and research presentations.",
+        "source": "https://www.registry.google/domains/page/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "foo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Code experiments, testing and developer sandboxes.",
+        "source": "https://www.registry.google/domains/foo/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "mov": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Films, videos, motion graphics and creative portfolios.",
+        "source": "https://www.registry.google/domains/mov/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Films, videos, motion graphics and creative portfolios.",
+        "source": "https://www.registry.google/domains/mov/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Films, videos, motion graphics and creative portfolios.",
+        "source": "https://www.registry.google/domains/mov/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Films, videos, motion graphics and creative portfolios.",
+        "source": "https://www.registry.google/domains/mov/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "prof": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Educator and researcher profiles, teaching and research publishing.",
+        "source": "https://www.registry.google/domains/prof/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Educator and researcher profiles, teaching and research publishing.",
+        "source": "https://www.registry.google/domains/prof/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Educator and researcher profiles, teaching and research publishing.",
+        "source": "https://www.registry.google/domains/prof/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "phd": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Researchers and scholars presenting credentials and publishing research.",
+        "source": "https://www.registry.google/domains/phd/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Researchers and scholars presenting credentials and publishing research.",
+        "source": "https://www.registry.google/domains/phd/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Researchers and scholars presenting credentials and publishing research.",
+        "source": "https://www.registry.google/domains/phd/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "esq": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Legal practices, professional expertise and prospective clients.",
+        "source": "https://www.registry.google/domains/esq/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Legal practices, professional expertise and prospective clients.",
+        "source": "https://www.registry.google/domains/esq/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "dad": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Fatherhood-related articles and blogs.",
+        "source": "https://www.registry.google/domains/dad/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "meme": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Sharing memes, humor, ideas and culture.",
+        "source": "https://www.registry.google/domains/meme/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Sharing memes, humor, ideas and culture.",
+        "source": "https://www.registry.google/domains/meme/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "design": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Designers showcasing their creative work.",
+        "source": "https://domains.registry.godaddy/design",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Designers showcasing their creative work.",
+        "source": "https://domains.registry.godaddy/design",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "beer": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Brewers, pubs and beer brands.",
+        "source": "https://domains.registry.godaddy/beer",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "vodka": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Vodka producers, wholesalers and retailers.",
+        "source": "https://domains.registry.godaddy/vodka",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "club": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Followers and customers forming a community.",
+        "source": "https://domains.registry.godaddy/club",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "photo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Photographers documenting and sharing their work.",
+        "source": "https://domains.registry.godaddy/photo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Photographers documenting and sharing their work.",
+        "source": "https://domains.registry.godaddy/photo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Photographers documenting and sharing their work.",
+        "source": "https://domains.registry.godaddy/photo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "health": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Health professionals connecting with clients and peers.",
+        "source": "https://domains.registry.godaddy/health",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "cooking": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Cooking, chefs and kitchen projects.",
+        "source": "https://domains.registry.godaddy/cooking",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "courses": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Syllabuses, lessons, training and coaching materials online.",
+        "source": "https://domains.registry.godaddy/courses",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Syllabuses, lessons, training and coaching materials online.",
+        "source": "https://domains.registry.godaddy/courses",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "study": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Educational institutions and research groups sharing studies.",
+        "source": "https://domains.registry.godaddy/study",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Educational institutions and research groups sharing studies.",
+        "source": "https://domains.registry.godaddy/study",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fashion": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Fashion retailers, designers, bloggers and influencers.",
+        "source": "https://domains.registry.godaddy/fashion",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Fashion retailers, designers, bloggers and influencers.",
+        "source": "https://domains.registry.godaddy/fashion",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Fashion retailers, designers, bloggers and influencers.",
+        "source": "https://domains.registry.godaddy/fashion",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fishing": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Fishing shops and fishing blogs or online stores.",
+        "source": "https://domains.registry.godaddy/fishing",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "Fishing shops and fishing blogs or online stores.",
+        "source": "https://domains.registry.godaddy/fishing",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Fishing shops and fishing blogs or online stores.",
+        "source": "https://domains.registry.godaddy/fishing",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "garden": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Gardening enthusiasts and gardening brands.",
+        "source": "https://domains.registry.godaddy/garden",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fit": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Fitness brands and the fitness community.",
+        "source": "https://domains.registry.godaddy/fit",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Fitness brands and the fitness community.",
+        "source": "https://domains.registry.godaddy/fit",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "yoga": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Yoga teachers, studios and communities.",
+        "source": "https://domains.registry.godaddy/yoga",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Yoga teachers, studios and communities.",
+        "source": "https://domains.registry.godaddy/yoga",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "tattoo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Showcasing tattoos and connecting tattoo enthusiasts.",
+        "source": "https://domains.registry.godaddy/tattoo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Showcasing tattoos and connecting tattoo enthusiasts.",
+        "source": "https://domains.registry.godaddy/tattoo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Showcasing tattoos and connecting tattoo enthusiasts.",
+        "source": "https://domains.registry.godaddy/tattoo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "surf": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Surfing and surf enthusiasts.",
+        "source": "https://domains.registry.godaddy/surf",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "rodeo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Rodeo riders, venues and enthusiasts.",
+        "source": "https://domains.registry.godaddy/rodeo",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "horse": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Horse breeders, trainers, riders and enthusiasts.",
+        "source": "https://domains.registry.godaddy/horse",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "gay": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "LGBTQIA+ communities and inclusion.",
+        "source": "https://domains.registry.godaddy/gay",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "wiki": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Information sharing and collaborative online hubs.",
+        "source": "https://domains.registry.godaddy/wiki",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Information sharing and collaborative online hubs.",
+        "source": "https://domains.registry.godaddy/wiki",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "vip": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Business branding with an exclusivity theme.",
+        "source": "https://domains.registry.godaddy/vip",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "store": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Online sellers and e-commerce websites.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "Online sellers and e-commerce websites.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "online": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Business websites across industries.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Business websites across industries.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "tech": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Technology startups.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "site": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Startups, businesses and freelancers showing their expertise.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Startups, businesses and freelancers showing their expertise.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Startups, businesses and freelancers showing their expertise.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "host": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Hosting providers and cloud services.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "press": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Journalists, writers and publishers.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Journalists, writers and publishers.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "space": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Photographers, bloggers and freelancers showing creative work.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Photographers, bloggers and freelancers showing creative work.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Photographers, bloggers and freelancers showing creative work.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Photographers, bloggers and freelancers showing creative work.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "website": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Personal blogs, portfolios and professional websites.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Personal blogs, portfolios and professional websites.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Personal blogs, portfolios and professional websites.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "fun": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Gamers, comics and content creators.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Gamers, comics and content creators.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Gamers, comics and content creators.",
+        "source": "https://radix.website/domains",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1191,7 +2221,7 @@
         "reason": "Nominet describes .co.uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1203,7 +2233,7 @@
         "reason": "Nominet describes .uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       },
       {
         "facet": "purpose",
@@ -1211,7 +2241,7 @@
         "reason": "Nominet describes .uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1223,7 +2253,7 @@
         "reason": "Nominet describes .org.uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       },
       {
         "facet": "purpose",
@@ -1231,7 +2261,7 @@
         "reason": "Nominet describes .org.uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
@@ -1243,14 +2273,1220 @@
         "reason": "Nominet describes .me.uk for this website purpose; intended use does not establish eligibility.",
         "source": "https://registrars.nominet.uk/uk-namespace/",
         "evidenceType": "registry-purpose",
-        "checkedAt": "2026-09-21"
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
       }
     ]
   },
-  "arpa": {
-    "namespace": {
-      "reason": "Internet infrastructure namespace; not a general registration suffix.",
-      "source": "https://www.iana.org/domains/arpa"
-    }
+  "art": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Artists and cultural professionals presenting their creative identity.",
+        "source": "https://www.art.art/about",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Artists and cultural professionals presenting their creative identity.",
+        "source": "https://www.art.art/about",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "bank": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "Banks presenting their services online.",
+        "source": "https://www.register.bank/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Banks presenting their services online.",
+        "source": "https://www.register.bank/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "cloud": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Cloud, SaaS and technology businesses.",
+        "source": "https://www.nic.cloud/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Cloud, SaaS and technology businesses.",
+        "source": "https://www.nic.cloud/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "shop": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "E-commerce and retail websites.",
+        "source": "https://get.shop/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "E-commerce and retail websites.",
+        "source": "https://get.shop/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "blog": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Publishing stories and blogs.",
+        "source": "https://get.blog/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Publishing stories and blogs.",
+        "source": "https://get.blog/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "game": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Video games, gaming software businesses and player portfolios.",
+        "source": "https://nic.game/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Video games, gaming software businesses and player portfolios.",
+        "source": "https://nic.game/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "Video games, gaming software businesses and player portfolios.",
+        "source": "https://nic.game/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Video games, gaming software businesses and player portfolios.",
+        "source": "https://nic.game/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Video games, gaming software businesses and player portfolios.",
+        "source": "https://nic.game/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "org": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "charity": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "foundation": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "gives": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "giving": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "ngo": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "ong": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes this family for mission-driven organizations and causes; this classification is a website purpose, not a registration gate.",
+        "source": "https://pir.org/our-domains/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T17:59:54.938078+00:00"
+      }
+    ]
+  },
+  "io": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry explicitly describes technology websites, software brands and technology startups.",
+        "source": "https://nic.io/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry explicitly describes technology websites, software brands and technology startups.",
+        "source": "https://nic.io/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "co": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "The registry describes broad use across sectors for businesses, startups and individuals.",
+        "source": "https://registry.co/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes broad use across sectors for businesses, startups and individuals.",
+        "source": "https://registry.co/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "The registry describes broad use across sectors for businesses, startups and individuals.",
+        "source": "https://registry.co/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "pw": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes professional and business websites and establishing a professional identity.",
+        "source": "https://registry.pw/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes professional and business websites and establishing a professional identity.",
+        "source": "https://registry.pw/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "The registry describes professional and business websites and establishing a professional identity.",
+        "source": "https://registry.pw/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "ai": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry describes AI tools, technology businesses and showcasing expertise in emerging technologies.",
+        "source": "https://www.nic.ai/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "The registry describes AI tools, technology businesses and showcasing expertise in emerging technologies.",
+        "source": "https://www.nic.ai/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes AI tools, technology businesses and showcasing expertise in emerging technologies.",
+        "source": "https://www.nic.ai/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "The registry describes AI tools, technology businesses and showcasing expertise in emerging technologies.",
+        "source": "https://www.nic.ai/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "tv": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry page description explicitly describes watchable media and sharing content.",
+        "source": "https://turnon.tv/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry page description explicitly describes watchable media and sharing content.",
+        "source": "https://turnon.tv/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "xn--g2xx48c": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry describes this Chinese extension for e-commerce.",
+        "source": "https://gouwunic.com/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "The registry describes this Chinese extension for e-commerce.",
+        "source": "https://gouwunic.com/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "kiwi": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry explicitly promotes this extension for Kiwi businesses and brands.",
+        "source": "https://www.hello.kiwi/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "accountant": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes accountants, accounting firms and accountancy-related services.",
+        "source": "http://nic.accountant",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry describes accountants, accounting firms and accountancy-related services.",
+        "source": "http://nic.accountant",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes accountants, accounting firms and accountancy-related services.",
+        "source": "http://nic.accountant",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "science": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "The registry describes scientists, scientific information and science-focused educational institutions.",
+        "source": "http://nic.science",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "bid": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry describes websites for buyers and sellers.",
+        "source": "http://nic.bid",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "cricket": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes cricket-related interactions and the cricket community.",
+        "source": "http://nic.cricket",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes cricket-related interactions and the cricket community.",
+        "source": "http://nic.cricket",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "loan": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry describes lending, banks, personal finance and mortgage services.",
+        "source": "http://nic.loan",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "racing": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes racing-related interactions and its community.",
+        "source": "http://nic.racing",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes racing-related interactions and its community.",
+        "source": "http://nic.racing",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "review": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes publishing and sharing reviews.",
+        "source": "http://nic.review",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes publishing and sharing reviews.",
+        "source": "http://nic.review",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "stream": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes streaming and sharing visual or audio media.",
+        "source": "http://nic.stream",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes streaming and sharing visual or audio media.",
+        "source": "http://nic.stream",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "trade": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry describes a dedicated online space for trade.",
+        "source": "http://nic.trade",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "win": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes gaming resources, services and the online gaming community.",
+        "source": "http://nic.win",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes gaming resources, services and the online gaming community.",
+        "source": "http://nic.win",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "ltda": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes company-specific domains for limited companies.",
+        "source": "https://www.internetx.info/en/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "srl": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes company-specific domains for limited companies.",
+        "source": "https://www.internetx.info/en/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "jobs": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes employer branding and company recruitment websites.",
+        "source": "https://secure.jobs/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "fans": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes artists, creators, sports clubs and fan communities sharing content.",
+        "source": "https://www.nic.fans/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes artists, creators, sports clubs and fan communities sharing content.",
+        "source": "https://www.nic.fans/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes artists, creators, sports clubs and fan communities sharing content.",
+        "source": "https://www.nic.fans/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes artists, creators, sports clubs and fan communities sharing content.",
+        "source": "https://www.nic.fans/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "qpon": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry describes businesses offering deals and e-commerce solutions.",
+        "source": "https://get.qpon/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "build": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry describes construction, technology companies and maker or DIY projects.",
+        "source": "https://about.build/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry describes construction, technology companies and maker or DIY projects.",
+        "source": "https://about.build/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes construction, technology companies and maker or DIY projects.",
+        "source": "https://about.build/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes construction, technology companies and maker or DIY projects.",
+        "source": "https://about.build/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "dealer": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "The registry describes dealers and transaction-oriented business websites across industries.",
+        "source": "https://www.get.dealer/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes dealers and transaction-oriented business websites across industries.",
+        "source": "https://www.get.dealer/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "hiphop": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes Hip Hop artists, creative work and the Hip Hop community.",
+        "source": "https://get.hiphop",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes Hip Hop artists, creative work and the Hip Hop community.",
+        "source": "https://get.hiphop",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "inc": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry explicitly describes business brands and professional company websites.",
+        "source": "https://www.get.inc/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "sport": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes sport organizations and the sports community.",
+        "source": "https://join.sport/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes sport organizations and the sports community.",
+        "source": "https://join.sport/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "audio": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes sound and music websites.",
+        "source": "https://nic.audio",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes sound and music websites.",
+        "source": "https://nic.audio",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "beauty": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes beauty professionals, companies, tutorials and fan communities.",
+        "source": "https://nic.beauty/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes beauty professionals, companies, tutorials and fan communities.",
+        "source": "https://nic.beauty/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes beauty professionals, companies, tutorials and fan communities.",
+        "source": "https://nic.beauty/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes beauty professionals, companies, tutorials and fan communities.",
+        "source": "https://nic.beauty/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "hair": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes salons, hair professionals, tutorials, communities and showcasing work.",
+        "source": "https://nic.hair/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes salons, hair professionals, tutorials, communities and showcasing work.",
+        "source": "https://nic.hair/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes salons, hair professionals, tutorials, communities and showcasing work.",
+        "source": "https://nic.hair/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes salons, hair professionals, tutorials, communities and showcasing work.",
+        "source": "https://nic.hair/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "The registry describes salons, hair professionals, tutorials, communities and showcasing work.",
+        "source": "https://nic.hair/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "skin": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes skincare professionals, company sites, tips and communities.",
+        "source": "https://nic.skin/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes skincare professionals, company sites, tips and communities.",
+        "source": "https://nic.skin/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes skincare professionals, company sites, tips and communities.",
+        "source": "https://nic.skin/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes skincare professionals, company sites, tips and communities.",
+        "source": "https://nic.skin/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "makeup": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "The registry describes makeup artists, cosmetics companies, tutorials and fan communities.",
+        "source": "https://nic.makeup/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry describes makeup artists, cosmetics companies, tutorials and fan communities.",
+        "source": "https://nic.makeup/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes makeup artists, cosmetics companies, tutorials and fan communities.",
+        "source": "https://nic.makeup/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes makeup artists, cosmetics companies, tutorials and fan communities.",
+        "source": "https://nic.makeup/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes makeup artists, cosmetics companies, tutorials and fan communities.",
+        "source": "https://nic.makeup/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "diet": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "The registry describes food and diet-related websites.",
+        "source": "https://nic.diet",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "flowers": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes botanical and horticulture enthusiasts.",
+        "source": "https://nic.flowers",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "guitars": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "The registry describes guitar enthusiasts and music websites.",
+        "source": "https://nic.guitars",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes guitar enthusiasts and music websites.",
+        "source": "https://nic.guitars",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "homes": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry describes real estate and home-industry services.",
+        "source": "https://nic.homes/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes real estate and home-industry services.",
+        "source": "https://nic.homes/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "hosting": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "The registry describes hosting-service websites.",
+        "source": "https://nic.hosting",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes hosting-service websites.",
+        "source": "https://nic.hosting",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "lat": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "The registry explicitly describes broad use by individuals, businesses and organizations.",
+        "source": "https://nic.lat",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "mom": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "The registry describes parenting blogs and caregiving resources.",
+        "source": "https://nic.mom",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "pics": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry describes photography websites and sharing photographic work.",
+        "source": "https://nic.pics",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "rent": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry describes property owners, agents and rental listings.",
+        "source": "https://nic.rent/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes property owners, agents and rental listings.",
+        "source": "https://nic.rent/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "storage": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes websites for storage businesses and facilities.",
+        "source": "https://nic.storage/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "theatre": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "The registry describes live performances, film screenings and promoting creative work.",
+        "source": "https://nic.theatre/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "The registry describes live performances, film screenings and promoting creative work.",
+        "source": "https://nic.theatre/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "xyz": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "The registry explicitly describes use for websites of all kinds.",
+        "source": "https://nic.xyz",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "insurance": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "The registry describes this extension for insurers and insurance producers.",
+        "source": "https://ftld.com/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "realestate": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "The registry describes real estate websites for client acquisition and business use.",
+        "source": "https://www.get.realestate/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes real estate websites for client acquisition and business use.",
+        "source": "https://www.get.realestate/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "scot": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes Scottish businesses and individuals online.",
+        "source": "https://dot.scot/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "The registry describes Scottish businesses and individuals online.",
+        "source": "https://dot.scot/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
+  },
+  "eco": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "The registry describes environmental businesses, products, nonprofits and community action.",
+        "source": "https://go.eco",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "The registry describes environmental businesses, products, nonprofits and community action.",
+        "source": "https://go.eco",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "The registry describes environmental businesses, products, nonprofits and community action.",
+        "source": "https://go.eco",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "The registry describes environmental businesses, products, nonprofits and community action.",
+        "source": "https://go.eco",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21T18:17:40.031131+00:00"
+      }
+    ]
   }
 }

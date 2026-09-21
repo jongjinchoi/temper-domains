@@ -170,7 +170,7 @@ describe("rdapLookup", () => {
     const result = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
 
     expect(result.status).toBe("error");
-    expect(result.error).toBe("HTTP 403");
+    expect(result.error).toBe("HTTP 403: registry denied access");
   });
 
   test("honors Retry-After before retrying and before subsequent work", async () => {

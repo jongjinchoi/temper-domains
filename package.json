@@ -20,11 +20,12 @@
   "files": ["dist/npm", "README.md", "LICENSE"],
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "catalog:verify": "bun run scripts/checker-fingerprint.ts",
     "catalog:update": "bun run scripts/update-extension-catalog.ts",
     "build:npm": "bun run build-npm.ts",
     "web:dev": "bun run --cwd web dev",
     "web:typecheck": "bun run --cwd web typecheck",
-    "web:build": "bun run --cwd web build",
+    "web:build": "bun run catalog:verify && bun run --cwd web build",
     "prepack": "bun run build-npm.ts"
   },
   "devDependencies": {

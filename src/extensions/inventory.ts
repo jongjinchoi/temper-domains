@@ -1,3 +1,4 @@
+import { parseBootstrap } from "../checker/bootstrap-cache.ts";
 import { createHash } from "node:crypto";
 import { domainToASCII, domainToUnicode } from "node:url";
 import { parseDomain } from "../utils/domain.ts";
@@ -24,18 +25,15 @@ export function buildInventory(rootText: string, pslText: string, checkedAt: str
   const suffixes = [...new Set([...roots, ...rules.filter(r => !r.startsWith("*") && !r.startsWith("!") && rootSet.has(r.split(".").at(-1)!))])].sort();
   const sources = [{ url: ROOT_SOURCE, sha256: hash(rootText) }, { url: PSL_SOURCE, sha256: hash(pslText) }];
   let rdapKeys: string[] = [];
+  let rdapEndpoints: Record<string, string[]> = {};
   if (rdapText !== undefined) {
-    const data = JSON.parse(rdapText);
-    if (!Array.isArray(data.services) || !data.services.length) throw new Error("Invalid RDAP bootstrap snapshot");
-    for (const service of data.services) {
-      if (!Array.isArray(service) || !Array.isArray(service[0]) || !service[0].every((key: unknown) => typeof key === "string") || !Array.isArray(service[1]) || !service[1].some((url: unknown) => typeof url === "string" && /^https?:\/\//.test(url))) throw new Error("Invalid RDAP service");
-      rdapKeys.push(...service[0]);
-    }
-    rdapKeys = [...new Set(rdapKeys)].sort();
+    const registry = parseBootstrap(JSON.parse(rdapText));
+    rdapKeys = [...registry.keys()].sort();
+    rdapEndpoints = Object.fromEntries([...registry.endpoints].map(([key, urls]) => [key, [...urls]]));
     sources.push({ url: RDAP_SOURCE, sha256: hash(rdapText) });
   }
   return {
-    version: hash(JSON.stringify(sources)).slice(0, 16), checkedAt, sources, roots: roots.sort(), rules, rdapKeys,
+    version: hash(JSON.stringify(sources)).slice(0, 16), checkedAt, sources, roots: roots.sort(), rules, rdapKeys, rdapEndpoints,
     entries: suffixes.map(suffix => {
       const parsed = parseDomain(`temper-boundary-probe.${suffix}`);
       const direct = parsed.isIcann && !parsed.isPrivate && parsed.publicSuffix === suffix && parsed.registrableDomain === parsed.asciiDomain;

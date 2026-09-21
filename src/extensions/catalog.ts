@@ -1,3 +1,4 @@
+import { verificationSummary } from "./evidence.ts";
 import { domainToASCII } from "node:url";
 import snapshot from "./data/catalog.json";
 import { hash } from "./inventory.ts";
@@ -32,7 +33,7 @@ for (const entry of supportedEntries) {
   const seen = new Set<string>();
   for (const a of entry.assignments) {
     const key = `${a.facet}:${a.id}`;
-    if (seen.has(key) || !a.reason || !a.source.startsWith("https://") || !a.checkedAt || !categoriesFor(a.facet).some(c => c.id === a.id)) throw new Error(`Invalid classification evidence: ${entry.suffix} ${key}`);
+    if (seen.has(key) || !a.reason || !/^https?:\/\//.test(a.source) || !a.checkedAt || !categoriesFor(a.facet).some(c => c.id === a.id)) throw new Error(`Invalid classification evidence: ${entry.suffix} ${key}`);
     seen.add(key);
   }
 }
@@ -44,7 +45,7 @@ export function catalogStats() {
     unclassified: supportedEntries.filter(e => !e.assignments.some(a => a.facet !== "region")).length,
   };
 }
-const metadata = () => ({ catalogVersion, checkedAt: inventory.checkedAt, ...catalogStats(), notice: "Lookup results may differ from final purchase availability. Listing extensions does not query domains." });
+const metadata = () => ({ catalogVersion, checkedAt: inventory.checkedAt, generatedAt: inventory.generatedAt, ...catalogStats(), notice: "Lookup results may differ from final purchase availability. Listing extensions does not query domains." });
 
 export function listCategories(facet: Facet) {
   const categories = categoriesFor(facet).map(category => ({ ...category, count: supportedEntries.filter(e => e.assignments.some(a => a.facet === facet && a.id === category.id)).length })).filter(category => facet !== "region" || category.count > 0);
@@ -77,7 +78,7 @@ export function browseExtensions(options: CatalogFilters & { cursor?: string; li
       offset = decoded.offset;
     } catch { throw new Error("Invalid or stale cursor for these filters; restart the listing"); }
   }
-  const items = matched.slice(offset, offset + limit).map(e => ({ ...e, lookupSupport: lookupSupport(e.suffix) }));
+  const items = matched.slice(offset, offset + limit).map(e => ({ ...e, lookupSupport: lookupSupport(e.suffix), classificationEvidence: e.classificationReview?.sources.map(id => inventory.reviewSources?.[id]).filter(Boolean) ?? [], verification: verificationSummary(e, inventory, inventory.checkerSignatures?.[lookupSupport(e.suffix) === "whois" ? "whois" : "rdap"] ?? "") }));
   const nextCursor = offset + limit < matched.length ? Buffer.from(JSON.stringify({ key, offset: offset + limit })).toString("base64url") : null;
   return { ...metadata(), matched: matched.length, items, nextCursor };
 }

@@ -7,8 +7,8 @@ import { whoisLookup } from "./whois.ts";
 import { getTld } from "../utils/domain.ts";
 
 export async function lookupDomainAvailability(domain: string, rdapUrl: string | null, signal: AbortSignal,
-  timeoutMs: number, rdapKey?: string, context?: LookupContext): Promise<DomainResult> {
-  if (rdapUrl) return enrichDomainResult(await rdapLookup(domain, rdapUrl, signal, context), rdapKey);
+  timeoutMs: number, rdapKey?: string, context?: LookupContext, endpoints?: readonly string[]): Promise<DomainResult> {
+  if (rdapUrl) return enrichDomainResult(await rdapLookup(domain, endpoints ?? rdapUrl, signal, context), rdapKey);
   const queuedAt = performance.now();
   let attempts = 0;
   let queueTimeMs = 0;
@@ -21,7 +21,7 @@ export async function lookupDomainAvailability(domain: string, rdapUrl: string |
     }, signal);
     attempts = result.attempts ?? attempts;
     return enrichDomainResult({ ...result, attempts, queueTimeMs: Math.round(queueTimeMs),
-      terminationReason: signal.aborted ? abortReason(signal, attempts) : result.status === "slow" || result.error === "whois timeout" ? "request_timeout" : undefined }, rdapKey);
+      terminationReason: signal.aborted ? abortReason(signal, attempts) : result.status === "slow" || result.error === "whois timeout" ? "request_timeout" : result.terminationReason }, rdapKey);
   } catch (error) {
     return enrichDomainResult({ domain, tld: getTld(domain), status: signal.aborted ? "slow" : "error", method: "whois",
       responseTime: Math.round(performance.now() - queuedAt), attempts, queueTimeMs: Math.round(attempts ? queueTimeMs : performance.now() - queuedAt),

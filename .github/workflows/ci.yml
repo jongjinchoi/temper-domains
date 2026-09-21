@@ -64,3 +64,4 @@ jobs:
       - run: node dist/npm/index.js extensions --categories
       - run: bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
       - run: node --test tests/runtime/node-checks.mjs
+      - run: node tests/transport/runner.mjs

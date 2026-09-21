@@ -19,7 +19,7 @@ export function extensionCommand(opts: Options): string {
     if ("facets" in result) {
       for (const f of result.facets) lines.push(`${f.name}: ${f.categoryCount} classifications, ${f.extensionCount} extensions`, `  ${f.description}`, `  ${f.command}`);
     } else {
-      for (const c of result.categories) lines.push(`${c.id.padEnd(26)} ${c.name} / ${c.nameKo} (${c.count})`, `  ${c.description}`);
+      for (const c of result.categories) lines.push(`${c.id.padEnd(26)} ${c.name} / ${c.nameKo} (${c.count})`, `  ${c.description}`, ...(c.inclusion ? [`  Include: ${c.inclusion}`, `  Exclude: ${c.exclusion}`] : []));
       const option = result.facet === "industry" ? "category" : result.facet;
       lines.push(`\nNext: temper extensions --${option} <id>`);
     }
@@ -31,6 +31,8 @@ export function extensionCommand(opts: Options): string {
   const lines = [`Extensions: ${page.matched} matches / ${page.total} total (as of ${page.checkedAt.slice(0, 10)})`, page.notice, ""];
   for (const e of page.items) {
     lines.push(`.${e.displaySuffix}${e.displaySuffix !== e.suffix ? ` (${e.suffix})` : ""} — boundary: ${e.boundaryState}; lookup route: ${e.lookupSupport}`);
+    lines.push(`  Lookup verification: ${e.verification.state}${e.verification.latest ? `; ${e.verification.latest.checkedAt}; ${e.verification.latest.runtime}; ${e.verification.latest.status}` : ""}`);
+    if (e.classificationReview) lines.push(`  Classification review: ${e.classificationReview.state} — ${e.classificationReview.rationale}`);
     if (!e.assignments.some(a => a.facet !== "region")) lines.push("  Industry / purpose: unclassified");
     for (const a of e.assignments) lines.push(`  ${a.facet}: ${a.id} — ${a.reason}`, `    ${a.evidenceType}; ${a.checkedAt}; ${a.source}`);
     for (const offer of e.offers ?? []) lines.push(`  Offered by ${offer.provider}; ${offer.checkedAt}; ${offer.source}`);

@@ -1,3 +1,4 @@
+import { rdapTransport, TransportError } from "./http-transport.ts";
 import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
 import { requestScheduler, serverKey } from "./scheduler.ts";
 import { createRun, abortReason, LookupAbort, type LookupContext } from "./run.ts";
@@ -31,8 +32,8 @@ function validateDomainResponse(value: unknown, domain: string): Record<string, 
   return data;
 }
 
-interface RdapAnswer { status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number }
-async function queryRdap(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
+interface RdapAnswer { location?: string | null; status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number }
+async function queryRdap(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
   if (!context) {
     const run = createRun(10000, signal);
     try { return await queryRdap(domain, base, run.signal, run.context); }
@@ -40,8 +41,11 @@ async function queryRdap(domain: string, base: string, signal: AbortSignal, cont
   }
   const start = performance.now();
   const ctx = context;
-  const key = serverKey(base);
-  const url = `${base.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
+  const endpoints = typeof base === "string" ? [base] : base;
+  let endpointIndex = 0;
+  let url = `${endpoints[0]!.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
+  let key = serverKey(url);
+  let redirects = 0;
   let attempts = 0;
   let queueTimeMs = 0;
   let queuedAt: number | undefined;
@@ -53,8 +57,10 @@ async function queryRdap(domain: string, base: string, signal: AbortSignal, cont
   });
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
+      key = serverKey(url);
       queuedAt = performance.now();
-      const answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
+      let answer: RdapAnswer;
+      try { answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
         queueTimeMs += performance.now() - queuedAt!;
         queuedAt = undefined;
         signal.throwIfAborted();
@@ -68,13 +74,13 @@ async function queryRdap(domain: string, base: string, signal: AbortSignal, cont
         const requestSignal = AbortSignal.any([signal, controller.signal]);
         let response: Response | undefined;
         try {
-          response = await fetch(url, { signal: requestSignal, redirect: "follow", headers: RDAP_HEADERS });
+          response = await rdapTransport.request(url, { signal: requestSignal, headers: RDAP_HEADERS });
           if (response.status === 429 || response.status === 503) {
             const wait = parseRetryAfter(response.headers.get("retry-after"));
             requestScheduler.backoff(key, wait);
             return { status: response.status, retryAt: Date.now() + wait };
           }
-          if (response.status !== 200) return { status: response.status };
+          if (response.status !== 200) return { status: response.status, location: response.headers.get("location") };
           try {
             const json = validateDomainResponse(await response.json(), domain);
             return { status: 200, json, parsed: parseRdapResponse(json) };
@@ -90,10 +96,24 @@ async function queryRdap(domain: string, base: string, signal: AbortSignal, cont
           await response?.body?.cancel().catch(() => {});
         }
       }, signal);
+      } catch (error) {
+        // Only an unanswered transport request may use another published HTTPS URL.
+        if (!signal.aborted && terminationReason === undefined && error instanceof TransportError && ["network", "tls", "protocol"].includes(error.kind) && endpoints[endpointIndex + 1]?.startsWith("https:")) {
+          url = `${endpoints[++endpointIndex]!.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
+          attempt--; continue;
+        }
+        throw error;
+      }
+      if ([301, 302, 303, 307, 308].includes(answer.status)) {
+        if (!answer.location || ++redirects > 5) throw new TransportError("protocol", "Invalid or excessive RDAP redirects");
+        const target = new URL(answer.location, url);
+        if (!["https:", "http:"].includes(target.protocol) || target.username || target.password || (url.startsWith("https:") && target.protocol !== "https:")) throw new TransportError("protocol", "Unsafe RDAP redirect");
+        url = target.href; attempt--; continue;
+      }
       lastAnswer = answer;
       if (answer.status === 200) return row({ status: "taken", ...answer.parsed, rawRdap: answer.json });
       if (answer.status === 404) return row({ status: "available" });
-      if (answer.status !== 429 && answer.status !== 503) return row({ error: `HTTP ${answer.status}`, terminationReason: "http_error" });
+      if (answer.status !== 429 && answer.status !== 503) return row({ error: answer.status === 403 ? "HTTP 403: registry denied access" : `HTTP ${answer.status}`, terminationReason: "http_error" });
       if (attempt === 1 || (answer.retryAt ?? 0) >= ctx.deadline) break;
     }
     return row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
@@ -102,18 +122,18 @@ async function queryRdap(domain: string, base: string, signal: AbortSignal, cont
   } catch (error) {
     if (queuedAt !== undefined) queueTimeMs += performance.now() - queuedAt;
     const reason = terminationReason ?? (signal.aborted ? abortReason(signal, attempts)
-      : error instanceof LookupAbort ? error.reason : "network_error");
+      : error instanceof LookupAbort ? error.reason : error instanceof TransportError && error.kind === "payload" ? "invalid_response" : "network_error");
     return row({ status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
-      terminationReason: reason, error: error instanceof Error ? error.message : String(error) });
+      terminationReason: reason, error: error instanceof TransportError ? `${error.kind}: ${error.message}` : error instanceof Error ? error.message : String(error) });
   }
 }
 
-export async function rdapLookup(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainResult> {
+export async function rdapLookup(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainResult> {
   const { rawRdap, registrar, registrant, createdDate, updatedDate, expiryDate, nameServers, dnssec, statusCodes, ...result } =
     await queryRdap(domain, base, signal, context);
   return { ...result, tld: getTld(domain) };
 }
-export async function rdapDetail(domain: string, base: string, signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
+export async function rdapDetail(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
   return queryRdap(domain, base, signal, context);
 }
 

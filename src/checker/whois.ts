@@ -2,18 +2,10 @@ import { createConnection } from "node:net";
 import type { DomainDetail, DomainResult, DomainStatus } from "./types.ts";
 import { getTld } from "../utils/domain.ts";
 
-const WHOIS_SERVERS: Record<string, string> = {
-  io: "whois.nic.io",
-  co: "whois.registry.co",
-  me: "whois.nic.me",
-  gg: "whois.gg",
-  sh: "whois.nic.sh",
-  so: "whois.nic.so",
-};
+import { WHOIS_PROFILES } from "./services.ts";
+import { domainToASCII } from "node:url";
 
-export function hasWhoisServer(tld: string): boolean {
-  return Object.hasOwn(WHOIS_SERVERS, tld);
-}
+export function hasWhoisServer(tld: string): boolean { return Object.hasOwn(WHOIS_PROFILES, tld); }
 
 async function whoisRaw(
   host: string,
@@ -80,51 +72,23 @@ async function whoisRaw(
   });
 }
 
-export function detectStatus(raw: string): DomainStatus {
-  const lower = raw.toLowerCase();
-  const hasDomainName = /^domain name:/im.test(raw);
-
-  // Available patterns (check BEFORE Domain Name header — some registries like .so
-  // return "Domain Name:" even for non-existent domains with "does not exist")
-  const availablePatterns = [
-    "no match",
-    "not found",
-    "domain not found",
-    "no data found",
-    "no entries found",
-    "does not exist",
-    "no object found",
-    "status: free",
-  ];
-  if (availablePatterns.some((p) => lower.includes(p))) {
-    return "available";
-  }
-
-  // Taken (Domain Name header without any "not found" pattern)
-  if (hasDomainName) {
-    return "taken";
-  }
-
-  // Rate limit — only match first few lines (actual rejection responses are short)
-  const firstLines = lower.split("\n").slice(0, 5).join(" ");
-  if (
-    firstLines.includes("rate limit") ||
-    firstLines.includes("quota exceeded") ||
-    firstLines.includes("too many queries")
-  ) {
-    return "rate_limited";
-  }
-
-  // Reserved
-  if (lower.includes("reserved") || lower.includes("is reserved")) {
-    return "reserved";
-  }
-
-  // Premium
-  if (lower.includes("premium")) {
-    return "premium";
-  }
-
+export function detectStatus(raw: string, domain?: string): DomainStatus {
+  const profile = domain ? WHOIS_PROFILES[getTld(domain)]?.parser : "standard";
+  const field = profile === "sn" ? /^nom de domaine:\s*(\S+)/im : profile === "cr" || profile === "sr" ? /^domain:\s*(\S+)/im : /^domain name:\s*(\S+)/im;
+  const matched = field.exec(raw)?.[1];
+  if (matched && domain && domainToASCII(matched).toLowerCase() !== domainToASCII(domain).toLowerCase()) return "error";
+  const firstLines = raw.split("\n").slice(0, 5).join(" ");
+  if (/rate limit|quota exceeded|too many queries/i.test(firstLines)) return "rate_limited";
+  const lines = raw.split(/\r?\n/).map(line => line.trim().replace(/^[%#]+\s*/, ""));
+  if (lines.slice(0, 5).some(line => /^(?:error:\s*)?(?:access denied|not authorized|permission denied)\b/i.test(line))) return "error";
+  // Anchor response markers; legal notices and free-form remarks are not status.
+  const negative = profile === "cr" ? /^(?:ERROR:101: )?no entries found[.!]?$/i
+    : profile === "sr" ? /^Message:\s*No Object Found[.!]?$/i
+    : profile === "sn" ? /^NOT FOUND[.!]?$/i
+    : /^(?:no match(?: for.*)?|not found[.!]?|domain not found[.!]?|no data found[.!]?|no entries found[.!]?|no object found[.!]?|status:\s*free|the queried object does not exist(?::.*)?)$/i;
+  if (lines.some(line => negative.test(line))) return "available";
+  if (matched) return "taken";
+  if (lines.some(line => /^(?:this )?domain.*(?:is reserved|is a premium)|^(?:reserved|premium)(?:\s|$)|^this is a premium domain/i.test(line))) return /premium/i.test(raw) ? "premium" : "reserved";
   return "error";
 }
 
@@ -134,7 +98,7 @@ export async function whoisLookup(
   timeoutMs = 3000,
 ): Promise<DomainResult> {
   const tld = getTld(domain);
-  const host = WHOIS_SERVERS[tld];
+  const host = WHOIS_PROFILES[tld]?.host;
   if (!host) {
     return {
       domain, tld, status: "error", method: "whois", responseTime: 0, attempts: 0,
@@ -149,8 +113,8 @@ export async function whoisLookup(
     const raw = await whoisRaw(host, domain, timeoutMs, signal);
 
     const responseTime = Math.round(performance.now() - start);
-    const status = detectStatus(raw);
-    return { domain, tld, status, method: "whois", responseTime, attempts };
+    const status = detectStatus(raw, domain);
+    return { domain, tld, status, method: "whois", responseTime, attempts, ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
     if (signal.aborted) {
@@ -173,7 +137,7 @@ function normalizeDate(value: string): string {
   return value;
 }
 
-export function parseWhoisRaw(raw: string): Partial<DomainDetail> {
+export function parseWhoisRaw(raw: string, profile = "standard"): Partial<DomainDetail> {
   const detail: Partial<DomainDetail> = {};
   const nameServers: string[] = [];
   const statusCodes: string[] = [];
@@ -185,8 +149,12 @@ export function parseWhoisRaw(raw: string): Partial<DomainDetail> {
     const colonIdx = trimmed.indexOf(":");
     if (colonIdx === -1) continue;
 
-    const key = trimmed.slice(0, colonIdx).trim().toLowerCase();
-    const value = trimmed.slice(colonIdx + 1).trim();
+    let key = trimmed.slice(0, colonIdx).trim().toLowerCase();
+    const dialect: Record<string, string> = profile === "sn" ? { "date de création": "creation date", "dernière modification": "updated date", "date d'expiration": "expiry date", "statut": "status" } : profile === "cr" ? { expire: "expiry date" } : {};
+    key = dialect[key] ?? key;
+    let value = trimmed.slice(colonIdx + 1).trim();
+    // CR dates have no timezone: preserve that uncertainty, avoid host-local parsing.
+    if (profile === "cr" && /^(\d{2})\.(\d{2})\.(\d{4})/.test(value)) value = value.replace(/^(\d{2})\.(\d{2})\.(\d{4})(.*)$/, "$3-$2-$1$4");
     if (!value) continue;
 
     switch (key) {
@@ -202,19 +170,20 @@ export function parseWhoisRaw(raw: string): Partial<DomainDetail> {
       case "created":
       case "created on":
       case "registered":
-        if (!detail.createdDate) detail.createdDate = normalizeDate(value);
+        if (!detail.createdDate) detail.createdDate = profile === "cr" ? value : normalizeDate(value);
         break;
       case "updated date":
       case "last updated":
       case "last modified":
-        if (!detail.updatedDate) detail.updatedDate = normalizeDate(value);
+      case "changed":
+        if (!detail.updatedDate) detail.updatedDate = profile === "cr" ? value : normalizeDate(value);
         break;
       case "expiry date":
       case "expiration date":
       case "registry expiry date":
       case "registrar registration expiration date":
       case "paid-till":
-        if (!detail.expiryDate) detail.expiryDate = normalizeDate(value);
+        if (!detail.expiryDate) detail.expiryDate = profile === "cr" ? value : normalizeDate(value);
         break;
       case "name server":
       case "nserver":
@@ -245,7 +214,7 @@ export async function whoisDetail(
   timeoutMs = 5000,
 ): Promise<DomainDetail> {
   const tld = getTld(domain);
-  const host = WHOIS_SERVERS[tld];
+  const host = WHOIS_PROFILES[tld]?.host;
   if (!host) {
     return {
       domain, status: "error", method: "whois", responseTime: 0, attempts: 0,
@@ -260,12 +229,13 @@ export async function whoisDetail(
     const raw = await whoisRaw(host, domain, timeoutMs, signal);
 
     const responseTime = Math.round(performance.now() - start);
-    const status = detectStatus(raw);
-    const parsed = status === "taken" ? parseWhoisRaw(raw) : {};
+    const status = detectStatus(raw, domain);
+    const parsed = status === "taken" ? parseWhoisRaw(raw, WHOIS_PROFILES[tld]?.parser) : {};
 
     return {
       domain, status, method: "whois", responseTime, attempts,
       ...parsed,
+      ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}),
       rawWhois: raw,
     };
   } catch (err) {

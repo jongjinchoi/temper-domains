@@ -42,7 +42,8 @@ When a user asks for domain name suggestions without a specific name:
 4. TLD SELECTION GUIDE:
    - Use the shared extension catalog for classification reasons and sources.
    - Classification is not evidence of popularity, price, registration eligibility, SEO or investment value.
-   - Missing classification does not prevent explicit suffix selection. The catalog includes known lookup routes; responses and final purchase availability can still differ.
+   - Missing classification does not prevent explicit suffix selection. Do not force a category onto an unclassified extension. Review records state the inspected sources and any missing evidence.
+   - Known lookup routes and observed server responses are separate. Inspect verification.state and its dated observation; needs-recheck or not-checked is not a confirmed failure. Even response-confirmed is not a purchase guarantee.
 
 5. FINAL RECOMMENDATION should include:
    - Top pick with reasoning
@@ -400,7 +401,7 @@ const discoverySchema = z.strictObject({
 });
 
 server.registerTool("list_supported_tlds", {
-  description: "Discover extensions offline. No arguments returns the default/additional/extended search bundles. view=categories returns facet navigation, or classifications with facet=industry|purpose|region. view=extensions lists supported extensions with classification and offering evidence, filtered by query/industries/purposes/regions, with cursor paging (default 50, max 100). Listing does not query domains. Lookup results may differ from final purchase availability.",
+  description: "Discover extensions offline. No arguments returns the default/additional/extended search bundles. view=categories returns facet navigation, or classifications with facet=industry|purpose|region. view=extensions lists supported extensions with classification reviews, offering evidence and dated lookup verification, filtered by query/industries/purposes/regions, with cursor paging (default 50, max 100). Unclassified extensions remain selectable. Listing does not query domains. Lookup results may differ from final purchase availability.",
   inputSchema: discoverySchema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
 }, (args) => {

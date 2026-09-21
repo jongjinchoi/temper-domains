@@ -1,4 +1,7 @@
+import { verifyBundledCheckerSignatures } from "./scripts/checker-fingerprint.ts";
 import { readFile, writeFile } from "node:fs/promises";
+
+await verifyBundledCheckerSignatures();
 
 const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
 

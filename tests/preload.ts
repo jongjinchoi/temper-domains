@@ -1,3 +1,4 @@
+import "./helpers/mock-rdap-transport.ts";
 import { afterAll, mock } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import * as os from "node:os";
