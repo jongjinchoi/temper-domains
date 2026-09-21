@@ -18,7 +18,7 @@ function renderLlmsTxt(): string {
 
 ## What it is
 
-temper is an open-source command-line tool that queries RDAP (with WHOIS fallback) to check domain availability. The CLI and MCP server run on the user's machine with zero telemetry and no temper-hosted query proxy. The hosted web demo uses a server-side API route for live checks.
+temper is an open-source command-line tool that uses official RDAP and WHOIS routes to check domain availability. The CLI and MCP server run on the user's machine with zero telemetry and no temper-hosted query proxy. The hosted web demo uses a server-side API route for live checks.
 
 - License: Apache 2.0
 - Language: TypeScript, built on the Bun runtime
@@ -57,7 +57,7 @@ temper is an open-source command-line tool that queries RDAP (with WHOIS fallbac
 - \`temper search <name> --tlds com,co.uk\` - search only the selected suffixes
 - \`temper search <name> --category design-arts\` - search the industry selection (max 472 name × suffix combinations)
 - \`temper suggest <name>\` - prefix/suffix brainstorm
-- \`temper whois <domain>\` - RDAP-first registrar details
+- \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
 - \`temper watch <domain>\` - track availability, \`temper list\` to review
 - \`temper history\` - interactive search history
 - \`temper mcp\` - start the MCP stdio server

@@ -36,7 +36,9 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Catalog snapshot maintenance: `scripts/update-extension-catalog.ts`
 - Shared HTTP bootstrap cache: `src/checker/bootstrap-cache.ts`; disk adapter: `src/checker/bootstrap.ts`
 - RDAP lookup and parsing: `src/checker/rdap.ts`
-- WHOIS fallback and parsing: `src/checker/whois.ts`
+- Shared RDAP/WHOIS routing and service profiles: `src/checker/services.ts`
+- ALPN HTTP/1.1 and HTTP/2 transport: `src/checker/http-transport.ts`
+- WHOIS parsing: `src/checker/whois.ts`
 - Shared batch lifecycle: `src/checker/batch.ts`, `src/checker/run.ts`
 - Server scheduler and streaming: `src/checker/scheduler.ts`, `src/checker/stream.ts`
 - Single-domain RDAP/WHOIS lookup wrapper: `src/checker/lookup.ts`
@@ -263,18 +265,24 @@ Historical docs are useful for product intent, but they are not the source of tr
 ## Extension catalog maintenance
 
 The initial bundled catalog contains 756 offered extensions passing Temper's
-registration-boundary and route checks (741 RDAP, 15 WHOIS). These are static
+registration-boundary and route checks (738 RDAP, 18 WHOIS). These are static
 support checks, not 756 successful live registry calls or a worldwide total.
 The inputs combine 1,062 registration suffixes from Porkbun, Dynadot and Gandi.
 Default 30/extended 59 are approved quick-search bundles within this catalog.
 
 The runtime snapshot is `src/extensions/data/catalog.json`. It contains IANA/
-PSL boundary data, offering evidence and editorial classifications together.
-`commercial.json`, `overrides.json` and `regions.json` are maintenance inputs;
+PSL boundary data, offering evidence, classification reviews, lookup observations,
+full endpoint plans and checker signatures together.
+`commercial.json`, `overrides.json`, `regions.json`, `captures.json` and
+`reviews.json` are maintenance inputs;
 runtime does not mix them into an independently updated snapshot. Each
 classification records its reason, source, evidence type and checked date.
 Entries without industry/purpose evidence remain explicitly unclassified.
 Registration qualification metadata is not collected, displayed or a search gate.
+The current bundle has 221 industry/purpose-classified entries and 535 deferred
+entries. Deferred records distinguish insufficient inspected evidence from a
+source that could not be retrieved; they do not establish that no evidence exists
+elsewhere. Category inclusion/exclusion rules live in `taxonomy.ts`.
 
 Maintain a complete capture directory containing:
 
@@ -285,6 +293,10 @@ Maintain a complete capture directory containing:
   using the checked-in schema (provider, source URL, actual checkedAt date,
   normalized suffixes and optional sourceBySuffix for product-page evidence).
 - `overrides.json`, `regions.json`: reviewed classification and namespace evidence.
+- `captures.json`: URL, SHA-256 and actual capture date for each raw structural input.
+- `reviews.json`: captured purpose sources (URL, hash, date, locator and claim),
+  per-entry review decisions bound to source/assignment/rule hashes, and dated
+  lookup observations with route, parser, checker hash, runtime and attempts.
 
 Do not label a failed/partial capture as a complete provider list. Preserve
 individual source dates; refreshing boundaries does not reverify older offers.
@@ -299,12 +311,22 @@ bun run catalog:update /path/to/capture --apply  # explicitly replace the bundle
 ```
 
 The command reads all saved inputs without network downloads, validates source
-and classification integrity, and previews additions/removals, route changes,
-unclassified entries and source counts. Invalid data, missing providers and
+and classification integrity, and previews additions/removals, endpoint/parser
+changes, classification/review changes, unclassified entries and source counts.
+Saved-source capture dates are preserved; `generatedAt` is the separate bundle
+generation date. Invalid data, stale assigned reviews, missing providers and
 unexpected large shrinkage fail without replacing the previous snapshot.
 A single temporary-file rename publishes all runtime evidence together.
 Review the preview and Git diff; normal builds, installs and catalog browsing
 never run this command. The existing RDAP bootstrap network cache is separate.
+`bun run catalog:verify` checks that bundled checker signatures match the sources
+and lockfile, and that assigned classifications match their captured evidence
+and the current classification rules. npm, standalone binary and web builds run this guard. Release
+verification also runs the npm build before compiling platform binaries.
+Refreshing signatures makes old
+observations require rechecking; it does not manufacture a new server success.
+Historical successful observations remain visible after route or checker changes.
+No automatic live probe runs while listing extensions or building the package.
 Do not retrieve the PSL more than once per 24 hours. Preserve source attribution;
 PSL data is provided under Mozilla Public License 2.0 (https://publicsuffix.org/list/).
 Dependency/parser changes and new providers require their own scope review.
@@ -314,3 +336,8 @@ Verification uses temporary homes and controlled RDAP responses: exhaustive
 zero-lookups, the 472 boundary, partial results and snapshot failure preservation.
 Node CLI/MCP integration uses `tests/runtime/node-checks.mjs`; these tests do
 not make live registry calls or update the installed/connected MCP process.
+`node tests/transport/runner.mjs` additionally starts local TLS servers and checks
+the actual Bun/Node transports, ALPN, compression, redirects, certificate rejection,
+cancellation and retry limits. It needs OpenSSL and uses temporary certificates;
+it does not query public registries. Live registry observations are separate
+evidence, not a consequence of these controlled tests passing.

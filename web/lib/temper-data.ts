@@ -120,7 +120,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 03",
     sig: { cmd: "whois", arg: "<domain>" },
-    desc: "Registrar, expiry, nameservers, DNSSEC, EPP. RDAP-first.",
+    desc: "Registrar, expiry, nameservers, DNSSEC, EPP. RDAP/WHOIS.",
     example: "$ temper whois example.com --format json",
   },
   {

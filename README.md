@@ -184,6 +184,15 @@ Catalog browsing is offline and does not write user settings or search history.
 Maintainers explicitly refresh the bundled data; users do not download catalog
 updates while browsing. See [catalog maintenance](docs/current.md#extension-catalog-maintenance).
 
+Each extension separates its lookup route from recorded server verification.
+`response-confirmed` means a response was observed with the recorded checker and
+route; `needs-recheck` means those changed, and `not-checked` means no matching
+attempt has been recorded. `observed-error` preserves a failed observation.
+These records do not guarantee current server availability or a purchase.
+Classification records include the source, capture date and review rationale.
+Unclassified entries remain browsable and selectable; a deferred review states
+what was inspected or could not be retrieved.
+
 #### JSON output
 
 ```bash
@@ -221,7 +230,7 @@ temper whois example.com                         # TUI view
 temper whois example.com --format json           # JSON output
 ```
 
-Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Uses RDAP (RFC 9083) when available, falls back to WHOIS. Detailed results also include confidence and review reasons; a missing registration record is not presented as guaranteed purchase availability.
+Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Search and detail share the same official RDAP/WHOIS routes. RDAP negotiates HTTP/2 or HTTP/1.1 over verified TLS; reviewed WHOIS profiles cover namespaces without a usable RDAP route, including `.cr`, `.sr` and `.sn`. Detailed results also include confidence and review reasons; a missing registration record is not presented as guaranteed purchase availability.
 
 ### Suggest
 
