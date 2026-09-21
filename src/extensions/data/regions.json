@@ -1,0 +1,1532 @@
+[
+  {
+    "root": "ac",
+    "region": "AC",
+    "source": "https://www.iana.org/domains/root/db/ac.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ad",
+    "region": "AD",
+    "source": "https://www.iana.org/domains/root/db/ad.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ae",
+    "region": "AE",
+    "source": "https://www.iana.org/domains/root/db/ae.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "af",
+    "region": "AF",
+    "source": "https://www.iana.org/domains/root/db/af.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ag",
+    "region": "AG",
+    "source": "https://www.iana.org/domains/root/db/ag.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ai",
+    "region": "AI",
+    "source": "https://www.iana.org/domains/root/db/ai.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "al",
+    "region": "AL",
+    "source": "https://www.iana.org/domains/root/db/al.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "am",
+    "region": "AM",
+    "source": "https://www.iana.org/domains/root/db/am.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "an",
+    "region": "AN",
+    "source": "https://www.iana.org/domains/root/db/an.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ao",
+    "region": "AO",
+    "source": "https://www.iana.org/domains/root/db/ao.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "aq",
+    "region": "AQ",
+    "source": "https://www.iana.org/domains/root/db/aq.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ar",
+    "region": "AR",
+    "source": "https://www.iana.org/domains/root/db/ar.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "as",
+    "region": "AS",
+    "source": "https://www.iana.org/domains/root/db/as.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "at",
+    "region": "AT",
+    "source": "https://www.iana.org/domains/root/db/at.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "au",
+    "region": "AU",
+    "source": "https://www.iana.org/domains/root/db/au.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "aw",
+    "region": "AW",
+    "source": "https://www.iana.org/domains/root/db/aw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ax",
+    "region": "AX",
+    "source": "https://www.iana.org/domains/root/db/ax.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "az",
+    "region": "AZ",
+    "source": "https://www.iana.org/domains/root/db/az.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ba",
+    "region": "BA",
+    "source": "https://www.iana.org/domains/root/db/ba.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bb",
+    "region": "BB",
+    "source": "https://www.iana.org/domains/root/db/bb.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bd",
+    "region": "BD",
+    "source": "https://www.iana.org/domains/root/db/bd.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "be",
+    "region": "BE",
+    "source": "https://www.iana.org/domains/root/db/be.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bf",
+    "region": "BF",
+    "source": "https://www.iana.org/domains/root/db/bf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bg",
+    "region": "BG",
+    "source": "https://www.iana.org/domains/root/db/bg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bh",
+    "region": "BH",
+    "source": "https://www.iana.org/domains/root/db/bh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bi",
+    "region": "BI",
+    "source": "https://www.iana.org/domains/root/db/bi.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bj",
+    "region": "BJ",
+    "source": "https://www.iana.org/domains/root/db/bj.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bl",
+    "region": "BL",
+    "source": "https://www.iana.org/domains/root/db/bl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bm",
+    "region": "BM",
+    "source": "https://www.iana.org/domains/root/db/bm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bn",
+    "region": "BN",
+    "source": "https://www.iana.org/domains/root/db/bn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bo",
+    "region": "BO",
+    "source": "https://www.iana.org/domains/root/db/bo.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bq",
+    "region": "BQ",
+    "source": "https://www.iana.org/domains/root/db/bq.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "br",
+    "region": "BR",
+    "source": "https://www.iana.org/domains/root/db/br.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bs",
+    "region": "BS",
+    "source": "https://www.iana.org/domains/root/db/bs.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bt",
+    "region": "BT",
+    "source": "https://www.iana.org/domains/root/db/bt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bv",
+    "region": "BV",
+    "source": "https://www.iana.org/domains/root/db/bv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bw",
+    "region": "BW",
+    "source": "https://www.iana.org/domains/root/db/bw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "by",
+    "region": "BY",
+    "source": "https://www.iana.org/domains/root/db/by.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "bz",
+    "region": "BZ",
+    "source": "https://www.iana.org/domains/root/db/bz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ca",
+    "region": "CA",
+    "source": "https://www.iana.org/domains/root/db/ca.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cc",
+    "region": "CC",
+    "source": "https://www.iana.org/domains/root/db/cc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cd",
+    "region": "CD",
+    "source": "https://www.iana.org/domains/root/db/cd.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cf",
+    "region": "CF",
+    "source": "https://www.iana.org/domains/root/db/cf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cg",
+    "region": "CG",
+    "source": "https://www.iana.org/domains/root/db/cg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ch",
+    "region": "CH",
+    "source": "https://www.iana.org/domains/root/db/ch.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ci",
+    "region": "CI",
+    "source": "https://www.iana.org/domains/root/db/ci.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ck",
+    "region": "CK",
+    "source": "https://www.iana.org/domains/root/db/ck.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cl",
+    "region": "CL",
+    "source": "https://www.iana.org/domains/root/db/cl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cm",
+    "region": "CM",
+    "source": "https://www.iana.org/domains/root/db/cm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cn",
+    "region": "CN",
+    "source": "https://www.iana.org/domains/root/db/cn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "co",
+    "region": "CO",
+    "source": "https://www.iana.org/domains/root/db/co.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cr",
+    "region": "CR",
+    "source": "https://www.iana.org/domains/root/db/cr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cu",
+    "region": "CU",
+    "source": "https://www.iana.org/domains/root/db/cu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cv",
+    "region": "CV",
+    "source": "https://www.iana.org/domains/root/db/cv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cw",
+    "region": "CW",
+    "source": "https://www.iana.org/domains/root/db/cw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cx",
+    "region": "CX",
+    "source": "https://www.iana.org/domains/root/db/cx.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cy",
+    "region": "CY",
+    "source": "https://www.iana.org/domains/root/db/cy.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "cz",
+    "region": "CZ",
+    "source": "https://www.iana.org/domains/root/db/cz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "de",
+    "region": "DE",
+    "source": "https://www.iana.org/domains/root/db/de.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "dj",
+    "region": "DJ",
+    "source": "https://www.iana.org/domains/root/db/dj.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "dk",
+    "region": "DK",
+    "source": "https://www.iana.org/domains/root/db/dk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "dm",
+    "region": "DM",
+    "source": "https://www.iana.org/domains/root/db/dm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "do",
+    "region": "DO",
+    "source": "https://www.iana.org/domains/root/db/do.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "dz",
+    "region": "DZ",
+    "source": "https://www.iana.org/domains/root/db/dz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ec",
+    "region": "EC",
+    "source": "https://www.iana.org/domains/root/db/ec.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ee",
+    "region": "EE",
+    "source": "https://www.iana.org/domains/root/db/ee.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "eg",
+    "region": "EG",
+    "source": "https://www.iana.org/domains/root/db/eg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "eh",
+    "region": "EH",
+    "source": "https://www.iana.org/domains/root/db/eh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "er",
+    "region": "ER",
+    "source": "https://www.iana.org/domains/root/db/er.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "es",
+    "region": "ES",
+    "source": "https://www.iana.org/domains/root/db/es.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "et",
+    "region": "ET",
+    "source": "https://www.iana.org/domains/root/db/et.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "eu",
+    "region": "EU",
+    "source": "https://www.iana.org/domains/root/db/eu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fi",
+    "region": "FI",
+    "source": "https://www.iana.org/domains/root/db/fi.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fj",
+    "region": "FJ",
+    "source": "https://www.iana.org/domains/root/db/fj.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fk",
+    "region": "FK",
+    "source": "https://www.iana.org/domains/root/db/fk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fm",
+    "region": "FM",
+    "source": "https://www.iana.org/domains/root/db/fm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fo",
+    "region": "FO",
+    "source": "https://www.iana.org/domains/root/db/fo.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "fr",
+    "region": "FR",
+    "source": "https://www.iana.org/domains/root/db/fr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ga",
+    "region": "GA",
+    "source": "https://www.iana.org/domains/root/db/ga.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gb",
+    "region": "GB",
+    "source": "https://www.iana.org/domains/root/db/gb.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gd",
+    "region": "GD",
+    "source": "https://www.iana.org/domains/root/db/gd.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ge",
+    "region": "GE",
+    "source": "https://www.iana.org/domains/root/db/ge.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gf",
+    "region": "GF",
+    "source": "https://www.iana.org/domains/root/db/gf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gg",
+    "region": "GG",
+    "source": "https://www.iana.org/domains/root/db/gg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gh",
+    "region": "GH",
+    "source": "https://www.iana.org/domains/root/db/gh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gi",
+    "region": "GI",
+    "source": "https://www.iana.org/domains/root/db/gi.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gl",
+    "region": "GL",
+    "source": "https://www.iana.org/domains/root/db/gl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gm",
+    "region": "GM",
+    "source": "https://www.iana.org/domains/root/db/gm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gn",
+    "region": "GN",
+    "source": "https://www.iana.org/domains/root/db/gn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gp",
+    "region": "GP",
+    "source": "https://www.iana.org/domains/root/db/gp.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gq",
+    "region": "GQ",
+    "source": "https://www.iana.org/domains/root/db/gq.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gr",
+    "region": "GR",
+    "source": "https://www.iana.org/domains/root/db/gr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gs",
+    "region": "GS",
+    "source": "https://www.iana.org/domains/root/db/gs.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gt",
+    "region": "GT",
+    "source": "https://www.iana.org/domains/root/db/gt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gu",
+    "region": "GU",
+    "source": "https://www.iana.org/domains/root/db/gu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gw",
+    "region": "GW",
+    "source": "https://www.iana.org/domains/root/db/gw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "gy",
+    "region": "GY",
+    "source": "https://www.iana.org/domains/root/db/gy.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "hk",
+    "region": "HK",
+    "source": "https://www.iana.org/domains/root/db/hk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "hm",
+    "region": "HM",
+    "source": "https://www.iana.org/domains/root/db/hm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "hn",
+    "region": "HN",
+    "source": "https://www.iana.org/domains/root/db/hn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "hr",
+    "region": "HR",
+    "source": "https://www.iana.org/domains/root/db/hr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ht",
+    "region": "HT",
+    "source": "https://www.iana.org/domains/root/db/ht.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "hu",
+    "region": "HU",
+    "source": "https://www.iana.org/domains/root/db/hu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "id",
+    "region": "ID",
+    "source": "https://www.iana.org/domains/root/db/id.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ie",
+    "region": "IE",
+    "source": "https://www.iana.org/domains/root/db/ie.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "il",
+    "region": "IL",
+    "source": "https://www.iana.org/domains/root/db/il.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "im",
+    "region": "IM",
+    "source": "https://www.iana.org/domains/root/db/im.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "in",
+    "region": "IN",
+    "source": "https://www.iana.org/domains/root/db/in.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "io",
+    "region": "IO",
+    "source": "https://www.iana.org/domains/root/db/io.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "iq",
+    "region": "IQ",
+    "source": "https://www.iana.org/domains/root/db/iq.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ir",
+    "region": "IR",
+    "source": "https://www.iana.org/domains/root/db/ir.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "is",
+    "region": "IS",
+    "source": "https://www.iana.org/domains/root/db/is.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "it",
+    "region": "IT",
+    "source": "https://www.iana.org/domains/root/db/it.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "je",
+    "region": "JE",
+    "source": "https://www.iana.org/domains/root/db/je.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "jm",
+    "region": "JM",
+    "source": "https://www.iana.org/domains/root/db/jm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "jo",
+    "region": "JO",
+    "source": "https://www.iana.org/domains/root/db/jo.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "jp",
+    "region": "JP",
+    "source": "https://www.iana.org/domains/root/db/jp.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ke",
+    "region": "KE",
+    "source": "https://www.iana.org/domains/root/db/ke.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kg",
+    "region": "KG",
+    "source": "https://www.iana.org/domains/root/db/kg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kh",
+    "region": "KH",
+    "source": "https://www.iana.org/domains/root/db/kh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ki",
+    "region": "KI",
+    "source": "https://www.iana.org/domains/root/db/ki.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "km",
+    "region": "KM",
+    "source": "https://www.iana.org/domains/root/db/km.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kn",
+    "region": "KN",
+    "source": "https://www.iana.org/domains/root/db/kn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kp",
+    "region": "KP",
+    "source": "https://www.iana.org/domains/root/db/kp.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kr",
+    "region": "KR",
+    "source": "https://www.iana.org/domains/root/db/kr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kw",
+    "region": "KW",
+    "source": "https://www.iana.org/domains/root/db/kw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ky",
+    "region": "KY",
+    "source": "https://www.iana.org/domains/root/db/ky.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "kz",
+    "region": "KZ",
+    "source": "https://www.iana.org/domains/root/db/kz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "la",
+    "region": "LA",
+    "source": "https://www.iana.org/domains/root/db/la.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lb",
+    "region": "LB",
+    "source": "https://www.iana.org/domains/root/db/lb.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lc",
+    "region": "LC",
+    "source": "https://www.iana.org/domains/root/db/lc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "li",
+    "region": "LI",
+    "source": "https://www.iana.org/domains/root/db/li.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lk",
+    "region": "LK",
+    "source": "https://www.iana.org/domains/root/db/lk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lr",
+    "region": "LR",
+    "source": "https://www.iana.org/domains/root/db/lr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ls",
+    "region": "LS",
+    "source": "https://www.iana.org/domains/root/db/ls.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lt",
+    "region": "LT",
+    "source": "https://www.iana.org/domains/root/db/lt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lu",
+    "region": "LU",
+    "source": "https://www.iana.org/domains/root/db/lu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "lv",
+    "region": "LV",
+    "source": "https://www.iana.org/domains/root/db/lv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ly",
+    "region": "LY",
+    "source": "https://www.iana.org/domains/root/db/ly.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ma",
+    "region": "MA",
+    "source": "https://www.iana.org/domains/root/db/ma.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mc",
+    "region": "MC",
+    "source": "https://www.iana.org/domains/root/db/mc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "md",
+    "region": "MD",
+    "source": "https://www.iana.org/domains/root/db/md.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "me",
+    "region": "ME",
+    "source": "https://www.iana.org/domains/root/db/me.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mf",
+    "region": "MF",
+    "source": "https://www.iana.org/domains/root/db/mf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mg",
+    "region": "MG",
+    "source": "https://www.iana.org/domains/root/db/mg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mh",
+    "region": "MH",
+    "source": "https://www.iana.org/domains/root/db/mh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mk",
+    "region": "MK",
+    "source": "https://www.iana.org/domains/root/db/mk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ml",
+    "region": "ML",
+    "source": "https://www.iana.org/domains/root/db/ml.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mm",
+    "region": "MM",
+    "source": "https://www.iana.org/domains/root/db/mm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mn",
+    "region": "MN",
+    "source": "https://www.iana.org/domains/root/db/mn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mo",
+    "region": "MO",
+    "source": "https://www.iana.org/domains/root/db/mo.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mp",
+    "region": "MP",
+    "source": "https://www.iana.org/domains/root/db/mp.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mq",
+    "region": "MQ",
+    "source": "https://www.iana.org/domains/root/db/mq.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mr",
+    "region": "MR",
+    "source": "https://www.iana.org/domains/root/db/mr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ms",
+    "region": "MS",
+    "source": "https://www.iana.org/domains/root/db/ms.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mt",
+    "region": "MT",
+    "source": "https://www.iana.org/domains/root/db/mt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mu",
+    "region": "MU",
+    "source": "https://www.iana.org/domains/root/db/mu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mv",
+    "region": "MV",
+    "source": "https://www.iana.org/domains/root/db/mv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mw",
+    "region": "MW",
+    "source": "https://www.iana.org/domains/root/db/mw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mx",
+    "region": "MX",
+    "source": "https://www.iana.org/domains/root/db/mx.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "my",
+    "region": "MY",
+    "source": "https://www.iana.org/domains/root/db/my.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "mz",
+    "region": "MZ",
+    "source": "https://www.iana.org/domains/root/db/mz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "na",
+    "region": "NA",
+    "source": "https://www.iana.org/domains/root/db/na.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nc",
+    "region": "NC",
+    "source": "https://www.iana.org/domains/root/db/nc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ne",
+    "region": "NE",
+    "source": "https://www.iana.org/domains/root/db/ne.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nf",
+    "region": "NF",
+    "source": "https://www.iana.org/domains/root/db/nf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ng",
+    "region": "NG",
+    "source": "https://www.iana.org/domains/root/db/ng.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ni",
+    "region": "NI",
+    "source": "https://www.iana.org/domains/root/db/ni.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nl",
+    "region": "NL",
+    "source": "https://www.iana.org/domains/root/db/nl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "no",
+    "region": "NO",
+    "source": "https://www.iana.org/domains/root/db/no.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "np",
+    "region": "NP",
+    "source": "https://www.iana.org/domains/root/db/np.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nr",
+    "region": "NR",
+    "source": "https://www.iana.org/domains/root/db/nr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nu",
+    "region": "NU",
+    "source": "https://www.iana.org/domains/root/db/nu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "nz",
+    "region": "NZ",
+    "source": "https://www.iana.org/domains/root/db/nz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "om",
+    "region": "OM",
+    "source": "https://www.iana.org/domains/root/db/om.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pa",
+    "region": "PA",
+    "source": "https://www.iana.org/domains/root/db/pa.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pe",
+    "region": "PE",
+    "source": "https://www.iana.org/domains/root/db/pe.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pf",
+    "region": "PF",
+    "source": "https://www.iana.org/domains/root/db/pf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pg",
+    "region": "PG",
+    "source": "https://www.iana.org/domains/root/db/pg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ph",
+    "region": "PH",
+    "source": "https://www.iana.org/domains/root/db/ph.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pk",
+    "region": "PK",
+    "source": "https://www.iana.org/domains/root/db/pk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pl",
+    "region": "PL",
+    "source": "https://www.iana.org/domains/root/db/pl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pm",
+    "region": "PM",
+    "source": "https://www.iana.org/domains/root/db/pm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pn",
+    "region": "PN",
+    "source": "https://www.iana.org/domains/root/db/pn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pr",
+    "region": "PR",
+    "source": "https://www.iana.org/domains/root/db/pr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ps",
+    "region": "PS",
+    "source": "https://www.iana.org/domains/root/db/ps.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pt",
+    "region": "PT",
+    "source": "https://www.iana.org/domains/root/db/pt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "pw",
+    "region": "PW",
+    "source": "https://www.iana.org/domains/root/db/pw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "py",
+    "region": "PY",
+    "source": "https://www.iana.org/domains/root/db/py.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "qa",
+    "region": "QA",
+    "source": "https://www.iana.org/domains/root/db/qa.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "re",
+    "region": "RE",
+    "source": "https://www.iana.org/domains/root/db/re.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ro",
+    "region": "RO",
+    "source": "https://www.iana.org/domains/root/db/ro.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "rs",
+    "region": "RS",
+    "source": "https://www.iana.org/domains/root/db/rs.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ru",
+    "region": "RU",
+    "source": "https://www.iana.org/domains/root/db/ru.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "rw",
+    "region": "RW",
+    "source": "https://www.iana.org/domains/root/db/rw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sa",
+    "region": "SA",
+    "source": "https://www.iana.org/domains/root/db/sa.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sb",
+    "region": "SB",
+    "source": "https://www.iana.org/domains/root/db/sb.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sc",
+    "region": "SC",
+    "source": "https://www.iana.org/domains/root/db/sc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sd",
+    "region": "SD",
+    "source": "https://www.iana.org/domains/root/db/sd.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "se",
+    "region": "SE",
+    "source": "https://www.iana.org/domains/root/db/se.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sg",
+    "region": "SG",
+    "source": "https://www.iana.org/domains/root/db/sg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sh",
+    "region": "SH",
+    "source": "https://www.iana.org/domains/root/db/sh.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "si",
+    "region": "SI",
+    "source": "https://www.iana.org/domains/root/db/si.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sj",
+    "region": "SJ",
+    "source": "https://www.iana.org/domains/root/db/sj.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sk",
+    "region": "SK",
+    "source": "https://www.iana.org/domains/root/db/sk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sl",
+    "region": "SL",
+    "source": "https://www.iana.org/domains/root/db/sl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sm",
+    "region": "SM",
+    "source": "https://www.iana.org/domains/root/db/sm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sn",
+    "region": "SN",
+    "source": "https://www.iana.org/domains/root/db/sn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "so",
+    "region": "SO",
+    "source": "https://www.iana.org/domains/root/db/so.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sr",
+    "region": "SR",
+    "source": "https://www.iana.org/domains/root/db/sr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ss",
+    "region": "SS",
+    "source": "https://www.iana.org/domains/root/db/ss.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "st",
+    "region": "ST",
+    "source": "https://www.iana.org/domains/root/db/st.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "su",
+    "region": "SU",
+    "source": "https://www.iana.org/domains/root/db/su.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sv",
+    "region": "SV",
+    "source": "https://www.iana.org/domains/root/db/sv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sx",
+    "region": "SX",
+    "source": "https://www.iana.org/domains/root/db/sx.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sy",
+    "region": "SY",
+    "source": "https://www.iana.org/domains/root/db/sy.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "sz",
+    "region": "SZ",
+    "source": "https://www.iana.org/domains/root/db/sz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tc",
+    "region": "TC",
+    "source": "https://www.iana.org/domains/root/db/tc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "td",
+    "region": "TD",
+    "source": "https://www.iana.org/domains/root/db/td.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tf",
+    "region": "TF",
+    "source": "https://www.iana.org/domains/root/db/tf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tg",
+    "region": "TG",
+    "source": "https://www.iana.org/domains/root/db/tg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "th",
+    "region": "TH",
+    "source": "https://www.iana.org/domains/root/db/th.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tj",
+    "region": "TJ",
+    "source": "https://www.iana.org/domains/root/db/tj.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tk",
+    "region": "TK",
+    "source": "https://www.iana.org/domains/root/db/tk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tl",
+    "region": "TL",
+    "source": "https://www.iana.org/domains/root/db/tl.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tm",
+    "region": "TM",
+    "source": "https://www.iana.org/domains/root/db/tm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tn",
+    "region": "TN",
+    "source": "https://www.iana.org/domains/root/db/tn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "to",
+    "region": "TO",
+    "source": "https://www.iana.org/domains/root/db/to.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tp",
+    "region": "TP",
+    "source": "https://www.iana.org/domains/root/db/tp.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tr",
+    "region": "TR",
+    "source": "https://www.iana.org/domains/root/db/tr.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tt",
+    "region": "TT",
+    "source": "https://www.iana.org/domains/root/db/tt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tv",
+    "region": "TV",
+    "source": "https://www.iana.org/domains/root/db/tv.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tw",
+    "region": "TW",
+    "source": "https://www.iana.org/domains/root/db/tw.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "tz",
+    "region": "TZ",
+    "source": "https://www.iana.org/domains/root/db/tz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ua",
+    "region": "UA",
+    "source": "https://www.iana.org/domains/root/db/ua.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ug",
+    "region": "UG",
+    "source": "https://www.iana.org/domains/root/db/ug.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "uk",
+    "region": "GB",
+    "source": "https://www.iana.org/domains/root/db/uk.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "um",
+    "region": "UM",
+    "source": "https://www.iana.org/domains/root/db/um.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "us",
+    "region": "US",
+    "source": "https://www.iana.org/domains/root/db/us.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "uy",
+    "region": "UY",
+    "source": "https://www.iana.org/domains/root/db/uy.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "uz",
+    "region": "UZ",
+    "source": "https://www.iana.org/domains/root/db/uz.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "va",
+    "region": "VA",
+    "source": "https://www.iana.org/domains/root/db/va.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "vc",
+    "region": "VC",
+    "source": "https://www.iana.org/domains/root/db/vc.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ve",
+    "region": "VE",
+    "source": "https://www.iana.org/domains/root/db/ve.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "vg",
+    "region": "VG",
+    "source": "https://www.iana.org/domains/root/db/vg.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "vi",
+    "region": "VI",
+    "source": "https://www.iana.org/domains/root/db/vi.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "vn",
+    "region": "VN",
+    "source": "https://www.iana.org/domains/root/db/vn.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "vu",
+    "region": "VU",
+    "source": "https://www.iana.org/domains/root/db/vu.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "wf",
+    "region": "WF",
+    "source": "https://www.iana.org/domains/root/db/wf.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ws",
+    "region": "WS",
+    "source": "https://www.iana.org/domains/root/db/ws.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "ye",
+    "region": "YE",
+    "source": "https://www.iana.org/domains/root/db/ye.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "yt",
+    "region": "YT",
+    "source": "https://www.iana.org/domains/root/db/yt.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "za",
+    "region": "ZA",
+    "source": "https://www.iana.org/domains/root/db/za.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "zm",
+    "region": "ZM",
+    "source": "https://www.iana.org/domains/root/db/zm.html",
+    "checkedAt": "2026-09-21"
+  },
+  {
+    "root": "zw",
+    "region": "ZW",
+    "source": "https://www.iana.org/domains/root/db/zw.html",
+    "checkedAt": "2026-09-21"
+  }
+]

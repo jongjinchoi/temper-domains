@@ -234,3 +234,54 @@ test("Node SearchView shows a filtered match immediately after scrolling at 24 r
     if (tty) Object.defineProperty(process.stdin, "isTTY", tty); else delete process.stdin.isTTY;
   }
 });
+
+
+test("Node catalog pages are offline and composite CLI selection sends only selected domains", async () => {
+  const before = await requests();
+  const seen = [];
+  let cursor;
+  do {
+    const result = cli(["extensions", "--format", "json", "--limit", "100", ...(cursor ? ["--cursor", cursor] : [])]);
+    assert.equal(result.status, 0, result.stderr);
+    const page = JSON.parse(result.stdout);
+    assert.equal(page.total, 756);
+    seen.push(...page.items.map(e => e.suffix));
+    cursor = page.nextCursor;
+  } while (cursor);
+  assert.equal(seen.length, 756);
+  assert.equal(new Set(seen).size, 756);
+  assert.equal(await requests(), before);
+  for (const options of [["--tlds", "com,co.uk,uk", "--extended"], ["--category", "design-arts"]]) {
+    const result = cli(["search", "nodechoice", ...options, "--format", "json"]);
+    assert.equal(result.status, 0, result.stderr);
+    const domains = JSON.parse(result.stdout).map(e => e.domain);
+    if (options[0] === "--tlds") assert.deepEqual(domains.sort(), ["nodechoice.co.uk", "nodechoice.com", "nodechoice.uk"]);
+    else { assert.ok(domains.includes("nodechoice.design")); assert.ok(!domains.includes("nodechoice.com")); }
+  }
+  const current = await requests();
+  for (const args of [["search", ...Array.from({ length: 53 }, (_, i) => `limit${i}`), "--category", "technology", "--format", "json"], ["search", "x", "--category", "design-arts", "--extended"], ["search", "x", "--tld-preset", "tech"], ["show-presets"]]) assert.equal(cli(args).status, 1);
+  assert.equal(await requests(), current);
+});
+
+test("Node MCP exposes catalog and selected suffix schemas and preserves composite results", async () => {
+  const client = new Client({ name: "temper-node-extensions", version: "1.0.0" });
+  const transport = new StdioClientTransport({ command: process.execPath, args: ["--import", resolve("tests/runtime/preload.mjs"), resolve("dist/npm/index.js"), "mcp"], env: process.env });
+  try {
+    await client.connect(transport);
+    const { tools } = await client.listTools();
+    assert.ok(tools.find(t => t.name === "search_domain").inputSchema.properties.tlds);
+    const before = await requests();
+    for (const args of [undefined, {}]) {
+      const result = await client.callTool({ name: "list_supported_tlds", ...(args ? { arguments: args } : {}) });
+      assert.equal(result.structuredContent.discovery.total, 756);
+      assert.equal(result.structuredContent.extended.count, 59);
+    }
+    assert.equal(await requests(), before);
+    const selected = await client.callTool({ name: "search_names", arguments: { names: ["nodesingle", "nodesecond"], tlds: ["co.uk", "uk"] } });
+    assert.notEqual(selected.isError, true);
+    const text = JSON.stringify(selected.content);
+    for (const name of ["nodesingle", "nodesecond"]) for (const suffix of ["co.uk", "uk"]) assert.ok(text.includes(`${name}.${suffix}`));
+    assert.match(text, /4 requested/);
+    assert.doesNotMatch(text, /nodesingle.com/);
+  } finally { await client.close(); }
+});

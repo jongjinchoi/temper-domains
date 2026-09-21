@@ -32,7 +32,7 @@ let aborted = 0;
 globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
   if (String(input) === "https://data.iana.org/rdap/dns.json") {
     if (scenario === "bootstrap" || scenario === "suggest-bootstrap") throw new Error("test bootstrap unavailable");
-    return Response.json({ services: EXTENDED_TLDS.map((tld) => [[tld], [`https://${tld}.test/`]]) });
+    return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
   if (scenario === "suggest-cancel") {
     started++;
@@ -64,6 +64,7 @@ const element = scenario === "suggest"
   : scenario === "watch-corrupt" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
+  : scenario === "search-composite" ? <SearchView query="Acme" tlds={["uk", "co.uk"]} />
   : scenario?.startsWith("search-") ? <SearchView query="Acme" tlds={DEFAULT_TLDS} onlyAvailable={scenario.startsWith("search-available-")} />
   : <SearchView query="Acme" tlds={["com"]} />;
 const view = render(element, {
@@ -85,7 +86,19 @@ try {
       for (let i = 0; i < 20; i++) await key("j");
       frames.scrolled = plain();
     }
-    if (scenario === "search-resize") {
+    if (scenario === "search-composite") {
+      await key("/"); await key("co.uk"); await key("\r");
+      frames.selected = plain();
+      await key("a"); await until(() => frame.includes("Added acme.co.uk"));
+      await key("i"); await until(() => frame.includes("whois acme.co.uk"));
+      frames.detail = plain();
+      await key("\x1b"); await key("\r");
+      await until(() => frame.includes("Where to buy?")); frames.registrar = plain();
+      await key("c");
+    } else if (scenario === "search-partial") {
+      frames.initial = plain();
+      await key("/"); await key("dev"); await key("\r");
+    } else if (scenario === "search-resize") {
       Object.assign(output, { rows: 40 }); output.emit("resize"); await Bun.sleep(80);
       frames.expanded = plain();
       Object.assign(output, { rows: 18 }); output.emit("resize"); await Bun.sleep(80);

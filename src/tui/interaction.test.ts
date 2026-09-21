@@ -201,9 +201,22 @@ test.each(["none", "one", "some"])("available-only completion keeps %s results s
 test("search retains answered rows and partial completion guidance on an unresolved result", async () => {
   const result = await scenario("search-partial");
   expect(result.frame).toContain("29/30 answered");
-  expect(result.frame).toContain("acme.com");
+  expect(result.frames.initial).toContain("acme.com");
   expect(result.frame).toContain("acme.dev");
   expect(result.frame).toContain("Partial results");
   expect(result.frame).toContain("HTTP 400");
+  expect(result.unhandled).toEqual([]);
+});
+
+
+test("composite suffix remains intact in TUI selection, details, registrar and watchlist", async () => {
+  const result = await scenario("search-composite");
+  expect(result.frames.selected).toContain("acme.co.uk");
+  expect(result.frames.selected).not.toContain("acme.uk");
+  expect(result.frames.detail).toContain("whois acme.co.uk");
+  expect(result.frames.registrar).toMatch(/Selected:\s+acme.co.uk/);
+  expect(result.opened).toHaveLength(1);
+  expect(result.opened[0]).toContain("acme.co.uk");
+  expect(result.watch.map((entry: { domain: string }) => entry.domain)).toEqual(["acme.co.uk"]);
   expect(result.unhandled).toEqual([]);
 });

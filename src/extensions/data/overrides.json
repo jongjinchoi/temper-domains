@@ -1,0 +1,1256 @@
+{
+  "dev": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'dev' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/dev.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "app": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'app' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/app.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "Editorial interpretation of the label 'app' for product; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/app.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "tech": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'tech' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/tech.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "cloud": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'cloud' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/cloud.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "digital": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'digital' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/digital.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "software": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'software' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/software.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "product",
+        "reason": "Editorial interpretation of the label 'software' for product; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/software.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "systems": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'systems' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/systems.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "computer": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'computer' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/computer.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "technology": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "technology",
+        "reason": "Editorial interpretation of the label 'technology' for technology; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/technology.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "design": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'design' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/design.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "studio": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'studio' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/studio.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "art": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'art' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/art.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "gallery": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'gallery' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/gallery.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "graphics": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'graphics' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/graphics.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "photography": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'photography' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/photography.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Editorial interpretation of the label 'photography' for personal-portfolio; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/photography.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "photo": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'photo' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/photo.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "pictures": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "design-arts",
+        "reason": "Editorial interpretation of the label 'pictures' for design-arts; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/pictures.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "media": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'media' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/media.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Editorial interpretation of the label 'media' for content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/media.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "blog": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'blog' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/blog.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Editorial interpretation of the label 'blog' for content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/blog.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "news": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'news' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/news.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Editorial interpretation of the label 'news' for content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/news.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "press": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'press' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/press.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "video": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'video' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/video.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "content",
+        "reason": "Editorial interpretation of the label 'video' for content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/video.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "audio": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'audio' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/audio.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "movie": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'movie' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/movie.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "film": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "media-content",
+        "reason": "Editorial interpretation of the label 'film' for media-content; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/film.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "shop": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'shop' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/shop.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "Editorial interpretation of the label 'shop' for store; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/shop.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "store": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'store' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/store.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "Editorial interpretation of the label 'store' for store; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/store.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "shopping": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'shopping' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/shopping.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "store",
+        "reason": "Editorial interpretation of the label 'shopping' for store; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/shopping.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "market": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'market' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/market.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "bargains": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'bargains' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/bargains.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "sale": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'sale' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/sale.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "deals": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "commerce",
+        "reason": "Editorial interpretation of the label 'deals' for commerce; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/deals.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "agency": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'agency' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/agency.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "consulting": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'consulting' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/consulting.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "services": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'services' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/services.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "lawyer": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'lawyer' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/lawyer.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "accountant": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'accountant' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/accountant.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "legal": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "professional-services",
+        "reason": "Editorial interpretation of the label 'legal' for professional-services; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/legal.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "education": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'education' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/education.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "academy": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'academy' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/academy.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "school": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'school' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/school.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "university": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'university' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/university.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "college": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'college' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/college.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "science": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "education-research",
+        "reason": "Editorial interpretation of the label 'science' for education-research; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/science.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "finance": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "Editorial interpretation of the label 'finance' for finance-insurance; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/finance.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "financial": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "Editorial interpretation of the label 'financial' for finance-insurance; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/financial.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "insurance": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "Editorial interpretation of the label 'insurance' for finance-insurance; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/insurance.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "bank": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "finance-insurance",
+        "reason": "Editorial interpretation of the label 'bank' for finance-insurance; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/bank.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "health": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Editorial interpretation of the label 'health' for health-medical; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/health.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "healthcare": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Editorial interpretation of the label 'healthcare' for health-medical; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/healthcare.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "clinic": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Editorial interpretation of the label 'clinic' for health-medical; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/clinic.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "dental": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Editorial interpretation of the label 'dental' for health-medical; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/dental.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "doctor": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "health-medical",
+        "reason": "Editorial interpretation of the label 'doctor' for health-medical; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/doctor.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "food": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'food' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/food.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "restaurant": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'restaurant' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/restaurant.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "cafe": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'cafe' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/cafe.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "coffee": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'coffee' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/coffee.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "kitchen": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'kitchen' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/kitchen.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "pizza": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "food-dining",
+        "reason": "Editorial interpretation of the label 'pizza' for food-dining; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/pizza.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "travel": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "Editorial interpretation of the label 'travel' for travel-hospitality; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/travel.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "tours": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "Editorial interpretation of the label 'tours' for travel-hospitality; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/tours.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "holiday": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "Editorial interpretation of the label 'holiday' for travel-hospitality; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/holiday.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "vacations": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "Editorial interpretation of the label 'vacations' for travel-hospitality; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/vacations.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "flights": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "travel-hospitality",
+        "reason": "Editorial interpretation of the label 'flights' for travel-hospitality; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/flights.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "property": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'property' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/property.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "properties": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'properties' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/properties.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "estate": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'estate' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/estate.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "realty": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'realty' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/realty.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "construction": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'construction' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/construction.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "builders": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "property-construction",
+        "reason": "Editorial interpretation of the label 'builders' for property-construction; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/builders.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "games": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'games' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/games.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "game": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'game' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/game.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "sport": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'sport' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/sport.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "fitness": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'fitness' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/fitness.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "golf": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'golf' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/golf.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "football": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'football' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/football.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "toys": {
+    "assignments": [
+      {
+        "facet": "industry",
+        "id": "sports-games-hobbies",
+        "reason": "Editorial interpretation of the label 'toys' for sports-games-hobbies; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/toys.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "site": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Editorial interpretation of the label 'site' for general; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/site.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "online": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Editorial interpretation of the label 'online' for general; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/online.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "website": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Editorial interpretation of the label 'website' for general; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/website.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "page": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "general",
+        "reason": "Editorial interpretation of the label 'page' for general; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/page.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "company": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Editorial interpretation of the label 'company' for company; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/company.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "business": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Editorial interpretation of the label 'business' for company; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/business.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "ltd": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Editorial interpretation of the label 'ltd' for company; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/ltd.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "me": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Editorial interpretation of the label 'me' for personal-portfolio; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/me.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "bio": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Editorial interpretation of the label 'bio' for personal-portfolio; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/bio.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "club": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Editorial interpretation of the label 'club' for community; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/club.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "community": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Editorial interpretation of the label 'community' for community; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/community.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "social": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Editorial interpretation of the label 'social' for community; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/social.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "team": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Editorial interpretation of the label 'team' for community; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/team.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "ngo": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "Editorial interpretation of the label 'ngo' for nonprofit; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/ngo.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "charity": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "Editorial interpretation of the label 'charity' for nonprofit; not a registry eligibility or popularity claim.",
+        "source": "https://www.iana.org/domains/root/db/charity.html",
+        "evidenceType": "editorial",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "co.uk": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Nominet describes .co.uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "uk": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "company",
+        "reason": "Nominet describes .uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Nominet describes .uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "org.uk": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "nonprofit",
+        "reason": "Nominet describes .org.uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      },
+      {
+        "facet": "purpose",
+        "id": "community",
+        "reason": "Nominet describes .org.uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "me.uk": {
+    "assignments": [
+      {
+        "facet": "purpose",
+        "id": "personal-portfolio",
+        "reason": "Nominet describes .me.uk for this website purpose; intended use does not establish eligibility.",
+        "source": "https://registrars.nominet.uk/uk-namespace/",
+        "evidenceType": "registry-purpose",
+        "checkedAt": "2026-09-21"
+      }
+    ]
+  },
+  "arpa": {
+    "namespace": {
+      "reason": "Internet infrastructure namespace; not a general registration suffix.",
+      "source": "https://www.iana.org/domains/arpa"
+    }
+  }
+}

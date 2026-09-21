@@ -1,5 +1,5 @@
 import { test, expect, describe } from "bun:test";
-import { DEFAULT_TLDS, EXTENDED_TLDS, TLD_PRESETS } from "./types.ts";
+import { DEFAULT_TLDS, EXTENDED_TLDS } from "./types.ts";
 
 describe("DEFAULT_TLDS", () => {
   test("has 30 entries", () => {
@@ -38,28 +38,5 @@ describe("EXTENDED_TLDS", () => {
   test("has no duplicates", () => {
     const unique = new Set(EXTENDED_TLDS);
     expect(unique.size).toBe(EXTENDED_TLDS.length);
-  });
-});
-
-describe("TLD_PRESETS", () => {
-  test("has 4 presets", () => {
-    expect(Object.keys(TLD_PRESETS)).toHaveLength(4);
-  });
-
-  test("has popular, tech, startup, cheap", () => {
-    expect(TLD_PRESETS).toHaveProperty("popular");
-    expect(TLD_PRESETS).toHaveProperty("tech");
-    expect(TLD_PRESETS).toHaveProperty("startup");
-    expect(TLD_PRESETS).toHaveProperty("cheap");
-  });
-
-  test("popular includes com", () => {
-    expect(TLD_PRESETS["popular"]).toContain("com");
-  });
-
-  test("each preset has at least 5 TLDs", () => {
-    for (const [, tlds] of Object.entries(TLD_PRESETS)) {
-      expect(tlds.length).toBeGreaterThanOrEqual(5);
-    }
   });
 });

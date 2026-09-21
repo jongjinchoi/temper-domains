@@ -18,14 +18,14 @@ export const SEARCH_TIMEOUT_DESCRIPTION = "automatic 5–30s budget";
 // remain a subset of EXTENDED_TLDS (enforced in __tests__/temper-data.test.ts).
 export const PLAYGROUND_TLDS = [
   "com", "io", "dev", "app", "ai", "co", "xyz", "net",
-  "sh", "org", "me", "so", "gg", "cloud", "tech",
+  "biz", "org", "me", "shop", "store", "cloud", "tech",
 ] as const;
 
 // Hero CRT demo: the 7 TLDs rendered in the header CRT. Must remain a subset
 // of EXTENDED_TLDS; the Hero runs a live /api/check on mount with these.
 export const HERO_DEMO_NAME = "gethalden";
 export const HERO_DEMO_TLDS = [
-  "com", "io", "dev", "app", "ai", "co", "sh",
+  "com", "io", "dev", "app", "ai", "co", "biz",
 ] as const;
 
 export interface Theme {
@@ -88,6 +88,7 @@ export const THEMES: Theme[] = [
 ];
 
 export const MCP_TOOLS = [
+  "list_supported_tlds",
   "search_domain",
   "search_names",
   "suggest_domain",
@@ -107,8 +108,8 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 01",
     sig: { cmd: "search", arg: "<name>" },
-    desc: "Check 30 TLDs (59 with --extended). Navigate with j/k. Enter to buy.",
-    example: "$ temper search gethalden --tlds com,dev,io",
+    desc: "Check 30 TLDs, 59 with --extended, or chosen extensions with --tlds.",
+    example: "$ temper search gethalden --tlds com,dev,co.uk",
   },
   {
     slot: "CMD / 02",
@@ -139,6 +140,12 @@ export const COMMANDS: Command[] = [
     sig: { cmd: "mcp" },
     desc: "Start the MCP server over stdio. For Codex/Claude/Cursor configs.",
     example: "$ temper mcp",
+  },
+  {
+    slot: "CMD / 07",
+    sig: { cmd: "extensions" },
+    desc: "Browse supported extensions by industry, purpose or region. Offline, 50 per page (max 100).",
+    example: "$ temper extensions --categories",
   },
 ];
 

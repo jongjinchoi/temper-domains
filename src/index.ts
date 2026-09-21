@@ -4,6 +4,8 @@ import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
+import { resolveExplicitSelection, resolveCategorySelection, assertCandidateLimit, validateSearchCombinations } from "./extensions/selection.ts";
+import { extensionCommand, splitFilter } from "./extensions/cli.ts";
 
 const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
 
@@ -33,22 +35,7 @@ function validateDomainOrExit(domain: string, argName: string): string {
 }
 
 function validateTldsOrExit(rawTlds: string): string[] {
-  const tlds = rawTlds
-    .split(",")
-    .map((tld) => tld.replace(/^\./, "").trim().toLowerCase())
-    .filter(Boolean);
-
-  if (tlds.length === 0) {
-    exitWithError("invalid --tlds value. Provide one or more comma-separated TLDs.");
-  }
-
-  for (const tld of tlds) {
-    if (!isValidDomainLabel(tld)) {
-      exitWithError(`invalid TLD '${tld}'. Expected a single label like 'com', 'dev', or 'io'.`);
-    }
-  }
-
-  return [...new Set(tlds)];
+  return resolveExplicitSelection(rawTlds.split(","));
 }
 
 function parseTimeoutMsOrExit(value: string, argName: string): number {
@@ -70,8 +57,8 @@ program
 program
   .command("search")
   .argument("<queries...>")
-  .option("--tlds <tlds>", "Comma-separated TLDs (e.g. com,io,dev)")
-  .option("--tld-preset <preset>", "TLD preset (popular, tech, startup, cheap)")
+  .option("--tlds <tlds>", "Only these comma-separated extensions (e.g. design,studio,co.uk)")
+  .option("--category <ids>", "Search an industry classification (discover with extensions --categories industry)")
   .option("--extended", "Check 59 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
@@ -83,23 +70,19 @@ program
     const config = await loadConfig();
     setTheme(config.theme);
 
-    // Resolve TLDs: --tlds > --tld-preset > --extended > default
+    // Explicit extensions keep precedence over the extended bundle.
     let tlds: string[] | undefined;
-    if (opts.tlds) {
+    if (opts.category !== undefined) {
+      if (opts.tlds !== undefined || opts.extended !== undefined) throw new Error("--category cannot be combined with --tlds or --extended");
+      tlds = resolveCategorySelection({ industries: splitFilter(opts.category) });
+      assertCandidateLimit(queries.length, tlds.length);
+    } else if (opts.tlds !== undefined) {
       tlds = validateTldsOrExit(opts.tlds);
-    } else if (opts.tldPreset) {
-      const { TLD_PRESETS } = await import("./checker/types.ts");
-      const preset = TLD_PRESETS[opts.tldPreset as string];
-      tlds = preset ? [...preset] : undefined;
-      if (!tlds) {
-        console.error(`Unknown preset: ${opts.tldPreset}`);
-        console.error(`Available: ${Object.keys(TLD_PRESETS).join(", ")}`);
-        process.exit(1);
-      }
     } else if (opts.extended) {
       const { EXTENDED_TLDS } = await import("./checker/types.ts");
       tlds = [...EXTENDED_TLDS];
     }
+    if (tlds) validateSearchCombinations(queries, tlds);
 
     const timeoutMs = opts.timeout === undefined ? undefined : parseTimeoutMsOrExit(opts.timeout, "--timeout");
 
@@ -276,16 +259,20 @@ program
     instance.waitUntilExit().then(() => process.exit(0));
   });
 
-// --- show-presets ---
+// --- extensions ---
 program
-  .command("show-presets")
-  .description("Show available TLD presets")
-  .action(async () => {
-    const { TLD_PRESETS } = await import("./checker/types.ts");
-    for (const [name, tlds] of Object.entries(TLD_PRESETS)) {
-      console.log(`  ${name.padEnd(10)} ${(tlds as readonly string[]).join(", ")}`);
-    }
-  });
+  .command("extensions")
+  .description("Discover extensions by industry, purpose and region (offline)")
+  .option("--categories [facet]", "Show navigation summary, or classifications for industry, purpose or region")
+  .option("--category <ids>", "Filter by industry IDs (comma-separated)")
+  .option("--purpose <ids>", "Filter by website purpose IDs (comma-separated)")
+  .option("--region <ids>", "Filter by geographic association IDs (e.g. GB,KR)")
+  .option("--query <suffix>", "Find an extension (e.g. co.uk)")
+  .option("--limit <count>", "Page size (default: 50; maximum: 100)")
+  .option("--cursor <cursor>", "Continue the same filtered listing")
+  .option("-f, --format <format>", "Output format (text, json)", "text")
+  .addHelpText("after", "\nExamples:\n  temper extensions --categories\n  temper extensions --categories industry\n  temper extensions --category design-arts\n  temper extensions --purpose store\n  temper extensions --region GB\n  temper extensions --query co.uk\n  temper search mybrand --tlds design,studio,co.uk\n  temper search mybrand --category design-arts")
+  .action(opts => console.log(extensionCommand(opts)));
 
 // --- config ---
 const configCmd = program

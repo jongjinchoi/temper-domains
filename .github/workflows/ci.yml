@@ -61,6 +61,6 @@ jobs:
       - run: bun ci
       - run: bun run build:npm
       - run: node dist/npm/index.js --help
-      - run: node dist/npm/index.js show-presets
+      - run: node dist/npm/index.js extensions --categories
       - run: bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
       - run: node --test tests/runtime/node-checks.mjs

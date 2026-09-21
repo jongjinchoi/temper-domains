@@ -10,12 +10,18 @@ import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
+import { browseExtensions, categoryOverview, listCategories, catalogStats, catalogVersion } from "../extensions/catalog.ts";
+import { assertCandidateLimit, resolveExplicitSelection, validateSearchCombinations } from "../extensions/selection.ts";
+import { formatSelectedResults } from "./search-format.ts";
 
 export const MCP_INSTRUCTIONS = `temper is a domain availability search tool.
 
 TOOL ROUTING RULES:
+- Use list_supported_tlds when the user asks which domain extensions are supported or what the default and extended lists contain. This lists the search catalog without checking domain availability.
 - Bare names such as "lockway", "flume", or AI-generated name candidates must use search_domain or search_names.
-- Always check the default 30 TLDs first for bare names. Treat .com as the first result to interpret.
+- For bare names without a requested extension or classification, check the default 30 TLDs first. Treat .com as the first result to interpret in that mode.
+- When extensions are explicitly selected, pass only those suffixes in tlds to search_domain or search_names. Do not add default TLDs. Do not combine tlds and extended.
+- For industry, purpose or region discovery, use list_supported_tlds with view=categories (facet optional), then view=extensions and the relevant filters. Explain classification inclusion evidence, then search the user's chosen suffixes. Do not turn contextual geography into an unrequested strict filter.
 - Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
 - Use check_domain_availability only for full domains explicitly provided by the user, such as "lockway.com".
 - Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
@@ -34,12 +40,9 @@ When a user asks for domain name suggestions without a specific name:
 3. SUGGEST ALTERNATIVES using suggest_domain for the best candidates (adds prefixes like get/try/use and suffixes like app/hub/dev)
 
 4. TLD SELECTION GUIDE:
-   - .com: Universal trust, always check first (YC top 20 all own .com)
-   - .io: Tech startups, developer tools
-   - .dev: Developer-focused products
-   - .ai: AI/ML products
-   - .app: Web/mobile applications
-   - Avoid: .top, .xin (high spam association)
+   - Use the shared extension catalog for classification reasons and sources.
+   - Classification is not evidence of popularity, price, registration eligibility, SEO or investment value.
+   - Missing classification does not prevent explicit suffix selection. The catalog includes known lookup routes; responses and final purchase availability can still differ.
 
 5. FINAL RECOMMENDATION should include:
    - Top pick with reasoning
@@ -53,10 +56,10 @@ When a user asks for domain name suggestions without a specific name:
    - Remind user to verify: social media handle (@username) availability on major platforms`;
 
 export const SEARCH_DOMAIN_DESCRIPTION =
-  "Check one bare name across TLDs. Use this for names without a TLD, e.g. 'lockway'. Default 30 TLDs first; 59 with extended=true.";
+  "Check one bare name across TLDs. Use this for names without a TLD, e.g. 'lockway'. Default 30 TLDs first; 59 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 472 selected domain candidates.";
 
 export const SEARCH_NAMES_DESCRIPTION =
-  "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 59 with extended=true.";
+  "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 59 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 472 names × suffixes.";
 
 export const CHECK_DOMAIN_AVAILABILITY_DESCRIPTION =
   "Check availability for full domain names explicitly provided by the user using RDAP/WHOIS. Max 100 domains. Do not infer, append, or choose TLDs; use search_domain or search_names for bare names.";
@@ -385,13 +388,58 @@ export function formatBareDomainInputError(bareDomains: readonly string[]): stri
   return `Error: ${names} ${bareDomains.length === 1 ? "is" : "are"} bare domain ${bareDomains.length === 1 ? "name" : "names"}. Use search_domain for one bare name or search_names for multiple bare names. check_domain_availability only accepts full domains explicitly provided by the user.`;
 }
 
+const discoverySchema = z.strictObject({
+  view: z.enum(["presets", "categories", "extensions"]).optional(),
+  facet: z.enum(["industry", "purpose", "region"]).optional(),
+  query: z.string().optional(),
+  industries: z.array(z.string()).min(1).optional(),
+  purposes: z.array(z.string()).min(1).optional(),
+  regions: z.array(z.string()).min(1).optional(),
+  cursor: z.string().optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
+
+server.registerTool("list_supported_tlds", {
+  description: "Discover extensions offline. No arguments returns the default/additional/extended search bundles. view=categories returns facet navigation, or classifications with facet=industry|purpose|region. view=extensions lists supported extensions with classification and offering evidence, filtered by query/industries/purposes/regions, with cursor paging (default 50, max 100). Listing does not query domains. Lookup results may differ from final purchase availability.",
+  inputSchema: discoverySchema,
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+}, (args) => {
+  try {
+    const { view = "presets", facet, ...filters } = args;
+    const hasFilters = Object.values(filters).some(value => value !== undefined);
+    let catalog: Record<string, unknown>;
+    if (view === "presets") {
+      if (facet !== undefined || hasFilters) throw new Error("Bundle listing does not accept facet, filters or paging; select categories or extensions view");
+      const defaults = new Set<string>(DEFAULT_TLDS);
+      const additional = EXTENDED_TLDS.filter(tld => !defaults.has(tld));
+      catalog = {
+        default: { count: DEFAULT_TLDS.length, tlds: [...DEFAULT_TLDS] },
+        additional: { count: additional.length, tlds: additional },
+        extended: { count: EXTENDED_TLDS.length, tlds: [...EXTENDED_TLDS] },
+        discovery: { total: catalogStats().total, catalogVersion, view: "extensions", defaultPageSize: 50, maxPageSize: 100 },
+        usage: "For search_domain and search_names, omit extended or set extended=false for the default list; set extended=true for the full extended list, which includes the default list. These are built-in search bundles, not a list of all existing or registerable domain extensions. Domain availability is not checked here. Use view=categories or view=extensions for discovery beyond these bundles; pass tlds to search only selected suffixes. Never combine tlds with extended.",
+      };
+    } else if (view === "categories") {
+      if (hasFilters) throw new Error("Category navigation accepts only facet; use view=extensions for filters or paging");
+      catalog = facet ? listCategories(facet) : categoryOverview();
+    } else {
+      if (facet !== undefined) throw new Error("facet is only valid with view=categories");
+      catalog = browseExtensions(filters);
+    }
+    return { content: [{ type: "text" as const, text: JSON.stringify(catalog, null, 2) }], structuredContent: catalog };
+  } catch (err) {
+    return { content: [{ type: "text" as const, text: `Error: ${err instanceof Error ? err.message : String(err)}` }], isError: true };
+  }
+});
+
 server.registerTool("search_domain", {
   description: SEARCH_DOMAIN_DESCRIPTION,
-  inputSchema: {
+  inputSchema: z.strictObject({
     name: z.string().describe("Domain name without TLD, e.g. 'gethalden'"),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
-  },
-}, async ({ name, extended }, extra) => {
+    tlds: z.array(z.string()).min(1).optional().describe("Only these suffixes; e.g. ['design', 'co.uk']. Cannot combine with extended."),
+  }),
+}, async ({ name, extended, tlds: selected }, extra) => {
   try {
     const normalized = normalizeSearchDomainInput(name);
     if (normalized.error || !normalized.name) {
@@ -401,13 +449,18 @@ server.registerTool("search_domain", {
       };
     }
 
-    const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    if (selected !== undefined && extended !== undefined) throw new Error("tlds and extended cannot be combined");
+    const tlds = selected !== undefined ? resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    if (selected !== undefined) {
+      assertCandidateLimit(1, tlds.length);
+      validateSearchCombinations([normalized.name], tlds);
+    }
     let summary: CheckSummary | undefined;
     const results: DomainResult[] = [];
     for await (const result of checkDomains(normalized.name, tlds, { signal: extra.signal, onSummary: value => { summary = value; } })) {
       results.push(result);
     }
-    const text = formatResults(normalized.name, results, tlds, summary);
+    const text = selected !== undefined ? formatSelectedResults([normalized.name], tlds, results, summary) : formatResults(normalized.name, results, tlds, summary);
     return { content: [{ type: "text" as const, text }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -417,15 +470,16 @@ server.registerTool("search_domain", {
 
 server.registerTool("search_names", {
   description: SEARCH_NAMES_DESCRIPTION,
-  inputSchema: {
+  inputSchema: z.strictObject({
     names: z
       .array(z.string())
       .min(1)
       .max(8)
       .describe("Bare domain names without TLDs, e.g. ['lockway', 'hatchway']. Do not include .com or any other TLD."),
     extended: z.boolean().optional().describe("Check 59 TLDs instead of the default 30"),
-  },
-}, async ({ names, extended }, extra) => {
+    tlds: z.array(z.string()).min(1).optional().describe("Only these suffixes; maximum 472 names × suffixes. Cannot combine with extended."),
+  }),
+}, async ({ names, extended, tlds: selected }, extra) => {
   try {
     const normalized = normalizeBareNames(names);
     if (normalized.errors.length > 0) {
@@ -435,11 +489,16 @@ server.registerTool("search_names", {
       };
     }
 
-    const tlds = extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    if (selected !== undefined && extended !== undefined) throw new Error("tlds and extended cannot be combined");
+    const tlds = selected !== undefined ? resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    if (selected !== undefined) {
+      assertCandidateLimit(normalized.names.length, tlds.length);
+      validateSearchCombinations(normalized.names, tlds);
+    }
     const startedAt = performance.now();
     const groups = await checkSuggestionMatrix(normalized.names, tlds, { concurrency: 20, signal: extra.signal });
     const summary = summarizeResults(groups.flatMap(group => group.results), normalized.names.length * tlds.length, performance.now() - startedAt);
-    return { content: [{ type: "text" as const, text: formatSearchNamesResults(groups, tlds) + "\n" + formatCoverage(summary) }] };
+    return { content: [{ type: "text" as const, text: selected !== undefined ? formatSelectedResults(normalized.names, tlds, groups.flatMap(group => group.results), summary) : formatSearchNamesResults(groups, tlds) + "\n" + formatCoverage(summary) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -560,7 +619,22 @@ server.registerTool("whois_domain", {
   }
 });
 
+// SDK 1.30 validates an absent argument object as undefined. Preserve the original
+// no-argument discovery call while exposing its new optional fields in tools/list.
+class DiscoveryStdioTransport extends StdioServerTransport {
+  override async start() {
+    const receive = this.onmessage;
+    this.onmessage = (message) => {
+      if ("method" in message && message.method === "tools/call" && message.params?.name === "list_supported_tlds" && message.params.arguments === undefined) {
+        message = { ...message, params: { ...message.params, arguments: {} } };
+      }
+      receive?.(message);
+    };
+    await super.start();
+  }
+}
+
 export async function startMcpServer() {
-  const transport = new StdioServerTransport();
+  const transport = new DiscoveryStdioTransport();
   await server.connect(transport);
 }

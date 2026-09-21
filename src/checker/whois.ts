@@ -11,6 +11,10 @@ const WHOIS_SERVERS: Record<string, string> = {
   so: "whois.nic.so",
 };
 
+export function hasWhoisServer(tld: string): boolean {
+  return Object.hasOwn(WHOIS_SERVERS, tld);
+}
+
 async function whoisRaw(
   host: string,
   domain: string,
