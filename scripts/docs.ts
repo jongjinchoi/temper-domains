@@ -1,6 +1,19 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { checkManifest, MANIFEST, outputPaths, ROOT, tapeSources } from './media/core.ts';
+import { manifestForCurrentPackage, recordPackageSource } from './media-package.ts';
+
+if (process.argv[2] === '--record-package') {
+  if (process.argv.length > 4) throw new Error('Usage: scripts/docs.ts --record-package [staging-directory]');
+  const mediaRoot = process.argv[3] ? resolve(process.argv[3]) : ROOT;
+  const path = join(mediaRoot, MANIFEST);
+  const manifest = JSON.parse(readFileSync(path, 'utf8'));
+  checkManifest(manifest, mediaRoot);
+  const recorded = recordPackageSource(manifest, readFileSync(join(ROOT, 'package.json'), 'utf8'));
+  writeFileSync(path, JSON.stringify(recorded, null, 2) + '\n');
+  console.log('Preserved the hash-verified package source; capture identity and media are unchanged.');
+  process.exit(0);
+}
 
 const file = join(ROOT, 'README.md');
 const original = readFileSync(file, 'utf8');
@@ -25,6 +38,14 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
   for (const tape of tapes) {
     if (!tape.includes('Wait+Screen') || !tape.includes('Set FontFamily') || !tape.includes('Require temper-media-session')) throw new Error('Tape lacks recording safeguards');
   }
-  checkManifest(JSON.parse(readFileSync(join(ROOT, MANIFEST), 'utf8')));
+  const manifest = JSON.parse(readFileSync(join(ROOT, MANIFEST), 'utf8'));
+  try {
+    checkManifest(manifestForCurrentPackage(manifest, readFileSync(join(ROOT, 'package.json'), 'utf8')));
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('Capture inputs changed:')) {
+      throw new Error('Capture inputs changed: review whether screens or demonstrated interactions changed before deciding to recapture');
+    }
+    throw error;
+  }
   console.log('README help, media references, tape outputs and capture fingerprints match.');
 }

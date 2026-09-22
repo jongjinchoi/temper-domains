@@ -290,6 +290,10 @@ Use `rg` to confirm stale claims are gone after copy updates.
 - Tapes require the recording wrapper marker, assert screen states with bounded
   VHS waits and use explicit font/terminal themes. They are run from the staging
   directory so failures do not overwrite the repository's assets.
+- After capture, run `bun run scripts/docs.ts --record-package <staging-directory>`
+  to preserve the exact package source alongside its original capture hash.
+  This validates all staged inputs and outputs first; it does not recapture or
+  change the original source commit, capture time, input hashes or media.
 - Review all staged PNGs and play every GIF through before running
   `bun run media:record --apply <staging-directory>`. Apply requires a complete
   manifest, unchanged capture inputs and unchanged destination files. Ordinary
@@ -298,9 +302,18 @@ Use `rg` to confirm stale claims are gone after copy updates.
 - `assets/screenshots/manifest.json` identifies the source commit, relevant
   input hashes, runtime/tool versions and output hashes/dimensions. Inputs include
   uncommitted capture tooling, so the commit alone is not the full identity.
-  A new input fingerprint requires a fresh capture; do not just relabel old media.
-  This is a declared-input check, not proof that every possible visual change is
-  detected. Image headers/hashes are checked in CI; recording also decodes every
+  File changes are a reason to review screen relevance, not proof that a screen
+  changed. Recapture when the displayed content or demonstrated interaction is
+  outdated; do not relabel old media as a new capture just to pass a hash check.
+  For the current tapes, `docs:check` permits a package `version`-only change:
+  it verifies the preserved package source against the original hash, then
+  compares all other package fields and all remaining capture inputs unchanged.
+  The original capture record is never rewritten for the comparison. These tapes
+  do not display the version and disable update checks. A future version-output
+  or update-prompt recording must not use this exception without revisiting it.
+  Other input mismatches stop validation for review; this check cannot determine
+  actual visual equivalence from source hashes alone.
+  Image headers/hashes are checked in CI; recording also decodes every
   output with ffmpeg, and visual review remains required.
 - The images show documentation examples, not current domain registration or
   purchase availability. Changes on main may precede a published release.
