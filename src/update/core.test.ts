@@ -1,33 +1,13 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadUpdateCache, saveUpdateCache, cacheDecision } from "./cache.ts";
 import { fetchLatestVersion, parseBrewInfo, parseFormulaVersion } from "./versions.ts";
 import { runProcess, withInstallLock } from "./process.ts";
 
 const directories: string[] = [];
 async function temporary() { const dir = await mkdtemp(join(tmpdir(), "temper-updater-")); directories.push(dir); return dir; }
 afterEach(async () => { await Promise.all(directories.splice(0).map(dir => rm(dir, { recursive: true, force: true }))); });
-
-test("cache respects daily checks, later, backoff, installation changes and corruption", async () => {
-  const path = join(await temporary(), "cache", "update.json");
-  const now = 2_000_000_000;
-  const value = { schema: 1 as const, key: "install-a", identity: "npm:a", channel: "npm" as const, checkedAt: now, attemptedAt: now, latest: "0.5.0", postponedAt: 0, failed: false };
-  await saveUpdateCache(path, value);
-  expect(await loadUpdateCache(path)).toEqual(value);
-  expect(cacheDecision(value, "install-a", now + 1000)).toBe("cached");
-  expect(cacheDecision({ ...value, postponedAt: now }, "install-a", now + 1000)).toBe("skip");
-  expect(cacheDecision(value, "install-b", now + 1000)).toBe("check");
-  expect(cacheDecision(value, "install-a", now + 86_400_001)).toBe("check");
-  expect(cacheDecision({ ...value, failed: true }, "install-a", now + 1000)).toBe("skip");
-  expect(cacheDecision({ ...value, failed: true }, "install-a", now + 3_600_001)).toBe("check");
-  await writeFile(path, "{broken");
-  expect(await loadUpdateCache(path)).toBeNull();
-  await writeFile(path, JSON.stringify({ ...value, latest: "$(bad)", checkedAt: "oops" }));
-  expect(await loadUpdateCache(path)).toBeNull();
-  expect(cacheDecision(value, "install-a", now - 1000)).toBe("check");
-});
 
 test("release lookup uses each installation channel and rejects invalid responses", async () => {
   const urls: string[] = [];

@@ -1,9 +1,7 @@
-export const DAY_MS = 24 * 60 * 60 * 1000;
-export const FAILURE_BACKOFF_MS = 60 * 60 * 1000;
 export const AUTOMATIC_TIMEOUT_MS = 2000;
 
 export function automaticUpdatesEnabled(command: string, format: string | undefined, stdinTTY: boolean, stdoutTTY: boolean, env: NodeJS.ProcessEnv): boolean {
-  return ["search", "suggest", "whois", "list"].includes(command) && format !== "json" &&
+  return ["temper", "search", "suggest", "whois", "list"].includes(command) && format !== "json" &&
     stdinTTY && stdoutTTY && !env.CI && !env.CONTINUOUS_INTEGRATION && !env.BUILD_NUMBER &&
     env.TEMPER_NO_UPDATE_CHECK !== "1";
 }

@@ -31,6 +31,8 @@ test("npm installs the approved version and verifies the owned entry with a fres
   expect(executions).toHaveLength(1);
   expect(executions[0]!.args).toContain("temper-domains@0.5.0");
   expect(executions[0]!.args).toContain("--prefix");
+  expect(executions[0]!.args).toContain("--loglevel=warn");
+  expect(executions[0]!.args).toContain("--no-progress");
   await expect(performUpdate(installation, "0.6.0", { lockDirectory: home, query: async () => ({ stdout: installed, stderr: "" }), execute: async () => {}, confirmTarget: async () => true })).rejects.toThrow("verification");
   expect(() => updateCommands(installation, "1.0.0;bad")).toThrow();
 });
@@ -42,6 +44,11 @@ test("Homebrew refreshes metadata, requires changed-target approval and respects
   const options = { lockDirectory: home, query, execute: async (command: Invocation) => { executed.push(command.args[0]!); refreshed = true; }, confirmTarget: async (version: string) => { expect(version).toBe("0.6.0"); return false; } };
   expect(await performUpdate(installation, "0.5.0", options)).toEqual({ status: "cancelled" });
   expect(executed).toEqual(["update"]);
+  for (const command of updateCommands(installation, "0.5.0")) {
+    expect(command.args).toContain("--quiet");
+    expect(command.args).not.toContain("--yes");
+    expect(command.args).not.toContain("--no-ask");
+  }
   pinned = true;
   await expect(performUpdate(installation, "0.5.0", options)).rejects.toThrow("pinned");
   expect(executed).toEqual(["update"]);

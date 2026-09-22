@@ -9,7 +9,7 @@ const stdout = new Writable({ write(chunk, _encoding, callback) { frame += Strin
 Object.assign(stdout, { isTTY: true, columns: 110, rows: 30 });
 const stdin = new PassThrough();
 Object.assign(stdin, { isTTY: true, setRawMode(value: boolean) { raw = value; modes.push(value); }, ref() {}, unref() {} });
-const view = render(<UpdatePrompt current="0.4.1" latest="0.5.0" commands={[{ file: "npm", args: ["install", "-g", "temper-domains@0.5.0"] }]} onUpdate={async (execute, confirm) => {
+const view = render(<UpdatePrompt current="0.4.1" latest="0.5.0" onUpdate={async (execute, confirm) => {
   executed++;
   if (scenario === "changed" && !await confirm("0.6.0")) return { status: "cancelled" };
   await execute({ file: process.execPath, args: ["-e", "setTimeout(() => process.exit(0), 80)"] });

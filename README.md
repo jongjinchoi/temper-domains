@@ -108,13 +108,19 @@ temper update          # Check now, then ask before installing
 temper update --check  # Check now and show instructions; never install
 ```
 
-Interactive `search`, `suggest`, `whois`, and `list` check for a newer stable
-version before opening the search screen. Successful checks are cached for 24
-hours; automatic checks wait at most 2 seconds and failures back off for 1 hour.
-Choose **Later** (the default) to continue and postpone the notice for 24 hours.
-Set `TEMPER_NO_UPDATE_CHECK=1` to disable automatic checks. Manual checks bypass
-the cache and this opt-out. MCP, JSON, pipes, CI, help/version, `extensions`, and
-configuration/history commands do not perform automatic update checks.
+Interactive `temper`, `search`, `suggest`, `whois`, and `list` check for a newer
+stable version on every invocation. Automatic checks wait at most 2 seconds;
+if a check fails, Temper reports it briefly and continues the original command.
+Choose **Later** (the default) to skip the update for this invocation only.
+After updating, an equal installed/published version produces no notice; a newer
+published version produces a new notice. Set `TEMPER_NO_UPDATE_CHECK=1` to disable
+automatic checks. Manual checks bypass this opt-out. MCP, JSON, pipes, CI,
+help/version, `extensions`, and configuration/history commands do not perform
+automatic update checks.
+
+In a terminal, `temper` shows a welcome box with common commands and exits.
+Both `temper --help` and `temper help` show the full commands and options in a box.
+Piped output remains plain text.
 
 Updates require a terminal and explicit confirmation; there is no `--yes` option.
 Verified global npm installs update the displayed version in the same prefix.
@@ -125,12 +131,17 @@ version, Temper asks again. Local packages, `npx`, downloaded binaries, and
 unknown installation methods receive instructions instead of an automatic install.
 After an update, Temper verifies the installed version and exits; run your original
 command again. Failed or interrupted installers report failure without claiming
-an automatic rollback.
+an automatic rollback. Installer quiet options reduce ordinary output; on macOS
+and Linux, the system `script` utility also filters known routine lines while
+preserving the installer terminal, warnings, unknown output, and input prompts.
+No installation transcript is saved. Without that utility (including Windows),
+Temper preserves direct terminal access and the installer's quiet output.
 
 Version checks contact the npm registry or the Temper Homebrew tap on GitHub,
 according to the installation method. They send no searched domain names or
 search history. These services can see normal connection metadata such as your
-IP address. The disposable cache is `~/.temper/cache/update.json`.
+IP address. Version checks do not reuse cached results or previous postponements.
+Installation locks remain under `~/.temper/cache/`.
 Existing releases gain this feature only after installing a release containing it.
 
 ### Keyboard shortcuts

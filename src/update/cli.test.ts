@@ -28,3 +28,14 @@ test("CLI exposes update help and check-only without accepting unattended instal
   expect(check.code).toBe(0);
   expect(check.stdout).toContain("source checkout");
 });
+
+
+test("bare CLI is a successful entry point; explicit help and invalid commands retain their contracts", async () => {
+  const bare = await cli([]);
+  expect(bare.code).toBe(0);
+  expect(bare.stdout).toContain("Usage: temper");
+  expect(bare.stderr).toBe("");
+  const invalid = await cli(["not-a-command"]);
+  expect(invalid.code).toBe(1);
+  expect(invalid.stderr).toContain("unknown command");
+});

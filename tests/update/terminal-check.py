@@ -11,7 +11,7 @@ import tempfile
 import time
 
 runtime, entry = sys.argv[1:3]
-for scenario in ("later", "cancel", "success", "failure", "interrupt"):
+for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", "logs"):
     with tempfile.TemporaryDirectory(prefix="temper-update-pty-") as home:
         result_path = os.path.join(home, "result.json")
         child_path = os.path.join(home, "child.json")
@@ -50,6 +50,9 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt"):
                 if scenario == "interrupt" and stage == 1 and b"CHILD_READY" in data:
                     os.write(fd, b"\x03")
                     stage = 2
+                if scenario == "input" and stage == 1 and b"Proceed? " in data:
+                    os.write(fd, b"yes\n")
+                    stage = 2
                 done, status = os.waitpid(pid, os.WNOHANG)
                 if done:
                     exited = True
@@ -63,14 +66,24 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt"):
             assert os.path.exists(result_path), data.decode(errors="replace")
             with open(result_path) as file:
                 result = json.load(file)
-            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed"}[scenario]
+            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated"}[scenario]
             assert result["result"]["kind"] == expected, result
             assert result["raw"] is False, result
-            if scenario in ("success", "failure", "interrupt"):
+            if scenario in ("success", "failure", "interrupt", "input", "logs"):
                 with open(child_path) as file:
                     child = json.load(file)
-                assert child == {"tty": True, "raw": False}, child
-            else:
+                assert child["tty"] is True and child["outputTTY"] is True and child["raw"] is False, child
+                try:
+                    os.kill(child["pid"], 0)
+                    raise AssertionError("Installer child still running")
+                except ProcessLookupError:
+                    pass
+            if scenario == "input":
+                assert b"ANSWER:yes" in data, data
+            if scenario == "logs":
+                assert b"Removing:" not in data, data[-2000:]
+                assert b"Warning: keep this diagnostic" in data, data[-2000:]
+            if scenario in ("later", "cancel"):
                 assert not os.path.exists(child_path)
             print(f"PTY {scenario}: passed ({runtime}); no package installation")
         finally:

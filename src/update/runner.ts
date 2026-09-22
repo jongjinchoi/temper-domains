@@ -7,8 +7,8 @@ import { FORMULA, parseBrewInfo } from "./versions.ts";
 
 export function updateCommands(installation: Installation, version: string): Invocation[] {
   if (!parseStableVersion(version)) throw new Error("Invalid update target version");
-  if (installation.kind === "npm") return [{ file: installation.npm.file, args: [...installation.npm.args, "install", "--global", "--prefix", installation.prefix, `temper-domains@${version}`] }];
-  if (installation.kind === "homebrew") return [{ file: installation.brew, args: ["update"] }, { file: installation.brew, args: ["upgrade", "--formula", FORMULA] }];
+  if (installation.kind === "npm") return [{ file: installation.npm.file, args: [...installation.npm.args, "install", "--global", "--prefix", installation.prefix, `temper-domains@${version}`, "--loglevel=warn", "--no-progress"] }];
+  if (installation.kind === "homebrew") return [{ file: installation.brew, args: ["update", "--quiet"] }, { file: installation.brew, args: ["upgrade", "--formula", FORMULA, "--quiet"] }];
   return [];
 }
 

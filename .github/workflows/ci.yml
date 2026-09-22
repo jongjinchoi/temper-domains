@@ -92,3 +92,7 @@ jobs:
           bun build tests/update/terminal.tsx --target=node --packages=external --outfile=dist/test-runtime/update-terminal.mjs
           python3 tests/update/terminal-check.py bun tests/update/terminal.tsx
           python3 tests/update/terminal-check.py node dist/test-runtime/update-terminal.mjs
+          python3 tests/update/automatic-check.py bun
+          python3 tests/update/startup-check.py bun src/index.ts
+          bun run build:npm
+          python3 tests/update/startup-check.py node dist/npm/index.js

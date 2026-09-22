@@ -54,6 +54,18 @@ program
   .description("Never leave your terminal to find a domain.")
   .version(VERSION);
 
+async function showStart(): Promise<void> {
+  if (!process.stdin.isTTY || !process.stdout.isTTY || process.env.CI || process.env.CONTINUOUS_INTEGRATION || process.env.BUILD_NUMBER) {
+    program.outputHelp();
+    return;
+  }
+  const config = await loadConfig();
+  setTheme(config.theme);
+  if (await maybeUpdate("temper")) return;
+  const { showWelcome } = await import("./tui/Welcome.tsx");
+  showWelcome();
+}
+
 // --- search ---
 program
   .command("search")
@@ -318,7 +330,7 @@ program
   .command("update")
   .description("Check for a new version and update after confirmation")
   .option("--check", "Show the published version and instructions without installing")
-  .addHelpText("after", "\nAutomatic checks: interactive search, suggest, whois and list only; at most once per 24 hours.\nSet TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks.\nManual checks bypass the cache. Updating requires a terminal; no --yes option.\nExamples:\n  temper update\n  temper update --check")
+  .addHelpText("after", "\nAutomatic checks: interactive temper, search, suggest, whois and list; checked on every invocation.\nSet TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks.\nLater skips only the current invocation. Updating requires a terminal; no --yes option.\nExamples:\n  temper update\n  temper update --check")
   .action(async opts => { await updateCommand(Boolean(opts.check)); });
 
 // --- mcp ---
@@ -333,6 +345,30 @@ program
     await startMcpServer();
   });
 
-program.parseAsync().catch((error: unknown) => {
+// Help stays synchronous once Commander starts parsing. Load the renderer only
+// for interactive help so JSON/MCP/version paths keep their existing output.
+async function main(): Promise<void> {
+  const requestedHelp = process.argv.slice(2).some(arg => arg === "--help" || arg === "-h") || process.argv[2] === "help";
+  if (requestedHelp && !process.argv.includes("--version") && !process.argv.includes("-V") && process.stdout.isTTY && !process.env.CI && !process.env.CONTINUOUS_INTEGRATION && !process.env.BUILD_NUMBER) {
+    const config = await loadConfig();
+    setTheme(config.theme);
+    const [{ renderToString, Text }, { createElement }, { TerminalPanel }] = await Promise.all([
+      import("ink"), import("react"), import("./tui/TerminalPanel.tsx"),
+    ]);
+    const columns = Math.max(10, process.stdout.columns || 80);
+    const configure = (command: Command): void => {
+      command.configureHelp({ helpWidth: Math.max(6, columns - 4) });
+      command.configureOutput({ writeOut: text => {
+        console.log(renderToString(createElement(TerminalPanel, { children: createElement(Text, {}, text.trimEnd()) }), { columns }));
+      } });
+      command.commands.forEach(configure);
+    };
+    configure(program);
+  }
+
+  await (process.argv.length === 2 ? showStart() : program.parseAsync());
+}
+
+main().catch((error: unknown) => {
   exitWithError(error instanceof Error ? error.message : String(error));
 });

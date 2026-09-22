@@ -5,7 +5,7 @@ import { mkdir, open, unlink } from "node:fs/promises";
 import { join } from "node:path";
 
 export interface Invocation { file: string; args: string[] }
-export interface ProcessOptions { signal?: AbortSignal; inherit?: boolean; env?: NodeJS.ProcessEnv }
+export interface ProcessOptions { signal?: AbortSignal; inherit?: boolean; env?: NodeJS.ProcessEnv; onOutput?: (text: string) => void }
 
 export function displayInvocation(command: Invocation): string {
   return [command.file, ...command.args].map(part => /^[\w./:@=+-]+$/.test(part) ? part : JSON.stringify(part)).join(" ");
@@ -15,7 +15,7 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
   return new Promise((resolve, reject) => {
     if (options.signal?.aborted) { reject(new Error("Update check cancelled or timed out")); return; }
     const child = spawn(command.file, command.args, {
-      shell: false, stdio: options.inherit ? "inherit" : ["ignore", "pipe", "pipe"],
+      shell: false, stdio: options.onOutput ? ["inherit", "pipe", "pipe"] : options.inherit ? "inherit" : ["ignore", "pipe", "pipe"],
       env: options.env ?? process.env,
     });
     let stdout = "";
@@ -28,12 +28,13 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
     options.signal?.addEventListener("abort", stop, { once: true });
     if (options.signal?.aborted) stop();
     if (options.inherit) { process.on("SIGINT", interrupt); process.on("SIGTERM", terminate); }
-    const collect = (chunk: Buffer, stream: "stdout" | "stderr") => {
-      if (stream === "stdout") stdout += chunk.toString(); else stderr += chunk.toString();
+    const collect = (chunk: string, stream: "stdout" | "stderr") => {
+      if (options.onOutput) { options.onOutput(chunk); return; }
+      if (stream === "stdout") stdout += chunk; else stderr += chunk;
       if (stdout.length + stderr.length > 1024 * 1024) { failure = new Error("Package manager response is too large"); child.kill(); }
     };
-    child.stdout?.on("data", chunk => collect(chunk, "stdout"));
-    child.stderr?.on("data", chunk => collect(chunk, "stderr"));
+    child.stdout?.setEncoding("utf8").on("data", chunk => collect(chunk, "stdout"));
+    child.stderr?.setEncoding("utf8").on("data", chunk => collect(chunk, "stderr"));
     // ChildProcess is an EventEmitter; the installed mixed Node declarations
     // lose its merged event interface under TypeScript 7.
     const events = child as unknown as EventEmitter;

@@ -77,11 +77,14 @@ State errors stop local requests; the hosted demo uses separate memory-only stat
 
 ## CLI updates
 
-Interactive search/suggest/whois/list check the relevant npm registry or Homebrew
-tap for a stable update, at most once per 24 hours, with a 2-second automatic
-check deadline and 1-hour failure backoff. Later postpones the prompt for 24 hours.
-Set TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks; manual update checks bypass
-the cache. MCP, JSON, pipes, CI, help/version and offline commands never check automatically.
+Interactive temper/search/suggest/whois/list check the relevant npm registry or
+Homebrew tap for a stable update on every invocation, with a 2-second automatic
+check deadline. Failures are reported briefly without blocking the original command.
+Later skips this invocation only. Set TEMPER_NO_UPDATE_CHECK=1 to disable automatic
+checks; manual update checks bypass this opt-out. No cached result or earlier
+postponement suppresses a fresh check. MCP, JSON, pipes, CI, help/version and offline
+commands never check automatically. In a terminal, bare temper shows a welcome box;
+temper help and temper --help display the same full command help in a box.
 Checks send no domain names or history; the version services see normal connection metadata.
 npx/local packages, direct downloads and unknown installers receive instructions.
 After a confirmed update, verify the installed version and restart the CLI.

@@ -32,7 +32,7 @@ const args = process.argv.slice(2);
 if (args.join(' ') === 'root --global') console.log(${JSON.stringify(root)});
 else if (args.join(' ') === 'prefix --global') console.log(${JSON.stringify(prefix)});
 else if (args[0] === 'install') {
-  if (args.join('|') !== ${JSON.stringify(["install", "--global", "--prefix", prefix, "temper-domains@0.5.0"].join("|"))}) throw new Error('Unexpected install target');
+  if (args.join('|') !== ${JSON.stringify(["install", "--global", "--prefix", prefix, "temper-domains@0.5.0", "--loglevel=warn", "--no-progress"].join("|"))}) throw new Error('Unexpected install target');
   fs.appendFileSync(${JSON.stringify(log)}, JSON.stringify(args) + '\\n');
   fs.writeFileSync(${JSON.stringify(entry)}, 'console.log("0.5.0");\\n');
 } else throw new Error('Unexpected npm command');
@@ -45,12 +45,12 @@ else if (args[0] === 'install') {
   assert.equal(npm.args[0], npmEntry);
   const installation = await detectInstallation({ entry, node: process.execPath, npm, brew: null, signal: AbortSignal.timeout(5000) });
   assert.equal(installation.kind, "npm");
-  const cacheFile = join(home, "cache", "update.json");
+  const lockDirectory = join(home, "cache");
   let requests = 0;
-  const checkOptions = { current: "0.4.1", entry, cacheFile, detect: async () => installation, latest: async () => { requests++; return "0.5.0"; } };
+  const checkOptions = { current: "0.4.1", entry, lockDirectory, detect: async () => installation, latest: async () => { requests++; return "0.5.0"; } };
   assert.equal((await checkForUpdate(true, checkOptions))?.latest, "0.5.0");
   assert.equal((await checkForUpdate(true, checkOptions))?.latest, "0.5.0");
-  assert.equal(requests, 1);
+  assert.equal(requests, 2);
   const result = await performUpdate(installation, "0.5.0", { lockDirectory: home, confirmTarget: async () => { throw new Error("npm must not change the approved target"); }, execute: async command => { await runProcess(command); } });
   assert.deepEqual(result, { status: "updated", version: "0.5.0" });
   assert.equal((await runProcess({ file: process.execPath, args: [entry, "--version"] })).stdout.trim(), "0.5.0");

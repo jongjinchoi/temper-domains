@@ -31,7 +31,7 @@ in both workspaces so root typechecking does not download a separate compiler.
 ## Source Of Truth
 
 - CLI commands and help: `src/index.ts`
-- CLI update policy, installation ownership, cache and installer: `src/update/`
+- CLI update policy, installation ownership, fresh checks and installer: `src/update/`
 - Update confirmation and terminal handoff: `src/tui/UpdatePrompt.tsx`
 - Default and extended TLDs: `src/checker/types.ts`
 - Extension catalog, classifications and selection: `src/extensions/`
@@ -60,19 +60,27 @@ in both workspaces so root typechecking does not download a separate compiler.
 - `temper update` checks freshly and asks before installation; `--check` only reports.
   Global npm and the verified Homebrew tap are executable update targets; npx/local,
   source checkouts, direct downloads and unknown installers receive guidance.
-- Only interactive search/suggest/whois/list perform automatic checks, after input
-  validation and before mounting search UI. Success TTL is 24h, automatic preflight
-  deadline 2s, failure backoff 1h; Later postpones 24h. `TEMPER_NO_UPDATE_CHECK=1`
-  disables automatic checks. MCP/JSON/pipes/CI/help/version/offline commands are excluded.
+- Interactive bare `temper` and search/suggest/whois/list check on every invocation;
+  search arguments are validated before checking. The automatic deadline is 2s;
+  failures produce a brief notice and continue. Later skips only this invocation.
+  `TEMPER_NO_UPDATE_CHECK=1` disables automatic checks.
+  MCP/JSON/pipes/CI/help/version/offline commands are excluded.
+- Bare `temper` displays a themed welcome box and exits successfully. `temper help`
+  and `temper --help` share boxed command/option help in interactive terminals;
+  non-TTY/CI help stays plain text. Subcommand help uses the same renderer.
 - npm version discovery uses registry.npmjs.org; Homebrew uses the published
   jongjinchoi/homebrew-temper-domains formula on raw.githubusercontent.com.
-  Checks do not send domains/history. Local cache is ~/.temper/cache/update.json.
+  Checks do not send domains/history. Old version-check cache files are ignored.
   npm and Homebrew release availability are checked separately.
 - Installation uses explicit confirmation, a per-installation local lock, fixed
   package/formula targets and fresh version verification. Homebrew refreshes metadata,
   preserves pins and asks again if its target changes. Installation failure does not
   imply rollback. Windows npm wrappers use the verified npm JS entry via Node.
-  Existing Ink suspendTerminal hands input/output to the installer and restores it.
+  Ink suspendTerminal hands the terminal to the installer and restores it. Native
+  quiet flags reduce output. Unix `/usr/bin/script`, when available, preserves the
+  child TTY while filtering known routine output; partial prompts and unknown
+  diagnostics are forwarded. No transcript is saved. Windows/missing-script systems
+  keep direct terminal inheritance and native quiet output. Locks remain in ~/.temper/cache/.
   Completion exits; it does not re-run the user's original command automatically.
 - Default search checks 30 TLDs.
 - Extended search checks 60 TLDs.

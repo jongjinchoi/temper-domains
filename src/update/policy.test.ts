@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { automaticUpdatesEnabled, compareStableVersions, parseStableVersion } from "./policy.ts";
 
 test("only interactive lookup commands may check for updates", () => {
-  for (const command of ["search", "suggest", "whois", "list"]) {
+  for (const command of ["temper", "search", "suggest", "whois", "list"]) {
     expect(automaticUpdatesEnabled(command, undefined, true, true, {})).toBe(true);
     expect(automaticUpdatesEnabled(command, "json", true, true, {})).toBe(false);
     expect(automaticUpdatesEnabled(command, undefined, false, true, {})).toBe(false);
