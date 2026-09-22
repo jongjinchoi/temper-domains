@@ -55,7 +55,7 @@ in both workspaces so root typechecking does not download a separate compiler.
 ## Current Behavior Notes
 
 - Default search checks 30 TLDs.
-- Extended search checks 59 TLDs.
+- Extended search checks 60 TLDs.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.
 - npm installs expose the `temper` binary and require Node.js >= 22.12.0.
 - Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
@@ -131,14 +131,14 @@ in both workspaces so root typechecking does not download a separate compiler.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
-- `list_supported_tlds` is offline. No arguments returns the 30/29/59 bundles
+- `list_supported_tlds` is offline. No arguments returns the 30/30/60 bundles
   and full catalog count; view=extensions offers paged discovery (50 default,
   100 maximum), view=categories exposes industry/purpose/region navigation.
 - `search_domain` and `search_names` accept explicit `tlds`, including composite
   suffixes and supported IDNs. Selected searches never append defaults, reject
   any simultaneous `extended` argument and preserve every requested result.
   MCP selected searches and CLI `--category` cap name × suffix combinations at
-  472. Existing CLI explicit `--tlds` is not newly capped.
+  480. Existing CLI explicit `--tlds` is not newly capped.
 - `temper extensions` exposes the same catalog and classification evidence.
   The old named presets were immediately replaced without aliases. No-input
   MCP discovery remains supported over stdio.
@@ -268,7 +268,7 @@ The initial bundled catalog contains 756 offered extensions passing Temper's
 registration-boundary and route checks (738 RDAP, 18 WHOIS). These are static
 support checks, not 756 successful live registry calls or a worldwide total.
 The inputs combine 1,062 registration suffixes from Porkbun, Dynadot and Gandi.
-Default 30/extended 59 are approved quick-search bundles within this catalog.
+Default 30/extended 60 are approved quick-search bundles within this catalog.
 
 The runtime snapshot is `src/extensions/data/catalog.json`. It contains IANA/
 PSL boundary data, offering evidence, classification reviews, lookup observations,
@@ -332,8 +332,8 @@ PSL data is provided under Mozilla Public License 2.0 (https://publicsuffix.org/
 Dependency/parser changes and new providers require their own scope review.
 
 Verification uses temporary homes and controlled RDAP responses: exhaustive
-756-entry paging and selection, 30/59 bundles, composite suffixes, invalid-input
-zero-lookups, the 472 boundary, partial results and snapshot failure preservation.
+756-entry paging and selection, 30/60 bundles, composite suffixes, invalid-input
+zero-lookups, the 480 boundary, partial results and snapshot failure preservation.
 Node CLI/MCP integration uses `tests/runtime/node-checks.mjs`; these tests do
 not make live registry calls or update the installed/connected MCP process.
 `node tests/transport/runner.mjs` additionally starts local TLS servers and checks

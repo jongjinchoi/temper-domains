@@ -57,10 +57,10 @@ When a user asks for domain name suggestions without a specific name:
    - Remind user to verify: social media handle (@username) availability on major platforms`;
 
 export const SEARCH_DOMAIN_DESCRIPTION =
-  "Check one bare name across TLDs. Use this for names without a TLD, e.g. 'lockway'. Default 30 TLDs first; 59 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 472 selected domain candidates.";
+  "Check one bare name across TLDs. Use this for names without a TLD, e.g. 'lockway'. Default 30 TLDs first; 60 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 480 selected domain candidates.";
 
 export const SEARCH_NAMES_DESCRIPTION =
-  "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 59 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 472 names × suffixes.";
+  "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 60 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 480 names × suffixes.";
 
 export const CHECK_DOMAIN_AVAILABILITY_DESCRIPTION =
   "Check availability for full domain names explicitly provided by the user using RDAP/WHOIS. Max 100 domains. Do not infer, append, or choose TLDs; use search_domain or search_names for bare names.";
@@ -437,7 +437,7 @@ server.registerTool("search_domain", {
   description: SEARCH_DOMAIN_DESCRIPTION,
   inputSchema: z.strictObject({
     name: z.string().describe("Domain name without TLD, e.g. 'gethalden'"),
-    extended: z.boolean().optional().describe("Check 59 TLDs instead of 30"),
+    extended: z.boolean().optional().describe("Check 60 TLDs instead of 30"),
     tlds: z.array(z.string()).min(1).optional().describe("Only these suffixes; e.g. ['design', 'co.uk']. Cannot combine with extended."),
   }),
 }, async ({ name, extended, tlds: selected }, extra) => {
@@ -477,8 +477,8 @@ server.registerTool("search_names", {
       .min(1)
       .max(8)
       .describe("Bare domain names without TLDs, e.g. ['lockway', 'hatchway']. Do not include .com or any other TLD."),
-    extended: z.boolean().optional().describe("Check 59 TLDs instead of the default 30"),
-    tlds: z.array(z.string()).min(1).optional().describe("Only these suffixes; maximum 472 names × suffixes. Cannot combine with extended."),
+    extended: z.boolean().optional().describe("Check 60 TLDs instead of the default 30"),
+    tlds: z.array(z.string()).min(1).optional().describe("Only these suffixes; maximum 480 names × suffixes. Cannot combine with extended."),
   }),
 }, async ({ names, extended, tlds: selected }, extra) => {
   try {

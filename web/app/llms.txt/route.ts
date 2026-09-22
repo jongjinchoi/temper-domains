@@ -43,7 +43,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 
 - \`list_supported_tlds\` - offline discovery. No arguments returns default/additional/extended bundles plus full catalog count; view=extensions browses the catalog with cursor paging, view=categories lists classification facets (facet=industry|purpose|region for details).
 - \`search_domain\` - query one bare name across default or extended TLDs, or only suffixes supplied in tlds (including co.uk)
-- \`search_names\` - query up to 8 bare names across default, extended or selected suffixes; selected names × suffixes max 472. Do not combine tlds with extended, including false.
+- \`search_names\` - query up to 8 bare names across default, extended or selected suffixes; selected names × suffixes max 480. Do not combine tlds with extended, including false.
 - \`suggest_domain\` - generate prefix/suffix combinations and check them with RDAP/WHOIS
 - \`check_domain_availability\` - explicit full-domain check only
 - \`whois_domain\` - registrar, expiry, nameserver lookup
@@ -55,7 +55,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper extensions --categories\` - browse industry, purpose and region classifications
 - \`temper extensions --limit 100\` - browse the full supported catalog, following the next cursor
 - \`temper search <name> --tlds com,co.uk\` - search only the selected suffixes
-- \`temper search <name> --category design-arts\` - search the industry selection (max 472 name × suffix combinations)
+- \`temper search <name> --category design-arts\` - search the industry selection (max 480 name × suffix combinations)
 - \`temper suggest <name>\` - prefix/suffix brainstorm
 - \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
 - \`temper watch <domain>\` - track availability, \`temper list\` to review

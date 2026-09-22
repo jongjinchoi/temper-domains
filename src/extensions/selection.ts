@@ -3,7 +3,7 @@ import { filterExtensions, inventory, lookupSupport } from "./catalog.ts";
 import { normalizeSuffix } from "./boundary.ts";
 import type { CatalogFilters } from "./types.ts";
 
-export const MAX_SELECTED_CANDIDATES = 472;
+export const MAX_SELECTED_CANDIDATES = 480;
 
 export function normalizeSuffixSelection(raw: readonly string[]): string[] {
   if (!raw.length) throw new Error("Provide at least one extension");

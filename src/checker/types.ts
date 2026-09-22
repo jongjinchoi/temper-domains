@@ -50,7 +50,7 @@ export const EXTENDED_TLDS = [
   ...DEFAULT_TLDS,
   "club", "tech", "cyou", "cloud", "life", "world", "fun", "mobi", "blog", "digital",
   "work", "art", "link", "website", "autos", "one", "help", "buzz", "lat", "studio",
-  "skin", "win", "bet", "run", "today", "makeup", "beer", "email", "ink",
+  "skin", "win", "bet", "run", "today", "makeup", "beer", "email", "ink", "design",
 ] as const;
 
 export interface DomainDetail extends LookupMetadata {

@@ -74,8 +74,8 @@ test("selection supports out-of-bundle, IDN and composite suffixes without accep
   }
   expect(resolveCategorySelection({ industries: ["design-arts"] })).toContain("design");
   expect(() => resolveCategorySelection({ industries: ["design-arts"], regions: ["GB"] })).toThrow(/No/);
-  expect(() => assertCandidateLimit(8, 59)).not.toThrow();
-  expect(() => assertCandidateLimit(8, 60)).toThrow(/480.*472/);
+  expect(() => assertCandidateLimit(8, 60)).not.toThrow();
+  expect(() => assertCandidateLimit(8, 61)).toThrow(/488.*480/);
 });
 
 test("supported offerings have dated sources; raw-only suffixes stay out of discovery", () => {
@@ -85,7 +85,7 @@ test("supported offerings have dated sources; raw-only suffixes stay out of disc
   const direct = resolveExplicitSelection(["ac.me"]);
   expect(direct).toEqual(["ac.me"]);
   expect(browseExtensions({ query: "ac.me" }).matched).toBe(0);
-  expect(() => assertCandidateLimit(1, 472)).not.toThrow();
-  expect(() => assertCandidateLimit(1, 473)).toThrow(/473.*472/);
+  expect(() => assertCandidateLimit(1, 480)).not.toThrow();
+  expect(() => assertCandidateLimit(1, 481)).toThrow(/481.*480/);
   expect(() => resolveExplicitSelection(["us"])).toThrow(/route/);
 });

@@ -32,7 +32,7 @@ AI coding tools can't check if a domain is available. Claude suggests a name, yo
 ## Features
 
 - **Private** — CLI and MCP queries run on your machine. No tracking, no telemetry. The hosted web demo uses a server-side API route for live checks.
-- **Fast** — checks 30 TLDs by default with an automatic 5–30s search budget. 59 with `--extended`.
+- **Fast** — checks 30 TLDs by default with an automatic 5–30s search budget. 60 with `--extended`.
 - **MCP native** — Codex, Claude Code, Claude Desktop, and Cursor can search domains directly.
 - **Keyboard-first** — vim-style navigation, single-key registrar selection.
 - **Pipe-friendly** — `--format json` for scripting and automation.
@@ -101,7 +101,7 @@ Commands:
 
 ```bash
 temper search myproject                          # 30 default TLDs
-temper search myproject --extended               # 59 TLDs
+temper search myproject --extended               # 60 TLDs
 temper search myproject --tlds com,design,co.uk   # only selected extensions
 temper search myproject --category design-arts   # industry classification
 temper search myproject -a                        # available only
@@ -147,15 +147,15 @@ against known registration boundaries and lookup routes. A normal domain or a
 PRIVATE hosting suffix cannot be used as a registration extension. Unknown
 boundaries and unsupported routes have separate errors.
 
-`--category` searches only an industry's extensions, with a maximum of 472
+`--category` searches only an industry's extensions, with a maximum of 480
 name × extension combinations. It cannot be combined with `--tlds` or
 `--extended`. Existing `--tlds` precedence over `--extended` is retained;
 the new category limit does not apply to existing explicit CLI `--tlds` searches.
 Requests are never silently shortened to fit. The previous named presets and
 their commands have been replaced; there are no compatibility aliases.
 
-The default 30 and extended 59 are quick-search bundles within the catalog.
-Extended includes all default entries plus 29 additions. They are curated search
+The default 30 and extended 60 are quick-search bundles within the catalog.
+Extended includes all default entries plus 30 additions. They are curated search
 bundles, not a global search-popularity ranking.
 
 Default 30:
@@ -169,7 +169,7 @@ Default 30:
 .io .co .me .tv .cc
 ```
 
-Additional 29 (extended = default + additional):
+Additional 30 (extended = default + additional):
 
 ```text
 .club .tech .cyou .cloud .life
@@ -177,7 +177,7 @@ Additional 29 (extended = default + additional):
 .work .art .link .website .autos
 .one .help .buzz .lat .studio
 .skin .win .bet .run .today
-.makeup .beer .email .ink
+.makeup .beer .email .ink .design
 ```
 
 Catalog browsing is offline and does not write user settings or search history.
@@ -382,7 +382,7 @@ Command Palette → `MCP: Add server` → stdio → `temper mcp`
 | Tool | Description |
 |------|-------------|
 | `list_supported_tlds` | Browse bundles, classifications and supported extensions offline |
-| `search_domain` | Check one bare name across 30, 59 or explicitly selected extensions |
+| `search_domain` | Check one bare name across 30, 60 or explicitly selected extensions |
 | `search_names` | Check up to 8 bare names across default, extended or selected extensions |
 | `suggest_domain` | 15 name combinations × 5 TLDs using RDAP/WHOIS |
 | `check_domain_availability` | Verify explicit full domains only (up to 100) |
@@ -395,7 +395,7 @@ reported as review instead of a final recommendation.
 **Example: Discover supported extensions**
 
 Ask "Which domain extensions do you support?" No arguments to
-`list_supported_tlds` returns the default 30, additional 29 and combined 59,
+`list_supported_tlds` returns the default 30, additional 30 and combined 60,
 plus the full catalog count and discovery guidance. Use
 `{"view":"extensions","limit":100}` for the full catalog, following `nextCursor`
 with the same filters. Pages default to 50, maximum 100. The initial 756 entries
@@ -413,7 +413,7 @@ For selected searches:
 ```
 
 Use `search_names` with `names` for multiple names. Only the selected extensions
-are queried; defaults are not appended. Maximum selected combinations: 472.
+are queried; defaults are not appended. Maximum selected combinations: 480.
 Do not combine `tlds` with `extended`, even `extended:false`. Invalid inputs and
 unknown options fail before lookup. Selected results retain every requested
 domain and any failures, timeouts or missing responses.

@@ -114,7 +114,7 @@ const JSON_LD = {
   dateModified: new Date().toISOString().split("T")[0],
   downloadUrl: `${GITHUB_URL}/releases`,
   featureList: [
-    "30 TLDs checked per search (59 with --extended)",
+    "30 TLDs checked per search (60 with --extended)",
     "RDAP with WHOIS fallback",
     "MCP server for Codex, Claude, and Cursor",
     "Interactive TUI with vim-style navigation",
@@ -158,7 +158,7 @@ const JSON_LD_FAQ = {
       name: "How many TLDs does temper check?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "30 TLDs by default. Use --extended for 59, --tlds for chosen extensions including co.uk, or --category for an industry. Use temper extensions to browse the full supported catalog by industry, purpose and region.",
+        text: "30 TLDs by default. Use --extended for 60, --tlds for chosen extensions including co.uk, or --category for an industry. Use temper extensions to browse the full supported catalog by industry, purpose and region.",
       },
     },
     {

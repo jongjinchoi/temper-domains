@@ -10,7 +10,7 @@
 //   COMMANDS, KEYMAP                         ← ../../src/index.ts + README.md
 
 export const DEFAULT_TLDS_COUNT = 30;
-export const EXTENDED_TLDS_COUNT = 59;
+export const EXTENDED_TLDS_COUNT = 60;
 export const SEARCH_TIMEOUT_DESCRIPTION = "automatic 5–30s budget";
 
 // Playground-only subset. Not synced with the CLI's DEFAULT_TLDS — this is
@@ -108,7 +108,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 01",
     sig: { cmd: "search", arg: "<name>" },
-    desc: "Check 30 TLDs, 59 with --extended, or chosen extensions with --tlds.",
+    desc: "Check 30 TLDs, 60 with --extended, or chosen extensions with --tlds.",
     example: "$ temper search gethalden --tlds com,dev,co.uk",
   },
   {

@@ -164,7 +164,7 @@ test("MCP lists every supported extension offline with exhaustive cursor pages",
   expect(await readFile(join(home, "requests"), "utf8").catch(() => "")).toBe(before);
 });
 
-test("extended searches send the approved 59 domains and selected searches accept 472 but reject overflow before lookup", async () => {
+test("extended searches send the approved 60 domains and selected searches accept 480 but reject overflow before lookup", async () => {
   const extended = await client.callTool({ name: "search_domain", arguments: { name: "bundlecheck", extended: true } });
   expect(extended.isError).not.toBe(true);
   const log = await readFile(join(home, "requests"), "utf8");
@@ -172,17 +172,18 @@ test("extended searches send the approved 59 domains and selected searches accep
   expect(queried.sort()).toEqual([...EXTENDED_TLDS].sort());
   expect(queried).toContain("biz");
   expect(queried).toContain("asia");
+  expect(queried).toContain("design");
   expect(queried).not.toContain("sh");
   const names = ["onecap", "twocap", "threecap", "fourcap", "fivecap", "sixcap", "sevencap", "eightcap"];
   const selected = await client.callTool({ name: "search_names", arguments: { names, tlds: [...EXTENDED_TLDS] } });
   expect(selected.isError).not.toBe(true);
   const text = (selected.content as { text: string }[])[0]!.text;
-  expect(text).toContain("472 requested");
+  expect(text).toContain("480 requested");
   for (const name of names) for (const suffix of EXTENDED_TLDS) expect(text).toContain(`${name}.${suffix}`);
   const before = await readFile(join(home, "requests"), "utf8");
-  const overflow = await client.callTool({ name: "search_names", arguments: { names, tlds: [...EXTENDED_TLDS, "design"] } });
+  const overflow = await client.callTool({ name: "search_names", arguments: { names, tlds: [...EXTENDED_TLDS, "page"] } });
   expect(overflow.isError).toBe(true);
-  expect(JSON.stringify(overflow.content)).toMatch(/480.*472/);
+  expect(JSON.stringify(overflow.content)).toMatch(/488.*480/);
   expect(await readFile(join(home, "requests"), "utf8")).toBe(before);
 }, 20000);
 

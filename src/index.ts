@@ -59,7 +59,7 @@ program
   .argument("<queries...>")
   .option("--tlds <tlds>", "Only these comma-separated extensions (e.g. design,studio,co.uk)")
   .option("--category <ids>", "Search an industry classification (discover with extensions --categories industry)")
-  .option("--extended", "Check 59 TLDs instead of 30")
+  .option("--extended", "Check 60 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .option("-f, --format <format>", "Output format (tui, json)", "tui")
   .option("-t, --timeout <seconds>", "Whole-search timeout including bootstrap (default: automatic 5–30s)")

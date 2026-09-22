@@ -274,7 +274,9 @@ test("Node MCP exposes catalog and selected suffix schemas and preserves composi
     for (const args of [undefined, {}]) {
       const result = await client.callTool({ name: "list_supported_tlds", ...(args ? { arguments: args } : {}) });
       assert.equal(result.structuredContent.discovery.total, 756);
-      assert.equal(result.structuredContent.extended.count, 59);
+      assert.equal(result.structuredContent.extended.count, 60);
+      assert.equal(result.structuredContent.additional.count, 30);
+      assert.ok(result.structuredContent.extended.tlds.includes("design"));
     }
     assert.equal(await requests(), before);
     const selected = await client.callTool({ name: "search_names", arguments: { names: ["nodesingle", "nodesecond"], tlds: ["co.uk", "uk"] } });
