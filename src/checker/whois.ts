@@ -72,6 +72,11 @@ async function whoisRaw(
   });
 }
 
+export function whoisLimitMessage(raw: string): string | undefined {
+  const line = raw.split("\n").slice(0, 5).find(line => /rate limit|quota exceeded|too many queries/i.test(line));
+  return line?.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").replace(/[\x00-\x1f\x7f-\x9f]/g, " ").trim().slice(0, 240);
+}
+
 export function detectStatus(raw: string, domain?: string): DomainStatus {
   const profile = domain ? WHOIS_PROFILES[getTld(domain)]?.parser : "standard";
   const field = profile === "sn" ? /^nom de domaine:\s*(\S+)/im : profile === "cr" || profile === "sr" ? /^domain:\s*(\S+)/im : /^domain name:\s*(\S+)/im;
@@ -114,7 +119,7 @@ export async function whoisLookup(
 
     const responseTime = Math.round(performance.now() - start);
     const status = detectStatus(raw, domain);
-    return { domain, tld, status, method: "whois", responseTime, attempts, ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
+    return { domain, tld, status, method: "whois", responseTime, attempts, ...(status === "rate_limited" ? { error: whoisLimitMessage(raw), terminationReason: "rate_limited" as const } : {}), ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
     if (signal.aborted) {
@@ -235,7 +240,7 @@ export async function whoisDetail(
     return {
       domain, status, method: "whois", responseTime, attempts,
       ...parsed,
-      ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}),
+      ...(status === "rate_limited" ? { error: whoisLimitMessage(raw), terminationReason: "rate_limited" as const } : {}), ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}),
       rawWhois: raw,
     };
   } catch (err) {

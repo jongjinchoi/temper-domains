@@ -28,6 +28,8 @@ const TERMINATION_MESSAGES: Record<TerminationReason, string> = {
   deadline: "Overall time limit reached while querying this domain",
   request_timeout: "The lookup server did not respond within the request time limit",
   cancelled: "Lookup cancelled",
+  server_cooldown: "Previous server limit: this request was not sent",
+  limit_state_error: "Could not safely coordinate lookup requests; repair the local state before retrying",
   rate_limited: "The lookup server asked us to wait before retrying",
   service_unavailable: "The lookup service is temporarily unavailable",
   invalid_response: "The server did not return a valid matching RDAP domain response",

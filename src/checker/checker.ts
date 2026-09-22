@@ -1,3 +1,4 @@
+import { localLimits } from "./limit-store.ts";
 import { getBootstrap } from "./bootstrap.ts";
 import { checkDomainBatch } from "./batch.ts";
 import type { CheckOptions } from "./stream.ts";
@@ -27,7 +28,7 @@ export async function* checkDomains(name: string, tlds: readonly string[] = DEFA
 
 export async function* checkFullDomains(domains: readonly string[], options: DomainSearchOptions = {}): AsyncGenerator<DomainResult> {
   const { rdapUrls, ...checkOptions } = options;
-  yield* checkDomainBatch(domains.map(normalizeDomainKey), checkOptions,
+  yield* checkDomainBatch(domains.map(normalizeDomainKey), { limits: localLimits, ...checkOptions },
     () => rdapUrls ? Promise.resolve(rdapUrls) : getBootstrap());
 }
 

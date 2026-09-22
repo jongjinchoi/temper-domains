@@ -1,3 +1,4 @@
+import { ServerCooldown, LimitStateError } from "./limits.ts";
 import { rdapTransport, TransportError } from "./http-transport.ts";
 import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
 import { requestScheduler, serverKey } from "./scheduler.ts";
@@ -9,14 +10,16 @@ const RDAP_HEADERS = {
   "User-Agent": "temper-domains",
 };
 
-export function parseRetryAfter(value: string | null, now = Date.now()): number {
-  if (!value) return 500;
+export function retryAfterDelay(value: string | null, now = Date.now()): number | undefined {
+  if (!value) return undefined;
   if (/^\d+$/.test(value.trim())) return Math.min(Number(value) * 1000, 8.64e15 - now);
   // A signed number is not an HTTP-date or a delay-seconds value.
-  if (/^[+-]?\d+(\.\d+)?$/.test(value.trim())) return 500;
+  if (/^[+-]?\d+(\.\d+)?$/.test(value.trim())) return undefined;
   const date = Date.parse(value);
-  return Number.isFinite(date) ? Math.max(0, date - now) : 500;
+  return Number.isFinite(date) ? Math.max(0, date - now) : undefined;
 }
+
+export function parseRetryAfter(value: string | null, now = Date.now()): number { return retryAfterDelay(value, now) ?? 500; }
 
 function validateDomainResponse(value: unknown, domain: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid RDAP domain object");
@@ -32,7 +35,7 @@ function validateDomainResponse(value: unknown, domain: string): Record<string, 
   return data;
 }
 
-interface RdapAnswer { location?: string | null; status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number }
+interface RdapAnswer { location?: string | null; status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number; retryAtSource?: "server" | "client_policy" }
 async function queryRdap(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
   if (!context) {
     const run = createRun(10000, signal);
@@ -60,7 +63,10 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
       key = serverKey(url);
       queuedAt = performance.now();
       let answer: RdapAnswer;
-      try { answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
+      try {
+        const permit = await ctx.limits.acquire(key, ctx.deadline, signal);
+        try { answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
+        await permit.check();
         queueTimeMs += performance.now() - queuedAt!;
         queuedAt = undefined;
         signal.throwIfAborted();
@@ -76,14 +82,16 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
         try {
           response = await rdapTransport.request(url, { signal: requestSignal, headers: RDAP_HEADERS });
           if (response.status === 429 || response.status === 503) {
-            const wait = parseRetryAfter(response.headers.get("retry-after"));
-            requestScheduler.backoff(key, wait);
-            return { status: response.status, retryAt: Date.now() + wait };
+            const metadata = await permit.limited(response.status === 429 ? "rate_limited" : "service_unavailable", retryAfterDelay(response.headers.get("retry-after")));
+            return { status: response.status, retryAt: Date.parse(metadata.retryAt), retryAtSource: metadata.retryAtSource };
           }
+          if (response.status === 404) await permit.answered();
           if (response.status !== 200) return { status: response.status, location: response.headers.get("location") };
           try {
             const json = validateDomainResponse(await response.json(), domain);
-            return { status: 200, json, parsed: parseRdapResponse(json) };
+            const parsed = parseRdapResponse(json);
+            await permit.answered();
+            return { status: 200, json, parsed };
           } catch (error) {
             if (!requestSignal.aborted) terminationReason = "invalid_response";
             throw error;
@@ -96,7 +104,9 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
           await response?.body?.cancel().catch(() => {});
         }
       }, signal);
+        } finally { await permit.release(); }
       } catch (error) {
+        if (error instanceof ServerCooldown && error.until < ctx.deadline && !signal.aborted) { attempt--; continue; }
         // Only an unanswered transport request may use another published HTTPS URL.
         if (!signal.aborted && terminationReason === undefined && error instanceof TransportError && ["network", "tls", "protocol"].includes(error.kind) && endpoints[endpointIndex + 1]?.startsWith("https:")) {
           url = `${endpoints[++endpointIndex]!.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
@@ -118,11 +128,14 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
     }
     return row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
       error: `HTTP ${lastAnswer?.status}`, terminationReason: lastAnswer?.status === 429 ? "rate_limited" : "service_unavailable",
-      retryAt: lastAnswer?.retryAt === undefined ? undefined : new Date(lastAnswer.retryAt).toISOString() });
+      retryAt: lastAnswer?.retryAt === undefined ? undefined : new Date(lastAnswer.retryAt).toISOString(), retryAtSource: lastAnswer?.retryAtSource });
   } catch (error) {
     if (queuedAt !== undefined) queueTimeMs += performance.now() - queuedAt;
+    if (error instanceof ServerCooldown) return row({ status: error.kind === "rate_limited" ? "rate_limited" : "error", terminationReason: "server_cooldown",
+      retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: error.message });
+    if (error instanceof LimitStateError) return row({ status: "error", terminationReason: "limit_state_error", error: error.message });
     const reason = terminationReason ?? (signal.aborted ? abortReason(signal, attempts)
-      : error instanceof LookupAbort ? error.reason : error instanceof TransportError && error.kind === "payload" ? "invalid_response" : "network_error");
+      : error instanceof LookupAbort ? error.reason : error instanceof TransportError && error.kind === "payload" ? "invalid_response" : error instanceof DOMException && error.name === "TimeoutError" ? "deadline_before_start" : "network_error");
     return row({ status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
       terminationReason: reason, error: error instanceof TransportError ? `${error.kind}: ${error.message}` : error instanceof Error ? error.message : String(error) });
   }

@@ -12,12 +12,15 @@ export type ResultConfidence = "high" | "medium" | "low";
 
 export type TerminationReason = "deadline_before_start" | "deadline" | "request_timeout"
   | "cancelled" | "rate_limited" | "service_unavailable" | "invalid_response"
-  | "network_error" | "http_error" | "invalid_input" | "bootstrap_error";
+  | "network_error" | "http_error" | "invalid_input" | "bootstrap_error"
+  | "server_cooldown" | "limit_state_error";
+export type RetryAtSource = "server" | "client_policy";
 export interface LookupMetadata {
   attempts?: number;
   queueTimeMs?: number;
   terminationReason?: TerminationReason;
   retryAt?: string;
+  retryAtSource?: RetryAtSource;
 }
 export interface CheckSummary {
   requested: number;

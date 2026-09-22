@@ -20,6 +20,7 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Root tests: `bun test`
 - Root typecheck: `bun run typecheck`
 - Real local TLS transport checks: `node tests/transport/runner.mjs`
+- Shared CLI/MCP cooldown checks: `node tests/limits/runner.mjs` (after npm build)
 - Bundled checker/evidence consistency: `bun run catalog:verify`
 - npm package build: `bun run build:npm`
 - Web dev: `bun run web:dev`
@@ -42,6 +43,8 @@ local server and intercepts `/api/check/`; it requires an available Playwright
 installation and browser, not a new product dependency.
 Transport checks start loopback TLS servers with temporary OpenSSL certificates,
 exercise Bun and Node, and do not query public registries.
+Shared cooldown checks also use temporary homes and loopback HTTP/WHOIS servers;
+they do not query public registries or change real user state.
 
 ## Source Of Truth
 

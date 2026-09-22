@@ -8,6 +8,7 @@ import SearchView from "./SearchView.tsx";
 import Spinner from "./Spinner.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 import { normalizeDomainKey } from "../utils/validate.ts";
+import { lookupNoticeLines } from "../utils/lookup-notice.ts";
 
 const CHECK_TLD = "com";
 
@@ -187,6 +188,10 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       {renderGroup("BASE", groups.base, 0)}
       {renderGroup("PREFIX", groups.prefix, groups.base.length)}
       {renderGroup("SUFFIX", groups.suffix, groups.base.length + groups.prefix.length)}
+
+      {lookupNoticeLines(results.get(normalizeDomainKey(allNames[cursor] ?? "")) ?? {}, true).map((line, index) => (
+        <Text key={index} color={theme.yellow} wrap="truncate-end">{line}</Text>
+      ))}
 
       {/* Summary */}
       {done && (

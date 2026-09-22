@@ -33,8 +33,10 @@ let aborted = 0;
 globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
   if (String(input) === "https://data.iana.org/rdap/dns.json") {
     if (scenario === "bootstrap" || scenario === "suggest-bootstrap") throw new Error("test bootstrap unavailable");
+    if (scenario === "search-cooldown") return Response.json({ services: [[["com", "net"], ["https://shared.test/"]]] });
     return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
+  if (scenario === "search-cooldown" || scenario === "suggest-cooldown") return new Response(null, { status: 429, headers: { "Retry-After": "86400" } });
   if (scenario === "suggest-cancel") {
     started++;
     return new Promise<Response>((_resolve, reject) => {
@@ -65,6 +67,7 @@ const element = scenario === "suggest"
   : scenario === "watch-corrupt" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
+  : scenario === "search-cooldown" ? <SearchView query="Acme" tlds={["com", "net"]} />
   : scenario === "search-composite" ? <SearchView query="Acme" tlds={["uk", "co.uk"]} />
   : scenario?.startsWith("search-") ? <SearchView query="Acme" tlds={DEFAULT_TLDS} onlyAvailable={scenario.startsWith("search-available-")} />
   : <SearchView query="Acme" tlds={["com"]} />;
@@ -87,7 +90,12 @@ try {
       for (let i = 0; i < 20; i++) await key("j");
       frames.scrolled = plain();
     }
-    if (scenario === "search-composite") {
+    if (scenario === "search-cooldown") {
+      frames.first = plain();
+      await key("j"); frames.queued = plain();
+      await key("i"); await until(() => frame.includes("Not sent: previous server limit"));
+      frames.detail = plain();
+    } else if (scenario === "search-composite") {
       await key("/"); await key("co.uk"); await key("\r");
       frames.selected = plain();
       await key("a"); await until(() => frame.includes("Added acme.co.uk"));
@@ -144,6 +152,10 @@ try {
     await until(() => aborted === started);
   } else if (scenario?.startsWith("suggest-")) {
     await until(() => frame.includes("3 names checked"));
+    if (scenario === "suggest-cooldown") {
+      frames.first = plain();
+      await key("j"); frames.queued = plain();
+    }
   } else if (scenario === "history-delete-conflict") {
     await until(() => frame.includes("selected"));
     await addHistory({ query: "new", timestamp: new Date().toISOString(), available: 1, total: 1 });

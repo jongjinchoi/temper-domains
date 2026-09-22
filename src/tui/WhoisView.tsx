@@ -1,3 +1,4 @@
+import { lookupNotice } from "../utils/lookup-notice.ts";
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useState } from "react";
 import type { DomainDetail } from "../checker/types.ts";
@@ -154,6 +155,8 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
           {detail.reason && <Text color={theme.dim}>Review: {detail.reason}</Text>}
         </Box>
       )}
+
+      {lookupNotice(detail, true) && <Text color={theme.yellow}>{lookupNotice(detail, true)}</Text>}
 
       {/* Error */}
       {detail.error && (

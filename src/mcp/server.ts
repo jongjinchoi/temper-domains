@@ -1,3 +1,4 @@
+import { lookupNotice } from "../utils/lookup-notice.ts";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -25,6 +26,8 @@ TOOL ROUTING RULES:
 - Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
 - Use check_domain_availability only for full domains explicitly provided by the user, such as "lockway.com".
 - Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
+
+Respect reported lookup waits: server_cooldown with attempts=0 means this domain was not queried because of a previous server limit. retryAt is the earliest retry time, not a success guarantee; retryAtSource distinguishes server guidance from Temper policy. Local CLI/MCP processes sharing the same home share cooldown state. Do not change homes, endpoints or protocols to bypass a cooldown, or automatically replay deferred queries. State coordination errors need repair before retrying.
 
 When a user asks for domain name suggestions without a specific name:
 
@@ -73,7 +76,7 @@ const server = new McpServer(
 function formatResultLine(r: DomainResult): string {
   const icon = getResultIcon(r);
   const method = r.method === "whois" ? "  (whois)" : "";
-  const error = r.error ? `  ${r.error}` : "";
+  const error = [r.error, lookupNotice(r)].filter(Boolean).map(value => `  ${value}`).join("");
   const confidence = formatConfidence(r);
   return `${icon} ${r.domain.padEnd(22)} ${r.status.padEnd(14)} ${String(r.responseTime).padStart(4)}ms${method}${confidence}${error}`;
 }
@@ -186,7 +189,7 @@ export function formatFullDomainResults(
 
   for (const result of orderedResults) {
     const icon = getResultIcon(result);
-    const error = result.error ? `  ${result.error}` : "";
+    const error = [result.error, lookupNotice(result)].filter(Boolean).map(value => `  ${value}`).join("");
     const confidence = formatConfidence(result);
     lines.push(
       `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`,
@@ -211,7 +214,7 @@ export interface NameSearchResultGroup {
 
 function formatCompactResult(result: DomainResult): string {
   const icon = getResultIcon(result);
-  const error = result.error ? `  ${result.error}` : "";
+  const error = [result.error, lookupNotice(result)].filter(Boolean).map(value => `  ${value}`).join("");
   const confidence = formatConfidence(result);
   return `  ${icon} .${result.tld.padEnd(8)} ${result.status.padEnd(14)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`;
 }
@@ -256,7 +259,7 @@ export function formatSuggestDomainResults(
   if (reviewResults.length > 0) {
     lines.push("\nReview:");
     for (const result of reviewResults) {
-      const error = result.error ? `  ${result.error}` : "";
+      const error = [result.error, lookupNotice(result)].filter(Boolean).map(value => `  ${value}`).join("");
       const confidence = formatConfidence(result);
       lines.push(`⚠ ${result.domain} ${result.status}${confidence}${error}`);
     }
@@ -289,6 +292,10 @@ export function formatSearchNamesResults(
     lines.push(`\n${group.name}`);
     if (comResult) {
       lines.push(formatCompactResult(comResult));
+    }
+
+    for (const result of orderedResults) {
+      if (result !== comResult && (result.retryAt || result.terminationReason === "limit_state_error")) lines.push(formatCompactResult(result));
     }
 
     if (availableDefaults.length > 0) {
@@ -370,6 +377,8 @@ export function formatDomainDetail(detail: DomainDetail): string {
   if (detail.reason && detail.confidence !== "high") {
     lines.push(`Review: ${detail.reason}`);
   }
+
+  if (lookupNotice(detail)) lines.push(lookupNotice(detail));
 
   if (detail.error) {
     lines.push(`\nError: ${detail.error}`);

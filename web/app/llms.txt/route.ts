@@ -64,6 +64,17 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper update --check\` - show published version and instructions without installing
 - \`temper mcp\` - start the MCP stdio server
 
+## Lookup limits
+
+Local CLI/MCP commands sharing the same home persist server cooldowns in
+~/.temper/state/lookup-limits.json. Server Retry-After takes precedence; otherwise
+Temper applies a 60/120/240/480/900-second policy with 0–5 seconds of jitter.
+After the wait, a new request sends one probe first; there is no background retry.
+server_cooldown with attempts=0 means no request was sent for that domain.
+retryAt is an earliest retry time, not a success guarantee; retryAtSource is
+server or client_policy. Do not bypass a cooldown by changing home or protocol.
+State errors stop local requests; the hosted demo uses separate memory-only state.
+
 ## CLI updates
 
 Interactive search/suggest/whois/list check the relevant npm registry or Homebrew

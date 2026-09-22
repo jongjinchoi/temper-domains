@@ -23,6 +23,7 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
   const { icon, color } = getStatusStyle(result.status);
   const confidence = result.confidence && result.confidence !== "high" ? `, ${result.confidence}` : "";
   const time = showTime ? `(${(result.responseTime / 1000).toFixed(2)}s${result.method === "whois" ? ", whois" : ""}${confidence})` : "";
+  const notice = result.retryAt ? `${result.attempts ?? 0} sent; ${result.terminationReason === "server_cooldown" ? "previous server limit" : "server response"}; i: retry details` : "";
   const error = result.error ? `  ${result.error}` : "";
   const reason = result.reason && result.confidence === "low" ? `  ${result.reason}` : "";
 
@@ -31,9 +32,10 @@ export default function ResultRow({ domain, result, isSelected, showTime = true 
       {isSelected ? <Text color={theme.primary}>  ▸ </Text> : <Text>    </Text>}
       <Text color={isSelected ? theme.text : theme.text}>{domain.padEnd(20)}</Text>
       <Text color={color}>  {icon} {result.status.padEnd(12)}</Text>
+      {notice && <Text color={theme.yellow}>  {notice}</Text>}
       {showTime && <Text color={theme.dim}>  {time}</Text>}
-      {result.error && <Text color={theme.dim}>{error}</Text>}
-      {reason && <Text color={theme.dim}>{reason}</Text>}
+      {!notice && result.error && <Text color={theme.dim}>{error}</Text>}
+      {!notice && reason && <Text color={theme.dim}>{reason}</Text>}
     </Text>
   );
 }

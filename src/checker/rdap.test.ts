@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { getServerLimit } from "./limiter.ts";
 import { parseRdapResponse, rdapLookup } from "./rdap.ts";
 
 const originalFetch = globalThis.fetch;
@@ -181,8 +180,9 @@ describe("rdapLookup", () => {
     const start = Date.now();
     const result = await rdapLookup("example.com", rdapUrl, new AbortController().signal);
     const afterLookup = Date.now();
-    const limit = getServerLimit(rdapUrl);
-    await limit(async () => {});
+    globalThis.fetch = (async () => new Response(null, { status: 404 })) as unknown as typeof fetch;
+    const subsequent = await rdapLookup("another.com", rdapUrl, new AbortController().signal);
+    expect(subsequent.status).toBe("available");
     const afterBackoff = Date.now();
 
     expect(result.status).toBe("rate_limited");

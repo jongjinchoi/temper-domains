@@ -1,3 +1,4 @@
+import { lookupNoticeLines } from "../utils/lookup-notice.ts";
 import { Box, Text, useApp, useInput, useStdout } from "ink";
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_TLDS } from "../checker/types.ts";
@@ -57,7 +58,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const [position, setPosition] = useState<Position>({ cursor: 0, offset: 0 });
   const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean } | null>(null);
   const [filterText, setFilterText] = useState("");
-  const maxVisible = Math.max(5, termRows - CHROME_LINES);
+  const hasLimits = [...results.values()].some(result => result.retryAt);
+  const maxVisible = Math.max(5, termRows - CHROME_LINES - (hasLimits ? 2 : 0));
 
   useEffect(() => {
     setScreenState(done ? (error ? "failed" : "selecting") : "searching");
@@ -299,6 +301,10 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           {hasMore && <Text color={theme.dim}>  ↓ {displayDomains.length - viewOffset - visibleCount} more</Text>}
         </Box>
       )}
+
+      {hasLimits && screenState !== "detail" && screenState !== "registrar" && selectedDomain &&
+        lookupNoticeLines(results.get(selectedDomain) ?? {}, true).map((line, index) =>
+          <Text key={index} color={theme.yellow} wrap="truncate-end">{line}</Text>)}
 
       {/* Progress bar during search */}
       {screenState === "searching" && (

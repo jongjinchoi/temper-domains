@@ -43,6 +43,7 @@ in both workspaces so root typechecking does not download a separate compiler.
 - WHOIS parsing: `src/checker/whois.ts`
 - Shared batch lifecycle: `src/checker/batch.ts`, `src/checker/run.ts`
 - Server scheduler and streaming: `src/checker/scheduler.ts`, `src/checker/stream.ts`
+- Shared local cooldown policy/storage: `src/checker/limits.ts`, `src/checker/limit-store.ts`
 - Single-domain RDAP/WHOIS lookup wrapper: `src/checker/lookup.ts`
 - Availability metadata and input policy: `src/checker/policy.ts`
 - PSL/IDN domain parsing: `src/utils/domain.ts`
@@ -83,17 +84,39 @@ in both workspaces so root typechecking does not download a separate compiler.
   completion under congestion, slow responses or new server cooldowns. Explicit
   CLI search timeouts remain strict; detail uses 10s and hosted demo uses 3s.
 - Actual requests share a process-local scheduler: at most 20 active requests,
-  two per server origin and 300ms between starts. These are client policy values;
-  separate hosted instances do not share a distributed rate limit.
+  two per server origin and 300ms between starts. Local CLI/MCP additionally
+  coordinate the per-server cap and interval across processes using the same
+  ~/.temper/state/lookup-limits.json. RDAP keys use origin; WHOIS uses host:43.
+  These are client policy values, not published server quotas. The hosted web
+  checker uses memory only; separate instances do not share a distributed limit.
 - RDAP 429/503 retries re-enter the scheduler (at most two attempts). Retry-After
   seconds and HTTP dates are honored without truncation. When waiting would
   exceed the deadline, return the response with retryAt. HTTP 503 is a service
   error, not a rate_limited result.
+- A missing/invalid server wait uses 60/120/240/480/900 seconds plus 0–5 seconds
+  of jitter, stored once per cooldown. Only a new limited probe increments the
+  step; concurrent replies and skipped searches do not. Valid server waits
+  (including zero or 24 hours) take precedence and are not capped to 900 seconds.
+  A longer previously observed wait cannot be shortened by a later response.
+- After a wait, one shared probe starts inside a new caller's request. A valid
+  registration/not-found response resets policy backoff; no background replay
+  runs. Another server can continue while one server is deferred. Duplicate
+  normalized domains in one batch share the lookup but retain each output row.
+- Local state is versioned and validated, with an exclusive short file lock,
+  fsynced temporary file/rename and 0600 permissions. Only server metadata is
+  stored, not queried domains or response bodies. Request leases use the run
+  deadline and process identity. Invalid/unwritable/busy state stops requests
+  with limit_state_error; it is not replaced with empty state. A lock left by
+  an interrupted file transaction requires manual removal of only the .lock
+  after confirming no Temper commands are running; the state must be preserved.
 - Search and detail validate HTTP 200 domain JSON, including identifier matching
   when present. Optional fields and unknown extensions are permitted; 404 needs
   no JSON body. These checks do not establish purchase or premium-sale status.
 - Results preserve the status enum and add optional attempts, queueTimeMs,
-  terminationReason and retryAt. MCP and web completion summaries report
+  terminationReason, retryAt and retryAtSource (server/client_policy).
+  server_cooldown with attempts=0 denotes a request not sent because of a prior
+  limit. TUI search/suggestion/detail and MCP display retry cause/time/source;
+  JSON/MCP use UTC and the TUI includes the local timezone. MCP and web completion summaries report
   requested/attempted/answered/unresolved and measured elapsed time. done marks
   stream termination, not successful answers for every requested domain.
 - Caller cancellation reaches queued/running lookups. Cancelling one caller does
@@ -407,3 +430,10 @@ the actual Bun/Node transports, ALPN, compression, redirects, certificate reject
 cancellation and retry limits. It needs OpenSSL and uses temporary certificates;
 it does not query public registries. Live registry observations are separate
 evidence, not a consequence of these controlled tests passing.
+
+`node tests/limits/runner.mjs` (after `bun run build:npm`) checks shared state
+across real Bun/Node CLI and MCP processes using temporary homes and loopback
+HTTP/WHOIS servers. It covers persisted 24-hour waits, single-probe recovery,
+request spacing, process termination and corrupt-state refusal. No public
+registry or real user state is used. Unit tests additionally cover parallel
+responses, cancellation, expired leases, lock contention and permission errors.

@@ -220,3 +220,24 @@ test("composite suffix remains intact in TUI selection, details, registrar and w
   expect(result.watch.map((entry: { domain: string }) => entry.domain)).toEqual(["acme.co.uk"]);
   expect(result.unhandled).toEqual([]);
 });
+
+test("cooldown results show request counts, wait source and retry time in search and detail", async () => {
+  const result = await scenario("search-cooldown");
+  expect(result.frames.first).toContain("Server limited this request");
+  expect(result.frames.first).toContain("Retry no earlier than");
+  expect(result.frames.queued).toContain("Not sent: previous server limit");
+  expect(result.frames.queued).toContain("attempts: 0");
+  expect(result.frames.queued).toContain("server Retry-After");
+  expect(result.frames.detail).toContain("Retry no earlier than");
+  expect(result.unhandled).toEqual([]);
+});
+
+test("suggestions show the selected domain's cooldown without starting another lookup", async () => {
+  const result = await scenario("suggest-cooldown");
+  expect(result.frames.first).toContain("Server limited this request");
+  expect(result.frames.first).toContain("Retry no earlier than");
+  expect(result.frames.queued).toContain("Not sent: previous server limit");
+  expect(result.frames.queued).toContain("attempts: 0");
+  expect(result.frames.queued).toContain("server Retry-After");
+  expect(result.unhandled).toEqual([]);
+});

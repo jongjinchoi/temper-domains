@@ -263,7 +263,7 @@ Each network request has up to 5s after dispatch, within the remaining total tim
 detailed lookups retain a 10s total limit. The hosted demo keeps a 3s total limit.
 
 Results keep the existing status values and JSON array format. Optional
-`attempts`, `queueTimeMs`, `terminationReason`, and `retryAt` fields distinguish a
+`attempts`, `queueTimeMs`, `terminationReason`, `retryAt`, and `retryAtSource` fields distinguish a
 request that never started, a timeout, cancellation, and server rate limits.
 RDAP `responseTime` includes queueing and retry waits; `queueTimeMs` isolates
 the queue portion.
@@ -271,6 +271,30 @@ MCP summaries separate requested, attempted, answered, and unresolved domains
 and show actual elapsed time. A completed stream can contain unresolved results.
 `available` means no registration record was found; confirm purchase availability,
 premium pricing, and restrictions with a registrar.
+
+Local CLI and MCP commands share server cooldowns in
+`~/.temper/state/lookup-limits.json`. A server's `Retry-After`, including a
+24-hour wait, survives command restarts. If no valid wait is provided, Temper
+waits 60, 120, 240, 480, then 900 seconds after repeated limits, adding 0–5
+seconds of jitter. These are client policy values, not registry quotas.
+Repeating a search during the wait does not increase that backoff. After the
+wait, a new user request sends one probe first; no background retry runs.
+
+`terminationReason: "server_cooldown"` with `attempts: 0` means that domain was
+not queried because of a previous server limit. `retryAt` is the earliest retry
+time in UTC, not a promise of success; `retryAtSource` is `server` or
+`client_policy`. TUI search, suggestion and detail views and MCP output explain
+the wait. HTTP 503 remains a service error. Other servers can continue.
+
+The state file contains server coordination metadata, not domain names or
+response bodies. Commands using the same home coordinate at most two requests
+per server and 300ms between starts. A damaged, inaccessible or busy state file
+returns `limit_state_error` instead of sending an uncoordinated request. Preserve
+and repair a damaged file; do not delete it to bypass a wait. If a command dies
+while holding the short file lock, first confirm no Temper processes are running,
+then remove only `lookup-limits.json.lock`. Request leases otherwise expire or
+are reclaimed after their process exits. Different homes, machines and hosted
+web instances do not share this local state; the web demo uses memory only.
 
 ### Whois
 

@@ -1,8 +1,10 @@
+import { memoryLimits, type LimitCoordinator } from "./limits.ts";
 import { createRequestScope, type RequestScope } from "./scheduler.ts";
 import type { TerminationReason } from "./types.ts";
 
 export interface LookupContext {
   scope: RequestScope;
+  limits: LimitCoordinator;
   deadline: number;
   requestTimeoutMs: number;
 }
@@ -25,13 +27,13 @@ export function waitWithSignal<T>(promise: Promise<T>, signal?: AbortSignal): Pr
     promise.then(resolve, reject).finally(() => signal.removeEventListener("abort", abort));
   });
 }
-export function createRun(timeoutMs: number, external?: AbortSignal, concurrency = 20, requestTimeoutMs = 5000) {
+export function createRun(timeoutMs: number, external?: AbortSignal, concurrency = 20, requestTimeoutMs = 5000, limits: LimitCoordinator = memoryLimits) {
   const startedAt = performance.now();
   const controller = new AbortController();
   const abort = () => controller.abort(new LookupAbort("cancelled"));
   if (external?.aborted) abort();
   else external?.addEventListener("abort", abort, { once: true });
-  const context: LookupContext = { scope: createRequestScope(concurrency), deadline: Date.now() + timeoutMs, requestTimeoutMs };
+  const context: LookupContext = { limits, scope: createRequestScope(concurrency), deadline: Date.now() + timeoutMs, requestTimeoutMs };
   let timer: ReturnType<typeof setTimeout>;
   const setBudget = (ms: number) => {
     context.deadline = Date.now() + Math.max(0, ms - (performance.now() - startedAt));

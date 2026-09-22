@@ -1,3 +1,4 @@
+import { whoisServerKey } from "./whois-request.ts";
 import { lookupPlan } from "./services.ts";
 import { lookupDomainAvailability } from "./lookup.ts";
 import { enrichDomainResult, getDomainInputError } from "./policy.ts";
@@ -9,7 +10,7 @@ import { getTld } from "../utils/domain.ts";
 
 export async function* checkDomainBatch(domains: readonly string[], options: CheckOptions,
   bootstrap: () => Promise<Map<string, string>>): AsyncGenerator<DomainResult> {
-  const run = createRun(options.timeoutMs ?? 30000, options.signal, options.concurrency, options.requestTimeoutMs);
+  const run = createRun(options.timeoutMs ?? 30000, options.signal, options.concurrency, options.requestTimeoutMs, options.limits);
   const rows: DomainResult[] = [];
   try {
     let map: Map<string, string>;
@@ -32,10 +33,11 @@ export async function* checkDomainBatch(domains: readonly string[], options: Che
       return { rdapKey: plan.key, rdapUrl: plan.method === "rdap" ? plan.endpoints[0]! : null, endpoints: plan.method === "rdap" ? plan.endpoints : [] };
     });
     if (options.timeoutMs === undefined) {
-      const keys = matches.map((m, i) => m.rdapUrl ? serverKey(m.rdapUrl) : `whois:${getTld(domains[i]!)}`);
+      const keys = matches.map((m, i) => m.rdapUrl ? serverKey(m.rdapUrl) : whoisServerKey(domains[i]!));
       const elapsed = performance.now() - run.startedAt;
       run.setBudget(Math.min(30000, Math.max(5000, elapsed + requestScheduler.estimateWait(keys) + run.context.requestTimeoutMs)));
     }
+    const pending = new Map<string, Promise<DomainResult>>();
     let index = 0;
     for await (const row of streamDomainResults(domains, { ...options, signal: run.signal }, async (domain, signal) => {
       const match = matches[index++]!;
@@ -43,7 +45,12 @@ export async function* checkDomainBatch(domains: readonly string[], options: Che
       if (inputError) return enrichDomainResult({ domain, tld: getTld(domain), status: "error",
         method: match.rdapUrl ? "rdap" : "whois", responseTime: 0, attempts: 0,
         terminationReason: "invalid_input", error: inputError }, match.rdapKey);
-      return lookupDomainAvailability(domain, match.rdapUrl, signal, run.context.requestTimeoutMs, match.rdapKey, run.context, match.endpoints);
+      let result = pending.get(domain);
+      if (!result) {
+        result = lookupDomainAvailability(domain, match.rdapUrl, signal, run.context.requestTimeoutMs, match.rdapKey, run.context, match.endpoints);
+        pending.set(domain, result);
+      }
+      return result;
     })) { rows.push(row); yield row; }
   } finally {
     run.close();

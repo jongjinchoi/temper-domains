@@ -1,7 +1,9 @@
+import type { LimitCoordinator } from "./limits.ts";
 import { getTld } from "../utils/domain.ts";
 import type { CheckSummary, DomainResult } from "./types.ts";
 
 export interface CheckOptions {
+  limits?: LimitCoordinator;
   concurrency?: number;
   timeoutMs?: number;
   requestTimeoutMs?: number;
