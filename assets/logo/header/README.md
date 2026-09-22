@@ -4,6 +4,12 @@ The PNG banners at `assets/logo/header-light.png` and `header-dark.png`
 are rendered from these SVGs. Edit the SVG to change wording, layout,
 or colors — then rebuild.
 
+The terminal panel is a simplified illustration, not a CLI screenshot or a live
+lookup. It shows the first seven entries of the default 30-TLD bundle; the
+extended bundle contains 60 TLDs. Keep these counts and entries aligned with
+`src/checker/types.ts`, and example statuses with `scripts/media/fixture.ts`.
+Do not add timing claims without supporting measurements.
+
 ## Rebuild
 
 Requires `rsvg-convert` (macOS: `brew install librsvg`) and the three
@@ -21,6 +27,9 @@ cd assets/logo/header
 rsvg-convert -w 1280 -h 640 source-light.svg -o ../header-light.png
 rsvg-convert -w 1280 -h 640 source-dark.svg  -o ../header-dark.png
 ```
+
+Regenerate both PNGs after editing the SVGs, then visually inspect both themes
+for matching content, readable text, and clipping before committing.
 
 ## Why two files
 

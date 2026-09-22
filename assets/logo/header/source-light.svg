@@ -40,13 +40,13 @@
   <text x="70" y="313" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.2" fill="#1e1a1f">TERMINAL TO FIND A</text>
   <text x="70" y="374" font-family="Space Grotesk" font-size="54" font-weight="700" letter-spacing="-1.2" font-style="italic" fill="#e8461a">DOMAIN.</text>
 
-  <!-- Tagline (2 lines, with flame highlight on "30 TLDs") -->
+  <!-- Tagline (3 lines, with flame highlight on "30 TLDs") -->
   <g font-family="JetBrains Mono" font-size="15" fill="#1e1a1f">
     <text x="70" y="470">A terminal-first domain search.</text>
     <rect x="66" y="485" width="82" height="22" fill="#e8461a"/>
     <text x="70" y="501" font-weight="700" fill="#faf3df">30 TLDs</text>
-    <text x="156" y="501"> in under 2 seconds. MCP-</text>
-    <text x="70" y="526">native for Claude and Cursor.</text>
+    <text x="156" y="501"> by default · 60 extended.</text>
+    <text x="70" y="526">CLI + MCP for AI assistants.</text>
   </g>
 
   <!-- ═══════ RIGHT COLUMN — CRT ═══════ -->
@@ -60,17 +60,17 @@
     <!-- Terminal text -->
     <g font-family="VT323" font-size="24" fill="#ff7a3d">
       <text x="26" y="46"><tspan fill="#e8461a" font-weight="700">&gt;</tspan> temper search gethalden</text>
-      <text x="26" y="78" fill="#8a7a5c">  15 TLDs · 1.5s</text>
+      <text x="26" y="78" fill="#8a7a5c">  30 TLDs · showing 7</text>
 
       <text x="26" y="140">  gethalden.com   <tspan fill="#ff7070">[taken]</tspan></text>
-      <text x="26" y="170">  gethalden.io    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="200">  gethalden.dev   <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="230">  gethalden.app   <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="260">  gethalden.ai    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="290">  gethalden.co    <tspan fill="#c5e860">[available]</tspan></text>
-      <text x="26" y="320">  gethalden.sh    <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="170">  gethalden.net   <tspan fill="#ff7070">[taken]</tspan></text>
+      <text x="26" y="200">  gethalden.org   <tspan fill="#ff7070">[taken]</tspan></text>
+      <text x="26" y="230">  gethalden.xyz   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="260">  gethalden.top   <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="290">  gethalden.info  <tspan fill="#c5e860">[available]</tspan></text>
+      <text x="26" y="320">  gethalden.shop  <tspan fill="#c5e860">[available]</tspan></text>
 
-      <text x="26" y="360" fill="#8a7a5c">  ── 12 available · 3 taken</text>
+      <text x="26" y="360" fill="#8a7a5c">  Illustration · not a live lookup</text>
     </g>
 
     <!-- Scanlines + vignette overlays -->
