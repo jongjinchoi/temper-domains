@@ -19,6 +19,9 @@
   "keywords": ["domain", "cli", "terminal", "tui", "mcp", "whois", "rdap"],
   "files": ["dist/npm", "README.md", "LICENSE"],
   "scripts": {
+    "docs:check": "bun run scripts/docs.ts",
+    "docs:help": "bun run scripts/docs.ts --write-help",
+    "media:record": "bun run scripts/media/record.ts",
     "typecheck": "tsc --noEmit",
     "catalog:verify": "bun run scripts/checker-fingerprint.ts",
     "catalog:update": "bun run scripts/update-extension-catalog.ts",

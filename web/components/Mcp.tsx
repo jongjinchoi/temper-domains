@@ -64,8 +64,8 @@ function Snippet({ client }: { client: Client }): ReactNode {
 
   const header: Record<Exclude<Client, "codex" | "claude-code">, string> = {
     "claude-desktop": "# Settings → Developer → Edit Config",
-    cursor: "# Settings → Tools & Integrations",
-    windsurf: "# ~/.codeium/windsurf/mcp_config.json",
+    cursor: "# .cursor/mcp.json or ~/.cursor/mcp.json",
+    windsurf: "# Open your client's MCP configuration",
   };
 
   return (
@@ -80,6 +80,7 @@ function Snippet({ client }: { client: Client }): ReactNode {
       {"    "}
       {k('"temper"')}: {"{"}
       {"\n"}
+      {client === "cursor" && <>{"      "}{k('"type"')}: "stdio",{"\n"}</>}
       {"      "}
       {k('"command"')}: "temper",
       {"\n"}
@@ -148,6 +149,13 @@ export default function Mcp() {
           <pre className={styles.mcpCode}>
             <Snippet client={active} />
           </pre>
+          {active === "windsurf" && (
+            <p className={styles.muted}>
+              Follow the <a href="https://docs.windsurf.com/windsurf/cascade/mcp">client MCP instructions</a> for
+              your installed version. The documentation currently redirects to Devin Desktop;
+              its configuration path may differ from older Windsurf versions.
+            </p>
+          )}
         </div>
       </div>
     </section>

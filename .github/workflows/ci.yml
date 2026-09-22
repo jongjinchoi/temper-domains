@@ -27,6 +27,7 @@ jobs:
       - run: bun ci
       - run: bun test
       - run: bun run typecheck
+      - run: bun run docs:check
       - run: bun run build:npm
 
   web:

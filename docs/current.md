@@ -271,6 +271,40 @@ When public behavior changes, check whether these files also need updates:
 
 Use `rg` to confirm stale claims are gone after copy updates.
 
+### README and terminal recordings
+
+- `bun run docs:help` replaces only the marked README help block with output
+  from the current CLI. `bun run docs:check` verifies that block, local media
+  references, tape output paths and the capture manifest. CI runs this check
+  without VHS or public registry requests.
+- `bun run media:record --only search` previews one tape. `bun run media:record`
+  stages all eight tapes and their existing 19 PNG/GIF outputs in a temporary
+  directory. Recording requires VHS, ttyd, ffmpeg/ffprobe, zsh, Fontconfig's
+  `fc-match`, and the Andale Mono font. Versions used are recorded, not imposed
+  as development runtime requirements. No dependency is installed by the script.
+- The temporary `temper` wrapper runs this checkout's `src/index.ts` with a
+  recording-only Bun preload. It isolates configuration, history and caches,
+  supplies synthetic bootstrap/RDAP responses, and blocks unexpected lookup,
+  browser and installer operations. It is not a release-binary or live-registry
+  test. Ordinary startup update checks are disabled during capture.
+- Tapes require the recording wrapper marker, assert screen states with bounded
+  VHS waits and use explicit font/terminal themes. They are run from the staging
+  directory so failures do not overwrite the repository's assets.
+- Review all staged PNGs and play every GIF through before running
+  `bun run media:record --apply <staging-directory>`. Apply requires a complete
+  manifest, unchanged capture inputs and unchanged destination files. Ordinary
+  copy failures restore original bytes; this is not a crash-atomic transaction.
+  Single-tape previews cannot be applied as a full capture.
+- `assets/screenshots/manifest.json` identifies the source commit, relevant
+  input hashes, runtime/tool versions and output hashes/dimensions. Inputs include
+  uncommitted capture tooling, so the commit alone is not the full identity.
+  A new input fingerprint requires a fresh capture; do not just relabel old media.
+  This is a declared-input check, not proof that every possible visual change is
+  detected. Image headers/hashes are checked in CI; recording also decodes every
+  output with ffmpeg, and visual review remains required.
+- The images show documentation examples, not current domain registration or
+  purchase availability. Changes on main may precede a published release.
+
 ## Internal Docs
 
 - `docs/current.md`: current implementation reference.

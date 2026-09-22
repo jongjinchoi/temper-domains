@@ -21,11 +21,17 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/demo.gif" width="600" /></p>
 
+Screenshots and recordings show the source revision recorded in
+[the capture manifest](assets/screenshots/manifest.json), using synthetic lookup
+responses for demonstration. They are not current domain availability checks;
+an installed release may differ from the development source shown here.
+
 ---
 
 ## Why
 
-AI coding tools can't check if a domain is available. Claude suggests a name, you open a browser, search manually, come back — the flow breaks every time.
+Generating a name does not tell you whether its domain is registered. Temper
+lets you check candidates in your terminal or through your AI assistant's MCP tools.
 
 **temper fixes this.** One command. 30 TLDs. Fast enough to stay in flow.
 
@@ -62,26 +68,38 @@ beyond the dependencies' runtime requirements.
 
 ## Usage
 
-```
+<!-- temper-help:start -->
+
+```text
 $ temper --help
 
 Usage: temper [options] [command]
 
 Never leave your terminal to find a domain.
 
+Options:
+  -V, --version                  output the version number
+  -h, --help                     display help for command
+
 Commands:
   search [options] <queries...>  Search domain availability across TLDs
-  suggest [options] [query]      Generate name combinations and check availability
-  whois <domain>                 Show detailed WHOIS/RDAP info for a domain
+  suggest [options] [query]      Generate name combinations and check
+                                 availability
   init                           Set up temper (registrar + theme)
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
+  whois [options] <domain>       Show detailed WHOIS/RDAP info for a domain
   list                           Show watchlist with current availability
-  extensions [options]           Browse supported extensions and classifications
+  extensions [options]           Discover extensions by industry, purpose and
+                                 region (offline)
   config                         Manage temper configuration
-  update [options]               Check for a new version and update after confirmation
+  update [options]               Check for a new version and update after
+                                 confirmation
   mcp                            Start MCP server over stdio
+  help [command]                 display help for command
 ```
+
+<!-- temper-help:end -->
 
 ### Updates
 
@@ -285,7 +303,7 @@ temper suggest gethalden -p use,try -s app,hq       # custom prefixes/suffixes
     ...
 
   SUFFIX
-    gethaldenapp         ✓ available
+    gethaldenapp         ✗ taken
     gethaldenlabs        ✓ available
     ...
 
@@ -376,12 +394,14 @@ Restart Claude Desktop after saving.
 
 ### Cursor
 
-Settings → Tools & Integrations → New MCP Server (command type):
+Add the following to `.cursor/mcp.json` in your project, or `~/.cursor/mcp.json`
+for all projects. See [Cursor's MCP documentation](https://cursor.com/docs/mcp).
 
 ```json
 {
   "mcpServers": {
     "temper": {
+      "type": "stdio",
       "command": "temper",
       "args": ["mcp"]
     }
@@ -391,7 +411,10 @@ Settings → Tools & Integrations → New MCP Server (command type):
 
 ### Windsurf
 
-Edit `~/.codeium/windsurf/mcp_config.json`:
+Open your client's MCP configuration and add the local server below. Follow the
+[client's MCP instructions](https://docs.windsurf.com/windsurf/cascade/mcp) for
+your installed version; that documentation currently redirects to Devin Desktop,
+whose configuration path should not be assumed to apply to older Windsurf versions.
 
 ```json
 {
@@ -404,9 +427,30 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
 }
 ```
 
-### VS Code (Cline)
+### Cline extension
 
-Command Palette → `MCP: Add server` → stdio → `temper mcp`
+In the Cline panel, open **MCP Servers → Configure → Configure MCP Servers**.
+Add `temper` under `mcpServers` in the opened JSON, using the local-server
+configuration above. See [Cline's MCP documentation](https://docs.cline.bot/mcp/mcp-overview).
+
+### VS Code built-in MCP support
+
+For VS Code's own MCP support, add this to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "temper": {
+      "type": "stdio",
+      "command": "temper",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+VS Code uses `servers` here; Cline uses its separate `mcpServers` configuration.
+See [VS Code's MCP documentation](https://code.visualstudio.com/docs/agent-customization/mcp-servers).
 
 ---
 
@@ -453,6 +497,9 @@ domain and any failures, timeouts or missing responses.
 
 **Example: Brainstorm from scratch**
 
+The conversations below are illustrative. Actual lookup results vary. Name
+suggestions and branding comments come from the assistant, not Temper's checks.
+
 ```
 You:    "I'm building a health management app. Suggest domain names."
 
@@ -464,7 +511,6 @@ Claude: [generates candidates: wellbi, vitalo, medra, healix, ...]
         - Short, pronounceable, .app TLD fits mobile apps
         - getwellbi.com also available
 
-        ⚠ Medra means "fear" in Spanish — avoid for global use
         💡 Check @wellbi on social media before registering
 ```
 
