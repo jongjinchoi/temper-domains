@@ -65,3 +65,29 @@ jobs:
       - run: bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
       - run: node --test tests/runtime/node-checks.mjs
       - run: node tests/transport/runner.mjs
+
+  updater-compatibility:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22.12.0"
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun ci
+      - run: bun test src/update
+      - run: bun run tests/update/runtime.ts
+      - run: bun build tests/update/runtime.ts --target=node --packages=external --define 'PKG_VERSION="0.0.0"' --outfile=dist/test-runtime/updater.mjs
+      - run: node dist/test-runtime/updater.mjs
+      - name: Verify real terminal handoff (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          bun build tests/update/terminal.tsx --target=node --packages=external --outfile=dist/test-runtime/update-terminal.mjs
+          python3 tests/update/terminal-check.py bun tests/update/terminal.tsx
+          python3 tests/update/terminal-check.py node dist/test-runtime/update-terminal.mjs

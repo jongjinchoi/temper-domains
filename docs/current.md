@@ -31,6 +31,8 @@ in both workspaces so root typechecking does not download a separate compiler.
 ## Source Of Truth
 
 - CLI commands and help: `src/index.ts`
+- CLI update policy, installation ownership, cache and installer: `src/update/`
+- Update confirmation and terminal handoff: `src/tui/UpdatePrompt.tsx`
 - Default and extended TLDs: `src/checker/types.ts`
 - Extension catalog, classifications and selection: `src/extensions/`
 - Catalog snapshot maintenance: `scripts/update-extension-catalog.ts`
@@ -54,6 +56,23 @@ in both workspaces so root typechecking does not download a separate compiler.
 
 ## Current Behavior Notes
 
+- `temper update` checks freshly and asks before installation; `--check` only reports.
+  Global npm and the verified Homebrew tap are executable update targets; npx/local,
+  source checkouts, direct downloads and unknown installers receive guidance.
+- Only interactive search/suggest/whois/list perform automatic checks, after input
+  validation and before mounting search UI. Success TTL is 24h, automatic preflight
+  deadline 2s, failure backoff 1h; Later postpones 24h. `TEMPER_NO_UPDATE_CHECK=1`
+  disables automatic checks. MCP/JSON/pipes/CI/help/version/offline commands are excluded.
+- npm version discovery uses registry.npmjs.org; Homebrew uses the published
+  jongjinchoi/homebrew-temper-domains formula on raw.githubusercontent.com.
+  Checks do not send domains/history. Local cache is ~/.temper/cache/update.json.
+  npm and Homebrew release availability are checked separately.
+- Installation uses explicit confirmation, a per-installation local lock, fixed
+  package/formula targets and fresh version verification. Homebrew refreshes metadata,
+  preserves pins and asks again if its target changes. Installation failure does not
+  imply rollback. Windows npm wrappers use the verified npm JS entry via Node.
+  Existing Ink suspendTerminal hands input/output to the installer and restores it.
+  Completion exits; it does not re-run the user's original command automatically.
 - Default search checks 30 TLDs.
 - Extended search checks 60 TLDs.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.

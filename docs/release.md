@@ -75,6 +75,18 @@ GitHub Secret을 정리하고 npm Publishing access에서 토큰 게시를 제�
 
 ## Verify
 
+Check npm publication and the Homebrew formula separately: the CLI updater uses
+each installation channel's published version, not GitHub release presence alone.
+The formula's explicit stable `version` field is the read-only discovery contract.
+If that format changes, update the strict parser in `src/update/versions.ts` too.
+Older installed releases do not show an update prompt until users install a
+release containing the updater through their existing installation method.
+
+Updater regression tests use temporary homes/install roots and fake package
+managers. Actual upgrades must use a disposable installation, never the maintainer's
+global installation as a test fixture. Verify terminal recovery after success,
+failure and cancellation, and confirm MCP/JSON/offline commands make no version requests.
+
 ```bash
 # GitHub Release
 gh release view v<version>

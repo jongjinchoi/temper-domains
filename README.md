@@ -79,8 +79,41 @@ Commands:
   list                           Show watchlist with current availability
   extensions [options]           Browse supported extensions and classifications
   config                         Manage temper configuration
+  update [options]               Check for a new version and update after confirmation
   mcp                            Start MCP server over stdio
 ```
+
+### Updates
+
+```bash
+temper update          # Check now, then ask before installing
+temper update --check  # Check now and show instructions; never install
+```
+
+Interactive `search`, `suggest`, `whois`, and `list` check for a newer stable
+version before opening the search screen. Successful checks are cached for 24
+hours; automatic checks wait at most 2 seconds and failures back off for 1 hour.
+Choose **Later** (the default) to continue and postpone the notice for 24 hours.
+Set `TEMPER_NO_UPDATE_CHECK=1` to disable automatic checks. Manual checks bypass
+the cache and this opt-out. MCP, JSON, pipes, CI, help/version, `extensions`, and
+configuration/history commands do not perform automatic update checks.
+
+Updates require a terminal and explicit confirmation; there is no `--yes` option.
+Verified global npm installs update the displayed version in the same prefix.
+Verified Homebrew installs run `brew update`, then upgrade
+`jongjinchoi/temper-domains/temper`; Homebrew's normal metadata refresh, pin,
+dependency and cleanup rules apply. If refreshed metadata changes the target
+version, Temper asks again. Local packages, `npx`, downloaded binaries, and
+unknown installation methods receive instructions instead of an automatic install.
+After an update, Temper verifies the installed version and exits; run your original
+command again. Failed or interrupted installers report failure without claiming
+an automatic rollback.
+
+Version checks contact the npm registry or the Temper Homebrew tap on GitHub,
+according to the installation method. They send no searched domain names or
+search history. These services can see normal connection metadata such as your
+IP address. The disposable cache is `~/.temper/cache/update.json`.
+Existing releases gain this feature only after installing a release containing it.
 
 ### Keyboard shortcuts
 

@@ -6,6 +6,7 @@ import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/valid
 import { VERSION } from "./version.ts";
 import { resolveExplicitSelection, resolveCategorySelection, assertCandidateLimit, validateSearchCombinations } from "./extensions/selection.ts";
 import { extensionCommand, splitFilter } from "./extensions/cli.ts";
+import { maybeUpdate, updateCommand } from "./update/cli.ts";
 
 const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
 
@@ -102,6 +103,8 @@ program
       return;
     }
 
+    if (await maybeUpdate("search", opts.format)) return;
+
     // TUI mode
     if (queries.length > 1) {
       const dropped = queries.slice(1).join(", ");
@@ -145,6 +148,8 @@ program
 
     const prefixes = opts.prefixes?.split(",").map((s: string) => s.trim());
     const suffixes = opts.suffixes?.split(",").map((s: string) => s.trim());
+
+    if (await maybeUpdate("suggest")) return;
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
@@ -229,6 +234,8 @@ program
       return;
     }
 
+    if (await maybeUpdate("whois", opts.format)) return;
+
     const { render } = await import("ink");
     const React = (await import("react")).default;
     const { default: WhoisView } = await import("./tui/WhoisView.tsx");
@@ -250,6 +257,8 @@ program
   .action(async () => {
     const config = await loadConfig();
     setTheme(config.theme);
+
+    if (await maybeUpdate("list")) return;
 
     const { render } = await import("ink");
     const React = (await import("react")).default;
@@ -303,6 +312,14 @@ configCmd
     await saveConfig({ theme: name });
     console.log(`Theme set to: ${name}`);
   });
+
+// --- update ---
+program
+  .command("update")
+  .description("Check for a new version and update after confirmation")
+  .option("--check", "Show the published version and instructions without installing")
+  .addHelpText("after", "\nAutomatic checks: interactive search, suggest, whois and list only; at most once per 24 hours.\nSet TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks.\nManual checks bypass the cache. Updating requires a terminal; no --yes option.\nExamples:\n  temper update\n  temper update --check")
+  .action(async opts => { await updateCommand(Boolean(opts.check)); });
 
 // --- mcp ---
 program

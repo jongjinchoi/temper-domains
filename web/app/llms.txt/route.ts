@@ -60,7 +60,20 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
 - \`temper watch <domain>\` - track availability, \`temper list\` to review
 - \`temper history\` - interactive search history
+- \`temper update\` - check now; verified global npm/Homebrew installs require confirmation before updating
+- \`temper update --check\` - show published version and instructions without installing
 - \`temper mcp\` - start the MCP stdio server
+
+## CLI updates
+
+Interactive search/suggest/whois/list check the relevant npm registry or Homebrew
+tap for a stable update, at most once per 24 hours, with a 2-second automatic
+check deadline and 1-hour failure backoff. Later postpones the prompt for 24 hours.
+Set TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks; manual update checks bypass
+the cache. MCP, JSON, pipes, CI, help/version and offline commands never check automatically.
+Checks send no domain names or history; the version services see normal connection metadata.
+npx/local packages, direct downloads and unknown installers receive instructions.
+After a confirmed update, verify the installed version and restart the CLI.
 
 ## Docs
 

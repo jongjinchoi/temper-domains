@@ -147,6 +147,12 @@ export const COMMANDS: Command[] = [
     desc: "Browse supported extensions by industry, purpose or region. Offline, 50 per page (max 100).",
     example: "$ temper extensions --categories",
   },
+  {
+    slot: "CMD / 08",
+    sig: { cmd: "update" },
+    desc: "Check for a new version. Verified npm/Homebrew installs update after confirmation; --check only reports.",
+    example: "$ temper update --check",
+  },
 ];
 
 export interface Keybind {
