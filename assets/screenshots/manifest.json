@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "sourceCommit": "db1bb0ea10d3742eb8e917077adea42082dc4a79",
-  "capturedAt": "2026-09-22T04:21:13.073Z",
+  "sourceCommit": "727d10f83996ec618ab5182c9647d15214d6ca51",
+  "capturedAt": "2026-09-22T06:49:10.389Z",
   "mode": "current-source-with-synthetic-rdap",
   "runtime": {
     "bun": "1.4.2",
@@ -23,27 +23,30 @@
     "assets/tape/theme-rose-pine-dawn.tape": "24233a7144a1570b7bd4456635e9d803569be732ef9dd2bf40a348a63512de88",
     "assets/tape/themes.tape": "3cc61844091edf79ae88eb2fbcd8360fcc96d758b3fdc0b2f317940f5939dda6",
     "bun.lock": "febbacc37d37c8b9f11a4ff875b7dfb62776977e2028d5ec528bb54210a8bfa6",
-    "package.json": "450c333ca54a8d845b113735a42f24c2e6ac593a3972af0abd1ea7da9e364b5d",
+    "package.json": "a783f8f3769311bc7dd2ff1bfe2d5fcf032afa1090743f84a08e7da8bc067456",
     "scripts/media/core.ts": "91bf216bfb7773ec6a06c0327bb04f9fb57cebe10e8a04809f62a56ad189c0d2",
     "scripts/media/fixture.ts": "663dff10db195c93e4e8b343f97e0838846fec4e9cf3209722b45c584a76294b",
     "scripts/media/preload.ts": "4327b2b3f67c9f73d37da096ac593442faadda04c259147f525e8e6cfeee2173",
     "scripts/media/record.ts": "24133c8b709bc2830d64ba7e8108e0c8d1344d92b2ecc733ddca92492bf872c6",
-    "src/checker/batch.ts": "00448751a64f6f9a9c669d4838631bccb5936e5271b76bef30ca6705dd0c9068",
+    "src/checker/batch.ts": "de347c3bcb501428a8c1d638ad9b8f97bd16d6b18ebcba424ecf607682981e99",
     "src/checker/bootstrap-cache.ts": "a54b8f5558f81ca02793a993e34bb4968d7ecd9edcef0804ee8bbfd2db79838a",
     "src/checker/bootstrap.ts": "3eac4835220878df061f0db01cc6457c7bc9c8f9f6f3f76312c5b00cb8fed02f",
-    "src/checker/checker.ts": "47800594a3c9a63a72fde7048970c4a80bd8ef96cca98e374d6922e0d66cd1a1",
-    "src/checker/detail.ts": "1f8b5baa98e022c6b98a3222e9cde75ba36db4b43bb764f1525cc606b675f8c6",
+    "src/checker/checker.ts": "0778146048088496a45aa095ccd4f77a998c391f5f330bf5dbc3280f9f52391c",
+    "src/checker/detail.ts": "a1f4a03837728ca42aa8900cc9333dc9abbac8d0661af31a866aabbcc409561f",
     "src/checker/http-transport.ts": "4021f2ff37a8051c51e23b6af118ec1d341012224a9c307279b548ebe1415518",
+    "src/checker/limit-store.ts": "55b953293a58f5521c454e35217d13575376b80a846fb3eba95adbe8999da9f2",
     "src/checker/limiter.ts": "5cb8773d07fa514e6ea0656cf7337a1266b3425935fbabf82c40382d262a0e46",
-    "src/checker/lookup.ts": "1804041ec6f3a63a7be59980379cd027f6556fe296baaa219fb26523c341818b",
-    "src/checker/policy.ts": "b8424442cd5fe9f44c3fbbea4f90f37d6b71d58ceaa315836b621c65d84deca4",
-    "src/checker/rdap.ts": "0370c83320871a78d057ec4c97333e82d9d139290af0db50b48e457e538a89e3",
-    "src/checker/run.ts": "542b6c421379eef890bb1bbe6c8b5b40bc801ecdaf4adf31eb538eddba9e68c2",
+    "src/checker/limits.ts": "1db085e45fbf6dfe451c53432d71443521945123466fedcbd229d9ddfec24197",
+    "src/checker/lookup.ts": "942b78fb6c48c86d5f901c68f3911ba2567ffea735c74ab9b071de17dba6b257",
+    "src/checker/policy.ts": "df0646e07ebd9c8886bb5036c580a9ec5f1501c2996b44c2efbd913b40be00b7",
+    "src/checker/rdap.ts": "2d6a076468106520922b889b7a492043cbec25687b7ba33a195998924f51a6fb",
+    "src/checker/run.ts": "17e9128fe591b08dd65409e4c6eb15271b424ca18523d0b4ecdea895f139e522",
     "src/checker/scheduler.ts": "9096e7e8ca68181aee0b8e28f80e9f486f670a7843c40ba0131ece5490adbe46",
     "src/checker/services.ts": "ff79c957fb2a83f4944d1eaecb1652885e2d7d1db533bb98facf004d47869c91",
-    "src/checker/stream.ts": "7468bd87db78736a246c8fd1531851b24175a8306da1c0f00e1126a859a7c2ba",
-    "src/checker/types.ts": "fb2cf2102e2ae3aab3832634b9dd51499b5bb48bde1199f02874a01346c9a509",
-    "src/checker/whois.ts": "5c8e051223266165ff22ffd91e1c0ed6a68dd1cb6a540ed929e2b93e28ab30eb",
+    "src/checker/stream.ts": "ec90ddb6972e0969eff0132e3cf300c49ce46fc6d3cf7c06353c5141bd7e4d83",
+    "src/checker/types.ts": "145d4fe27e3604a6b8b196ca9db353e69670ec01d3ed0ce9666fc6ff43762687",
+    "src/checker/whois-request.ts": "e56be061e9ced976fadfa3f83020e8f69462de6fc6a9bbb7c097886a9e94e6d7",
+    "src/checker/whois.ts": "dc7c715c10463cb553d23953ab2d0477cff8ef6928dfad4bec92513070e0ec92",
     "src/config/config.ts": "9de7daa250b894cc64dd058b31dc1d499b91a2f0886ca0a28e0a998b7497f5b1",
     "src/config/history.ts": "111e81e52ea876d5dc7e454b799070918c4199bd574b032eed3ac3b02c901a43",
     "src/config/watchlist.ts": "1e01dbc1d742e90763ae2cc1e4401dfd6cc1c9955ef876451f835de19193f2f9",
@@ -57,29 +60,30 @@
     "src/tui/KeyHints.tsx": "a9c8576edd3948b484ca53f4ef84d78cfa230ebf7049df2b75f081511066a2c4",
     "src/tui/ProgressBar.tsx": "f2ce97c256a61568febb16c2147596d8d23fdeccb08feb399bcbaaa8ec405f9e",
     "src/tui/RegistrarModal.tsx": "d5f059b88ac8002bb017c43fc6e31aca61dfe54fad91bcfc7e626e5c5b2b3595",
-    "src/tui/ResultRow.tsx": "b9e94dd9a950bba30cf181eeecbe8cd0b73498c91795faa59d331e753535781b",
-    "src/tui/SearchView.tsx": "f269a291d63c66bbc54ea4f6abd83f8baca257a74613a92f137c082b222cf46a",
+    "src/tui/ResultRow.tsx": "fa27153b6bc2cb043b7c5953550bb7b5fac1f734279c4a28d0941781feafc5ce",
+    "src/tui/SearchView.tsx": "b6c5bcf32e4640fe367ec7e335ec5fbde5cdc016e6508fda5df50d958ba8f0b1",
     "src/tui/Spinner.tsx": "b0723659bad4d7a0aed53cb176461b77cce9b2427d1dd2cb06f9f9639ecaca2b",
-    "src/tui/SuggestView.tsx": "1f5b13524f61771828c7ecc16249f9b67bb1635a4ef4f2a272ceb6a1582f900b",
+    "src/tui/SuggestView.tsx": "3a67ef978ac950b2a161f1518f3a5b158c7720cdbaf2fa808963ba3f8d88db7e",
     "src/tui/UpdatePrompt.tsx": "a9f1303d27d68426e6fbdf5962ee2d575852ab53a99044d76b0159490446dd82",
     "src/tui/WatchlistView.tsx": "1c9cfbdd5df964fc5f3a0e516bc53f84230673f686d54e105504dc9295d3a526",
-    "src/tui/WhoisView.tsx": "9b9d136995d1a876e5896108c9f327c3bc6e343f709944a64270d2cfbdd4245e",
+    "src/tui/WhoisView.tsx": "fed44702bf9c786eb3edd472e913db9f678c0b4a64cf0e020c4262ace1bdb4a4",
     "src/tui/hooks/useSearchExecution.ts": "256bc663ed25f8588a528f939012dc69d701b877868865096ee95932c7c9278c",
     "src/tui/theme.ts": "7526648ea27ad85687734e2c5a3b3a22f9d7a4bd2e1a5e920b621fbbf264d705",
     "src/utils/domain.ts": "5c6ce259634694cdf4907ea0f873d012d6ebc90fba1a60a197dbc2f715811aa8",
     "src/utils/fs.ts": "bd08b99f0b1bf9d5df52140c4e6dd921cd55fcbe4bcad97a60fed8492b1d2fc5",
+    "src/utils/lookup-notice.ts": "0d11d6061cb8e780be93a344f3d4baed6f19f17944f21a553c7ea006fc2dcee4",
     "src/utils/validate.ts": "308c31d0c25e90a81ac99345a361d5c33d4d6de95f56ddfe872192b851752d54",
     "src/version.ts": "7cf548ecce9b8150d219df270f6e208aaf6715bfcc760a326fd3da8d43b9f076"
   },
   "outputs": {
     "assets/screenshots/demo.gif": {
-      "sha256": "384b9436b8f119be9117082058bc14c61a8f6661aaa42d0229250d9c75ccfb6a",
+      "sha256": "dbfda256554f04dcb59fdd35b9cc503808346f9b1510b21a2994bfddf2a5e519",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/init.gif": {
-      "sha256": "2a17cafe7dd54652881513eb2546fac7d2ac9783721af2ed3a5570dc07678e5d",
+      "sha256": "7a49eef8e61a5529d2137f1b1b49322c2b2952673932653510c5d2780c9d61fe",
       "format": "gif",
       "width": 1200,
       "height": 700
@@ -91,101 +95,101 @@
       "height": 700
     },
     "assets/screenshots/registrar.gif": {
-      "sha256": "66390152582bd3752c330a33736d103231fe1d74660500a27db238a88f5f336e",
+      "sha256": "cb61f2b9f6c9ec3e7ba74941795c443f69c8eb62aa4c19071b9252b587192603",
       "format": "gif",
       "width": 1200,
       "height": 700
     },
     "assets/screenshots/registrar.png": {
-      "sha256": "162cc58888d0f37af89735cb6ab51a0ce42f2091ada737fd1ba32d20eb1581f5",
+      "sha256": "12d3256865b8d5e932e013191b3f4f532e1a7eecf625bba763985bb957c0db79",
       "format": "png",
       "width": 1200,
       "height": 700
     },
     "assets/screenshots/search.gif": {
-      "sha256": "f446f49b12bfe37d939c142b54f6f20e4cfb450721cac5d1dab4bdd28a08e682",
+      "sha256": "6a3e99b2d1ee054c235839c2c0b9195394ca344a7197351089b7fed390d1b89d",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/search.png": {
-      "sha256": "e1b387a9f1173a784ea6df7a0622aaec57c2880dca474daf4ab71b19a449bdec",
+      "sha256": "713e592ec9f87f205ba49761737664d64a207fce636ef6f9804d95fa11afd65b",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/suggest.gif": {
-      "sha256": "82e538692b152709962e5df7581e362124c7eb358012fe83e1ab3c2f9dcdaa4f",
+      "sha256": "064d59c9b5b3f134c2ba9c3dd6a6eaaad032220368ef0cf5e0e97bcc2460b21a",
       "format": "gif",
       "width": 1200,
       "height": 700
     },
     "assets/screenshots/suggest.png": {
-      "sha256": "8d7cf634685fa85f34b1f28ebee8063a17ac85360dd3bcfaf1fd73f286fc45ae",
+      "sha256": "eb7e8a98962825be45d75c4dde5969f654775e4fadba285bb9dd28c889dab902",
       "format": "png",
       "width": 1200,
       "height": 700
     },
     "assets/screenshots/theme-catppuccin-latte.gif": {
-      "sha256": "0a49c9ef7e8b459a05697486672bb1e4d52829338a747a2b7d46019c7c5156c9",
+      "sha256": "61fc63805ae96f977d840aad139958764d51116e22da834c7354982357d1b4fe",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-catppuccin-latte.png": {
-      "sha256": "5e754d7c2d1934a3fdde104b7b2664fe35f1c5fe429a9093661665e2ff9a4765",
+      "sha256": "863a407eef537edf177cbb60455b452611b77a4b817864e01e86e9b38e95f3c1",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-catppuccin-mocha.png": {
-      "sha256": "f0a4a4cd9834dabb4b2bb61f13152b250286a13cabe276b60563632f47e2b8da",
+      "sha256": "03af9a73a8b60d505bf3dc7f6775764503ad7299e484895aa212f3cf0477aba1",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-default.png": {
-      "sha256": "91855d766a7d2aade6d717338417544303b103225148d1800e3336a05d4a5116",
+      "sha256": "b86faa67ad013469b4f67c0b7ec372aff4ffa5886512c2f4ad0d6a063c9c1233",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-dracula.png": {
-      "sha256": "403dd78adbd17f4c11d3cf1d7565a77fc31f6ba4495bdd6b48a8104fb895b79a",
+      "sha256": "aabfd76152f83a5e898752c4b8b8edc7789a92ba0e5233d35ffaf31e1ff38274",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-rose-pine-dawn.gif": {
-      "sha256": "322053391a391c8263b4bcd7d960ebee29faf5e70cb8201f353e40a6b070bd77",
+      "sha256": "d8a04db73d9b16879deb1b89a27fa8226a4ece5af9fe2a3bbc3a10edfd53d5af",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-rose-pine-dawn.png": {
-      "sha256": "2ecc24c013b29be04e4d798213e6ebd74c4bf17959fc8a7f25436a888fc12619",
+      "sha256": "a83f2104e2052f7d4e21a1626f60433fe1de356baa369e2833576ee4788c1f85",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-seoul-night.png": {
-      "sha256": "dd9fd9935510efe145ab44a117f0ff38edfce34664a0570986999e2aa428a3a9",
+      "sha256": "c6359280b84c30c389a19d64d5b44532b307570ba6878916fcd6f727f2545b32",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/theme-temper-forge.png": {
-      "sha256": "483aa039ed58bf835b05a3615a6e20545bd4dd87610d47dd5eeb85f97f56aa6f",
+      "sha256": "3544fcfeec0e22fecbb618ae074d195a949a6e92a1272532b81fca79a3051054",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/themes.gif": {
-      "sha256": "03aacafc6bedde42b6e247acf2841bd3ef8d67019f3e079f2d0b405d7941759c",
+      "sha256": "ce596445e48d6a2ee9c143dded6e6587154933c231b8cbb18ae894cf5a60f8be",
       "format": "gif",
       "width": 1200,
       "height": 1000
     }
   },
-  "packageSource": "{\n  \"name\": \"temper-domains\",\n  \"version\": \"0.4.1\",\n  \"description\": \"Search domain availability from your terminal\",\n  \"main\": \"dist/npm/index.js\",\n  \"type\": \"module\",\n  \"workspaces\": [\"web\"],\n  \"bin\": {\n    \"temper\": \"./dist/npm/index.js\"\n  },\n  \"engines\": {\n    \"node\": \">=22.12.0\"\n  },\n  \"license\": \"Apache-2.0\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jongjinchoi/temper-domains.git\"\n  },\n  \"keywords\": [\"domain\", \"cli\", \"terminal\", \"tui\", \"mcp\", \"whois\", \"rdap\"],\n  \"files\": [\"dist/npm\", \"README.md\", \"LICENSE\"],\n  \"scripts\": {\n    \"docs:check\": \"bun run scripts/docs.ts\",\n    \"docs:help\": \"bun run scripts/docs.ts --write-help\",\n    \"media:record\": \"bun run scripts/media/record.ts\",\n    \"typecheck\": \"tsc --noEmit\",\n    \"catalog:verify\": \"bun run scripts/checker-fingerprint.ts\",\n    \"catalog:update\": \"bun run scripts/update-extension-catalog.ts\",\n    \"build:npm\": \"bun run build-npm.ts\",\n    \"web:dev\": \"bun run --cwd web dev\",\n    \"web:typecheck\": \"bun run --cwd web typecheck\",\n    \"web:build\": \"bun run catalog:verify && bun run --cwd web build\",\n    \"prepack\": \"bun run build-npm.ts\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"7.0.2\",\n    \"@types/bun\": \"1.4.2\",\n    \"@types/react\": \"19.3.0\",\n    \"react-devtools-core\": \"8.0.0\"\n  },\n  \"dependencies\": {\n    \"@modelcontextprotocol/sdk\": \"1.30.0\",\n    \"commander\": \"15.0.0\",\n    \"ink\": \"7.1.1\",\n    \"react\": \"19.3.0\",\n    \"tldts\": \"7.4.13\",\n    \"zod\": \"4.6.5\"\n  }\n}\n"
+  "packageSource": "{\n  \"name\": \"temper-domains\",\n  \"version\": \"0.5.0\",\n  \"description\": \"Search domain availability from your terminal\",\n  \"main\": \"dist/npm/index.js\",\n  \"type\": \"module\",\n  \"workspaces\": [\"web\"],\n  \"bin\": {\n    \"temper\": \"./dist/npm/index.js\"\n  },\n  \"engines\": {\n    \"node\": \">=22.12.0\"\n  },\n  \"license\": \"Apache-2.0\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jongjinchoi/temper-domains.git\"\n  },\n  \"keywords\": [\"domain\", \"cli\", \"terminal\", \"tui\", \"mcp\", \"whois\", \"rdap\"],\n  \"files\": [\"dist/npm\", \"README.md\", \"LICENSE\"],\n  \"scripts\": {\n    \"docs:check\": \"bun run scripts/docs.ts\",\n    \"docs:help\": \"bun run scripts/docs.ts --write-help\",\n    \"media:record\": \"bun run scripts/media/record.ts\",\n    \"typecheck\": \"tsc --noEmit\",\n    \"catalog:verify\": \"bun run scripts/checker-fingerprint.ts\",\n    \"catalog:update\": \"bun run scripts/update-extension-catalog.ts\",\n    \"build:npm\": \"bun run build-npm.ts\",\n    \"web:dev\": \"bun run --cwd web dev\",\n    \"web:typecheck\": \"bun run --cwd web typecheck\",\n    \"web:build\": \"bun run catalog:verify && bun run --cwd web build\",\n    \"prepack\": \"bun run build-npm.ts\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"7.0.2\",\n    \"@types/bun\": \"1.4.2\",\n    \"@types/react\": \"19.3.0\",\n    \"react-devtools-core\": \"8.0.0\"\n  },\n  \"dependencies\": {\n    \"@modelcontextprotocol/sdk\": \"1.30.0\",\n    \"commander\": \"15.0.0\",\n    \"ink\": \"7.1.1\",\n    \"react\": \"19.3.0\",\n    \"tldts\": \"7.4.13\",\n    \"zod\": \"4.6.5\"\n  }\n}\n"
 }
