@@ -162,14 +162,17 @@ export interface Keybind {
 
 export const KEYMAP: Keybind[] = [
   { keys: ["j", "k"], action: "move" },
-  { keys: ["↵"], action: "buy" },
+  { keys: ["↵"], action: "registrar" },
+  { keys: ["r"], action: "resume selected" },
+  { keys: ["R"], action: "resume visible" },
+  { keys: ["u"], action: "unresolved" },
   { keys: ["i"], action: "whois" },
   { keys: ["/"], action: "filter" },
   { keys: ["a"], action: "watch" },
   { keys: ["s"], action: "suggest" },
   { keys: ["h"], action: "history" },
   { keys: ["w"], action: "list" },
-  { keys: ["esc"], action: "back" },
+  { keys: ["esc"], action: "stop resume / back" },
   { keys: ["q"], action: "quit" },
 ];
 

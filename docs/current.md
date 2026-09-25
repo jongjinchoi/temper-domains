@@ -88,7 +88,7 @@ in both workspaces so root typechecking does not download a separate compiler.
 - npm installs expose the `temper` binary and require Node.js >= 22.12.0.
 - Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
 - CLI/MCP searches automatically budget 5–30s, including bootstrap, using queued
-  server start spacing plus a 5s request window. This estimate does not guarantee
+  local queue and shared recovery spacing plus a 5s request window. This estimate does not guarantee
   completion under congestion, slow responses or new server cooldowns. Explicit
   CLI search timeouts remain strict; detail uses 10s and hosted demo uses 3s.
 - Actual requests share a process-local scheduler: at most 20 active requests,
@@ -97,7 +97,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   ~/.temper/state/lookup-limits.json. RDAP keys use origin; WHOIS uses host:43.
   These are client policy values, not published server quotas. The hosted web
   checker uses memory only; separate instances do not share a distributed limit.
-- RDAP 429/503 retries re-enter the scheduler (at most two attempts). Retry-After
+- RDAP 429/503 retries re-enter the scheduler (at most two limited-response passes
+  for an initial lookup; one for explicit resume). Redirects and published HTTPS
+  endpoint failover can add transmissions; attempts counts actual requests. Retry-After
   seconds and HTTP dates are honored without truncation. When waiting would
   exceed the deadline, return the response with retryAt. HTTP 503 is a service
   error, not a rate_limited result.
@@ -106,22 +108,30 @@ in both workspaces so root typechecking does not download a separate compiler.
   step; concurrent replies and skipped searches do not. Valid server waits
   (including zero or 24 hours) take precedence and are not capped to 900 seconds.
   A longer previously observed wait cannot be shortened by a later response.
-- After a wait, one shared probe starts inside a new caller's request. A valid
-  registration/not-found response resets policy backoff; no background replay
-  runs. Another server can continue while one server is deferred. Duplicate
+- After a wait, recovery admits one request at a time. 429 spacing starts at 1200ms
+  and increases through 2400/4800/9600ms; eight consecutive valid answers and 30s
+  of observation relax one step (600 then 300ms on the way back). Errors, cancellation
+  and abandoned leases interrupt the streak. 503 preserves its separate failure kind
+  without increasing the 429 speed level. No background replay runs. Shared admission
+  returns a wait without retaining a lease or local transport slot; another server
+  can continue while one server is deferred. Duplicate
   normalized domains in one batch share the lookup but retain each output row.
-- Local state is versioned and validated, with an exclusive short file lock,
+- Local state is version 2 and validated, with an exclusive short file lock,
   fsynced temporary file/rename and 0600 permissions. Only server metadata is
   stored, not queried domains or response bodies. Request leases use the run
   deadline and process identity. Invalid/unwritable/busy state stops requests
   with limit_state_error; it is not replaced with empty state. A lock left by
   an interrupted file transaction requires manual removal of only the .lock
   after confirming no Temper commands are running; the state must be preserved.
+  Version 1 migration under that lock preserves cooldown/nextStart and refuses live
+  old leases. Older 0.5.2 readers reject v2: update old processes/reconnect MCP rather
+  than deleting state. No automatic downgrade is provided.
 - Search and detail validate HTTP 200 domain JSON, including identifier matching
   when present. Optional fields and unknown extensions are permitted; 404 needs
   no JSON body. These checks do not establish purchase or premium-sale status.
 - Results preserve the status enum and add optional attempts, queueTimeMs,
-  terminationReason, retryAt and retryAtSource (server/client_policy).
+  terminationReason, retryAt and retryAtSource (server/client_policy), observed
+  httpStatus and checkedAt for valid registration/not-found evidence.
   server_cooldown with attempts=0 denotes a request not sent because of a prior
   limit. TUI search/suggestion/detail and MCP display retry cause/time/source;
   JSON/MCP use UTC and the TUI includes the local timezone. MCP and web completion summaries report
@@ -166,6 +176,17 @@ in both workspaces so root typechecking does not download a separate compiler.
 - TUI searches use lowercase result keys, show bootstrap failures as errors,
   and do not record a failed bootstrap as a successful search. Suggestion parent
   input is disabled while its child search is active.
+- The root search owns a memory-only `SearchSession` above screen transitions.
+  r resumes the selected unresolved row; R selects unresolved rows in the current
+  filtered list; u toggles unresolved visibility. Confirmation shows count/120s
+  maximum and waiting counts. Esc stops a resume, retaining prior answers and
+  rejecting late availability results; reported transmission counts still accumulate.
+  No candidate beyond its retry time budget is sent and new limits stop that
+  server's pending resume work. Counts distinguish round progress from retained
+  answers; cumulative attempts survive zero-attempt deferrals. History updates
+  compare the exact session-owned entry under lock and never resurrect deletions.
+  Past-history re-search creates a new session. App exit does not persist candidates.
+  Unresolved/low-confidence registrar dialogs request availability confirmation.
 - Search filtering resets selection and scroll position as text changes. Displayed
   rows, keyboard actions and registrar targets use the same position normalized
   against the filtered list and terminal height. Empty results have no selection.
@@ -181,6 +202,12 @@ in both workspaces so root typechecking does not download a separate compiler.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
+- Lookup tools return schemaVersion 1/rows/summary/retryPlan in structuredContent
+  and JSON text while retaining human-readable text. Exact prior unresolved domains
+  can be passed to check_domain_availability with resume=true only on user request;
+  max 100 stays explicit, with no automatic replay or truncation. Resume lookup budget
+  is 30s independent of progress notifications; response/cleanup is additional.
+  Cancellation may discard the current tool's unreturned results at the host.
 - `list_supported_tlds` is offline. No arguments returns the 30/30/60 bundles
   and full catalog count; view=extensions offers paged discovery (50 default,
   100 maximum), view=categories exposes industry/purpose/region navigation.

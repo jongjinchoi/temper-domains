@@ -45,7 +45,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`search_domain\` - query one bare name across default or extended TLDs, or only suffixes supplied in tlds (including co.uk)
 - \`search_names\` - query up to 8 bare names across default, extended or selected suffixes; selected names × suffixes max 480. Do not combine tlds with extended, including false.
 - \`suggest_domain\` - generate prefix/suffix combinations and check them with RDAP/WHOIS
-- \`check_domain_availability\` - explicit full-domain check only
+- \`check_domain_availability\` - explicit full domains, or resume=true for exact prior unresolved domains on user request; maximum 100 per call
 - \`whois_domain\` - registrar, expiry, nameserver lookup
 - \`open_registrar\` - open purchase page in the browser
 
@@ -69,11 +69,19 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 Local CLI/MCP commands sharing the same home persist server cooldowns in
 ~/.temper/state/lookup-limits.json. Server Retry-After takes precedence; otherwise
 Temper applies a 60/120/240/480/900-second policy with 0–5 seconds of jitter.
-After the wait, a new request sends one probe first; there is no background retry.
+After the wait, recovery proceeds one request at a time with conservative adaptive
+spacing; one successful response does not reset the policy. There is no background retry.
 server_cooldown with attempts=0 means no request was sent for that domain.
 retryAt is an earliest retry time, not a success guarantee; retryAtSource is
 server or client_policy. Do not bypass a cooldown by changing home or protocol.
 State errors stop local requests; the hosted demo uses separate memory-only state.
+Version 2 shared state preserves existing waits on migration and refuses active old
+leases. Update older processes/reconnect MCP clients; do not delete cooldown state.
+Lookup tools return structured rows, summary and retryPlan alongside text.
+Resume only exact prior unresolved names when asked, with a 30s MCP lookup budget;
+do not silently truncate over 100 names or automatically replay remaining pages.
+TUI r/R resumes selected/visible unresolved candidates after confirmation (max 120s);
+Esc stops a resume while keeping results, and u shows unresolved rows.
 
 ## CLI updates
 

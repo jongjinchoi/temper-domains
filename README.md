@@ -149,14 +149,16 @@ Existing releases gain this feature only after installing a release containing i
 | Key | Action |
 |-----|--------|
 | `j`/`k` | Move up/down |
-| `Enter` | Buy domain / select |
+| `Enter` | Choose a registrar to buy or confirm an unresolved result / select |
 | `i` | WHOIS/RDAP detail |
 | `/` | Filter results |
+| `r` / `R` | Resume selected / visible unresolved candidates after confirmation |
+| `u` | Toggle unresolved results, including in available-only mode |
 | `a` | Add to watchlist |
 | `s` | Suggest combinations |
 | `h` | Search history |
 | `w` | Watchlist |
-| `esc` | Back |
+| `esc` | Stop the current resume and keep results; otherwise back |
 | `q` | Quit |
 
 ### Search
@@ -172,7 +174,14 @@ temper search myproject --format json             # JSON output for piping
 temper search gethalden writeholt --format json   # multiple keywords in JSON mode
 ```
 
-Navigate with `j`/`k`, press `Enter` to buy, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
+Navigate with `j`/`k`, press `Enter` to choose a registrar, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
+
+Use `r` to resume the selected unresolved candidate, or `R` for unresolved candidates
+in the current filtered list. Confirmation shows the count and a maximum 120s budget.
+Server waits still apply; candidates beyond the budget stay deferred. `Esc` stops
+the resume while retaining prior results. Returning from history or another screen
+preserves the current search in memory; exiting Temper ends that session. Resuming
+updates its existing history entry without recreating a deleted entry.
 
 <p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/search.png" width="600" /></p>
 
@@ -267,7 +276,7 @@ result should be reviewed with a registrar before treating it as purchasable.
 
 #### Lookup limits and partial results
 
-CLI/MCP searches choose a 5–30s total budget based on the current server queue.
+Initial CLI/MCP searches choose a 5–30s total budget based on the current server queue and shared spacing.
 This is a client policy, not a promise that every registry will answer. An explicit
 `search --timeout` sets a strict whole-search limit, including bootstrap loading.
 Each network request has up to 5s after dispatch, within the remaining total time;
@@ -278,6 +287,8 @@ Results keep the existing status values and JSON array format. Optional
 request that never started, a timeout, cancellation, and server rate limits.
 RDAP `responseTime` includes queueing and retry waits; `queueTimeMs` isolates
 the queue portion.
+`httpStatus` preserves the observed HTTP status and `checkedAt` dates an actual
+registration/not-found answer; a deferred request does not create new evidence.
 MCP summaries separate requested, attempted, answered, and unresolved domains
 and show actual elapsed time. A completed stream can contain unresolved results.
 `available` means no registration record was found; confirm purchase availability,
@@ -289,7 +300,11 @@ Local CLI and MCP commands share server cooldowns in
 waits 60, 120, 240, 480, then 900 seconds after repeated limits, adding 0–5
 seconds of jitter. These are client policy values, not registry quotas.
 Repeating a search during the wait does not increase that backoff. After the
-wait, a new user request sends one probe first; no background retry runs.
+wait, a new user request enters gradual recovery; no background retry runs.
+Recovery allows one request at a time. After a 429, spacing starts at 1200ms and
+can increase to 2400/4800/9600ms after new limits. Each step back toward normal
+requires eight consecutive valid answers and at least 30s of observation.
+These conservative policy values are not measured registry quotas or a speed guarantee.
 
 `terminationReason: "server_cooldown"` with `attempts: 0` means that domain was
 not queried because of a previous server limit. `retryAt` is the earliest retry
@@ -299,13 +314,20 @@ the wait. HTTP 503 remains a service error. Other servers can continue.
 
 The state file contains server coordination metadata, not domain names or
 response bodies. Commands using the same home coordinate at most two requests
-per server and 300ms between starts. A damaged, inaccessible or busy state file
+per server and at least 300ms between admissions under normal conditions.
+Waiting for shared admission does not hold a local network slot. A damaged, inaccessible or busy state file
 returns `limit_state_error` instead of sending an uncoordinated request. Preserve
 and repair a damaged file; do not delete it to bypass a wait. If a command dies
 while holding the short file lock, first confirm no Temper processes are running,
 then remove only `lookup-limits.json.lock`. Request leases otherwise expire or
 are reclaimed after their process exits. Different homes, machines and hosted
 web instances do not share this local state; the web demo uses memory only.
+
+The shared state now uses version 2. Migration preserves existing waits and refuses
+to proceed while a live version-1 request lease exists. Update older Temper
+processes and reconnect MCP clients before using the new version together.
+Older 0.5.2 processes reject version-2 state; do not delete the file to work around
+that error. Automatic downgrade is not supported.
 
 ### Whois
 
@@ -497,12 +519,19 @@ See [VS Code's MCP documentation](https://code.visualstudio.com/docs/agent-custo
 | `search_domain` | Check one bare name across 30, 60 or explicitly selected extensions |
 | `search_names` | Check up to 8 bare names across default, extended or selected extensions |
 | `suggest_domain` | 15 name combinations × 5 TLDs using RDAP/WHOIS |
-| `check_domain_availability` | Verify explicit full domains only (up to 100) |
+| `check_domain_availability` | Check explicit full domains, or user-requested resume of exact prior unresolved domains (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
 
 MCP output keeps uncertain results visible. Low-confidence availability is
 reported as review instead of a final recommendation.
+Search, suggestion and availability tools also return `structuredContent` with
+`schemaVersion`, `rows`, `summary`, and `retryPlan`, plus the same payload as JSON
+text. Use `resume: true` only when the user asks to resume exact unresolved names
+from a prior result. Each resumed call makes one pass with a 30s lookup budget;
+new limits stop queued work for that server while other servers continue. More
+than 100 candidates require an explicit selection or split, never silent truncation
+or automatic replay. A cancelled tool call may not deliver its in-progress results.
 
 **Example: Discover supported extensions**
 
