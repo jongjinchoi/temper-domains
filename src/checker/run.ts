@@ -1,4 +1,4 @@
-import { memoryLimits, type LimitCoordinator } from "./limits.ts";
+import { memoryLimits, type LimitCoordinator, type ServerCooldown } from "./limits.ts";
 import { createRequestScope, type RequestScope } from "./scheduler.ts";
 import type { TerminationReason } from "./types.ts";
 
@@ -7,6 +7,7 @@ export interface LookupContext {
   limits: LimitCoordinator;
   deadline: number;
   requestTimeoutMs: number;
+  stoppedServers?: Map<string, ServerCooldown>;
 }
 export class LookupAbort extends Error {
   constructor(readonly reason: TerminationReason) { super(reason); }

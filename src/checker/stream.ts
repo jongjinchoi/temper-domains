@@ -3,6 +3,7 @@ import { getTld } from "../utils/domain.ts";
 import type { CheckSummary, DomainResult } from "./types.ts";
 
 export interface CheckOptions {
+  resume?: boolean;
   limits?: LimitCoordinator;
   concurrency?: number;
   timeoutMs?: number;

@@ -16,6 +16,8 @@ export type TerminationReason = "deadline_before_start" | "deadline" | "request_
   | "server_cooldown" | "limit_state_error";
 export type RetryAtSource = "server" | "client_policy";
 export interface LookupMetadata {
+  httpStatus?: number;
+  checkedAt?: string;
   attempts?: number;
   queueTimeMs?: number;
   terminationReason?: TerminationReason;

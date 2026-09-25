@@ -8,7 +8,7 @@ import { LimitCoordinator, MemoryLimitStore, ServerCooldown, LimitStateError } f
 const key = "https://limits.example";
 const signal = () => AbortSignal.timeout(3000);
 
-test("client backoff advances only on a new probe, caps with one jitter, then resets on success", async () => {
+test("client backoff advances only on a new probe, caps with one jitter, and one success cannot reset it", async () => {
   let now = 100000;
   const store = new MemoryLimitStore();
   const limits = new LimitCoordinator(store, () => now, () => 1 - Number.EPSILON);
@@ -23,9 +23,9 @@ test("client backoff advances only on a new probe, caps with one jitter, then re
     now = Date.parse(limited.retryAt);
   }
   const success = await limits.acquire(key, now + 10000, signal());
-  await success.answered(); await success.release(); now += 300;
+  await success.answered(); await success.release(); now += 9600;
   const fresh = await limits.acquire(key, now + 10000, signal());
-  expect(Date.parse((await fresh.limited("rate_limited")).retryAt) - now).toBe(65000);
+  expect(Date.parse((await fresh.limited("rate_limited")).retryAt) - now).toBe(905000);
   await fresh.release();
 });
 
@@ -54,7 +54,7 @@ test("only one probe runs after cooldown across coordinators; cancellation relea
   await first.release();
   const probe = await a.acquire(key, now + 1000, signal());
   const cancel = new AbortController();
-  const waiting = b.acquire(key, now + 1000, cancel.signal);
+  const waiting = b.acquire(key, now + 3000, cancel.signal);
   await new Promise(resolve => setTimeout(resolve, 30));
   expect(await store.update(s => s.servers[key]!.leases.length)).toBe(1);
   cancel.abort(); await expect(waiting).rejects.toHaveProperty("name", "AbortError");

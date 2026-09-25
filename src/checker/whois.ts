@@ -73,7 +73,8 @@ async function whoisRaw(
 }
 
 export function whoisLimitMessage(raw: string): string | undefined {
-  const line = raw.split("\n").slice(0, 5).find(line => /rate limit|quota exceeded|too many queries/i.test(line));
+  const line = raw.split(/\r?\n/).slice(0, 5).map(line => line.trim().replace(/^[%#]+\s*/, ""))
+    .find(line => /^(?:error:\s*)?(?:rate limit exceeded|quota exceeded|too many queries)\b/i.test(line));
   return line?.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").replace(/[\x00-\x1f\x7f-\x9f]/g, " ").trim().slice(0, 240);
 }
 
@@ -82,8 +83,7 @@ export function detectStatus(raw: string, domain?: string): DomainStatus {
   const field = profile === "sn" ? /^nom de domaine:\s*(\S+)/im : profile === "cr" || profile === "sr" ? /^domain:\s*(\S+)/im : /^domain name:\s*(\S+)/im;
   const matched = field.exec(raw)?.[1];
   if (matched && domain && domainToASCII(matched).toLowerCase() !== domainToASCII(domain).toLowerCase()) return "error";
-  const firstLines = raw.split("\n").slice(0, 5).join(" ");
-  if (/rate limit|quota exceeded|too many queries/i.test(firstLines)) return "rate_limited";
+  if (whoisLimitMessage(raw)) return "rate_limited";
   const lines = raw.split(/\r?\n/).map(line => line.trim().replace(/^[%#]+\s*/, ""));
   if (lines.slice(0, 5).some(line => /^(?:error:\s*)?(?:access denied|not authorized|permission denied)\b/i.test(line))) return "error";
   // Anchor response markers; legal notices and free-form remarks are not status.
@@ -91,9 +91,17 @@ export function detectStatus(raw: string, domain?: string): DomainStatus {
     : profile === "sr" ? /^Message:\s*No Object Found[.!]?$/i
     : profile === "sn" ? /^NOT FOUND[.!]?$/i
     : /^(?:no match(?: for.*)?|not found[.!]?|domain not found[.!]?|no data found[.!]?|no entries found[.!]?|no object found[.!]?|status:\s*free|the queried object does not exist(?::.*)?)$/i;
-  if (lines.some(line => negative.test(line))) return "available";
+  const specialStatus = lines.some(line => /^(?:this )?domain.*(?:is reserved|is a premium)|^(?:reserved|premium)(?:\s|$)|^this is a premium domain/i.test(line));
+  if (lines.some(line => negative.test(line))) {
+    // Existing SR and queried-object fixtures echo the queried name even when
+    // absent. Their name field alone is not positive registration evidence.
+    const echoedQuery = profile === "sr" || lines.some(line => /^the queried object does not exist(?::.*)?$/i.test(line));
+    const registeredFields = lines.some(line => /^(?:status:\s*(?!free\b)\S|statut:\s*actif|creation date:|registered:|registrar:|name server:|nserver:)/i.test(line));
+    if (specialStatus || registeredFields || (matched && !echoedQuery)) return "error";
+    return "available";
+  }
   if (matched) return "taken";
-  if (lines.some(line => /^(?:this )?domain.*(?:is reserved|is a premium)|^(?:reserved|premium)(?:\s|$)|^this is a premium domain/i.test(line))) return /premium/i.test(raw) ? "premium" : "reserved";
+  if (specialStatus) return /premium/i.test(raw) ? "premium" : "reserved";
   return "error";
 }
 

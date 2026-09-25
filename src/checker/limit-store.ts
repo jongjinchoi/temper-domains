@@ -3,21 +3,24 @@ import { dirname, join } from "node:path";
 import { homedir } from "node:os";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
-import { LimitCoordinator, LimitStateError, ServerCooldown, type LimitState, type LimitStore } from "./limits.ts";
+import { LimitCoordinator, LimitStateError, ServerCooldown, processAlive, type LimitState, type LimitStore } from "./limits.ts";
 
 const integer = (v: unknown): v is number => typeof v === "number" && Number.isSafeInteger(v) && v >= 0;
-export function validateLimitState(value: unknown): value is LimitState {
+function validateState(value: unknown, version: 1 | 2): boolean {
   if (!value || typeof value !== "object") return false;
-  const data = value as LimitState;
-  if (data.version !== 1 || !data.servers || typeof data.servers !== "object" || Array.isArray(data.servers)) return false;
+  const data = value as Omit<LimitState, "version"> & { version: unknown };
+  if (data.version !== version || !data.servers || typeof data.servers !== "object" || Array.isArray(data.servers)) return false;
   return Object.entries(data.servers).every(([key, s]) => {
     if (!/^(https?:\/\/|whois:\/\/)/.test(key) || !s || typeof s !== "object") return false;
-    return [s.generation, s.observedAt, s.strikes, s.blockedUntil, s.nextStart].every(integer) && s.strikes <= 5
+    return (version === 1 || (typeof s.recovery === "boolean" && integer(s.level) && s.level <= 5 && integer(s.successes)
+      && (s.stableSince === undefined || integer(s.stableSince))))
+      && [s.generation, s.observedAt, s.strikes, s.blockedUntil, s.nextStart].every(integer) && s.strikes <= 5
       && ["server", "client_policy"].includes(s.source) && ["rate_limited", "service_unavailable"].includes(s.kind)
       && Array.isArray(s.leases) && s.leases.every(l => l && typeof l.id === "string" && integer(l.pid) && l.pid > 0
         && integer(l.expires) && integer(l.generation) && typeof l.probe === "boolean");
   });
 }
+export function validateLimitState(value: unknown): value is LimitState { return validateState(value, 2); }
 
 export class FileLimitStore implements LimitStore {
   private pending: Promise<unknown> = Promise.resolve();
@@ -26,13 +29,9 @@ export class FileLimitStore implements LimitStore {
     const deadline = Date.now() + 2000;
     const next = this.pending.then(() => this.transaction(change, deadline, signal));
     this.pending = next.catch(() => {});
-    if (!signal) return next;
-    if (signal.aborted) return Promise.reject(signal.reason);
-    return new Promise<T>((resolve, reject) => {
-      const abort = () => reject(signal.reason);
-      signal.addEventListener("abort", abort, { once: true });
-      next.then(resolve, reject).finally(() => signal.removeEventListener("abort", abort));
-    });
+    // Do not discard a committed lease on an abort during the atomic write.
+    // The caller must receive it and release it before leaving the request.
+    return next;
   }
   private async transaction<T>(change: (state: LimitState) => T, deadline: number, signal?: AbortSignal): Promise<T> {
     const lockPath = `${this.path}.lock`;
@@ -56,11 +55,28 @@ export class FileLimitStore implements LimitStore {
         if (error.code === "ENOENT") return null;
         throw error;
       });
-      const state: unknown = raw === null ? { version: 1, servers: {} } : JSON.parse(raw);
-      if (!validateLimitState(state)) throw new Error("Invalid structure; preserve and repair the state file before retrying");
+      const state: unknown = raw === null ? { version: 2, servers: {} } : JSON.parse(raw);
       const before = JSON.stringify(state);
+      if (validateState(state, 1)) {
+        const old = state as LimitState;
+        if (Object.values(old.servers).some(s => s.leases.some(l => l.expires > Date.now() && processAlive(l.pid)))) {
+          throw new Error("An older Temper request is active. Finish older Temper commands and reconnect updated MCP clients; preserve this state file.");
+        }
+        old.version = 2;
+        for (const entry of Object.values(old.servers)) {
+          entry.leases = []; entry.recovery = entry.strikes > 0; entry.level = entry.strikes > 0 ? 2 : 0;
+          entry.successes = 0; delete entry.stableSince;
+        }
+      }
+      if (!validateLimitState(state)) throw new Error("Unsupported or invalid state; use a compatible Temper version and reconnect MCP clients. Preserve the state file before repair.");
       signal?.throwIfAborted();
-      const result = change(state);
+      let result: T | undefined;
+      let policyError: ServerCooldown | DOMException | undefined;
+      try { result = change(state); }
+      catch (error) {
+        if (error instanceof ServerCooldown || error instanceof DOMException) policyError = error;
+        else throw error;
+      }
       if (JSON.stringify(state) !== before) {
         temporary = `${this.path}.${randomUUID()}.tmp`;
         const file = await open(temporary, "wx", 0o600);
@@ -68,7 +84,8 @@ export class FileLimitStore implements LimitStore {
         finally { await file.close(); }
         await rename(temporary, this.path);
       }
-      return result;
+      if (policyError) throw policyError;
+      return result as T;
     } catch (error) {
       // Preserve policy rejections; only persistence failures become state errors.
       if (signal?.aborted) throw signal.reason;

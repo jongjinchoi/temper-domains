@@ -11,6 +11,7 @@ import { getTld } from "../utils/domain.ts";
 export async function* checkDomainBatch(domains: readonly string[], options: CheckOptions,
   bootstrap: () => Promise<Map<string, string>>): AsyncGenerator<DomainResult> {
   const run = createRun(options.timeoutMs ?? 30000, options.signal, options.concurrency, options.requestTimeoutMs, options.limits);
+  if (options.resume) run.context.stoppedServers = new Map();
   const rows: DomainResult[] = [];
   try {
     let map: Map<string, string>;
@@ -34,8 +35,11 @@ export async function* checkDomainBatch(domains: readonly string[], options: Che
     });
     if (options.timeoutMs === undefined) {
       const keys = matches.map((m, i) => m.rdapUrl ? serverKey(m.rdapUrl) : whoisServerKey(domains[i]!));
+      // Best-effort estimate only. Authoritative admission still reports storage
+      // failures on each affected row, before any network request is sent.
+      const sharedWait = await run.context.limits.estimateWait(keys, run.signal).catch(() => 0);
       const elapsed = performance.now() - run.startedAt;
-      run.setBudget(Math.min(30000, Math.max(5000, elapsed + requestScheduler.estimateWait(keys) + run.context.requestTimeoutMs)));
+      run.setBudget(Math.min(30000, Math.max(5000, elapsed + Math.max(sharedWait, requestScheduler.estimateWait(keys)) + run.context.requestTimeoutMs)));
     }
     const pending = new Map<string, Promise<DomainResult>>();
     let index = 0;

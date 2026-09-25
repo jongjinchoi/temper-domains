@@ -1,7 +1,8 @@
 import { ServerCooldown, LimitStateError } from "./limits.ts";
 import { rdapTransport, TransportError } from "./http-transport.ts";
 import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
-import { requestScheduler, serverKey } from "./scheduler.ts";
+import { serverKey } from "./scheduler.ts";
+import { withAdmission, stopLimitedServer } from "./admission.ts";
 import { createRun, abortReason, LookupAbort, type LookupContext } from "./run.ts";
 import { getTld, parseDomain } from "../utils/domain.ts";
 
@@ -54,9 +55,10 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
   let queuedAt: number | undefined;
   let terminationReason: TerminationReason | undefined;
   let lastAnswer: RdapAnswer | undefined;
+  let httpStatus: number | undefined;
   const row = (fields: Partial<DomainDetail>): DomainDetail => ({
     domain, status: "error", method: "rdap", responseTime: Math.round(performance.now() - start),
-    attempts, queueTimeMs: Math.round(queueTimeMs), ...fields,
+    attempts, queueTimeMs: Math.round(queueTimeMs), httpStatus, ...fields,
   });
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
@@ -64,9 +66,7 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
       queuedAt = performance.now();
       let answer: RdapAnswer;
       try {
-        const permit = await ctx.limits.acquire(key, ctx.deadline, signal);
-        try { answer = await requestScheduler.run(key, ctx.scope, async (): Promise<RdapAnswer> => {
-        await permit.check();
+        answer = await withAdmission(key, ctx, signal, async (permit): Promise<RdapAnswer> => {
         queueTimeMs += performance.now() - queuedAt!;
         queuedAt = undefined;
         signal.throwIfAborted();
@@ -81,8 +81,11 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
         let response: Response | undefined;
         try {
           response = await rdapTransport.request(url, { signal: requestSignal, headers: RDAP_HEADERS });
+          httpStatus = response.status;
           if (response.status === 429 || response.status === 503) {
-            const metadata = await permit.limited(response.status === 429 ? "rate_limited" : "service_unavailable", retryAfterDelay(response.headers.get("retry-after")));
+            const kind = response.status === 429 ? "rate_limited" : "service_unavailable";
+            const metadata = await permit.limited(kind, retryAfterDelay(response.headers.get("retry-after")));
+            stopLimitedServer(ctx, key, kind, metadata);
             return { status: response.status, retryAt: Date.parse(metadata.retryAt), retryAtSource: metadata.retryAtSource };
           }
           if (response.status === 404) await permit.answered();
@@ -103,10 +106,9 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
           clearTimeout(timeout);
           await response?.body?.cancel().catch(() => {});
         }
-      }, signal);
-        } finally { await permit.release(); }
+      });
       } catch (error) {
-        if (error instanceof ServerCooldown && error.until < ctx.deadline && !signal.aborted) { attempt--; continue; }
+        if (error instanceof ServerCooldown && !ctx.stoppedServers && error.until < ctx.deadline && !signal.aborted) { attempt--; continue; }
         // Only an unanswered transport request may use another published HTTPS URL.
         if (!signal.aborted && terminationReason === undefined && error instanceof TransportError && ["network", "tls", "protocol"].includes(error.kind) && endpoints[endpointIndex + 1]?.startsWith("https:")) {
           url = `${endpoints[++endpointIndex]!.replace(/\/$/, "")}/domain/${encodeURIComponent(domain)}`;
@@ -121,10 +123,10 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
         url = target.href; attempt--; continue;
       }
       lastAnswer = answer;
-      if (answer.status === 200) return row({ status: "taken", ...answer.parsed, rawRdap: answer.json });
-      if (answer.status === 404) return row({ status: "available" });
+      if (answer.status === 200) return row({ status: "taken", ...answer.parsed, rawRdap: answer.json, checkedAt: new Date().toISOString() });
+      if (answer.status === 404) return row({ status: "available", checkedAt: new Date().toISOString() });
       if (answer.status !== 429 && answer.status !== 503) return row({ error: answer.status === 403 ? "HTTP 403: registry denied access" : `HTTP ${answer.status}`, terminationReason: "http_error" });
-      if (attempt === 1 || (answer.retryAt ?? 0) >= ctx.deadline) break;
+      if (ctx.stoppedServers || attempt === 1 || (answer.retryAt ?? 0) >= ctx.deadline) break;
     }
     return row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
       error: `HTTP ${lastAnswer?.status}`, terminationReason: lastAnswer?.status === 429 ? "rate_limited" : "service_unavailable",

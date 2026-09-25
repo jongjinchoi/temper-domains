@@ -1,6 +1,17 @@
 import { test, expect, describe } from "bun:test";
 import { detectStatus, parseWhoisRaw, whoisDetail, whoisLookup } from "./whois.ts";
 
+test("generic WHOIS notices are not denials and contradictory evidence stays unresolved", () => {
+  expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain not found.", "sample.io")).toBe("available");
+  expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain Name: sample.io", "sample.io")).toBe("taken");
+  expect(detectStatus("Domain Name: sample.io\nDomain not found.", "sample.io")).toBe("error");
+  expect(detectStatus("Rate limit exceeded\nDomain not found.", "sample.io")).toBe("rate_limited");
+  expect(detectStatus("Access denied\nDomain not found.", "sample.io")).toBe("error");
+  expect(detectStatus("Domain Name: other.io\nDomain not found.", "sample.io")).toBe("error");
+  expect(detectStatus("Domain not found.\nThis domain is reserved by the registry", "sample.io")).toBe("error");
+  expect(detectStatus("Domain: sample.sr\nStatus: active\nMessage: No Object Found", "sample.sr")).toBe("error");
+});
+
 describe("detectStatus", () => {
   test("returns 'taken' when Domain Name header present", () => {
     expect(detectStatus("Domain Name: example.com\nRegistrar: IANA")).toBe("taken");
