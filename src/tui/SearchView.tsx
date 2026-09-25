@@ -103,6 +103,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const capacity = termRows - 8 - footerLines - extraLines;
 
   useEffect(() => {
+    // Follow the live session; a cancelled run may finish after another screen opens.
     setScreenState(done ? (error ? "failed" : "selecting") : "searching");
   }, [done, error]);
 
@@ -155,9 +156,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         if (key.escape) setScreenState("selecting");
         else if (key.return) {
           try {
-            const run = session.resume(resumeDomains);
+            void session.resume(resumeDomains);
             setScreenState("searching");
-            void run.then(() => { if (session.getSnapshot().done) setScreenState(session.getSnapshot().error ? "failed" : "selecting"); });
           }
           catch (error) { setConfirmation({ text: String(error instanceof Error ? error.message : error), error: true }); setScreenState("selecting"); }
         }

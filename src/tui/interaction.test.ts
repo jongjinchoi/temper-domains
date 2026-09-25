@@ -69,6 +69,26 @@ test("explicit resume retains completed rows through cancel and screen navigatio
   expect(result.unhandled).toEqual([]);
 });
 
+test.each(["confirmation", "registrar", "running", "error"])("late cancelled resume completion preserves the %s screen and recovery", async mode => {
+  const result = await scenario(mode, "tui-resume-race-worker.tsx");
+  const expected = mode === "registrar" ? "Where to check?" : mode === "running" ? "Resuming" : "Resume 1 unresolved candidate once?";
+  expect(result.frames.beforeOldCompletion).toContain(expected);
+  expect(result.frames.afterOldCompletion).toContain(expected);
+  expect(result.frames.initial).toContain("1/2 answered");
+  if (mode === "registrar" || mode === "error") {
+    expect(result.frames.dismissed).toContain("enter registrar");
+    expect(result.frames.dismissed).not.toContain("Resume 1 unresolved");
+    expect(result.frames.dismissed).not.toContain("Where to check?");
+  }
+  expect(result.frames.final).toContain(mode === "error" ? "Search failed: Controlled resume failure" : "2/2 answered");
+  expect(result.frames.final).toContain("acme.com");
+  expect(result.results.find((row: { domain: string }) => row.domain === "acme.com").status).toBe("available");
+  expect(result.calls).toEqual([["acme.com", "acme.net"], ["acme.net"], ["acme.net"]]);
+  expect(result.history).toHaveLength(1);
+  expect(result.history[0].available).toBe(mode === "error" ? 1 : 2);
+  expect(result.unhandled).toEqual([]);
+});
+
 test("bootstrap failure becomes an error screen without a successful history entry", async () => {
   const result = await scenario("bootstrap");
   expect(result.unhandled).toEqual([]);
