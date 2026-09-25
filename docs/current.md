@@ -78,8 +78,17 @@ in both workspaces so root typechecking does not download a separate compiler.
   imply rollback. Windows npm wrappers use the verified npm JS entry via Node.
   Ink suspendTerminal hands the terminal to the installer and restores it. Native
   quiet flags reduce output. Unix `/usr/bin/script`, when available, preserves the
-  child TTY while filtering known routine output; partial prompts and unknown
-  diagnostics are forwarded. No transcript is saved. Windows/missing-script systems
+  child TTY. Homebrew alone receives `TERM=dumb` to stop its cursor-based download
+  animation; npm keeps its original TERM. The bounded incremental decoder handles
+  split ANSI, CR/CRLF and known routine lines, independently for relay stdout/stderr.
+  Known tap-trust blocks are summarized with excluded tap names and `brew doctor`;
+  target-tap blocks, unexpected text, questions and errors retain their context.
+  Unknown unterminated text is forwarded after 300ms idle (possible routine prefixes
+  after 1500ms); 8,192-character line/16,384-character block bounds fall back to
+  visible text, not log loss.
+  Input prompts pause progress. The runner supplies refresh/install/verification
+  stages; the final success still requires a fresh installed-version check.
+  No transcript is saved. Windows/missing-script systems
   keep direct terminal inheritance and native quiet output. Locks remain in ~/.temper/cache/.
   Completion exits; it does not re-run the user's original command automatically.
 - Default search checks 30 TLDs.

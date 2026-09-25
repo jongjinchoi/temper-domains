@@ -131,9 +131,13 @@ version, Temper asks again. Local packages, `npx`, downloaded binaries, and
 unknown installation methods receive instructions instead of an automatic install.
 After an update, Temper verifies the installed version and exits; run your original
 command again. Failed or interrupted installers report failure without claiming
-an automatic rollback. Installer quiet options reduce ordinary output; on macOS
-and Linux, the system `script` utility also filters known routine lines while
-preserving the installer terminal, warnings, unknown output, and input prompts.
+an automatic rollback. On macOS and Linux with the system `script` utility,
+Temper shows compact update progress followed by installation verification.
+The installer retains its terminal and input prompts. Homebrew's child terminal
+uses `TERM=dumb` to disable its download animation; known download and cleanup
+messages are filtered even when split across output chunks. Recognized untrusted-tap
+warnings are summarized with the affected tap names and `brew doctor` guidance.
+Errors, other warnings, unknown output, and input prompts remain visible.
 No installation transcript is saved. Without that utility (including Windows),
 Temper preserves direct terminal access and the installer's quiet output.
 
