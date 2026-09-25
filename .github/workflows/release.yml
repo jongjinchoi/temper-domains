@@ -49,16 +49,51 @@ jobs:
       - run: bun test
       - run: bun run typecheck
       - run: bun run docs:check
-      - run: bun run build:npm
+      - run: mkdir -p dist && npm pack --pack-destination dist
       - uses: actions/upload-artifact@v4
         with:
-          name: corresponding-source
-          path: dist/temper-source-*.tar.gz
+          name: release-inputs
+          path: |
+            dist/temper-source-*.tar.gz
+            dist/temper-domains-*.tgz
+            dist/source-manifest.json
+
+  source:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-inputs
+          path: dist
+      - name: Publish and verify corresponding source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$RELEASE_TAG" --json isDraft > "$RUNNER_TEMP/release.json"; then
+            test "$GITHUB_EVENT_NAME" = push
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes
+          else
+            test "$(jq -r .isDraft "$RUNNER_TEMP/release.json")" = false
+          fi
+          SOURCE_FILE="dist/temper-source-${GITHUB_SHA}.tar.gz"
+          if [ "$(gh release view "$RELEASE_TAG" --json assets --jq ".assets | any(.name == \"${SOURCE_FILE#dist/}\")")" != true ]; then
+            gh release upload "$RELEASE_TAG" "$SOURCE_FILE"
+          fi
+          curl --fail --location --retry 3 "https://github.com/jongjinchoi/temper-domains/releases/download/${RELEASE_TAG}/${SOURCE_FILE#dist/}" --output "$RUNNER_TEMP/temper-public-source.tar.gz"
+          bun run scripts/verify-source-archive.ts dist/source-manifest.json "$RUNNER_TEMP/temper-public-source.tar.gz"
 
   build:
     if: github.event_name == 'push'
-    needs: verify
+    needs: source
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: bun-darwin-arm64
@@ -92,62 +127,68 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           path: dist
+          pattern: temper-*
           merge-multiple: true
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: dist/temper-*.tar.gz
-          generate_release_notes: true
+      - name: Upload native archives without replacing published assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          for archive in dist/temper-*.tar.gz; do
+            name="${archive#dist/}"
+            if [ "$(gh release view "$RELEASE_TAG" --json assets --jq ".assets | any(.name == \"$name\")")" = true ]; then
+              curl --fail --location --retry 3 "https://github.com/jongjinchoi/temper-domains/releases/download/$RELEASE_TAG/$name" --output "$RUNNER_TEMP/$name"
+              # gzip timestamps can differ on a retry; compare the actual files.
+              diff <(tar -tzf "$archive" | sort) <(tar -tzf "$RUNNER_TEMP/$name" | sort)
+              while IFS= read -r member; do
+                cmp <(tar -xOf "$archive" "$member") <(tar -xOf "$RUNNER_TEMP/$name" "$member")
+              done < <(tar -tzf "$archive")
+            else
+              gh release upload "$RELEASE_TAG" "$archive"
+            fi
+          done
 
   npm:
-    needs: [verify, release]
-    if: always() && needs.verify.result == 'success' && (needs.release.result == 'success' || (github.event_name == 'workflow_dispatch' && needs.release.result == 'skipped'))
+    needs: source
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v5
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
       - uses: actions/setup-node@v5
         with:
           node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
-      - run: bun ci
-      - run: bun run build:npm
-      - name: Attach exact source before publishing npm (including recovery)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-inputs
+          path: dist
+      - name: Check whether this exact npm artifact was already published
+        id: published
         run: |
-          # The commit in the filename avoids replacing a tag build's source
-          # during recovery from a later workflow commit.
-          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')" = false
-          SOURCE_FILE="dist/temper-source-${GITHUB_SHA}.tar.gz"
-          # A retry may reuse an existing source for the same immutable commit.
-          if [ "$(gh release view "$RELEASE_TAG" --json assets --jq ".assets | any(.name == \"${SOURCE_FILE#dist/}\")")" != true ]; then
-            gh release upload "$RELEASE_TAG" "$SOURCE_FILE"
-          fi
-          curl --fail --location --retry 3 "https://github.com/jongjinchoi/temper-domains/releases/download/${RELEASE_TAG}/${SOURCE_FILE#dist/}" --output "$RUNNER_TEMP/temper-public-source.tar.gz"
-          tar -xOf "$RUNNER_TEMP/temper-public-source.tar.gz" ./SOURCE-MANIFEST.json > "$RUNNER_TEMP/temper-public-source.json"
           node --input-type=module -e '
-            import { readFileSync } from "node:fs";
-            import { execFileSync } from "node:child_process";
+            import { readFileSync, appendFileSync } from "node:fs";
             import { createHash } from "node:crypto";
-            const local = JSON.parse(readFileSync("dist/source-manifest.json", "utf8"));
-            const remote = JSON.parse(readFileSync(process.env.RUNNER_TEMP + "/temper-public-source.json", "utf8"));
-            if (remote.revision !== local.revision || remote.snapshot !== local.snapshot || remote.dirty) throw new Error("Published source does not match this build");
-            for (const [path, hash] of Object.entries(local.files)) {
-              const bytes = execFileSync("tar", ["-xOf", process.env.RUNNER_TEMP + "/temper-public-source.tar.gz", "./" + path], { maxBuffer: 64 * 1024 * 1024 });
-              if (createHash("sha256").update(bytes).digest("hex") !== hash) throw new Error("Published source file differs: " + path);
+            const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+            const file = `./dist/temper-domains-${pkg.version}.tgz`;
+            const response = await fetch(`https://registry.npmjs.org/${pkg.name}/${pkg.version}`);
+            if (response.status !== 404) {
+              if (!response.ok) throw new Error(`Registry check failed: ${response.status}`);
+              const remote = await response.json();
+              const integrity = "sha512-" + createHash("sha512").update(readFileSync(file)).digest("base64");
+              if (remote.dist.integrity !== integrity) throw new Error("This version already contains a different artifact; do not overwrite or republish it");
             }
+            appendFileSync(process.env.GITHUB_OUTPUT, `exists=${response.status !== 404}\nfile=${file}\n`);
           '
-      - run: npm publish --access public
+      - run: npm publish "${{ steps.published.outputs.file }}" --access public
+        if: steps.published.outputs.exists == 'false'
 
   homebrew:
     if: github.event_name == 'push'

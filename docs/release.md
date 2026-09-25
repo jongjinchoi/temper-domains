@@ -10,10 +10,20 @@
   incompatibility or violation has been established by that open status.
   Do not mark a runtime reviewed merely because its build succeeds. Dependency upgrades require a
   refreshed inventory and preserved notices.
-- Public package builds set `TEMPER_PUBLIC_BUILD=1`, check the actual Git commit
-  against the deployment commit and reject dirty inputs. The website applies
-  the same checks on Vercel; other public hosts must set this environment flag.
-  Local builds have no such publication claim and label dirty source as local.
+- Public packaging sets `TEMPER_PUBLIC_BUILD=1`, checks the actual Git commit
+  against the deployment commit and rejects changes to included source inputs,
+  listing those paths. Unrelated files outside the source archive do not block it.
+  Ordinary compilation needs neither Git nor release metadata. Source archives
+  are generated during packaging, once per package rather than before/after
+  compilation. Native packages retain the compiler's recorded Bun version;
+  the packager does not need to use the same version.
+  The website instead uses `VERCEL_GIT_COMMIT_SHA` (or `GITHUB_SHA` in CI) for its
+  source link without requiring a clean Git working directory. Other public hosts
+  set `TEMPER_PUBLIC_BUILD=1`; without deployment metadata, the website reads the
+  checkout's HEAD. A missing or invalid revision is reported rather than inventing
+  a source link. Local dirty previews remain labeled as unpublished.
+  Vercel's `.vercel/` project metadata and output are ignored and excluded from
+  source archives. Web CI builds in public mode.
 
 - Run `bun ci`. No exact Bun or Node.js version is required for local
   verification; record the versions used. Release workflows select Bun
@@ -50,14 +60,20 @@ git push origin main --tags
 
 태그 푸시 후 GitHub Actions가 자동 실행:
 
-1. **verify** - `bun test`, `bun run typecheck`, `bun run docs:check`, `bun run build:npm`; corresponding-source archive 생성
-2. **build** - 5개 플랫폼 바이너리 (`PKG_VERSION`은 태그 버전으로 주입)
+1. **verify** - `bun test`, `bun run typecheck`, `bun run docs:check`, `npm pack`; 게시할 npm tgz와 corresponding-source archive 생성
+2. **source** - GitHub Release 생성/확인, 실제 commit의 source archive 공개 및 파일 hash 확인. 한 번 내려받아 한 번 압축 해제하여 대조.
+3. **build / npm** - source 성공 뒤 독립 실행. npm은 verify가 만든 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드 (`PKG_VERSION`은 태그 버전으로 주입)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64
    - bun-windows-x64
-3. **release** - GitHub Release 생성 + 바이너리와 해당 source `tar.gz` 업로드
-4. **npm** - 공개 Release/source 확인, `bun run build:npm` 후 OIDC로 `npm publish --access public`
+4. **release** - 성공한 바이너리 `tar.gz` 업로드
 5. **homebrew** - `jongjinchoi/homebrew-temper-domains` Formula 자동 업데이트
+
+Source 공개가 바이너리보다 먼저 완료될 수 있다. 채널별 결과를 따로 확인한다.
+Native 실패는 npm 게시를 중단하지 않으며, source 실패는 두 채널 모두 중단한다.
+Homebrew는 native 배포 성공 뒤에만 갱신한다. 동일 npm 버전이 이미 있으면
+tgz integrity가 같을 때 재게시를 생략하고, 다르면 실패 이유를 보고한다.
+기존 버전/산출물을 덮어쓰거나 일부 성공을 전체 배포 완료로 보고하지 않는다.
 
 ## Recover npm Publication
 
