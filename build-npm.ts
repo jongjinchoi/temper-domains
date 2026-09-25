@@ -1,9 +1,10 @@
 import { verifyBundledCheckerSignatures } from "./scripts/checker-fingerprint.ts";
 import { readFile, writeFile } from "node:fs/promises";
-import { prepareSource } from "./scripts/source-package.ts";
+import { collectSource } from "./scripts/source-package.ts";
+import { createHash } from 'node:crypto';
 
 await verifyBundledCheckerSignatures();
-const source = prepareSource();
+const source = collectSource();
 
 const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
 
@@ -23,7 +24,7 @@ if (!result.success) {
   console.error("Build failed:", result.logs);
   process.exit(1);
 }
-if (prepareSource().manifest.snapshot !== source.manifest.snapshot) throw new Error('Source changed during npm build');
+if (collectSource().snapshot !== source.snapshot) throw new Error('Source changed during npm build');
 
 // Add shebang to dist/npm/index.js
 const indexPath = "./dist/npm/index.js";
@@ -33,4 +34,5 @@ if (!content.startsWith("#!/")) {
 }
 
 console.log("✓ dist/npm/index.js");
-await writeFile("./dist/npm/SOURCE.md", source.description);
+await writeFile('./dist/npm-build.json', JSON.stringify({ snapshot: source.snapshot, bun: Bun.version,
+  binarySha256: createHash('sha256').update(await readFile(indexPath)).digest('hex') }) + '\n');

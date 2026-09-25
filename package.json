@@ -29,7 +29,7 @@
     "web:dev": "bun run --cwd web dev",
     "web:typecheck": "bun run --cwd web typecheck",
     "web:build": "bun run catalog:verify && bun run --cwd web build",
-    "prepack": "bun run build-npm.ts"
+    "prepack": "bun run build-npm.ts && bun run scripts/pack-npm.ts"
   },
   "devDependencies": {
     "typescript": "7.0.2",

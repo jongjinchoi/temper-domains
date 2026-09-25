@@ -31,9 +31,11 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Web build: `bun run web:build`
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
-Package builds create a corresponding-source snapshot under `dist/` and require
-a Git checkout or an extracted source archive. `TEMPER_PUBLIC_BUILD=1` rejects
-dirty/unidentified source. Local packaging does not publish or install anything.
+Ordinary npm/native compilation does not require Git or release metadata.
+`npm pack` and native packaging create corresponding-source archives under `dist/`.
+For public packaging, `TEMPER_PUBLIC_BUILD=1` checks the commit and only the
+source archive's included inputs. Hosted web builds use deployment commit metadata
+without requiring a clean worktree. Local packaging does not publish or install anything.
 
 Install with `bun ci`. Development and local verification do not require an
 exact Bun or Node.js version. The npm CLI requires Node.js >= 22.12.0.

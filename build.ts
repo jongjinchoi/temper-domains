@@ -1,10 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { verifyBundledCheckerSignatures } from "./scripts/checker-fingerprint.ts";
-import { nativeBinaryName, prepareSource } from "./scripts/source-package.ts";
+import { nativeBinaryName, collectSource } from "./scripts/source-package.ts";
 
 await verifyBundledCheckerSignatures();
-const source = prepareSource();
+const source = collectSource();
 
 const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
 
@@ -44,9 +44,9 @@ for (const t of buildTargets) {
   });
 
   if (result.success) {
-    if (prepareSource().manifest.snapshot !== source.manifest.snapshot) throw new Error('Source changed during native build');
+    if (collectSource().snapshot !== source.snapshot) throw new Error('Source changed during native build');
     const binary = `./dist/bin/${nativeBinaryName(t)}`;
-    await writeFile(`${binary}.source.json`, JSON.stringify({ snapshot: source.manifest.snapshot, bun: Bun.version, binarySha256: createHash('sha256').update(await readFile(binary)).digest('hex') }) + '\n');
+    await writeFile(`${binary}.source.json`, JSON.stringify({ snapshot: source.snapshot, bun: Bun.version, binarySha256: createHash('sha256').update(await readFile(binary)).digest('hex') }) + '\n');
     console.log(`  ✓ dist/bin/temper-${t}`);
   } else {
     console.error(`  ✗ Failed:`, result.logs);

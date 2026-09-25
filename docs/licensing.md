@@ -51,9 +51,10 @@ records their integrity; [legal/inventory.json](https://github.com/jongjinchoi/t
 records the reviewed versions and source locations. npm dependencies remain
 external to the npm JavaScript bundle. They are not relicensed as Temper code.
 
-A source archive rebuild is labeled as a local snapshot. Publication requires
-the original Git checkout; public builds verify the deployment commit and
-reject uncommitted inputs.
+A source archive rebuild is labeled as a local snapshot. Ordinary compilation
+works without Git or a source manifest. Public packaging verifies the actual
+commit and rejects changes to included source inputs; unrelated local notes do
+not block it. Hosted web builds identify their source using deployment metadata.
 
 ## Third-party boundaries
 
