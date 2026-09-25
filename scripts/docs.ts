@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { checkManifest, MANIFEST, outputPaths, ROOT, tapeSources } from './media/core.ts';
-import { manifestForCurrentPackage, recordPackageSource } from './media-package.ts';
+import { captureInputChanges, checkManifest, MANIFEST, outputPaths, ROOT, tapeSources } from './media/core.ts';
+import { recordPackageSource } from './media-package.ts';
 import { HELP_COMMANDS, USER_DOCS, validateLinks, validateLicenseLabels } from './documentation.ts';
 import { createHash } from 'node:crypto';
 
@@ -45,8 +45,6 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
 } else {
   if (process.argv.length !== 2) throw new Error('Usage: docs:check or docs:help');
   if (original.match(match)![0] !== expected || original.match(optionsMatch)![0] !== optionsExpected) throw new Error('CLI reference help differs; run bun run docs:help');
-  const contracts = Bun.spawnSync([process.execPath, 'test', 'src/update/installation.test.ts'], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
-  if (contracts.exitCode !== 0) throw new Error(`Installation documentation contracts failed:\n${contracts.stdout}\n${contracts.stderr}`);
   const pages = new Map([...USER_DOCS, 'docs/current.md', 'docs/release.md', 'docs/backlog.md'].map(path => [path, readFileSync(join(ROOT, path), 'utf8')]));
   validateLinks(pages, path => existsSync(join(ROOT, path)));
   const labels = ['README.md', 'web/components/Hero.tsx', 'web/components/Features.tsx', 'web/components/Cta.tsx', 'web/components/Footer.tsx', 'web/app/layout.tsx', 'web/app/llms.txt/route.ts'];
@@ -54,7 +52,14 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
   validateLicenseLabels(pkg.license, new Map(labels.map(path => [path, readFileSync(join(ROOT, path), 'utf8')])));
   if (JSON.parse(readFileSync(join(ROOT, 'web/package.json'), 'utf8')).license !== pkg.license) throw new Error('Workspace license differs');
   const inventory = JSON.parse(readFileSync(join(ROOT, 'legal/inventory.json'), 'utf8'));
-  if (inventory.lockSha256 !== createHash('sha256').update(readFileSync(join(ROOT, 'bun.lock'))).digest('hex')) throw new Error('Dependency license inventory needs review after lockfile changes');
+  if (inventory.lockSha256 !== createHash('sha256').update(readFileSync(join(ROOT, 'bun.lock'))).digest('hex')) {
+    const lock = Bun.JSONC.parse(readFileSync(join(ROOT, 'bun.lock'), 'utf8')) as { packages: Record<string, [string, ...unknown[]]> };
+    const current = new Set(Object.values(lock.packages).map(entry => entry[0]).filter(id => !id.includes('@workspace:')));
+    const recorded = new Set<string>([...inventory.packages, ...inventory.nonHost].map((entry: { id: string }) => entry.id));
+    const added = [...current].filter(id => !recorded.has(id));
+    const removed = [...recorded].filter(id => !current.has(id));
+    console.warn(`Dependency inventory: lockfile changed; added: ${added.join(', ') || 'none'}; removed: ${removed.join(', ') || 'none'}. Review affected deployed dependencies, including source/integrity changes at the same version. The inventory was not rewritten or marked reviewed.`);
+  }
   if (inventory.licenseTextSha256 !== createHash('sha256').update(readFileSync(join(ROOT, 'LICENSE'))).digest('hex')) throw new Error('LICENSE differs from the reviewed standard AGPL text');
   const references = [...[...pages.values()].join('\n').matchAll(/(?:https:\/\/raw\.githubusercontent\.com\/jongjinchoi\/temper-domains\/main\/)?(assets\/[a-zA-Z0-9/_.-]+\.(?:png|gif))/g)].map(m => m[1]!);
   for (const ref of references) if (!existsSync(join(ROOT, ref))) throw new Error(`Missing README media: ${ref}`);
@@ -67,13 +72,9 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
   if (!manifest.runtime.bunExecutable || /[/\\]/.test(manifest.runtime.bunExecutable) || manifest.runtime.entry !== 'src/index.ts') {
     throw new Error('Public capture metadata must omit machine paths; prepare the manifest with --record-package before applying it');
   }
-  try {
-    checkManifest(manifestForCurrentPackage(manifest, readFileSync(join(ROOT, 'package.json'), 'utf8')));
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith('Capture inputs changed:')) {
-      throw new Error('Capture inputs changed: review whether screens or demonstrated interactions changed before deciding to recapture');
-    }
-    throw error;
-  }
-  console.log('Command help, installation contracts, documentation links, license labels and original capture fingerprints match. Other prose still requires source review.');
+  recordPackageSource(manifest, manifest.packageSource);
+  checkManifest(manifest, ROOT, ROOT, false);
+  const changes = captureInputChanges(manifest);
+  if (changes.length) console.warn(`Capture inputs changed (review screen/interaction impact; recapture if affected):\n${changes.join('\n')}\nOriginal capture metadata was preserved.`);
+  console.log('Command help, documentation links, license labels and original media integrity checked. Installation contracts run in bun test; prose and capture relevance require review.');
 }

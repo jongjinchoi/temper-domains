@@ -11,34 +11,8 @@ function packageForComparison(source: string) {
   return pkg;
 }
 
-// These files contain documentation/notices only and are not imported by the CLI.
-const DOCUMENTATION_ADDITIONS = new Set([
-  'SOURCE.md', 'THIRD_PARTY_NOTICES.md', 'docs/cli.md', 'docs/extensions.md',
-  'docs/troubleshooting.md', 'docs/mcp.md', 'docs/licensing.md',
-  'docs/current.md', 'docs/release.md', 'docs/backlog.md',
-]);
-
-export function manifestForCurrentPackage(manifest: DocumentationManifest, currentPackage: string): CaptureManifest {
-  if (typeof manifest.packageSource !== 'string') throw new Error('Missing capture package source; run scripts/docs.ts --record-package before changing the package');
-  recordPackageSource(manifest, manifest.packageSource);
-  const original = packageForComparison(manifest.packageSource);
-  const current = packageForComparison(currentPackage);
-  delete original.version;
-  delete current.version;
-  if (original.license === 'Apache-2.0' && current.license === 'AGPL-3.0-only') current.license = original.license;
-  if (Array.isArray(original.files) && Array.isArray(current.files)) {
-    current.files = current.files.filter((path: unknown) => original.files.includes(path)
-      || typeof path !== 'string' || !DOCUMENTATION_ADDITIONS.has(path));
-  }
-  if (JSON.stringify(original) !== JSON.stringify(current)) {
-    throw new Error('Package contents beyond approved display-neutral metadata changed; review their effect on recorded screens');
-  }
-  // Only the in-memory comparison changes. Original provenance remains intact.
-  // The current tapes do not display version/license/package file lists and disable update checks.
-  return { ...manifest, inputs: { ...manifest.inputs, 'package.json': digest(currentPackage) } };
-}
-
 export function recordPackageSource(manifest: DocumentationManifest, source: string): DocumentationManifest {
+  if (typeof source !== 'string') throw new Error('Missing original capture package source');
   if (digest(source) !== manifest.inputs['package.json']) throw new Error('Package source does not match the original capture hash');
   packageForComparison(source);
   const executable = manifest.runtime.bunExecutable;

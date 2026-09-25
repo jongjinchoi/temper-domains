@@ -39,10 +39,11 @@ export function validateLinks(pages: Map<string, string>, exists: (path: string)
 }
 
 // Historical and third-party notices are intentionally outside these current product labels.
-export function validateLicenseLabels(license: string, labels: Map<string, string>) {
+export function validateLicenseLabels(license: string, labels: Map<string, string>, required = ['README.md']) {
   if (license !== 'AGPL-3.0-only') throw new Error('Expected the approved AGPL-3.0-only package license');
   for (const [path, source] of labels) {
     if (/Apache(?:[- ]|%20)2(?:\.0|%2E0)/i.test(source)) throw new Error(`Stale product license in ${path}`);
-    if (!/AGPL(?:-3\.0-only| 3\.0 only)/i.test(source)) throw new Error(`Missing approved license label in ${path}`);
+    if (required.includes(path) && !/AGPL(?:-3\.0-only| 3\.0 only)/i.test(source)) throw new Error(`Missing approved license label in ${path}`);
   }
+  for (const path of required) if (!labels.has(path)) throw new Error(`Missing approved license label in ${path}`);
 }

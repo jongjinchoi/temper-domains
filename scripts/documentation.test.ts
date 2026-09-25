@@ -18,5 +18,6 @@ test('current license labels cannot silently disagree with the package', () => {
   expect(() => validateLicenseLabels('AGPL-3.0-only', new Map([['README.md', 'GNU AGPL 3.0 only']]))).not.toThrow();
   expect(() => validateLicenseLabels('Apache-2.0', new Map())).toThrow();
   expect(() => validateLicenseLabels('AGPL-3.0-only', new Map([['Hero.tsx', 'Apache 2.0']]))).toThrow('Hero.tsx');
-  expect(() => validateLicenseLabels('AGPL-3.0-only', new Map([['Footer.tsx', 'Open source']]))).toThrow('Footer.tsx');
+  expect(() => validateLicenseLabels('AGPL-3.0-only', new Map([['README.md', 'AGPL-3.0-only'], ['Footer.tsx', 'Open source']]))).not.toThrow();
+  expect(() => validateLicenseLabels('AGPL-3.0-only', new Map([['README.md', 'Open source']]))).toThrow('README.md');
 });

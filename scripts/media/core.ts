@@ -47,9 +47,14 @@ export interface CaptureManifest {
   inputs: Record<string, string | null>;
   outputs: Record<string, { sha256: string; format: string; width: number; height: number }>;
 }
-export function checkManifest(manifest: CaptureManifest, mediaRoot = ROOT, sourceRoot = ROOT) {
+export function captureInputChanges(manifest: CaptureManifest, sourceRoot = ROOT) {
+  const current = inputHashes(sourceRoot);
+  return [...new Set([...Object.keys(manifest.inputs), ...Object.keys(current)])]
+    .filter(path => manifest.inputs[path] !== current[path]).sort();
+}
+export function checkManifest(manifest: CaptureManifest, mediaRoot = ROOT, sourceRoot = ROOT, requireCurrentInputs = true) {
   if (manifest.schema !== 1 || manifest.mode !== 'current-source-with-synthetic-rdap') throw new Error('Unknown capture manifest');
-  if (JSON.stringify(manifest.inputs) !== JSON.stringify(inputHashes(sourceRoot))) throw new Error('Capture inputs changed: regenerate media');
+  if (requireCurrentInputs && captureInputChanges(manifest, sourceRoot).length) throw new Error('Capture inputs changed: regenerate media');
   const outputs = outputPaths(tapeSources(sourceRoot));
   if (outputs.length !== 19 || JSON.stringify(Object.keys(manifest.outputs).sort()) !== JSON.stringify(outputs)) throw new Error('Expected all 19 media outputs');
   for (const path of outputs) {

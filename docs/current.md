@@ -358,9 +358,13 @@ Use `rg` to confirm stale claims are gone after copy updates.
 ### README and terminal recordings
 
 - `bun run docs:help` updates the root and subcommand help blocks in `docs/cli.md`
-  from the current CLI. `bun run docs:check` verifies those blocks, the installation
-  support contracts, user-document links/anchors, current license labels, license
-  inventory lock hash, media references, tape outputs and original capture hashes.
+  from the current CLI. `bun run docs:check` verifies those blocks, user-document
+  links/anchors, package/README license labels, media references, tape outputs and
+  original media hashes. Installation support contracts run once in `bun test`.
+  Lockfile changes report dependency review information without blocking docs;
+  changed deployed dependencies still need the relevant notices reviewed.
+  Web license/source links and metadata are checked against the rendered site
+  by `tests/browser/playground.mjs`, not by requiring text in every component.
   CI runs this without VHS or public registry requests. Prose semantics still
   require source review; this command is not a complete documentation audit.
 - `bun run media:record --only search` previews one tape. `bun run media:record`
@@ -393,17 +397,12 @@ Use `rg` to confirm stale claims are gone after copy updates.
   File changes are a reason to review screen relevance, not proof that a screen
   changed. Recapture when the displayed content or demonstrated interaction is
   outdated; do not relabel old media as a new capture just to pass a hash check.
-  For the current tapes, `docs:check` permits a package `version` change, the
-  approved Apache-2.0 to AGPL-3.0-only metadata transition and the exact
-  documentation-only additions listed in `scripts/media-package.ts`:
-  it verifies the preserved package source against the original hash, then
-  compares all other package fields and all remaining capture inputs unchanged.
-  It does not ignore the whole `files` list; runtime removals or additions fail.
-  The original capture record is never rewritten for the comparison. These tapes
-  do not display the version and disable update checks. A future version-output
-  or update-prompt recording must not use this exception without revisiting it.
-  Other input mismatches stop validation for review; this check cannot determine
-  actual visual equivalence from source hashes alone.
+  `docs:check` verifies the preserved package source against its original hash
+  and reports changed capture inputs for screen/interaction review. Input drift
+  alone does not fail CI or require recapturing unaffected screens. Record the
+  review in the existing work notes; recapture affected demonstrations. The
+  original capture record is never rewritten to claim a new recording. This
+  check cannot determine actual visual equivalence from source hashes alone.
   Image headers/hashes are checked in CI; recording also decodes every
   output with ffmpeg, and visual review remains required.
 - The images show documentation examples, not current domain registration or
@@ -487,9 +486,12 @@ A single temporary-file rename publishes all runtime evidence together.
 Review the preview and Git diff; normal builds, installs and catalog browsing
 never run this command. The existing RDAP bootstrap network cache is separate.
 `bun run catalog:verify` checks that bundled checker signatures match the sources
-and lockfile, and that assigned classifications match their captured evidence
+and their resolved checker dependencies/configuration, and that assigned classifications match their captured evidence
 and the current classification rules. npm, standalone binary and web builds run this guard. Release
-verification also runs the npm build before compiling platform binaries.
+verification also prepares the npm artifact before compiling platform binaries.
+Web-only and developer dependency changes are excluded from checker signatures.
+The migration from whole-lock fingerprints preserves existing evidence IDs only
+for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
 Refreshing signatures makes old
 observations require rechecking; it does not manufacture a new server success.
 Historical successful observations remain visible after route or checker changes.
