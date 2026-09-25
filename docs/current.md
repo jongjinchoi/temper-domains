@@ -81,6 +81,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   child TTY. Homebrew alone receives `TERM=dumb` to stop its cursor-based download
   animation; npm keeps its original TERM. The bounded incremental decoder handles
   split ANSI, CR/CRLF and known routine lines, independently for relay stdout/stderr.
+  The runner passes channel, refresh/install stage and approved version context to
+  the installer. Refresh summaries and npm's standard package/funding summaries
+  are classified only in their respective channel/stage; audit diagnostics remain visible.
   Known tap-trust blocks are summarized with excluded tap names and `brew doctor`;
   target-tap blocks, unexpected text, questions and errors retain their context.
   Unknown unterminated text is forwarded after 300ms idle (possible routine prefixes
@@ -88,6 +91,10 @@ in both workspaces so root typechecking does not download a separate compiler.
   visible text, not log loss.
   Input prompts pause progress. The runner supplies refresh/install/verification
   stages; the final success still requires a fresh installed-version check.
+  Update choice has no inner panel border. Ink and the installer relay share
+  progress labels, theme color roles and blank-line spacing. During progress and
+  completion, only the spinner and success check receive accent colors; body text
+  keeps the selected theme's text color.
   No transcript is saved. Windows/missing-script systems
   keep direct terminal inheritance and native quiet output. Locks remain in ~/.temper/cache/.
   Completion exits; it does not re-run the user's original command automatically.

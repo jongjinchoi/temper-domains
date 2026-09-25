@@ -87,6 +87,27 @@ managers. Actual upgrades must use a disposable installation, never the maintain
 global installation as a test fixture. Verify terminal recovery after success,
 failure and cancellation, and confirm MCP/JSON/offline commands make no version requests.
 
+An opt-in full installation harness is available separately from `bun test`:
+
+```bash
+TEMPER_REAL_INSTALL=1 node tests/update/real-install.mjs npm
+TEMPER_REAL_INSTALL=1 TEMPER_TEST_UNTRUSTED_TAPS=1 node tests/update/real-install.mjs homebrew /path/to/brew /path/to/temper-bun-darwin-arm64.tar.gz <published-sha256>
+```
+
+This fixture currently tests this checkout with a test-only `0.6.0` version against
+published `0.6.1`. It does not change package.json or publish a version. It queries
+the real version endpoints and installs real packages in new temporary prefixes.
+Homebrew requires macOS ARM64, an existing Homebrew checkout with portable Ruby,
+and the verified 0.6.1 archive, served unchanged from a loopback mirror. Its
+nondefault-prefix warnings remain visible. Optional untrusted taps are empty
+local test repositories; they do not change the user's tap trust settings.
+`TEMPER_TEST_THEME=rose-pine-dawn` selects the alternate theme for the fixture.
+Retained evidence includes the source hashes, raw PTY output, timed cast and final
+version result. Do not share `session.json`: it contains the inherited environment.
+The test never upgrades the maintainer's global installation. A newly installed
+updater controls subsequent upgrades; it cannot change the screen already shown
+by the older updater that installed it.
+
 ```bash
 # GitHub Release
 gh release view v<version>

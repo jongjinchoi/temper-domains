@@ -134,10 +134,13 @@ command again. Failed or interrupted installers report failure without claiming
 an automatic rollback. On macOS and Linux with the system `script` utility,
 Temper shows compact update progress followed by installation verification.
 The installer retains its terminal and input prompts. Homebrew's child terminal
-uses `TERM=dumb` to disable its download animation; known download and cleanup
-messages are filtered even when split across output chunks. Recognized untrusted-tap
+uses `TERM=dumb` to disable its download animation; known refresh, download and cleanup
+messages are filtered even when split across output chunks. npm's standard package
+count and funding summaries are also filtered. Recognized untrusted-tap
 warnings are summarized with the affected tap names and `brew doctor` guidance.
 Errors, other warnings, unknown output, and input prompts remain visible.
+The update screens use your selected theme, with an unboxed choice, an accented
+spinner, normal body text and a muted cancel hint separated by a blank line.
 No installation transcript is saved. Without that utility (including Windows),
 Temper preserves direct terminal access and the installer's quiet output.
 
