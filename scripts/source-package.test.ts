@@ -14,6 +14,7 @@ test('source snapshot allows build inputs but excludes secrets and installed dep
 test('source collection works without Git or release metadata, and public scope ignores unrelated notes', () => {
   const root = mkdtempSync(join(tmpdir(), 'temper-source-scope-'));
   const git = (...args: string[]) => execFileSync('git', args, { cwd: root, stdio: 'pipe' });
+  const revisions = { GITHUB_SHA: process.env.GITHUB_SHA, VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA };
   try {
     mkdirSync(join(root, 'src'));
     writeFileSync(join(root, 'package.json'), '{"version":"1.0.0"}');
@@ -21,12 +22,21 @@ test('source collection works without Git or release metadata, and public scope 
     expect(collectSource(root).paths).toEqual(['package.json', 'src/index.ts']);
     git('init'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
     git('add', '.'); git('commit', '-m', 'fixture');
+    // This public-build fixture deploys its own commit, not the CI checkout.
+    const revision = git('rev-parse', 'HEAD').toString().trim();
+    process.env.GITHUB_SHA = revision;
+    process.env.VERCEL_GIT_COMMIT_SHA = revision;
     const initial = collectSource(root, true);
     writeFileSync(join(root, 'review-note.txt'), 'private review note');
     expect(collectSource(root, true).snapshot).toBe(initial.snapshot);
     writeFileSync(join(root, 'src/index.ts'), 'changed source');
     expect(() => collectSource(root, true)).toThrow('src/index.ts');
-  } finally { rmSync(root, { recursive: true, force: true }); }
+  } finally {
+    for (const [name, value] of Object.entries(revisions)) {
+      if (value === undefined) delete process.env[name]; else process.env[name] = value;
+    }
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('native package cannot pair stale or changed binaries with a new source snapshot', () => {
