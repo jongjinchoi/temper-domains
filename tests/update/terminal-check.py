@@ -11,13 +11,14 @@ import tempfile
 import time
 
 runtime, entry = sys.argv[1:3]
-for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", "logs"):
+for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure"):
     with tempfile.TemporaryDirectory(prefix="temper-update-pty-") as home:
         result_path = os.path.join(home, "result.json")
         child_path = os.path.join(home, "child.json")
         pid, fd = pty.fork()
         if pid == 0:
             os.environ["HOME"] = home
+            os.environ["TERM"] = "xterm-256color"
             os.environ.pop("CI", None)
             os.execvp(runtime, [runtime, entry, scenario, result_path, child_path])
         data = b""
@@ -50,7 +51,7 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", 
                 if scenario == "interrupt" and stage == 1 and b"CHILD_READY" in data:
                     os.write(fd, b"\x03")
                     stage = 2
-                if scenario == "input" and stage == 1 and b"Proceed? " in data:
+                if scenario in ("input", "unknown-input") and stage == 1 and (b"Proceed? " in data or b"Type a confirmation token: " in data):
                     os.write(fd, b"yes\n")
                     stage = 2
                 done, status = os.waitpid(pid, os.WNOHANG)
@@ -66,23 +67,33 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", 
             assert os.path.exists(result_path), data.decode(errors="replace")
             with open(result_path) as file:
                 result = json.load(file)
-            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated"}[scenario]
+            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed"}[scenario]
             assert result["result"]["kind"] == expected, result
             assert result["raw"] is False, result
-            if scenario in ("success", "failure", "interrupt", "input", "logs"):
+            if scenario not in ("later", "cancel"):
                 with open(child_path) as file:
                     child = json.load(file)
                 assert child["tty"] is True and child["outputTTY"] is True and child["raw"] is False, child
+                assert child["term"] == ("xterm-256color" if scenario == "npm-env" else "dumb"), child
                 try:
                     os.kill(child["pid"], 0)
                     raise AssertionError("Installer child still running")
                 except ProcessLookupError:
                     pass
-            if scenario == "input":
+            if scenario in ("input", "unknown-input"):
                 assert b"ANSWER:yes" in data, data
             if scenario == "logs":
                 assert b"Removing:" not in data, data[-2000:]
+                assert b"Downloading" not in data, data[-2000:]
                 assert b"Warning: keep this diagnostic" in data, data[-2000:]
+            if expected == "updated":
+                assert b"Verifying installation" in data, data[-2000:]
+                assert b"Temper updated:" in data, data[-2000:]
+                assert data.rfind(b"Updating Temper") < data.rfind(b"Verifying installation") < data.rfind(b"Temper updated:"), data[-2000:]
+            if expected == "failed":
+                assert b"Temper updated:" not in data, data[-2000:]
+            if scenario == "verify-failure":
+                assert b"Verifying installation" in data and "expected 0.5.0, found 0.4.1" in result["result"]["message"], result
             if scenario in ("later", "cancel"):
                 assert not os.path.exists(child_path)
             print(f"PTY {scenario}: passed ({runtime}); no package installation")

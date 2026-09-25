@@ -17,7 +17,9 @@ export interface UpdateExecution {
   query?: Query;
   execute?: (command: Invocation) => Promise<void>;
   confirmTarget: (version: string) => Promise<boolean>;
+  onStage?: (stage: UpdateStage) => Promise<void>;
 }
+export type UpdateStage = "refreshing" | "installing" | "verifying";
 export type UpdateOutcome = { status: "updated" | "current"; version: string } | { status: "cancelled" };
 
 export async function performUpdate(installation: Installation, target: string, options: UpdateExecution): Promise<UpdateOutcome> {
@@ -49,16 +51,20 @@ export async function performUpdate(installation: Installation, target: string, 
     if (installation.kind === "homebrew") {
       const info = async () => parseBrewInfo((await read({ file: installation.brew, args: ["info", "--json=v2", "--formula", FORMULA] })).stdout);
       if ((await info()).pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
+      await options.onStage?.("refreshing");
       await execute(updateCommands(installation, target)[0]!);
       const refreshed = await info();
       if (refreshed.pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
       expected = refreshed.version;
       if (compareStableVersions(expected, before) <= 0) throw new Error("Homebrew metadata does not offer a newer version; no upgrade was started");
       if (expected !== target && !await options.confirmTarget(expected)) return { status: "cancelled" };
+      await options.onStage?.("installing");
       await execute(updateCommands(installation, expected)[1]!);
     } else {
+      await options.onStage?.("installing");
       await execute(updateCommands(installation, target)[0]!);
     }
+    await options.onStage?.("verifying");
     const after = await installedVersion();
     if (compareStableVersions(after, expected) !== 0) throw new Error(`Update verification failed: expected ${expected}, found ${after}. Check this installation before retrying.`);
     return { status: "updated", version: after };

@@ -22,12 +22,15 @@ async function setup(kind: "npm" | "homebrew") {
 test("npm installs the approved version and verifies the owned entry with a fresh process", async () => {
   const { home, installation } = await setup("npm");
   const executions: Invocation[] = []; let installed = "0.4.1";
+  const stages: string[] = [];
   const result = await performUpdate(installation, "0.5.0", { lockDirectory: home,
-    query: async () => ({ stdout: installed, stderr: "" }),
+    query: async () => { if (installed === "0.5.0") expect(stages.at(-1)).toBe("verifying"); return { stdout: installed, stderr: "" }; },
+    onStage: async stage => { stages.push(stage); },
     execute: async command => { executions.push(command); installed = "0.5.0"; },
     confirmTarget: async () => true,
   });
   expect(result).toEqual({ status: "updated", version: "0.5.0" });
+  expect(stages).toEqual(["installing", "verifying"]);
   expect(executions).toHaveLength(1);
   expect(executions[0]!.args).toContain("temper-domains@0.5.0");
   expect(executions[0]!.args).toContain("--prefix");

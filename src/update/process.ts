@@ -5,7 +5,7 @@ import { mkdir, open, unlink } from "node:fs/promises";
 import { join } from "node:path";
 
 export interface Invocation { file: string; args: string[] }
-export interface ProcessOptions { signal?: AbortSignal; inherit?: boolean; env?: NodeJS.ProcessEnv; onOutput?: (text: string) => void }
+export interface ProcessOptions { signal?: AbortSignal; inherit?: boolean; env?: NodeJS.ProcessEnv; onOutput?: (text: string, stream: "stdout" | "stderr") => void }
 
 export function displayInvocation(command: Invocation): string {
   return [command.file, ...command.args].map(part => /^[\w./:@=+-]+$/.test(part) ? part : JSON.stringify(part)).join(" ");
@@ -29,7 +29,7 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
     if (options.signal?.aborted) stop();
     if (options.inherit) { process.on("SIGINT", interrupt); process.on("SIGTERM", terminate); }
     const collect = (chunk: string, stream: "stdout" | "stderr") => {
-      if (options.onOutput) { options.onOutput(chunk); return; }
+      if (options.onOutput) { options.onOutput(chunk, stream); return; }
       if (stream === "stdout") stdout += chunk; else stderr += chunk;
       if (stdout.length + stderr.length > 1024 * 1024) { failure = new Error("Package manager response is too large"); child.kill(); }
     };

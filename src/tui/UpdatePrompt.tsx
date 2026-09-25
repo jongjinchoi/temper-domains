@@ -4,7 +4,8 @@ import type { Invocation } from "../update/process.ts";
 import { runInstaller } from "../update/installer.ts";
 import { TerminalPanel } from "./TerminalPanel.tsx";
 import { theme } from "./theme.ts";
-import type { UpdateOutcome } from "../update/runner.ts";
+import type { UpdateOutcome, UpdateStage } from "../update/runner.ts";
+import Spinner from "./Spinner.tsx";
 
 export type PromptOutcome = { kind: "later" | "cancelled" } | { kind: "updated" | "current"; version: string } | { kind: "failed"; message: string };
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
   latest: string;
   installer?: string;
   guidance?: string;
-  onUpdate?: (execute: (command: Invocation) => Promise<void>, confirmTarget: (version: string) => Promise<boolean>) => Promise<UpdateOutcome>;
+  onUpdate?: (execute: (command: Invocation) => Promise<void>, confirmTarget: (version: string) => Promise<boolean>, onStage: (stage: UpdateStage) => Promise<void>) => Promise<UpdateOutcome>;
 }
 
 export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }: Props) {
@@ -21,6 +22,7 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
   const [target, setTarget] = useState(latest);
   const targetRef = useRef(latest);
   const [phase, setPhase] = useState<"choice" | "running" | "changed">("choice");
+  const [stage, setStage] = useState<UpdateStage>("installing");
   const [outcome, setOutcome] = useState<PromptOutcome | null>(null);
   const busy = useRef(false);
   useEffect(() => {
@@ -34,10 +36,16 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
     setPhase("running");
     try {
       const result = await onUpdate(
-        async command => { await suspendTerminal(async () => { await runInstaller(command, `Updating Temper… ${current} → ${targetRef.current}`); }); },
+        async command => { await suspendTerminal(async () => { await runInstaller(command, `Updating Temper… ${current} → ${targetRef.current}`, installer === "Homebrew"); }); },
         async version => {
           targetRef.current = version; setTarget(version); setSelected(1); setPhase("changed");
           return new Promise<boolean>(resolve => { answer.current = resolve; });
+        },
+        async nextStage => {
+          setStage(nextStage);
+          // Let React commit the stage before waiting for Ink's terminal flush.
+          await new Promise<void>(resolve => setImmediate(resolve));
+          await waitUntilRenderFlush();
         },
       );
       finish(result.status === "cancelled" ? { kind: "cancelled" } : { kind: result.status, version: result.version });
@@ -66,7 +74,10 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
     // The caller reports failures/cancellation after the terminal is restored.
     return null;
   }
-  if (phase === "running") return <Text color={theme.primary}>Updating Temper… {current} → {target}</Text>;
+  if (phase === "running") return <Box flexDirection="column">
+    <Text color={theme.primary}><Spinner /> {stage === "verifying" ? "Verifying installation…" : `Updating Temper… ${current} → ${target}`}</Text>
+    {stage !== "verifying" && <Text dimColor>Ctrl+C to cancel</Text>}
+  </Box>;
   return <TerminalPanel>
     <Text bold color={theme.primary}>Update available! {current} → {target}</Text>
     <Box marginY={1} flexDirection="column">
