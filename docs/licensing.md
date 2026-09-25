@@ -16,9 +16,9 @@ Third-party code, data and assets retain their original licenses and notices.
   relicense an independent caller's entire codebase.
 - There is no warranty, subject to the terms of the license.
 - Copies already released under Apache-2.0, including v0.6.2 and earlier,
-  retain their original terms. This checkout has not yet been released under
-  AGPL; keeping its version number during development does not replace old
-  release files or change the license of an already installed copy.
+  retain their original terms. Starting with v0.7.0, new releases use
+  AGPL-3.0-only. This does not replace old release files or change the license
+  of an already installed copy.
 
 See [AGPL sections 1, 4–6 and 13](https://opensource.org/license/agpl-3.0).
 

@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- The first AGPL release is not yet authorized or assigned a version. Do not
-  overwrite v0.6.2 or earlier Apache artifacts. Announce `AGPL-3.0-only` and
-  link `docs/licensing.md` in the first new release's notes.
+- v0.7.0 is the first AGPL release. Do not overwrite v0.6.2 or earlier
+  Apache artifacts. Announce `AGPL-3.0-only` and link `docs/licensing.md`
+  in the v0.7.0 release notes.
 - Review `legal/inventory.json` for the actual artifact/platform. The complete
   Bun linked-library notices and source/relink review is still open; no license
   incompatibility or violation has been established by that open status.
@@ -28,9 +28,8 @@
 - Run `bun ci`. No exact Bun or Node.js version is required for local
   verification; record the versions used. Release workflows select Bun
   `latest` and Node.js `lts/*`.
-- The npm minimum is Node.js 22.12.0. Announce the increase from the previous
-  Node.js >= 18 declaration in the next release notes. Standalone binary users
-  do not need to install Node.js.
+- The npm minimum is Node.js 22.12.0, as already declared by the published
+  v0.6.2 package. Standalone binary users do not need to install Node.js.
 - npm `temper-domains` Settings → Trusted Publisher에 GitHub Actions 등록:
   - Organization or user: `jongjinchoi`
   - Repository: `temper-domains`
