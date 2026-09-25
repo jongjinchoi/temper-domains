@@ -217,11 +217,20 @@ test("a complete Homebrew getch question pauses progress until the child respond
   expect(output).toContain("Confirmed");
 });
 
-test("animated progress returns to column zero even while the relay uses raw terminal mode", () => {
-  let output = "";
-  const view = new InstallerOutput("Updating Temper", text => { output += text; }, true);
-  view.finish();
-  expect(output).toContain("\r\nCtrl+C to cancel");
+test.each(["0", "3"])("animated progress preserves raw-mode CRLF with FORCE_COLOR=%s", color => {
+  const oldColor = process.env.FORCE_COLOR;
+  process.env.FORCE_COLOR = color;
+  try {
+    let output = "";
+    const view = new InstallerOutput("Updating Temper", text => { output += text; }, true);
+    view.finish();
+    // Ignore only styling; keep cursor controls and CRLF intact for this check.
+    const plain = output.replace(/\x1b\[[0-9;]*m/g, "");
+    expect(plain).toContain("\r\n\r\nCtrl+C to cancel");
+    expect(plain).not.toMatch(/(?<!\r)\n/);
+  } finally {
+    if (oldColor === undefined) delete process.env.FORCE_COLOR; else process.env.FORCE_COLOR = oldColor;
+  }
 });
 
 test("installer output hides known routine lines but preserves warnings, errors and partial questions", async () => {
