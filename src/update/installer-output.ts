@@ -1,17 +1,26 @@
-// Homebrew 7.0.6 output formats. Anything outside these formats remains visible.
+// Homebrew 7.0.6 and npm 11.17.0 output formats. Unknown formats remain visible.
 // In particular, a diagnostic must never be inferred to be routine from its prefix.
+import type { OutputContext } from "./presentation.ts";
 const diagnostic = /warn|error|fail|password|proceed|continue|\?|sudo|pinned|checksum|denied|✘/i;
 const question = /(?:\?|password\s*:|\[[yYnN/]+\])\s*$/i;
 const routinePrefixes = ["Removing: /", "==> ", "jongjinchoi/temper-domains/temper ", "✔︎ ", "✔ ", "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏", "Formula ", "Bottle ", "🍺 "];
 
-function routine(line: string): boolean {
+function routine(line: string, context: OutputContext): boolean {
   const text = line.trim();
   if (diagnostic.test(text)) return false;
+  if (context.channel === "npm") return context.stage === "installing" && (
+    /^(?:up to date|(?:added|removed|changed) \d+ packages?)(?:, (?:and )?(?:added|removed|changed|audited) \d+ packages?)* in \d+(?:\.\d+)?(?:ms|s|m|h|d)$/.test(text)
+    || /^\d+ (?:package is|packages are) looking for funding$/.test(text)
+    || text === "run `npm fund` for details"
+  );
+  if (context.stage === "refreshing") return text === "==> Updating Homebrew..."
+    || /^Updated \d+ taps? \([\w./, -]+\)\.$/.test(text)
+    || /^==> Updated Homebrew from [\w.() -]+ to [\w.() -]+\.$/.test(text);
   return text === "==> Cleanup"
     || /^Removing: \/.+\.\.\. \([^\n]+\)$/.test(text)
     || /^==> (?:Fetching downloads for: .+|Upgrading .+|Installing [\w@+.-]+ from [\w.-]+\/[\w.-]+|(?:Would upgrade|Upgraded) \d+ requested outdated packages?|Pouring .+\.bottle\..+)$/.test(text)
     || /^(?:jongjinchoi\/temper-domains\/temper )?\d+\.\d+\.\d+ (?:->|→) \d+\.\d+\.\d+$/.test(text)
-    || /^(?:✔︎? |[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏] )?(?:Formula|Bottle(?: Manifest)?|Resource) [\w@+./-]+ \([\w.+-]+\)(?:\s+(?:[# ]*Downloading|Downloaded|Extracting|Extracted|Verifying)\b[^\n]*)?$/.test(text)
+    || /^(?:✔︎? |[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏] )?(?:Formula|Bottle(?: Manifest)?|Resource) [\w@+./-]+ \([\w.+-]+\)(?:\s+(?:[# ]*Downloading|Downloaded|Extracting|Extracted|Verifying|Verified)\b[^\n]*)?$/.test(text)
     || /^🍺\s+\/[^\n]+:\s+\d+ files?, [\d.]+[KMGT]?B(?:, [^\n]+)?$/.test(text);
 }
 
@@ -30,6 +39,7 @@ const trustText = new Set([
   "Whole-tap trust is broader and includes all current and future formulae,",
   "casks and commands from the listed taps. Trust whole taps with:",
   "Untap them with:", "For more information, see:", trustEnd,
+  "Trust specific formulae, casks and commands with:",
 ]);
 
 function summarizeTrust(lines: string[]): string | undefined {
@@ -56,7 +66,7 @@ export class InstallerMessages {
   private blockSize = 0;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private blockTimer: ReturnType<typeof setTimeout> | undefined;
-  constructor(private emit: (text: string, partial: boolean) => void) {}
+  constructor(private emit: (text: string, partial: boolean) => void, private context: OutputContext = { channel: "homebrew", stage: "installing" }) {}
 
   write(chunk: string) {
     clearTimeout(this.timer);
@@ -81,13 +91,13 @@ export class InstallerMessages {
     if (!this.pending) return;
     // Recognizable questions must not wait for a newline (getch/readline).
     if (question.test(this.pending)) this.flushPartial();
-    else this.timer = setTimeout(() => { if (!routine(this.pending)) this.flushPartial(); }, possibleRoutine(this.pending) ? 1500 : 300);
+    else this.timer = setTimeout(() => { if (!routine(this.pending, this.context)) this.flushPartial(); }, this.context.channel === "homebrew" && (possibleRoutine(this.pending) || "Updated ".startsWith(this.pending) || this.pending.startsWith("Updated ")) ? 1500 : 300);
   }
 
   private line() {
     const text = this.pending; this.pending = "";
     if (this.partial) { this.emit(`${text}\n`, false); this.partial = false; return; }
-    if (text === trustHeader || this.block.length) {
+    if ((this.context.channel === "homebrew" && text === trustHeader) || this.block.length) {
       if (!this.block.length) this.blockTimer = setTimeout(() => this.flushBlock(), 1500);
       this.block.push(text); this.blockSize += text.length + 1;
       if (text.trim() === trustEnd) {
@@ -97,7 +107,7 @@ export class InstallerMessages {
       } else if (this.blockSize >= 16384 || (this.block.length > 1 && diagnostic.test(text))) this.flushBlock();
       return;
     }
-    if (text.trim() && !routine(text)) this.emit(`${text}\n`, question.test(text));
+    if (text.trim() && !routine(text, this.context)) this.emit(`${text}\n`, question.test(text));
   }
 
   private resetBlock() { clearTimeout(this.blockTimer); this.block = []; this.blockSize = 0; }

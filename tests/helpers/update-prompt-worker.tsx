@@ -9,11 +9,13 @@ const stdout = new Writable({ write(chunk, _encoding, callback) { frame += Strin
 Object.assign(stdout, { isTTY: true, columns: 110, rows: 30 });
 const stdin = new PassThrough();
 Object.assign(stdin, { isTTY: true, setRawMode(value: boolean) { raw = value; modes.push(value); }, ref() {}, unref() {} });
-const view = render(<UpdatePrompt current="0.4.1" latest="0.5.0" onUpdate={async (execute, confirm) => {
+const view = render(<UpdatePrompt current="0.4.1" latest="0.5.0" onUpdate={async (execute, confirm, stage) => {
   executed++;
   if (scenario === "changed" && !await confirm("0.6.0")) return { status: "cancelled" };
-  await execute({ file: process.execPath, args: ["-e", "setTimeout(() => process.exit(0), 80)"] });
+  await stage("installing");
+  await execute({ file: process.execPath, args: ["-e", "setTimeout(() => process.exit(0), 80)"] }, { channel: "npm", stage: "installing", current: "0.4.1", target: "0.5.0" });
   if (scenario === "failure") throw new Error("installer failed");
+  await stage("verifying");
   return { status: "updated", version: "0.5.0" };
 }} />, {
   stdout: stdout as NodeJS.WriteStream, stderr: stdout as NodeJS.WriteStream,

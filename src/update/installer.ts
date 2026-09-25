@@ -2,7 +2,7 @@ import { constants } from "node:fs";
 import { access } from "node:fs/promises";
 import { runProcess, type Invocation } from "./process.ts";
 import { InstallerMessages } from "./installer-output.ts";
-import { theme } from "../tui/theme.ts";
+import { colorSegment, progressLabel, progressRows, SPINNER_FRAMES, type InstallerContext, type OutputContext, type Segment } from "./presentation.ts";
 
 // script gives the installer a real terminal while we reduce only known routine
 // output. Do not pipe the package manager itself: Homebrew would skip questions.
@@ -20,7 +20,9 @@ export class InstallerOutput {
   private streams = new Map<string, InstallerMessages>();
   private frame = 0;
   private timer: ReturnType<typeof setInterval> | undefined;
-  constructor(private status: string, private output: (text: string) => void, private interactive = false) {
+  private drawnWidths: number[] = [];
+  constructor(private status: string, private output: (text: string) => void, private interactive = false,
+    private context: OutputContext = { channel: "homebrew", stage: "installing" }, private columns = () => process.stdout.columns || 80) {
     this.draw();
     if (interactive) this.timer = setInterval(() => {
       if (!this.progress || this.partial) return;
@@ -29,18 +31,32 @@ export class InstallerOutput {
   }
   private clear() {
     if (!this.progress) return;
-    this.output(this.interactive ? "\r\x1b[2K\x1b[1A\r\x1b[2K" : "\r\x1b[2K"); this.progress = false;
+    const rows = this.interactive ? this.drawnWidths.reduce((sum, width) => sum + Math.max(1, Math.ceil(width / Math.max(1, this.columns()))), 0) : 1;
+    this.output("\r\x1b[2K" + "\x1b[1A\r\x1b[2K".repeat(Math.max(0, rows - 1)));
+    this.progress = false;
   }
   private draw() {
     if (this.partial || this.progress) return;
     let text = this.status;
     if (this.interactive) {
-      text = `${["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"][this.frame % 10]} ${text}`;
-      if (process.env.FORCE_COLOR !== "0" && (!process.env.NO_COLOR || Boolean(process.env.FORCE_COLOR))) {
-        const color = [1, 3, 5].map(offset => parseInt(theme.primary.slice(offset, offset + 2), 16)).join(";");
-        text = `\x1b[38;2;${color}m${text}\x1b[0m`;
+      // Our progress labels contain only single-cell ASCII, arrow, ellipsis and
+      // braille glyphs. Wrap before the last column to avoid terminal auto-wrap.
+      const width = Math.max(1, this.columns() - 1);
+      const lines: Segment[][] = [];
+      for (const row of progressRows(text, SPINNER_FRAMES[this.frame % SPINNER_FRAMES.length]!)) {
+        let line: Segment[] = []; let used = 0;
+        for (const segment of row) {
+          let remaining = segment.text;
+          while (remaining) {
+            const part = remaining.slice(0, width - used);
+            line.push({ ...segment, text: part }); used += part.length; remaining = remaining.slice(part.length);
+            if (used === width) { lines.push(line); line = []; used = 0; }
+          }
+        }
+        if (line.length || row.length === 0) lines.push(line);
       }
-      text += "\r\nCtrl+C to cancel";
+      this.drawnWidths = lines.map(line => line.reduce((sum, part) => sum + part.text.length, 0));
+      text = lines.map(line => line.map(colorSegment).join("")).join("\r\n");
     }
     this.output(text); this.progress = true;
   }
@@ -55,7 +71,7 @@ export class InstallerOutput {
         if (partial) this.partialStreams.add(stream); else this.partialStreams.delete(stream);
         this.partial = this.partialStreams.size > 0;
         this.lastStream = stream;
-      });
+      }, this.context);
       this.streams.set(stream, decoder);
     }
     decoder.write(chunk);
@@ -68,7 +84,8 @@ export class InstallerOutput {
   }
 }
 
-export async function runInstaller(command: Invocation, status: string, homebrew = false): Promise<void> {
+export async function runInstaller(command: Invocation, context: InstallerContext): Promise<void> {
+  const status = progressLabel(context.stage, context.current, context.target);
   const platform = process.platform;
   const terminal = process.stdin.isTTY && process.stdout.isTTY;
   const available = terminal && (platform === "darwin" || platform === "linux")
@@ -83,11 +100,11 @@ export async function runInstaller(command: Invocation, status: string, homebrew
   // Ink removes its readable listener; stop the underlying stream too so it
   // cannot consume bytes intended for script while the outer terminal is raw.
   process.stdin.pause();
-  const view = new InstallerOutput(status.slice(0, Math.max(1, (process.stdout.columns || 80) - 3)), text => process.stdout.write(text), true);
+  const view = new InstallerOutput(status, text => process.stdout.write(text), true, context);
   try {
     await runProcess(terminalCommand(command, platform as "darwin" | "linux"), {
       inherit: true, onOutput: (text, stream) => view.write(text, stream),
-      env: { ...process.env, SHELL: "/bin/sh", HOMEBREW_NO_ENV_HINTS: "1", ...(homebrew ? { TERM: "dumb" } : {}) },
+      env: { ...process.env, SHELL: "/bin/sh", HOMEBREW_NO_ENV_HINTS: "1", ...(context.channel === "homebrew" ? { TERM: "dumb" } : {}) },
     });
   } finally { view.finish(); }
 }

@@ -4,6 +4,7 @@ import { brewReadEnvironment, isWithin, type Installation, type Query } from "./
 import { compareStableVersions, parseStableVersion } from "./policy.ts";
 import { runProcess, withInstallLock, type Invocation } from "./process.ts";
 import { FORMULA, parseBrewInfo } from "./versions.ts";
+import type { InstallerContext } from "./presentation.ts";
 
 export function updateCommands(installation: Installation, version: string): Invocation[] {
   if (!parseStableVersion(version)) throw new Error("Invalid update target version");
@@ -15,7 +16,7 @@ export function updateCommands(installation: Installation, version: string): Inv
 export interface UpdateExecution {
   lockDirectory: string;
   query?: Query;
-  execute?: (command: Invocation) => Promise<void>;
+  execute?: (command: Invocation, context: InstallerContext) => Promise<void>;
   confirmTarget: (version: string) => Promise<boolean>;
   onStage?: (stage: UpdateStage) => Promise<void>;
 }
@@ -52,17 +53,17 @@ export async function performUpdate(installation: Installation, target: string, 
       const info = async () => parseBrewInfo((await read({ file: installation.brew, args: ["info", "--json=v2", "--formula", FORMULA] })).stdout);
       if ((await info()).pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
       await options.onStage?.("refreshing");
-      await execute(updateCommands(installation, target)[0]!);
+      await execute(updateCommands(installation, target)[0]!, { channel: "homebrew", stage: "refreshing", current: before, target });
       const refreshed = await info();
       if (refreshed.pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
       expected = refreshed.version;
       if (compareStableVersions(expected, before) <= 0) throw new Error("Homebrew metadata does not offer a newer version; no upgrade was started");
       if (expected !== target && !await options.confirmTarget(expected)) return { status: "cancelled" };
       await options.onStage?.("installing");
-      await execute(updateCommands(installation, expected)[1]!);
+      await execute(updateCommands(installation, expected)[1]!, { channel: "homebrew", stage: "installing", current: before, target: expected });
     } else {
       await options.onStage?.("installing");
-      await execute(updateCommands(installation, target)[0]!);
+      await execute(updateCommands(installation, target)[0]!, { channel: "npm", stage: "installing", current: before, target });
     }
     await options.onStage?.("verifying");
     const after = await installedVersion();

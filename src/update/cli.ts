@@ -25,7 +25,7 @@ async function prompt(result: UpdateCheck): Promise<PromptOutcome> {
 
 function reportOutcome(outcome: PromptOutcome, command: string): void {
   if (outcome.kind === "updated" || outcome.kind === "current") {
-    console.log(command === "temper" || command === "update" ? "Run temper again." : "Run your original command again to use the installed version.");
+    console.log("\n" + (command === "temper" || command === "update" ? "Run temper again." : "Run your original command again to use the installed version."));
   } else if (outcome.kind === "failed") {
     console.error(`Update failed: ${outcome.message}\nCheck the installation, then retry with temper update. No rollback has been assumed.`);
     process.exitCode = 1;

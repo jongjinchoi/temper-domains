@@ -1,22 +1,28 @@
 """OS PTY checks. Uses only fake child commands and temporary output files."""
 import errno
+import fcntl
 import json
 import os
 import pty
 import select
 import signal
+import struct
 import sys
 import termios
 import tempfile
 import time
+import re
 
 runtime, entry = sys.argv[1:3]
-for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure"):
+columns = int(os.environ.get("TEMPER_TEST_COLUMNS", "80"))
+scenarios = sys.argv[3:] or ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure", "resize")
+for scenario in scenarios:
     with tempfile.TemporaryDirectory(prefix="temper-update-pty-") as home:
         result_path = os.path.join(home, "result.json")
         child_path = os.path.join(home, "child.json")
         pid, fd = pty.fork()
         if pid == 0:
+            fcntl.ioctl(1, termios.TIOCSWINSZ, struct.pack("HHHH", 32, columns, 0, 0))
             os.environ["HOME"] = home
             os.environ["TERM"] = "xterm-256color"
             os.environ.pop("CI", None)
@@ -51,6 +57,10 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", 
                 if scenario == "interrupt" and stage == 1 and b"CHILD_READY" in data:
                     os.write(fd, b"\x03")
                     stage = 2
+                if scenario == "resize" and stage == 1 and b"CHILD_READY" in data:
+                    fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 32, 24, 0, 0))
+                    os.kill(pid, signal.SIGWINCH)
+                    stage = 2
                 if scenario in ("input", "unknown-input") and stage == 1 and (b"Proceed? " in data or b"Type a confirmation token: " in data):
                     os.write(fd, b"yes\n")
                     stage = 2
@@ -67,7 +77,7 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", 
             assert os.path.exists(result_path), data.decode(errors="replace")
             with open(result_path) as file:
                 result = json.load(file)
-            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed"}[scenario]
+            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed", "resize": "updated"}[scenario]
             assert result["result"]["kind"] == expected, result
             assert result["raw"] is False, result
             if scenario not in ("later", "cancel"):
@@ -87,16 +97,33 @@ for scenario in ("later", "cancel", "success", "failure", "interrupt", "input", 
                 assert b"Downloading" not in data, data[-2000:]
                 assert b"Warning: keep this diagnostic" in data, data[-2000:]
             if expected == "updated":
-                assert b"Verifying installation" in data, data[-2000:]
-                assert b"Temper updated:" in data, data[-2000:]
-                assert data.rfind(b"Updating Temper") < data.rfind(b"Verifying installation") < data.rfind(b"Temper updated:"), data[-2000:]
+                # Ink wraps at word boundaries in narrow terminals. Compare the
+                # visible words independently of ANSI spans and line wrapping.
+                plain = re.sub(rb"\x1b\[[0-9;?]*[A-Za-z]", b"", data)
+                compact = re.sub(rb"\s+", b"", plain)
+                assert b"Verifyinginstallation" in compact, data[-2000:]
+                assert b"Temperupdated:" in compact, data[-2000:]
+                assert compact.rfind(b"UpdatingTemper") < compact.rfind(b"Verifyinginstallation") < compact.rfind(b"Temperupdated:"), data[-2000:]
             if expected == "failed":
                 assert b"Temper updated:" not in data, data[-2000:]
+            if scenario == "failure":
+                assert b"Error: checksum mismatch" in data, data[-2000:]
             if scenario == "verify-failure":
                 assert b"Verifying installation" in data and "expected 0.5.0, found 0.4.1" in result["result"]["message"], result
             if scenario in ("later", "cancel"):
                 assert not os.path.exists(child_path)
-            print(f"PTY {scenario}: passed ({runtime}); no package installation")
+            if scenario == "resize":
+                assert b"Warning: after resize" in data, data[-3000:]
+            if os.environ.get("NO_COLOR") and os.environ.get("FORCE_COLOR") == "0":
+                assert not re.search(rb"\x1b\[[0-9;]*m", data), data[-3000:]
+            print(f"PTY {scenario}: passed ({runtime}, {columns} columns); no package installation")
+            evidence = os.environ.get("TEMPER_PTY_EVIDENCE")
+            if evidence:
+                os.makedirs(evidence, exist_ok=True)
+                with open(os.path.join(evidence, f"{runtime}-{columns}-{scenario}.raw"), "wb") as file:
+                    file.write(data)
+                with open(os.path.join(evidence, f"{runtime}-{columns}-{scenario}.json"), "w") as file:
+                    json.dump(result, file)
         finally:
             if not exited:
                 for _ in range(20):

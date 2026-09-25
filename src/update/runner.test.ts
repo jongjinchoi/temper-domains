@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { performUpdate, updateCommands } from "./runner.ts";
 import type { Installation } from "./installation.ts";
 import type { Invocation } from "./process.ts";
+import type { InstallerContext } from "./presentation.ts";
 
 const paths: string[] = [];
 afterEach(async () => { await Promise.all(paths.splice(0).map(p => rm(p, { recursive: true, force: true }))); });
@@ -64,4 +65,19 @@ test("failed metadata refresh never starts a Homebrew upgrade", async () => {
     execute: async command => { calls.push(command.args[0]!); throw new Error("refresh failed"); }, confirmTarget: async () => true,
   })).rejects.toThrow("refresh failed");
   expect(calls).toEqual(["update"]);
+});
+
+test("approved changed Homebrew target reaches the installer context and fresh verification", async () => {
+  const { home, installation, keg } = await setup("homebrew");
+  const contexts: InstallerContext[] = []; let refreshed = false; let installed = "0.4.1";
+  const outcome = await performUpdate(installation, "0.5.0", { lockDirectory: home,
+    query: async command => ({ stdout: command.args.includes("info") ? JSON.stringify({ formulae: [{ name: "temper", full_name: "jongjinchoi/temper-domains/temper", tap: "jongjinchoi/temper-domains", pinned: false, versions: { stable: refreshed ? "0.6.0" : "0.5.0" }, installed: [{ version: installed }] }] }) : command.args.includes("--prefix") ? keg : installed, stderr: "" }),
+    execute: async (_command, context) => { contexts.push(context); if (context.stage === "refreshing") refreshed = true; else installed = "0.6.0"; },
+    confirmTarget: async target => { expect(target).toBe("0.6.0"); return true; },
+  });
+  expect(contexts).toEqual([
+    { channel: "homebrew", stage: "refreshing", current: "0.4.1", target: "0.5.0" },
+    { channel: "homebrew", stage: "installing", current: "0.4.1", target: "0.6.0" },
+  ]);
+  expect(outcome).toEqual({ status: "updated", version: "0.6.0" });
 });
