@@ -2,7 +2,7 @@
 
 Goal: preserve lookup evidence and let users explicitly resume unresolved candidates without bypassing shared waits.
 
-Approved design: [/Users/jongjinchoi/.codex/notes/projects/temper/rate-limit-design-validation-2026-09-25/design-review.md](/Users/jongjinchoi/.codex/notes/projects/temper/rate-limit-design-validation-2026-09-25/design-review.md). Approval: 2026-09-25, “승인 범위에 맞게 진행해. 추측하지 말고 임의로 구현하지 말고”. Main agent executes and reviews; no delegation, commit or external lookup.
+Design approved on 2026-09-25. The technical requirements and validation scope are recorded below; see [current implementation notes](../../current.md) for the maintained behavior reference.
 
 Architecture: a non-sleeping shared admission transaction feeds the local scheduler. Checker resume runs stop queued work for a newly limited server. A memory-owned TUI session merges results by run epoch; MCP returns bounded structured results and a manual retry plan. No new dependencies, cache, provider API or persisted domain list.
 

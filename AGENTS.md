@@ -8,6 +8,8 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Next.js marketing and live demo site: `web/`
 - Assets and terminal recordings: `assets/`
 - Current implementation notes: `docs/current.md`
+- User guides: `docs/cli.md`, `docs/extensions.md`, `docs/troubleshooting.md`, `docs/mcp.md`
+- License/source requirements: `docs/licensing.md`, `legal/inventory.json`
 - Historical PRDs and mockups: `docs/archive/`
 
 ## Language
@@ -23,11 +25,15 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Shared CLI/MCP cooldown checks: `node tests/limits/runner.mjs` (after npm build)
 - Bundled checker/evidence consistency: `bun run catalog:verify`
 - npm package build: `bun run build:npm`
+- Documentation contracts: `bun run docs:check` (help, links, labels and media; no live registry calls)
 - Web dev: `bun run web:dev`
 - Web typecheck: `bun run web:typecheck`
 - Web build: `bun run web:build`
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
+Package builds create a corresponding-source snapshot under `dist/` and require
+a Git checkout or an extracted source archive. `TEMPER_PUBLIC_BUILD=1` rejects
+dirty/unidentified source. Local packaging does not publish or install anything.
 
 Install with `bun ci`. Development and local verification do not require an
 exact Bun or Node.js version. The npm CLI requires Node.js >= 22.12.0.

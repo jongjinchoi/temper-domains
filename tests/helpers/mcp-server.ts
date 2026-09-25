@@ -22,7 +22,11 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
     : new Response(null, { status: 404 });
 }) as typeof fetch;
 mock.module("../../src/registrar/browser.ts", () => ({
-  openBrowser: (url: string) => writeFileSync(join(process.env.TEMPER_TEST_HOME!, "opened-url"), url),
+  openBrowser: async (url: string) => {
+    if (url.includes('fail.com')) throw new Error('Controlled launcher failure');
+    writeFileSync(join(process.env.TEMPER_TEST_HOME!, "opened-url"), url);
+    return { kind: url.includes('slow.com') ? 'unconfirmed' : 'accepted', url };
+  },
 }));
 const { startMcpServer } = await import("../../src/mcp/server.ts");
 await startMcpServer();

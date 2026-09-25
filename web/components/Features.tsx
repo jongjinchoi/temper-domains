@@ -57,7 +57,7 @@ const FEATURES: Feature[] = [
   {
     badge: "№ 07 / LICENSE",
     title: "Open source.",
-    body: "Apache 2.0. Zero telemetry. Read every line before you run it.",
+    body: "AGPL-3.0-only. Zero telemetry. Read every line before you run it.",
   },
   {
     badge: "∞ / INSTALL",

@@ -9,6 +9,18 @@ const source = capture.packageSource!;
 // docs:check separately checks the original manifest against the live source.
 const fixture = { ...capture, inputs: { ...inputHashes(), 'package.json': digest(source) } };
 
+test('public capture metadata omits machine paths without changing capture evidence', () => {
+  for (const bunExecutable of ['/home/recorder/.bun/bin/bun', 'C:\\Users\\recorder\\bun.exe']) {
+    const original = { ...fixture, runtime: { ...fixture.runtime, bunExecutable, entry: '/home/recorder/temper/src/index.ts' } };
+    const before = JSON.stringify(original);
+    const recorded = recordPackageSource(original, source);
+    expect(recorded.runtime.bunExecutable).toBe(bunExecutable.endsWith('.exe') ? 'bun.exe' : 'bun');
+    expect(recorded.runtime.entry).toBe('src/index.ts');
+    expect({ ...recorded, runtime: original.runtime }).toEqual({ ...original, packageSource: source });
+    expect(JSON.stringify(original)).toBe(before);
+  }
+});
+
 test('version-only changes pass without changing the original capture record', () => {
   const manifest = recordPackageSource(fixture, source);
   const before = JSON.stringify(manifest);
@@ -24,6 +36,18 @@ test('dependency, script, name and engine changes still fail', () => {
   for (const [field, value] of Object.entries({ dependencies: { ink: '0.0.0' }, scripts: {}, name: 'different', engines: { node: '>=99' } })) {
     expect(() => manifestForCurrentPackage(manifest, JSON.stringify({ ...JSON.parse(source), [field]: value }))).toThrow();
   }
+});
+
+test('approved license and documentation additions preserve capture identity', () => {
+  const before = JSON.stringify(fixture);
+  const pkg = JSON.parse(source);
+  const current = JSON.stringify({ ...pkg, license: 'AGPL-3.0-only', files: [...pkg.files, 'docs/cli.md', 'docs/mcp.md', 'SOURCE.md', 'THIRD_PARTY_NOTICES.md'] });
+  expect(() => manifestForCurrentPackage(fixture, current)).not.toThrow();
+  expect(JSON.stringify(fixture)).toBe(before);
+  for (const files of [pkg.files.filter((p: string) => p !== 'dist/npm'), [...pkg.files, 'scripts/publish.ts'], ['**/*']]) {
+    expect(() => manifestForCurrentPackage(fixture, JSON.stringify({ ...pkg, files }))).toThrow();
+  }
+  expect(() => manifestForCurrentPackage(fixture, JSON.stringify({ ...pkg, license: 'Unlicense' }))).toThrow();
 });
 
 test('missing or altered capture package evidence fails closed', () => {

@@ -536,9 +536,11 @@ server.registerTool("open_registrar", {
       };
     }
     const url = buildURL(registrar as Registrar, normalized.domain);
-    openBrowser(url);
+    const request = await openBrowser(url).catch(error => { throw new Error(`${error instanceof Error ? error.message : String(error)}. Open manually: ${url}`); });
     return {
-      content: [{ type: "text" as const, text: `Opened ${registrar} for ${normalized.domain}: ${url}` }],
+      content: [{ type: "text" as const, text: request.kind === "accepted"
+        ? `Browser open request accepted for ${normalized.domain}. Page loading is not verified: ${url}`
+        : `Browser open request is unconfirmed. Open manually: ${url}` }],
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

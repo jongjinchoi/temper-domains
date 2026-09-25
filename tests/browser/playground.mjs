@@ -1,5 +1,6 @@
 // Run against a local built/dev server. The API is intercepted: no registry calls.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 const { chromium } = await import(process.env.TEMPER_PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
@@ -19,6 +20,61 @@ await page.route('**/api/check/**', async route => {
 });
 try {
   await page.goto(process.env.TEMPER_TEST_URL || 'http://127.0.0.1:3000', { waitUntil: 'networkidle' });
+  const license = await page.request.get(new URL('/license/', page.url()).href);
+  assert.equal(license.status(), 200);
+  assert.equal(await license.text(), readFileSync(new URL('../../LICENSE', import.meta.url), 'utf8'));
+  const notices = await page.request.get(new URL('/notices/', page.url()).href);
+  assert.equal(notices.status(), 200);
+  assert.equal(await notices.text(), readFileSync(new URL('../../THIRD_PARTY_NOTICES.md', import.meta.url), 'utf8'));
+  assert.equal(await page.getByRole('link', { name: 'AGPL-3.0-only', exact: true }).getAttribute('href'), '/license/');
+  const sourceLink = page.getByRole('link', { name: 'source', exact: true });
+  if (await sourceLink.count()) assert.match(await sourceLink.getAttribute('href'), /\/tree\/[a-f0-9]{40}$/);
+  else await page.getByText('local source · unpublished', { exact: true }).waitFor();
+  const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
+  assert.ok(jsonLd.some(text => text.includes('/license/')));
+  assert.ok(jsonLd.some(text => text.includes('AGPL-3.0-only')));
+  assert.doesNotMatch(jsonLd.join('\n'), /Apache/i);
+  const llms = await page.request.get(new URL('/llms.txt', page.url()).href);
+  assert.match(await llms.text(), /License: AGPL-3\.0-only/);
+  assert.match(await llms.text(), /This website's source:/);
+  const copy = page.getByRole('button', { name: 'Copy install command' });
+  for (const mode of ['denied', 'missing', 'success', 'race']) {
+    await page.evaluate(mode => {
+      window.copyWrites = [];
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: mode === 'missing' ? undefined : {
+        writeText(text) {
+          window.copyWrites.push(text);
+          if (mode === 'denied') return Promise.reject(new DOMException('Denied', 'NotAllowedError'));
+          if (mode === 'race') return new Promise((resolve, reject) => { (window.copyPending ??= []).push({ resolve, reject }); });
+          return Promise.resolve();
+        },
+      } });
+    }, mode);
+    await copy.click();
+    if (mode === 'race') {
+      await copy.click();
+      await page.evaluate(() => window.copyPending[1].reject(new Error('Denied')));
+      await page.getByText('Copy failed — select the command').waitFor();
+      await page.evaluate(() => window.copyPending[0].resolve());
+      await page.waitForTimeout(1300);
+    }
+    if (mode === 'success') {
+      await page.getByText('Command copied', { exact: true }).waitFor();
+      assert.match(await copy.textContent(), /copied ✓/);
+      assert.deepEqual(await page.evaluate(() => window.copyWrites), ['brew install jongjinchoi/temper-domains/temper']);
+    } else {
+      await page.getByText('Copy failed — select the command').waitFor();
+      assert.doesNotMatch(await copy.textContent(), /copied ✓/);
+      assert.match(await copy.textContent(), /brew install/);
+      if (mode === 'denied') {
+        await copy.locator('span').nth(1).dblclick();
+        assert.ok((await page.evaluate(() => String(window.getSelection()))).length > 0, 'manual-copy guidance must offer selectable command text');
+      }
+    }
+  }
+  const themes = await page.locator('#themes').textContent();
+  assert.equal(themes.split('Illustrative theme preview').length - 1, 7);
+  assert.doesNotMatch(themes, /15 TLDs|1\.5s|12 · 3 taken|Terminal native/);
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -51,5 +107,5 @@ try {
   await page.waitForFunction(() => document.querySelector('#play input') === document.activeElement);
   assert.equal(await input.evaluate(el => el === document.activeElement), true, 'failure must restore focus');
   assert.deepEqual(errors, []);
-  console.log('PASS: pending Escape, stale response, completion/error focus, accessible name, incomplete stream, partial coverage and reason');
+  console.log('PASS: license/notices/source/JSON-LD/llms, 390/1440 layout, clipboard and lookup interaction contracts (intercepted API)');
 } finally { await browser.close(); }

@@ -16,7 +16,13 @@ import { addHistory } from "../../src/config/history.ts";
 
 const scenario = process.argv[2];
 const opened: string[] = [];
-mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: (url: string) => { opened.push(url); } }));
+let finishBrowser: (() => void) | undefined;
+mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: async (url: string) => {
+  opened.push(url);
+  if (scenario?.startsWith('search-browser-')) await new Promise<void>(resolve => { finishBrowser = resolve; });
+  if (scenario === 'search-browser-failed') throw new Error('Controlled failure');
+  return { kind: scenario === 'search-browser-unconfirmed' ? 'unconfirmed' : 'accepted', url };
+} }));
 if (scenario === "watch-corrupt" || scenario === "history-corrupt" || scenario === "history-save-failure") {
   const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
   await mkdir(dir, { recursive: true });
@@ -107,7 +113,13 @@ try {
       for (let i = 0; i < 20; i++) await key("j");
       frames.scrolled = plain();
     }
-    if (scenario === "search-resume-many") {
+    if (scenario?.startsWith('search-browser-')) {
+      await key('\r'); await until(() => frame.includes('Where to buy?'));
+      await key('c'); frames.pending = plain();
+      finishBrowser!();
+      await until(() => !frame.includes('Requesting browser'));
+      frames.outcome = plain();
+    } else if (scenario === "search-resume-many") {
       frames.initial = plain(); await key("R"); frames.confirm = plain();
     } else if (scenario === "search-resume") {
       frames.initial = plain();

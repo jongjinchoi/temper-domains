@@ -20,7 +20,10 @@ function renderLlmsTxt(): string {
 
 temper is an open-source command-line tool that uses official RDAP and WHOIS routes to check domain availability. The CLI and MCP server run on the user's machine with zero telemetry and no temper-hosted query proxy. The hosted web demo uses a server-side API route for live checks.
 
-- License: Apache 2.0
+- License: AGPL-3.0-only
+- License text: ${SITE_URL}/license/
+- Third-party notices: ${SITE_URL}/notices/
+- This website's source: ${process.env.NEXT_PUBLIC_TEMPER_SOURCE_URL || 'local worktree (unpublished)'}
 - Language: TypeScript, built on the Bun runtime
 - Platforms: macOS, Linux, Windows
 - Install: \`${INSTALL_CMD}\` or \`npm i -g temper-domains\`

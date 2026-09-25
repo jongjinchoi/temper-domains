@@ -7,8 +7,8 @@
 - [x] README MCP 섹션에 global install과 npx command/args 방식 정리
 
 ## 기능 개선
-- [ ] search 화면에서 `e` 키로 extended TLD 전환 (30 ↔ 59)
-- [ ] search ↔ history ↔ suggest 간 화면 전환 시 이전 검색 결과 유지
+- [ ] search 화면에서 `e` 키로 extended TLD 전환 (30 ↔ 60)
+- [x] search ↔ history ↔ suggest 간 화면 전환 시 기존 검색 세션 결과 유지 (history 항목의 새 검색은 검색어만 재사용)
 - [ ] watchlist 알림 기능 (cron 또는 launchd로 주기적 체크)
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
 

@@ -164,6 +164,11 @@
   font-weight: 700;
 }
 
+.installCommand {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 .copyHint {
   font-size: 10px;
   letter-spacing: 0.1em;

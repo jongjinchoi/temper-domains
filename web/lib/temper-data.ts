@@ -5,9 +5,9 @@
 //   PLAYGROUND_TLDS                          ← playground-only subset, verified ⊆ EXTENDED_TLDS
 //   HERO_DEMO_TLDS                           ← hero CRT subset, verified ⊆ EXTENDED_TLDS
 //   THEMES (key + palette)                   ← ../../src/tui/theme.ts
-//   THEMES (label + desc)                    ← ../../README.md + InitView.tsx
+//   THEMES (label + desc)                    ← ../../docs/cli.md + InitView.tsx
 //   MCP_TOOLS                                ← ../../src/mcp/server.ts
-//   COMMANDS, KEYMAP                         ← ../../src/index.ts + README.md
+//   COMMANDS, KEYMAP                         ← ../../src/index.ts + docs/cli.md
 
 export const DEFAULT_TLDS_COUNT = 30;
 export const EXTENDED_TLDS_COUNT = 60;
@@ -70,7 +70,7 @@ export const THEMES: Theme[] = [
   {
     key: "default",
     label: "Default",
-    desc: "Terminal native",
+    desc: "Classic terminal colors",
     palette: { bg: "#000000", fg: "#ffffff", accent: "#af87ff", ok: "#00af00", tk: "#ff0000", mu: "#666666" },
   },
   {

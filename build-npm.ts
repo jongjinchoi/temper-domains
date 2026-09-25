@@ -1,7 +1,9 @@
 import { verifyBundledCheckerSignatures } from "./scripts/checker-fingerprint.ts";
 import { readFile, writeFile } from "node:fs/promises";
+import { prepareSource } from "./scripts/source-package.ts";
 
 await verifyBundledCheckerSignatures();
+const source = prepareSource();
 
 const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
 
@@ -21,6 +23,7 @@ if (!result.success) {
   console.error("Build failed:", result.logs);
   process.exit(1);
 }
+if (prepareSource().manifest.snapshot !== source.manifest.snapshot) throw new Error('Source changed during npm build');
 
 // Add shebang to dist/npm/index.js
 const indexPath = "./dist/npm/index.js";
@@ -30,3 +33,4 @@ if (!content.startsWith("#!/")) {
 }
 
 console.log("✓ dist/npm/index.js");
+await writeFile("./dist/npm/SOURCE.md", source.description);

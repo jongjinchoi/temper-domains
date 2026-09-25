@@ -41,6 +41,14 @@ describe("temper-data sync", () => {
     expect(THEMES.map((t) => t.key)).toEqual(THEME_NAMES);
   });
 
+  test('Default palette description matches CLI reference and setup choices', () => {
+    const readme = readFileSync(join(import.meta.dir, '../../../docs/cli.md'), 'utf8');
+    const init = readFileSync(join(import.meta.dir, '../../../src/tui/InitView.tsx'), 'utf8');
+    const theme = THEMES.find(theme => theme.key === 'default')!;
+    expect(readme.includes(theme.desc)).toBe(true);
+    expect(init.includes(`desc: "${theme.desc}"`)).toBe(true);
+  });
+
   test("MCP_TOOLS matches registerTool calls in src/mcp/server.ts", () => {
     const serverSource = readFileSync(
       join(import.meta.dir, "../../../src/mcp/server.ts"),

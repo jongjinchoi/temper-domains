@@ -11,10 +11,12 @@ import struct
 import sys
 import termios
 import time
+from real_pty_contract import decision, succeeded
 
 root = sys.argv[1]
 with open(os.path.join(root, "session.json")) as file:
     session = json.load(file)
+assert session.get("startVersion") and session.get("targetVersion"), "Explicit version contract required"
 started = time.monotonic()
 pid, fd = pty.fork()
 if pid == 0:
@@ -22,6 +24,7 @@ if pid == 0:
     os.execve(session["command"][0], session["command"], session["env"])
 data = b""
 answered = False
+rejected = False
 exited = False
 status = None
 decoder = codecs.getincrementaldecoder("utf-8")("replace")
@@ -41,7 +44,11 @@ with open(os.path.join(root, "session.cast"), "w") as cast:
                 data += chunk
                 cast.write(json.dumps([time.monotonic() - started, "o", decoder.decode(chunk)]) + "\n")
                 cast.flush()
-            if not answered and b"Enter confirm" in data and not (termios.tcgetattr(fd)[3] & termios.ICANON):
+            action = decision(data.decode(errors="replace"), session["startVersion"], session["targetVersion"], answered)
+            if not rejected and action == "cancel":
+                os.write(fd, b"\x1b")
+                rejected = True
+            elif not rejected and action == "confirm" and not (termios.tcgetattr(fd)[3] & termios.ICANON):
                 os.write(fd, b"\x1b[A")
                 time.sleep(0.1)
                 os.write(fd, b"\r")
@@ -70,10 +77,11 @@ with open(os.path.join(root, "session.cast"), "w") as cast:
         os.close(fd)
         with open(os.path.join(root, "session.raw"), "wb") as file:
             file.write(data)
-        result = {"exit": os.waitstatus_to_exitcode(status), "confirmed": answered,
+        result = {"exit": os.waitstatus_to_exitcode(status), "confirmed": answered, "rejectedTarget": rejected,
+                  "expectedStart": session["startVersion"], "expectedTarget": session["targetVersion"],
                   "verifying": b"Verifying installation" in data,
-                  "success": b"Temper updated:" in data}
+                  "success": succeeded(data.decode(errors="replace"), session["startVersion"], session["targetVersion"])}
         with open(os.path.join(root, "pty-result.json"), "w") as file:
             json.dump(result, file, indent=2)
         print(json.dumps(result))
-assert result["exit"] == 0 and result["confirmed"] and result["verifying"] and result["success"], data[-3000:].decode(errors="replace")
+assert not result["rejectedTarget"] and result["exit"] == 0 and result["confirmed"] and result["verifying"] and result["success"], data[-3000:].decode(errors="replace")

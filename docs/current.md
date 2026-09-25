@@ -9,7 +9,7 @@ documents live in `docs/archive/`.
 - Web package: Next.js marketing site and hosted live demo under `web/`.
 - Current npm package name: `temper-domains`.
 - Current repository: `jongjinchoi/temper-domains`.
-- License: Apache-2.0.
+- License: AGPL-3.0-only.
 
 ## Main Commands
 
@@ -58,8 +58,11 @@ in both workspaces so root typechecking does not download a separate compiler.
 ## Current Behavior Notes
 
 - `temper update` checks freshly and asks before installation; `--check` only reports.
-  Global npm and the verified Homebrew tap are executable update targets; npx/local,
-  source checkouts, direct downloads and unknown installers receive guidance.
+  Global npm and the verified Homebrew tap are executable update targets. Local,
+  linked and npx-cache packages query npm but receive manual installation guidance.
+  Source checkouts and unidentified binaries without a release channel skip remote
+  version queries and receive guidance. An npx command can also resolve a local package;
+  detection uses the actual entry and verified package ownership.
 - Interactive bare `temper` and search/suggest/whois/list check on every invocation;
   search arguments are validated before checking. The automatic deadline is 2s;
   failures produce a brief notice and continue. Later skips only this invocation.
@@ -98,6 +101,13 @@ in both workspaces so root typechecking does not download a separate compiler.
   No transcript is saved. Windows/missing-script systems
   keep direct terminal inheritance and native quiet output. Locks remain in ~/.temper/cache/.
   Completion exits; it does not re-run the user's original command automatically.
+- Browser opening waits for the OS launcher: exit 0 means the request was accepted,
+  not that a page loaded. Spawn/nonzero failures display an error and manual URL;
+  no completion within 5s displays an unconfirmed request and manual URL. Late events
+  cannot replace that result, and Temper does not kill a launched browser or retry.
+- The web install command reports copied only after the Clipboard API fulfills.
+  Missing/denied access keeps the command and displays accessible manual-copy guidance.
+  Theme cards are labeled illustrative previews, not live query or timing evidence.
 - Default search checks 30 TLDs.
 - Extended search checks 60 TLDs.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.
@@ -328,7 +338,7 @@ for example.com/net/org and detail for example.com. This does not establish
 purchase availability or deployed Production behavior.
 
 Execution scope, commands and evidence are recorded in
-[the RDAP implementation plan](superpowers/plans/2026-09-19-rdap-reliability.md).
+[the RDAP implementation plan](https://github.com/jongjinchoi/temper-domains/blob/main/docs/superpowers/plans/2026-09-19-rdap-reliability.md).
 
 ## Documentation Sync
 
@@ -347,10 +357,12 @@ Use `rg` to confirm stale claims are gone after copy updates.
 
 ### README and terminal recordings
 
-- `bun run docs:help` replaces only the marked README help block with output
-  from the current CLI. `bun run docs:check` verifies that block, local media
-  references, tape output paths and the capture manifest. CI runs this check
-  without VHS or public registry requests.
+- `bun run docs:help` updates the root and subcommand help blocks in `docs/cli.md`
+  from the current CLI. `bun run docs:check` verifies those blocks, the installation
+  support contracts, user-document links/anchors, current license labels, license
+  inventory lock hash, media references, tape outputs and original capture hashes.
+  CI runs this without VHS or public registry requests. Prose semantics still
+  require source review; this command is not a complete documentation audit.
 - `bun run media:record --only search` previews one tape. `bun run media:record`
   stages all eight tapes and their existing 19 PNG/GIF outputs in a temporary
   directory. Recording requires VHS, ttyd, ffmpeg/ffprobe, zsh, Fontconfig's
@@ -366,6 +378,8 @@ Use `rg` to confirm stale claims are gone after copy updates.
   directory so failures do not overwrite the repository's assets.
 - After capture, run `bun run scripts/docs.ts --record-package <staging-directory>`
   to preserve the exact package source alongside its original capture hash.
+  The public manifest records the executable basename and repository-relative
+  entry point, omitting local account and directory paths.
   This validates all staged inputs and outputs first; it does not recapture or
   change the original source commit, capture time, input hashes or media.
 - Review all staged PNGs and play every GIF through before running
@@ -379,9 +393,12 @@ Use `rg` to confirm stale claims are gone after copy updates.
   File changes are a reason to review screen relevance, not proof that a screen
   changed. Recapture when the displayed content or demonstrated interaction is
   outdated; do not relabel old media as a new capture just to pass a hash check.
-  For the current tapes, `docs:check` permits a package `version`-only change:
+  For the current tapes, `docs:check` permits a package `version` change, the
+  approved Apache-2.0 to AGPL-3.0-only metadata transition and the exact
+  documentation-only additions listed in `scripts/media-package.ts`:
   it verifies the preserved package source against the original hash, then
   compares all other package fields and all remaining capture inputs unchanged.
+  It does not ignore the whole `files` list; runtime removals or additions fail.
   The original capture record is never rewritten for the comparison. These tapes
   do not display the version and disable update checks. A future version-output
   or update-prompt recording must not use this exception without revisiting it.
@@ -394,6 +411,11 @@ Use `rg` to confirm stale claims are gone after copy updates.
 
 ## Internal Docs
 
+User-facing documentation starts in the concise [README](../README.md), with
+[CLI](cli.md), [extensions](extensions.md), [troubleshooting](troubleshooting.md),
+[MCP](mcp.md) and [licensing/source](licensing.md) guides. Help text and the full
+theme gallery live in the CLI guide.
+
 - `docs/current.md`: current implementation reference.
 - `docs/release.md`: release process.
 - `docs/backlog.md`: current backlog and follow-up ideas.
@@ -403,6 +425,11 @@ Historical docs are useful for product intent, but they are not the source of tr
 
 
 ## Extension catalog maintenance
+
+The source distribution preserves the eight original generator inputs under
+`data-sources/catalog/`. Preview without network access using
+`bun run catalog:update data-sources/catalog`; apply only after reviewing the
+reported changes. Capture dates and third-party source notices remain intact.
 
 The initial bundled catalog contains 756 offered extensions passing Temper's
 registration-boundary and route checks (738 RDAP, 18 WHOIS). These are static

@@ -136,6 +136,18 @@ test("availability and registrar stdio tools preserve their successful results",
 }, 20000);
 
 
+test("registrar stdio reports request acceptance, uncertainty and failure honestly", async () => {
+  for (const [domain, message, failed] of [
+    ['accepted.com', 'request accepted', false], ['slow.com', 'unconfirmed', false], ['fail.com', 'Open manually:', true],
+  ] as const) {
+    const result = await client.callTool({ name: 'open_registrar', arguments: { domain, registrar: 'porkbun' } });
+    expect(result.isError === true).toBe(failed);
+    expect(JSON.stringify(result.content)).toContain(message);
+    expect(JSON.stringify(result.content)).toContain(domain);
+    expect(JSON.stringify(result.content)).not.toContain('Opened ');
+  }
+});
+
 test("MCP cancellation reaches the lookup without cancelling another request", async () => {
   const controller = new AbortController();
   const pending = client.callTool({ name: "check_domain_availability", arguments: { domains: ["hold.com"] } }, undefined, { signal: controller.signal });

@@ -4,6 +4,12 @@ import { getTld } from "../utils/domain.ts";
 
 import { WHOIS_PROFILES } from "./services.ts";
 import { domainToASCII } from "node:url";
+import { abortReason } from "./run.ts";
+
+function failureReason(error: unknown, signal: AbortSignal, attempts: number) {
+  if (signal.aborted) return abortReason(signal, attempts);
+  return error instanceof Error && error.message === "whois timeout" ? "request_timeout" as const : "network_error" as const;
+}
 
 export function hasWhoisServer(tld: string): boolean { return Object.hasOwn(WHOIS_PROFILES, tld); }
 
@@ -131,11 +137,12 @@ export async function whoisLookup(
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
     if (signal.aborted) {
-      return { domain, tld, status: "slow", method: "whois", responseTime, attempts };
+      return { domain, tld, status: "slow", method: "whois", responseTime, attempts, terminationReason: failureReason(err, signal, attempts) };
     }
     return {
       domain, tld, status: "error", method: "whois", responseTime, attempts,
       error: err instanceof Error ? err.message : String(err),
+      terminationReason: failureReason(err, signal, attempts),
     };
   }
 }
@@ -260,6 +267,7 @@ export async function whoisDetail(
       responseTime,
       attempts,
       error: err instanceof Error ? err.message : String(err),
+      terminationReason: failureReason(err, signal, attempts),
     };
   }
 }

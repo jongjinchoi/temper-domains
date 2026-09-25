@@ -1,6 +1,12 @@
 import { test, expect, describe } from "bun:test";
 import { detectStatus, parseWhoisRaw, whoisDetail, whoisLookup } from "./whois.ts";
 
+test("connection refusal retains a retryable reason through the search session", async () => {
+  const child = Bun.spawn([process.execPath, "tests/runtime/whois-network.ts"], { stdout: "pipe", stderr: "pipe" });
+  const error = await new Response(child.stderr).text();
+  expect(await child.exited, error).toBe(0);
+});
+
 test("generic WHOIS notices are not denials and contradictory evidence stays unresolved", () => {
   expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain not found.", "sample.io")).toBe("available");
   expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain Name: sample.io", "sample.io")).toBe("taken");

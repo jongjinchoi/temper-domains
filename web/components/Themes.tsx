@@ -24,7 +24,7 @@ export default function Themes() {
               >
                 <span style={{ color: accent }}>$</span> temper search {HERO_DEMO_NAME}
                 {"\n"}
-                <span style={{ color: mu }}>{"  "}15 TLDs · 1.5s</span>
+                <span style={{ color: mu }}>Illustrative theme preview</span>
                 {"\n\n"}
                 <span style={{ color: tk }}>{"  "}{HERO_DEMO_NAME}.com  ✗</span>
                 {"\n"}
@@ -33,8 +33,6 @@ export default function Themes() {
                 <span style={{ color: ok }}>{"  "}{HERO_DEMO_NAME}.dev  ✓</span>
                 {"\n"}
                 <span style={{ color: ok }}>{"  "}{HERO_DEMO_NAME}.app  ✓</span>
-                {"\n"}
-                <span style={{ color: mu }}>{"  "}─ 12 · 3 taken</span>
               </div>
               <div className={styles.snapLabel}>
                 <strong>{theme.label}</strong>

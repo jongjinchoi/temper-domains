@@ -18,7 +18,7 @@ const THEME_META = [
   { name: "seoul-night", label: "Seoul Night", desc: "Neon × Han River" },
   { name: "catppuccin-mocha", label: "Catppuccin", desc: "Soft pastels" },
   { name: "dracula", label: "Dracula", desc: "High contrast" },
-  { name: "default", label: "Default", desc: "Terminal native" },
+  { name: "default", label: "Default", desc: "Classic terminal colors" },
   { name: "catppuccin-latte", label: "Catppuccin Latte", desc: "Pastel light" },
   { name: "rose-pine-dawn", label: "Rosé Pine Dawn", desc: "Warm natural light" },
 ];

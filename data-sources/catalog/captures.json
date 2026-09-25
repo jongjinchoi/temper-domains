@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://data.iana.org/TLD/tlds-alpha-by-domain.txt",
+    "sha256": "826de5396d8a4891bba8f23a6280253d57246b01edfd11f239932d394a3e2286",
+    "capturedAt": "2026-09-21"
+  },
+  {
+    "url": "https://publicsuffix.org/list/public_suffix_list.dat",
+    "sha256": "ffd93eadaf266e38209b7970d4e2902723cf2a528d4bdc6a216471ebe66b1575",
+    "capturedAt": "2026-09-21"
+  },
+  {
+    "url": "https://data.iana.org/rdap/dns.json",
+    "sha256": "d26bbc0af59c3d477bc2c388112793858079f06bffb94ea3ff7f4f8066f5c26d",
+    "capturedAt": "2026-09-21"
+  }
+]

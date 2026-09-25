@@ -11,13 +11,13 @@
   "engines": {
     "node": ">=22.12.0"
   },
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jongjinchoi/temper-domains.git"
   },
   "keywords": ["domain", "cli", "terminal", "tui", "mcp", "whois", "rdap"],
-  "files": ["dist/npm", "README.md", "LICENSE"],
+  "files": ["dist/npm", "README.md", "LICENSE", "SOURCE.md", "THIRD_PARTY_NOTICES.md", "docs/cli.md", "docs/extensions.md", "docs/troubleshooting.md", "docs/mcp.md", "docs/licensing.md", "docs/current.md", "docs/release.md", "docs/backlog.md"],
   "scripts": {
     "docs:check": "bun run scripts/docs.ts",
     "docs:help": "bun run scripts/docs.ts --write-help",

@@ -24,6 +24,17 @@ function expectViewport(frame: string, rows: number) {
   expect(above + shown + below).toBe(30);
 }
 
+test.each(['accepted', 'unconfirmed', 'failed'])('browser %s feedback preserves search results without premature success', async outcome => {
+  const result = await scenario(`search-browser-${outcome}`);
+  expect(result.frames.pending).toContain('Requesting browser');
+  expect(result.frames.pending).not.toContain('accepted');
+  expect(result.frames.outcome).toContain('30/30 answered');
+  expect(result.frames.outcome).toContain('acme.com');
+  expect(result.frames.outcome).toContain(outcome === 'failed' ? 'Could not open browser' : outcome === 'accepted' ? 'request accepted' : 'unconfirmed');
+  expect(result.frames.outcome).toContain('https://');
+  expect(result.unhandled).toEqual([]);
+});
+
 test("resume confirmation and footer remain visible for a full unresolved list in a 24-row terminal", async () => {
   const result = await scenario("search-resume-many");
   expect(result.frames.confirm).toContain("Resume 30 unresolved candidates once? Maximum 120s.");

@@ -1,6 +1,6 @@
 import { lookupNoticeLines } from "../utils/lookup-notice.ts";
 import { Box, Text, useApp, useInput, useStdout } from "ink";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_TLDS } from "../checker/types.ts";
 import { addWatch } from "../config/watchlist.ts";
 import { useSearchExecution } from "./hooks/useSearchExecution.ts";
@@ -86,7 +86,9 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [position, setPosition] = useState<Position>({ cursor: 0, offset: 0 });
-  const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean } | null>(null);
+  const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean; neutral?: boolean } | null>(null);
+  const browserRequest = useRef(0);
+  useEffect(() => () => { browserRequest.current++; }, []);
   const [filterText, setFilterText] = useState("");
   const [unresolvedOnly, setUnresolvedOnly] = useState(false);
   const [resumeDomains, setResumeDomains] = useState<string[]>([]);
@@ -223,14 +225,22 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     { isActive: screenState !== "registrar" && screenState !== "detail" && process.stdin.isTTY === true },
   );
 
-  const handleRegistrarSelect = (registrar: Registrar) => {
+  const handleRegistrarSelect = async (registrar: Registrar) => {
     const domain = selectedDomain;
     if (!domain) return;
     const url = buildURL(registrar, domain);
-    openBrowser(url);
-    setConfirmation({ text: `✓ Opening ${registrar} for ${domain}...` });
+    const requestId = ++browserRequest.current;
+    setConfirmation({ text: `Requesting browser for ${domain}...`, neutral: true });
     setScreenState("selecting");
-    setTimeout(() => setConfirmation(null), 3000);
+    try {
+      const request = await openBrowser(url);
+      if (requestId !== browserRequest.current) return;
+      setConfirmation({ neutral: request.kind === "unconfirmed", text: request.kind === "accepted"
+        ? `Browser open request accepted: ${url}`
+        : `Browser request unconfirmed. Open manually: ${url}` });
+    } catch {
+      if (requestId === browserRequest.current) setConfirmation({ text: `Could not open browser. Open manually: ${url}`, error: true });
+    }
   };
 
   const handleRegistrarCancel = () => {
@@ -340,7 +350,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       {/* Confirmation */}
       {confirmation && (
         <Box marginTop={1}>
-          <Text color={confirmation.error ? theme.red : theme.green}>{confirmation.text}</Text>
+          <Text color={confirmation.error ? theme.red : confirmation.neutral ? theme.dim : theme.green}>{confirmation.text}</Text>
         </Box>
       )}
     </FrameBox>

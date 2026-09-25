@@ -21,7 +21,10 @@ type HeroState =
 const ROW_PAD = 14;
 
 export default function Hero() {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "pending" | "copied" | "failed">("idle");
+  const copyAttempt = useRef(0);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => { copyAttempt.current++; clearTimeout(copyTimer.current); }, []);
   const [state, setState] = useState<HeroState>({ kind: "pending" });
   const version = getVersion();
 
@@ -53,11 +56,19 @@ export default function Hero() {
     return () => controller.abort();
   }, []);
 
-  const handleCopy = () => {
-    if (typeof navigator === "undefined") return;
-    navigator.clipboard?.writeText(INSTALL_CMD);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1200);
+  const handleCopy = async () => {
+    const attempt = ++copyAttempt.current;
+    clearTimeout(copyTimer.current);
+    setCopyState("pending");
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(INSTALL_CMD);
+      if (attempt !== copyAttempt.current) return;
+      setCopyState("copied");
+      copyTimer.current = setTimeout(() => setCopyState("idle"), 1200);
+    } catch {
+      if (attempt === copyAttempt.current) setCopyState("failed");
+    }
   };
 
   const availableCount =
@@ -86,7 +97,7 @@ export default function Hero() {
         <span className={`${styles.sticker} ${styles.navy} ${styles.s2}`}>
           MADE IN GANGHWA / KOREA
         </span>
-        <span className={`${styles.sticker} ${styles.s3}`}>APACHE 2.0</span>
+        <span className={`${styles.sticker} ${styles.s3}`}>AGPL 3.0</span>
       </div>
 
       <div className={styles.heroGrid}>
@@ -94,7 +105,7 @@ export default function Hero() {
           <div className={styles.issueBar}>
             <span>v{version}</span>
             <span>{DEFAULT_TLDS_COUNT} TLDs</span>
-            <span>Apache 2.0</span>
+            <span>AGPL-3.0-only</span>
           </div>
           <h1 className={styles.headline}>
             Never{" "}
@@ -117,9 +128,12 @@ export default function Hero() {
             aria-label="Copy install command"
           >
             <span className={styles.installIc}>▸</span>
-            <span>{copied ? "copied ✓" : INSTALL_CMD}</span>
+            <span className={styles.installCommand}>{copyState === "copied" ? "copied ✓" : INSTALL_CMD}</span>
             <span className={styles.copyHint}>(CLICK TO COPY)</span>
           </button>
+          <div role="status" aria-live="polite">
+            {copyState === "failed" ? "Copy failed — select the command" : copyState === "copied" ? "Command copied" : ""}
+          </div>
         </div>
 
         <div className={styles.crt} role="status" aria-live="polite">

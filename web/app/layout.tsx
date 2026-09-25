@@ -109,7 +109,7 @@ const JSON_LD = {
     sameAs: ["https://github.com/jongjinchoi"],
   },
   codeRepository: GITHUB_URL,
-  license: "https://www.apache.org/licenses/LICENSE-2.0",
+  license: `${SITE_URL}/license/`,
   softwareVersion: getVersion(),
   dateModified: new Date().toISOString().split("T")[0],
   downloadUrl: `${GITHUB_URL}/releases`,
@@ -150,7 +150,7 @@ const JSON_LD_FAQ = {
       name: "Is temper free?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. temper is open-source software released under the Apache 2.0 license.",
+        text: "Yes. temper is open-source software released under the AGPL-3.0-only license.",
       },
     },
     {

@@ -107,6 +107,24 @@ try {
     assert.ok(requests[2].at - requests[1].at >= 2390, 'a single valid answer cannot restore normal speed');
     assert.equal(JSON.parse(await readFile(file, 'utf8')).servers[origin].strikes, 2);
     whoisRequests = 0;
+    const closed = createWhoisServer();
+    await new Promise(resolve => closed.listen(0, '127.0.0.1', resolve));
+    const closedPort = closed.address().port;
+    await new Promise(resolve => closed.close(resolve));
+    const livePort = env.TEMPER_LIMIT_TEST_WHOIS_PORT;
+    env.TEMPER_LIMIT_TEST_WHOIS_PORT = String(closedPort);
+    const refused = JSON.parse(await cli(['search', 'refused', '--tlds', 'io', '--format', 'json']))[0];
+    assert.equal(refused.terminationReason, 'network_error'); assert.equal(refused.attempts, 1);
+    const refusedDetail = JSON.parse(await cli(['whois', 'refused.io', '--format', 'json']));
+    assert.equal(refusedDetail.terminationReason, 'network_error');
+    const refusalClient = new Client({ name: 'whois-refusal-regression', version: '1.0.0' });
+    try {
+      await refusalClient.connect(new StdioClientTransport({ command: runtime, args: [...prefix, 'mcp'], env }));
+      const result = await refusalClient.callTool({ name: 'check_domain_availability', arguments: { domains: ['refused.io'] } });
+      assert.deepEqual(result.structuredContent.retryPlan.eligible, ['refused.io']);
+      assert.deepEqual(result.structuredContent.retryPlan.notRetryable, []);
+    } finally { await refusalClient.close(); }
+    env.TEMPER_LIMIT_TEST_WHOIS_PORT = livePort;
     const whoisFirst = JSON.parse(await cli(['search', 'whoisone', '--tlds', 'io', '--format', 'json']))[0];
     assert.equal(whoisRequests, 1, 'WHOIS must reach our loopback fixture');
     assert.equal(whoisFirst.status, 'rate_limited'); assert.equal(whoisFirst.retryAtSource, 'client_policy');

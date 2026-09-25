@@ -2,6 +2,19 @@
 
 ## Prerequisites
 
+- The first AGPL release is not yet authorized or assigned a version. Do not
+  overwrite v0.6.2 or earlier Apache artifacts. Announce `AGPL-3.0-only` and
+  link `docs/licensing.md` in the first new release's notes.
+- Review `legal/inventory.json` for the actual artifact/platform. The complete
+  Bun linked-library notices and source/relink review is still open; no license
+  incompatibility or violation has been established by that open status.
+  Do not mark a runtime reviewed merely because its build succeeds. Dependency upgrades require a
+  refreshed inventory and preserved notices.
+- Public package builds set `TEMPER_PUBLIC_BUILD=1`, check the actual Git commit
+  against the deployment commit and reject dirty inputs. The website applies
+  the same checks on Vercel; other public hosts must set this environment flag.
+  Local builds have no such publication claim and label dirty source as local.
+
 - Run `bun ci`. No exact Bun or Node.js version is required for local
   verification; record the versions used. Release workflows select Bun
   `latest` and Node.js `lts/*`.
@@ -37,13 +50,13 @@ git push origin main --tags
 
 태그 푸시 후 GitHub Actions가 자동 실행:
 
-1. **verify** - `bun test`, `bun run typecheck`, `bun run build:npm`
+1. **verify** - `bun test`, `bun run typecheck`, `bun run docs:check`, `bun run build:npm`; corresponding-source archive 생성
 2. **build** - 5개 플랫폼 바이너리 (`PKG_VERSION`은 태그 버전으로 주입)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64
    - bun-windows-x64
-3. **release** - GitHub Release 생성 + `tar.gz` 업로드
-4. **npm** - `bun run build:npm` 후 OIDC로 `npm publish --access public`
+3. **release** - GitHub Release 생성 + 바이너리와 해당 source `tar.gz` 업로드
+4. **npm** - 공개 Release/source 확인, `bun run build:npm` 후 OIDC로 `npm publish --access public`
 5. **homebrew** - `jongjinchoi/homebrew-temper-domains` Formula 자동 업데이트
 
 ## Recover npm Publication
@@ -57,8 +70,9 @@ GitHub Release가 이미 게시됐지만 npm 게시만 실패한 경우 기존 �
 gh workflow run release.yml --ref main -f release_tag=v0.4.0
 ```
 
-수동 실행은 verify와 npm job만 수행하며 바이너리·GitHub Release·Homebrew를
-재게시하지 않는다. 입력 태그와 package.json 버전이 같고, 태그가 현재 커밋의
+수동 실행은 verify와 npm job만 수행하며 바이너리·Homebrew를 재게시하지 않는다.
+기존 공개 GitHub Release에 복구 빌드의 실제 커밋을 담은 소스 archive를 추가한다.
+기존 태그 빌드의 소스 archive를 덮어쓰지 않는다. 입력 태그와 package.json 버전이 같고, 태그가 현재 커밋의
 조상이며, 태그 이후 변경이 `release.yml`과 이 문서뿐일 때만 게시를 허용한다.
 이 조건을 만족하지 않으면 새 버전으로 정상 릴리스를 진행한다.
 
@@ -75,6 +89,33 @@ GitHub Secret을 정리하고 npm Publishing access에서 토큰 게시를 제�
 
 ## Verify
 
+Before publication, inspect the actual npm tarball and all five native archives:
+
+- npm contains `LICENSE`, `THIRD_PARTY_NOTICES.md`, the linked user guides and
+  `dist/npm/SOURCE.md`; no private environment files or developer notes.
+- Native archives contain `temper` (Windows: `temper.exe`) plus `LICENSE`,
+  `THIRD_PARTY_NOTICES.md` and the build-specific `SOURCE.md`.
+- `temper-source-<actual-commit>.tar.gz` contains the source, lockfile, build
+  scripts, saved catalog inputs and `SOURCE-MANIFEST.json`. Extract it and check
+  the recorded hashes and a rebuild. A locally successful snapshot is not proof
+  that the public download URL works: verify that URL after release upload and
+  before npm publication.
+- Homebrew's generated formula declares `AGPL-3.0-only` and installs the three
+  legal/source files with `pkgshare.install`.
+- The deployed website shows a Source link to the exact build commit, readable
+  `/license/` and `/notices/` responses, matching FAQ/JSON-LD/llms labels. A local
+  dirty preview instead displays `local source · unpublished`.
+
+Local package checks do not publish or update the maintainer's installation:
+
+```sh
+bun run build:npm
+npm pack --dry-run
+npm pack --pack-destination /path/to/temporary-directory
+bun run build.ts bun-darwin-arm64
+bun run scripts/source-package.ts bun-darwin-arm64
+```
+
 Check npm publication and the Homebrew formula separately: the CLI updater uses
 each installation channel's published version, not GitHub release presence alone.
 The formula's explicit stable `version` field is the read-only discovery contract.
@@ -90,15 +131,18 @@ failure and cancellation, and confirm MCP/JSON/offline commands make no version 
 An opt-in full installation harness is available separately from `bun test`:
 
 ```bash
-TEMPER_REAL_INSTALL=1 node tests/update/real-install.mjs npm
-TEMPER_REAL_INSTALL=1 TEMPER_TEST_UNTRUSTED_TAPS=1 node tests/update/real-install.mjs homebrew /path/to/brew /path/to/temper-bun-darwin-arm64.tar.gz <published-sha256>
+TEMPER_REAL_INSTALL=1 node tests/update/real-install.mjs npm <test-start-version> <expected-target-version>
+TEMPER_REAL_INSTALL=1 TEMPER_TEST_UNTRUSTED_TAPS=1 node tests/update/real-install.mjs homebrew <test-start-version> <expected-target-version> /path/to/brew /path/to/temper-bun-darwin-arm64.tar.gz <published-sha256>
 ```
 
-This fixture currently tests this checkout with a test-only `0.6.0` version against
-published `0.6.1`. It does not change package.json or publish a version. It queries
+This fixture tests this checkout with an explicitly supplied test-only start version
+against an explicitly expected published target. It is not an old release binary.
+Preflight checks the published version, archive integrity and package/binary version;
+the PTY approves only the exact start/target pair and cancels a changed Homebrew target.
+It does not change package.json or publish a version. It queries
 the real version endpoints and installs real packages in new temporary prefixes.
 Homebrew requires macOS ARM64, an existing Homebrew checkout with portable Ruby,
-and the verified 0.6.1 archive, served unchanged from a loopback mirror. Its
+and the verified target archive, served unchanged from a loopback mirror. Its
 nondefault-prefix warnings remain visible. Optional untrusted taps are empty
 local test repositories; they do not change the user's tap trust settings.
 `TEMPER_TEST_THEME=rose-pine-dawn` selects the alternate theme for the fixture.
@@ -120,10 +164,10 @@ brew update && brew upgrade temper
 temper --version
 ```
 
-## Rollback
+## Recovery and publication removal
 
 ```bash
-# npm unpublish (72시간 이내만 가능)
+# npm unpublish (check eligibility under the current npm policy first)
 npm unpublish temper-domains@<version>
 
 # GitHub Release 삭제
@@ -133,6 +177,13 @@ gh release delete v<version> --yes
 git tag -d v<version>
 git push origin :refs/tags/v<version>
 ```
+
+These are publication removals, not rollbacks of users' installed packages.
+Under [npm's unpublish policy](https://docs.npmjs.com/policies/unpublish/), removal
+within 72 hours requires no dependents; after that, additional download and
+ownership conditions apply. An unpublished name/version cannot be reused.
+Prefer a corrected release when users already depend on the published version;
+any removal still requires explicit authorization.
 
 ## Notes
 

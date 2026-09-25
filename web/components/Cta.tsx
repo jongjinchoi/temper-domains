@@ -10,7 +10,7 @@ export default function Cta() {
         <em>terminal.</em> 🔥
       </h2>
       <p>
-        Open source, Apache 2.0. If temper saves you a tab, give it a star.
+        Open source, AGPL-3.0-only. If temper saves you a tab, give it a star.
         Issues and pull requests welcome.
       </p>
       <div className={styles.btns}>

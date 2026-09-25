@@ -13,6 +13,9 @@ on:
 permissions:
   contents: write
 
+env:
+  TEMPER_PUBLIC_BUILD: '1'
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -45,7 +48,12 @@ jobs:
       - run: bun ci
       - run: bun test
       - run: bun run typecheck
+      - run: bun run docs:check
       - run: bun run build:npm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corresponding-source
+          path: dist/temper-source-*.tar.gz
 
   build:
     if: github.event_name == 'push'
@@ -72,15 +80,8 @@ jobs:
       - run: bun ci
       - name: Build binary
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          mkdir -p dist
-          bun build --compile --target=${{ matrix.target }} --minify --sourcemap --define PKG_VERSION="\"$VERSION\"" ./src/index.ts --outfile dist/temper
-          cd dist
-          if [ -f temper.exe ]; then
-            tar -czf temper-${{ matrix.target }}.tar.gz temper.exe
-          else
-            tar -czf temper-${{ matrix.target }}.tar.gz temper
-          fi
+          bun run build.ts ${{ matrix.target }}
+          bun run scripts/source-package.ts ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         with:
           name: temper-${{ matrix.target }}
@@ -101,10 +102,11 @@ jobs:
           generate_release_notes: true
 
   npm:
-    needs: verify
+    needs: [verify, release]
+    if: always() && needs.verify.result == 'success' && (needs.release.result == 'success' || (github.event_name == 'workflow_dispatch' && needs.release.result == 'skipped'))
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - uses: actions/checkout@v5
@@ -118,6 +120,33 @@ jobs:
           package-manager-cache: false
       - run: bun ci
       - run: bun run build:npm
+      - name: Attach exact source before publishing npm (including recovery)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: |
+          # The commit in the filename avoids replacing a tag build's source
+          # during recovery from a later workflow commit.
+          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')" = false
+          SOURCE_FILE="dist/temper-source-${GITHUB_SHA}.tar.gz"
+          # A retry may reuse an existing source for the same immutable commit.
+          if [ "$(gh release view "$RELEASE_TAG" --json assets --jq ".assets | any(.name == \"${SOURCE_FILE#dist/}\")")" != true ]; then
+            gh release upload "$RELEASE_TAG" "$SOURCE_FILE"
+          fi
+          curl --fail --location --retry 3 "https://github.com/jongjinchoi/temper-domains/releases/download/${RELEASE_TAG}/${SOURCE_FILE#dist/}" --output "$RUNNER_TEMP/temper-public-source.tar.gz"
+          tar -xOf "$RUNNER_TEMP/temper-public-source.tar.gz" ./SOURCE-MANIFEST.json > "$RUNNER_TEMP/temper-public-source.json"
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            import { execFileSync } from "node:child_process";
+            import { createHash } from "node:crypto";
+            const local = JSON.parse(readFileSync("dist/source-manifest.json", "utf8"));
+            const remote = JSON.parse(readFileSync(process.env.RUNNER_TEMP + "/temper-public-source.json", "utf8"));
+            if (remote.revision !== local.revision || remote.snapshot !== local.snapshot || remote.dirty) throw new Error("Published source does not match this build");
+            for (const [path, hash] of Object.entries(local.files)) {
+              const bytes = execFileSync("tar", ["-xOf", process.env.RUNNER_TEMP + "/temper-public-source.tar.gz", "./" + path], { maxBuffer: 64 * 1024 * 1024 });
+              if (createHash("sha256").update(bytes).digest("hex") !== hash) throw new Error("Published source file differs: " + path);
+            }
+          '
       - run: npm publish --access public
 
   homebrew:
@@ -144,6 +173,7 @@ jobs:
             desc "Never leave your terminal to find a domain"
             homepage "https://github.com/jongjinchoi/temper-domains"
             version "${VERSION}"
+            license "AGPL-3.0-only"
 
             on_macos do
               if Hardware::CPU.arm?
@@ -167,6 +197,7 @@ jobs:
 
             def install
               bin.install "temper"
+              pkgshare.install "LICENSE", "THIRD_PARTY_NOTICES.md", "SOURCE.md"
             end
 
             test do

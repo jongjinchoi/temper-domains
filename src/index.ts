@@ -329,7 +329,7 @@ configCmd
 program
   .command("update")
   .description("Check for a new version and update after confirmation")
-  .option("--check", "Show the published version and instructions without installing")
+  .option("--check", "Query a known release channel and show guidance without installing")
   .addHelpText("after", "\nAutomatic checks: interactive temper, search, suggest, whois and list; checked on every invocation.\nSet TEMPER_NO_UPDATE_CHECK=1 to disable automatic checks.\nLater skips only the current invocation. Updating requires a terminal; no --yes option.\nExamples:\n  temper update\n  temper update --check")
   .action(async opts => { await updateCommand(Boolean(opts.check)); });
 

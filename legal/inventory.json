@@ -1,0 +1,5098 @@
+{
+  "schemaVersion": 1,
+  "lockSha256": "febbacc37d37c8b9f11a4ff875b7dfb62776977e2028d5ec528bb54210a8bfa6",
+  "lockEntries": 218,
+  "packages": [
+    {
+      "id": "@alcalzone/ansi-tokenize@0.3.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AlCalzone/ansi-tokenize.git"
+      },
+      "source": "https://registry.npmjs.org/%40alcalzone%2Fansi-tokenize/0.3.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c60f722e431aa92d949775157b269851c9d0e2a1bc18f77dcbf0d95363734443"
+        }
+      ]
+    },
+    {
+      "id": "@hono/node-server@1.19.12",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/honojs/node-server.git"
+      },
+      "source": "https://registry.npmjs.org/%40hono%2Fnode-server/1.19.12",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "6895190430d809c4c57a7582ecc2f99acbc2ea39a5dfad20262a41d5b3e91733"
+        }
+      ]
+    },
+    {
+      "id": "@img/colour@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lovell/colour.git"
+      },
+      "source": "https://registry.npmjs.org/%40img%2Fcolour/1.1.0",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "e2eaa4603c14cb26f301e88648c12a853fa3f0f5da6d4b0972958c666e7f2ab8"
+        }
+      ]
+    },
+    {
+      "id": "@img/sharp-darwin-arm64@0.35.4",
+      "license": "Apache-2.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lovell/sharp.git",
+        "directory": "npm/darwin-arm64"
+      },
+      "source": "https://registry.npmjs.org/%40img%2Fsharp-darwin-arm64/0.35.4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+        }
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-darwin-arm64@1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "directory": "npm/darwin-arm64"
+      },
+      "source": "https://registry.npmjs.org/%40img%2Fsharp-libvips-darwin-arm64/1.3.3",
+      "notices": [
+        {
+          "path": "https://github.com/lovell/sharp-libvips/blob/6e5971d333377743163edc3ad9e5d0b897abcbc9/THIRD-PARTY-NOTICES.md",
+          "sha256": "25ffcfa69e28b1913ced27ec778b90f24911a1bb3021253577e8b0af55db0d49"
+        }
+      ]
+    },
+    {
+      "id": "@modelcontextprotocol/sdk@1.30.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/modelcontextprotocol/typescript-sdk.git"
+      },
+      "source": "https://registry.npmjs.org/%40modelcontextprotocol%2Fsdk/1.30.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e13dbbc1d120fc2a03cecde7c91424ae2d7de11b63d58ded2f4431e261ee50d"
+        }
+      ]
+    },
+    {
+      "id": "@next/env@16.3.5",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/vercel/next.js",
+        "directory": "packages/next-env"
+      },
+      "source": "https://registry.npmjs.org/%40next%2Fenv/16.3.5",
+      "notices": [
+        {
+          "path": "https://github.com/vercel/next.js/blob/v16.3.5/license.md",
+          "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
+        }
+      ]
+    },
+    {
+      "id": "@next/swc-darwin-arm64@16.3.5",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/vercel/next.js",
+        "directory": "crates/next-napi-bindings/npm/darwin-arm64"
+      },
+      "source": "https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.5",
+      "notices": [
+        {
+          "path": "https://github.com/vercel/next.js/blob/v16.3.5/license.md",
+          "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
+        }
+      ]
+    },
+    {
+      "id": "@swc/helpers@0.5.23",
+      "license": "Apache-2.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/swc-project/swc.git",
+        "directory": "packages/helpers"
+      },
+      "source": "https://registry.npmjs.org/%40swc%2Fhelpers/0.5.23",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91"
+        }
+      ]
+    },
+    {
+      "id": "@types/bun@1.4.2",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/bun"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Fbun/1.4.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "id": "@types/node@24.13.6",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/node"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Fnode/24.13.6",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "id": "@types/node@25.5.2",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/node"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Fnode/25.5.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "id": "@types/react-dom@19.3.0",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/react-dom"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Freact-dom/19.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "id": "@types/react@19.3.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/react"
+      },
+      "source": "https://registry.npmjs.org/%40types%2Freact/19.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+        }
+      ]
+    },
+    {
+      "id": "@typescript/typescript-darwin-arm64@7.0.2",
+      "license": "Apache-2.0",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/TypeScript.git"
+      },
+      "source": "https://registry.npmjs.org/%40typescript%2Ftypescript-darwin-arm64/7.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+        },
+        {
+          "path": "NOTICE.txt",
+          "sha256": "f5c708b59114507b8b27b48181b6883d106bbca0c1634bbee45b5e344237b66b"
+        }
+      ]
+    },
+    {
+      "id": "accepts@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/accepts",
+      "source": "https://registry.npmjs.org/accepts/2.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "71f83c4c0621102a56d9853812777b85751bce7e9726f686f5b056c1f8a4b0e6"
+        }
+      ]
+    },
+    {
+      "id": "ajv-formats@3.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ajv-validator/ajv-formats.git"
+      },
+      "source": "https://registry.npmjs.org/ajv-formats/3.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "9df3bb69929a3b650ed73b3bfa1756725aaff0ac296461605753547004eafeaf"
+        }
+      ]
+    },
+    {
+      "id": "ajv@8.18.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "ajv-validator/ajv",
+      "source": "https://registry.npmjs.org/ajv/8.18.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a05350a88e318e4f5f2c2a1ff1e2e88daa4dd38e6e78b71cccae422bdc762cc3"
+        }
+      ]
+    },
+    {
+      "id": "ansi-escapes@7.3.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/ansi-escapes",
+      "source": "https://registry.npmjs.org/ansi-escapes/7.3.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "ansi-regex@6.2.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/ansi-regex",
+      "source": "https://registry.npmjs.org/ansi-regex/6.2.2",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "ansi-styles@6.2.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/ansi-styles",
+      "source": "https://registry.npmjs.org/ansi-styles/6.2.3",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "auto-bind@5.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/auto-bind",
+      "source": "https://registry.npmjs.org/auto-bind/5.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "baseline-browser-mapping@2.10.38",
+      "license": "Apache-2.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/web-platform-dx/baseline-browser-mapping.git"
+      },
+      "source": "https://registry.npmjs.org/baseline-browser-mapping/2.10.38",
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ]
+    },
+    {
+      "id": "body-parser@2.2.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "expressjs/body-parser",
+      "source": "https://registry.npmjs.org/body-parser/2.2.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "23d466b1b134b415b66fa50c6526b4cf3e7b9258554da88d3abb371721e7ce68"
+        }
+      ]
+    },
+    {
+      "id": "bun-types@1.4.2",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/oven-sh/bun",
+        "directory": "packages/bun-types"
+      },
+      "source": "https://registry.npmjs.org/bun-types/1.4.2",
+      "notices": [
+        {
+          "path": "docs/project/license.mdx",
+          "sha256": "1fac2ad9eac5ba9e1e0ef0d2893108e7d7a17fae5afac60f4bb0bd403087f3ec"
+        }
+      ]
+    },
+    {
+      "id": "bytes@3.1.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "visionmedia/bytes.js",
+      "source": "https://registry.npmjs.org/bytes/3.1.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "e3b44af066615de2ea48d18d852d0762f18c0b2efcea714fa48a6f729d405b85"
+        }
+      ]
+    },
+    {
+      "id": "call-bind-apply-helpers@1.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/call-bind-apply-helpers.git"
+      },
+      "source": "https://registry.npmjs.org/call-bind-apply-helpers/1.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "call-bound@1.0.4",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/call-bound.git"
+      },
+      "source": "https://registry.npmjs.org/call-bound/1.0.4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "caniuse-lite@1.0.30001799",
+      "license": "CC-BY-4.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": "browserslist/caniuse-lite",
+      "source": "https://registry.npmjs.org/caniuse-lite/1.0.30001799",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "fd3a263fe19ed8faa9068b43abaebafc02c77897b0c6fc09abc04bb592e5f16e"
+        }
+      ]
+    },
+    {
+      "id": "chalk@5.6.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/chalk",
+      "source": "https://registry.npmjs.org/chalk/5.6.2",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "cli-boxes@4.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/cli-boxes",
+      "source": "https://registry.npmjs.org/cli-boxes/4.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "cli-cursor@4.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/cli-cursor",
+      "source": "https://registry.npmjs.org/cli-cursor/4.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "cli-truncate@6.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "github:sindresorhus/cli-truncate",
+      "source": "https://registry.npmjs.org/cli-truncate/6.1.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "client-only@0.0.1",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "source": "https://registry.npmjs.org/client-only/0.0.1",
+      "notices": []
+    },
+    {
+      "id": "code-excerpt@4.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "vadimdemedes/code-excerpt",
+      "source": "https://registry.npmjs.org/code-excerpt/4.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "b53ca5a0db1b07785cbd9627341b6bd731ef6104bc3b74d44c15c5e7a8990f20"
+        }
+      ]
+    },
+    {
+      "id": "commander@15.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tj/commander.js.git"
+      },
+      "source": "https://registry.npmjs.org/commander/15.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+        }
+      ]
+    },
+    {
+      "id": "content-disposition@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/content-disposition",
+      "source": "https://registry.npmjs.org/content-disposition/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd47ce7b88c7759630d1e2b9fcfa170a0f1fde522be09e13fb1581a79d090400"
+        }
+      ]
+    },
+    {
+      "id": "content-type@1.0.5",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/content-type",
+      "source": "https://registry.npmjs.org/content-type/1.0.5",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "257aed98914108e91a337912727b6a802eef218248507f74b76faffaff517a38"
+        }
+      ]
+    },
+    {
+      "id": "convert-to-spaces@2.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "vadimdemedes/convert-to-spaces",
+      "source": "https://registry.npmjs.org/convert-to-spaces/2.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "49810fde850fee8647c52ae2d5debb9272c3b26634b9f6a800242b8aa823bad2"
+        }
+      ]
+    },
+    {
+      "id": "cookie-signature@1.2.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/visionmedia/node-cookie-signature.git"
+      },
+      "source": "https://registry.npmjs.org/cookie-signature/1.2.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "0dd4e47333485760cf8c265db5a5e24ae8d7401064c6f2e19793ee81a5bef42f"
+        }
+      ]
+    },
+    {
+      "id": "cookie@0.7.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/cookie",
+      "source": "https://registry.npmjs.org/cookie/0.7.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c02110eedc16c7114f1a9bdc026c65626ce1d9c7e27fd51a8e0feee8a48a6858"
+        }
+      ]
+    },
+    {
+      "id": "cors@2.8.6",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "expressjs/cors",
+      "source": "https://registry.npmjs.org/cors/2.8.6",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "1aa9a12863eefb583779b2ca0e5d73c610b6e6d07529ae0472721769a6ea0a32"
+        }
+      ]
+    },
+    {
+      "id": "cross-spawn@7.0.6",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git@github.com:moxystudio/node-cross-spawn.git"
+      },
+      "source": "https://registry.npmjs.org/cross-spawn/7.0.6",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "aaa78451b6fecd1b9c4594c796c133c0e90cad100372ff8bc6de615e9ef9adf1"
+        }
+      ]
+    },
+    {
+      "id": "csstype@3.2.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "https://github.com/frenic/csstype",
+      "source": "https://registry.npmjs.org/csstype/3.2.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "11d55bd4541c75ee7879547ac49089c489163dae49551389713c3d026cab383e"
+        }
+      ]
+    },
+    {
+      "id": "debug@4.4.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/debug-js/debug.git"
+      },
+      "source": "https://registry.npmjs.org/debug/4.4.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "3a61c6c96caf5c1d9b623fb9b04c822b783dfcb78aa7e49c76a3f643e6ed7f95"
+        }
+      ]
+    },
+    {
+      "id": "depd@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "dougwilson/nodejs-depd",
+      "source": "https://registry.npmjs.org/depd/2.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd134b41da59e452fb5a1d366b660886f741c87c2bf9428e93764c419fbc40f5"
+        }
+      ]
+    },
+    {
+      "id": "detect-libc@2.1.2",
+      "license": "Apache-2.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/lovell/detect-libc.git"
+      },
+      "source": "https://registry.npmjs.org/detect-libc/2.1.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+        }
+      ]
+    },
+    {
+      "id": "dunder-proto@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/es-shims/dunder-proto.git"
+      },
+      "source": "https://registry.npmjs.org/dunder-proto/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "2b770a704c15de238c3f622b01b0044ddd60b49ee30608ea6991ebf19db7a7a1"
+        }
+      ]
+    },
+    {
+      "id": "ee-first@1.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jonathanong/ee-first",
+      "source": "https://registry.npmjs.org/ee-first/1.1.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "965ef284f7f4c176842ec2e87fa13e79feed777d56d7a21a5a3b38f1bb6dc288"
+        }
+      ]
+    },
+    {
+      "id": "encodeurl@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "pillarjs/encodeurl",
+      "source": "https://registry.npmjs.org/encodeurl/2.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "7585ea7bba616ccbbe43cb54ecb67956688c3c5641bb84f3099a652a73193afe"
+        }
+      ]
+    },
+    {
+      "id": "environment@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/environment",
+      "source": "https://registry.npmjs.org/environment/1.1.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "es-define-property@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/es-define-property.git"
+      },
+      "source": "https://registry.npmjs.org/es-define-property/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "es-errors@1.3.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/es-errors.git"
+      },
+      "source": "https://registry.npmjs.org/es-errors/1.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "es-object-atoms@1.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/es-object-atoms.git"
+      },
+      "source": "https://registry.npmjs.org/es-object-atoms/1.1.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "es-toolkit@1.45.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/toss/es-toolkit.git"
+      },
+      "source": "https://registry.npmjs.org/es-toolkit/1.45.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "ed68888a2a28f32a05e88f24d4d4ee75075a1bda2b6372a1f2e00fa0576a5524"
+        }
+      ]
+    },
+    {
+      "id": "escape-html@1.0.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "component/escape-html",
+      "source": "https://registry.npmjs.org/escape-html/1.0.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "255aa557a1f55224ce522f311629c0bf20854740a67955cefd798fbd1d3d1ded"
+        }
+      ]
+    },
+    {
+      "id": "escape-string-regexp@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/escape-string-regexp",
+      "source": "https://registry.npmjs.org/escape-string-regexp/2.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        }
+      ]
+    },
+    {
+      "id": "etag@1.8.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/etag",
+      "source": "https://registry.npmjs.org/etag/1.8.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a7996721249a136fbcfc1c201bcb5f414f38a701d4a24f28abe65e16cfcce813"
+        }
+      ]
+    },
+    {
+      "id": "eventsource-parser@3.0.6",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/rexxars/eventsource-parser.git"
+      },
+      "source": "https://registry.npmjs.org/eventsource-parser/3.0.6",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "0ed3f0dbbe73375664ee877b4cf571ce3e4b2e22ebf1a9dfb352643cba41df63"
+        }
+      ]
+    },
+    {
+      "id": "eventsource@3.0.7",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://git@github.com/EventSource/eventsource.git"
+      },
+      "source": "https://registry.npmjs.org/eventsource/3.0.7",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "f683a72ffe6a9675b5507af22fe0f448d8c8de3da1e14f139d370a7e6a54a23e"
+        }
+      ]
+    },
+    {
+      "id": "express-rate-limit@8.3.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/express-rate-limit/express-rate-limit.git"
+      },
+      "source": "https://registry.npmjs.org/express-rate-limit/8.3.2",
+      "notices": [
+        {
+          "path": "license.md",
+          "sha256": "90021adfb24b0a7af5754cebc6085e2560555f74d29a6d44a7f9a32125f8b348"
+        }
+      ]
+    },
+    {
+      "id": "express@5.2.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "expressjs/express",
+      "source": "https://registry.npmjs.org/express/5.2.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "95a5762890e5c1c9808921cef095661fc482c5e1f0bba31446ac85595df6237c"
+        }
+      ]
+    },
+    {
+      "id": "fast-deep-equal@3.1.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/epoberezkin/fast-deep-equal.git"
+      },
+      "source": "https://registry.npmjs.org/fast-deep-equal/3.1.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+        }
+      ]
+    },
+    {
+      "id": "fast-uri@3.1.0",
+      "license": "BSD-3-Clause",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fastify/fast-uri.git"
+      },
+      "source": "https://registry.npmjs.org/fast-uri/3.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "185ef4f377743572c2bf0931f741fae52401268cbe70c880b74063799814083e"
+        }
+      ]
+    },
+    {
+      "id": "finalhandler@2.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "pillarjs/finalhandler",
+      "source": "https://registry.npmjs.org/finalhandler/2.1.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "47dcccf62bf40469d23849b0b1dc8df9fc91bce219b880c638d4dc4596e6b5cf"
+        }
+      ]
+    },
+    {
+      "id": "forwarded@0.2.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/forwarded",
+      "source": "https://registry.npmjs.org/forwarded/0.2.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd47ce7b88c7759630d1e2b9fcfa170a0f1fde522be09e13fb1581a79d090400"
+        }
+      ]
+    },
+    {
+      "id": "fresh@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/fresh",
+      "source": "https://registry.npmjs.org/fresh/2.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a0ec0dab16b3666f24950f86d257930ac2ad475557b4bfe245620e0817d8a45d"
+        }
+      ]
+    },
+    {
+      "id": "function-bind@1.1.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/Raynos/function-bind.git"
+      },
+      "source": "https://registry.npmjs.org/function-bind/1.1.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "773e131a7684726005a7e4688a80b4620033bc08499bc1404dd1a1eb3bca725e"
+        }
+      ]
+    },
+    {
+      "id": "get-east-asian-width@1.5.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/get-east-asian-width",
+      "source": "https://registry.npmjs.org/get-east-asian-width/1.5.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "get-intrinsic@1.3.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/get-intrinsic.git"
+      },
+      "source": "https://registry.npmjs.org/get-intrinsic/1.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "39c5ec504cf6bd5cd782a7c695828e09189df79f5d94840e4f08feb97b9fd416"
+        }
+      ]
+    },
+    {
+      "id": "get-proto@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/get-proto.git"
+      },
+      "source": "https://registry.npmjs.org/get-proto/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "be46ce1e3b0479af9ce82d22b465a6d7d2ff084fca0aaf3d54172da2b5eb5781"
+        }
+      ]
+    },
+    {
+      "id": "gopd@1.2.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/gopd.git"
+      },
+      "source": "https://registry.npmjs.org/gopd/1.2.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "d90bf0a089da4cf43d644ed240a0b3825dcdb705e64e38371d56995a4cc9e4c5"
+        }
+      ]
+    },
+    {
+      "id": "has-symbols@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/inspect-js/has-symbols.git"
+      },
+      "source": "https://registry.npmjs.org/has-symbols/1.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "206c1adcf206dc0031b11232f5b054ec5f1662407ab1ca415247921cab2068ab"
+        }
+      ]
+    },
+    {
+      "id": "hasown@2.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/inspect-js/hasOwn.git"
+      },
+      "source": "https://registry.npmjs.org/hasown/2.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bf9b0d665be2a689851eea667ca9f42066ea1d903b38349c51e6a44b2577680a"
+        }
+      ]
+    },
+    {
+      "id": "hono@4.12.10",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/honojs/hono.git"
+      },
+      "source": "https://registry.npmjs.org/hono/4.12.10",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a6ab98e5c77b9070c443eaff2ff81034a6f8cc05a7524d5098eb0f24defa0115"
+        }
+      ]
+    },
+    {
+      "id": "http-errors@2.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/http-errors",
+      "source": "https://registry.npmjs.org/http-errors/2.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "dcb94ff9b1e037a847bc20589dc81a1066d041fd4c16deb18b0fa968c66cf395"
+        }
+      ]
+    },
+    {
+      "id": "iconv-lite@0.7.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/pillarjs/iconv-lite.git"
+      },
+      "source": "https://registry.npmjs.org/iconv-lite/0.7.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "ac779f7314c74f232ef847ea86e714abe25cf6eeb5cc97b69451b74e2af6492d"
+        }
+      ]
+    },
+    {
+      "id": "indent-string@5.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/indent-string",
+      "source": "https://registry.npmjs.org/indent-string/5.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "inherits@2.0.4",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "git://github.com/isaacs/inherits",
+      "source": "https://registry.npmjs.org/inherits/2.0.4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5ffe28e7ade7d8f10d85d5337a73fd793dac5c462fb9a28fbf8c5046c7fbca3b"
+        }
+      ]
+    },
+    {
+      "id": "ink@7.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "vadimdemedes/ink",
+      "source": "https://registry.npmjs.org/ink/7.1.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "de84e62e27d9a970b50446d0af1f713c1439a4180faa098adfa5da94f5158a55"
+        }
+      ]
+    },
+    {
+      "id": "ip-address@10.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/beaugunderson/ip-address.git"
+      },
+      "source": "https://registry.npmjs.org/ip-address/10.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "f8d791359a50cbcac82c29cb7b0b1b889b28be76fdd35b8ee33f0f7c8704702a"
+        }
+      ]
+    },
+    {
+      "id": "ipaddr.js@1.9.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "git://github.com/whitequark/ipaddr.js",
+      "source": "https://registry.npmjs.org/ipaddr.js/1.9.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "62568a2d1337b77171ecca9db10579163446de1ba6151678e81f06cdc199971b"
+        }
+      ]
+    },
+    {
+      "id": "is-fullwidth-code-point@5.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/is-fullwidth-code-point",
+      "source": "https://registry.npmjs.org/is-fullwidth-code-point/5.1.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "is-in-ci@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/is-in-ci",
+      "source": "https://registry.npmjs.org/is-in-ci/2.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "is-promise@4.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/then/is-promise.git"
+      },
+      "source": "https://registry.npmjs.org/is-promise/4.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "44191656d296391e0ec97e32f5385f0d02b6f2992694082d22ea04ba0f66f9e4"
+        }
+      ]
+    },
+    {
+      "id": "isexe@2.0.0",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/isaacs/isexe.git"
+      },
+      "source": "https://registry.npmjs.org/isexe/2.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ]
+    },
+    {
+      "id": "jose@6.2.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "panva/jose",
+      "source": "https://registry.npmjs.org/jose/6.2.2",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "8078b0829d6c3e9ecde2f003e1966e4cad3efc6e7a640efbab0313cc166b1af1"
+        }
+      ]
+    },
+    {
+      "id": "json-schema-traverse@1.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/epoberezkin/json-schema-traverse.git"
+      },
+      "source": "https://registry.npmjs.org/json-schema-traverse/1.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a"
+        }
+      ]
+    },
+    {
+      "id": "json-schema-typed@8.0.2",
+      "license": "BSD-2-Clause",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/RemyRylan/json-schema-typed.git"
+      },
+      "source": "https://registry.npmjs.org/json-schema-typed/8.0.2",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "bbe87b573c12bda5baf18742117330efa177e0886b3b0a278dacf8f236e1e129"
+        }
+      ]
+    },
+    {
+      "id": "math-intrinsics@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/es-shims/math-intrinsics.git"
+      },
+      "source": "https://registry.npmjs.org/math-intrinsics/1.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "2b770a704c15de238c3f622b01b0044ddd60b49ee30608ea6991ebf19db7a7a1"
+        }
+      ]
+    },
+    {
+      "id": "media-typer@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/media-typer",
+      "source": "https://registry.npmjs.org/media-typer/1.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd47ce7b88c7759630d1e2b9fcfa170a0f1fde522be09e13fb1581a79d090400"
+        }
+      ]
+    },
+    {
+      "id": "merge-descriptors@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/merge-descriptors",
+      "source": "https://registry.npmjs.org/merge-descriptors/2.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "70b126abc64d7ea06e1243349073935caa16fa47a41a571773ccf0b350b1d574"
+        }
+      ]
+    },
+    {
+      "id": "mime-db@1.54.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/mime-db",
+      "source": "https://registry.npmjs.org/mime-db/1.54.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cc1dfd4dafa27271e8212cd3b274eeb3f262e40a6fdab36ddc3f9696f706f58b"
+        }
+      ]
+    },
+    {
+      "id": "mime-types@3.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/mime-types",
+      "source": "https://registry.npmjs.org/mime-types/3.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "71f83c4c0621102a56d9853812777b85751bce7e9726f686f5b056c1f8a4b0e6"
+        }
+      ]
+    },
+    {
+      "id": "mimic-fn@2.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/mimic-fn",
+      "source": "https://registry.npmjs.org/mimic-fn/2.1.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        }
+      ]
+    },
+    {
+      "id": "ms@2.1.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "vercel/ms",
+      "source": "https://registry.npmjs.org/ms/2.1.3",
+      "notices": [
+        {
+          "path": "license.md",
+          "sha256": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801"
+        }
+      ]
+    },
+    {
+      "id": "nanoid@3.3.19",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": "ai/nanoid",
+      "source": "https://registry.npmjs.org/nanoid/3.3.19",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da4db1480d9beea3483a2eda5c53b22238d0827d57da162b48f122e04d2d9987"
+        }
+      ]
+    },
+    {
+      "id": "negotiator@1.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/negotiator",
+      "source": "https://registry.npmjs.org/negotiator/1.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "553d4d20029a24e315b428a1a54a9e109eaa340f2e958a4f50a92362c2c4070b"
+        }
+      ]
+    },
+    {
+      "id": "next@16.3.5",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": "vercel/next.js",
+      "source": "https://registry.npmjs.org/next/16.3.5",
+      "notices": [
+        {
+          "path": "license.md",
+          "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
+        },
+        {
+          "path": "dist/compiled/is-docker/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/zod/LICENSE",
+          "sha256": "3f1189b28e3866e0d979968d466b78f813f76827cfdca1fbb124cc0a5c8841f8"
+        },
+        {
+          "path": "dist/compiled/anser/LICENSE",
+          "sha256": "6d2abc90a426cf65bbf84f7cedf9487f7ff86a3daf0e130b335a45c112f040d0"
+        },
+        {
+          "path": "dist/compiled/browserslist/LICENSE",
+          "sha256": "f25bf9bf3ae8984bcd43bf7fb8f78e7eec8d577081fb8d0989cfa7c67ecebb8e"
+        },
+        {
+          "path": "dist/compiled/is-wsl/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/webpack-sources3/LICENSE",
+          "sha256": "214d0ac13edb475ec426df1979d96fd46b443debc466c0fb592e32152ae5a940"
+        },
+        {
+          "path": "dist/compiled/jest-worker/LICENSE",
+          "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+        },
+        {
+          "path": "dist/compiled/stacktrace-parser/LICENSE",
+          "sha256": "e1898814043cb5500483d9c8517edda824b352f696d35e5043fcfb537c221531"
+        },
+        {
+          "path": "dist/compiled/cli-select/LICENSE",
+          "sha256": "a8e260b5b60eb27746ff2c5967489e6878c5a6ba99400cbec84c89a9b49a46ca"
+        },
+        {
+          "path": "dist/compiled/tty-browserify/LICENSE",
+          "sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+        },
+        {
+          "path": "dist/compiled/strip-ansi/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/react-experimental/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/content-type/LICENSE",
+          "sha256": "257aed98914108e91a337912727b6a802eef218248507f74b76faffaff517a38"
+        },
+        {
+          "path": "dist/compiled/async-sema/LICENSE",
+          "sha256": "291ff3e2bd22891edef553930da53ba64adf79d83f0bd1c5b7f6fe9727526b37"
+        },
+        {
+          "path": "dist/compiled/react-is/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/content-disposition/LICENSE",
+          "sha256": "bd47ce7b88c7759630d1e2b9fcfa170a0f1fde522be09e13fb1581a79d090400"
+        },
+        {
+          "path": "dist/compiled/web-vitals/LICENSE",
+          "sha256": "bfdeded4040e05da31ca9b6239dc83bd23fa26ac8db87342a7ca4363f68916ff"
+        },
+        {
+          "path": "dist/compiled/vm-browserify/LICENSE",
+          "sha256": "3a62887f73cd035ac1068bc0127ce94291f7a03843391f56df3520e2ca2037f8"
+        },
+        {
+          "path": "dist/compiled/lru-cache/LICENSE",
+          "sha256": "451ec07eeb9c4e1b86de9abdaa426462a8be48f887ec7421cf0bbb9c769555ab"
+        },
+        {
+          "path": "dist/compiled/sass-loader/LICENSE",
+          "sha256": "2af12ca8b612a22e6659ae68e0e59ee7ac792718c45524a989b512c49c5f5879"
+        },
+        {
+          "path": "dist/compiled/commander/LICENSE",
+          "sha256": "04512a63dce4d2d506ad612dc0bd7681ccf6e3655f7b6eaef7dfac8323d1ec0b"
+        },
+        {
+          "path": "dist/compiled/ci-info/LICENSE",
+          "sha256": "25bd22427e27b0d3f1c3da2670bb44b622bcced22ebdf4777d5488ac129370a1"
+        },
+        {
+          "path": "dist/compiled/loader-utils3/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/text-table/LICENSE",
+          "sha256": "435a6722c786b0a56fbe7387028f1d9d3f3a2d0fb615bb8fee118727c3f59b7b"
+        },
+        {
+          "path": "dist/compiled/react-server-dom-turbopack-experimental/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/bytes/LICENSE",
+          "sha256": "e3b44af066615de2ea48d18d852d0762f18c0b2efcea714fa48a6f729d405b85"
+        },
+        {
+          "path": "dist/compiled/util/LICENSE",
+          "sha256": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43"
+        },
+        {
+          "path": "dist/compiled/@opentelemetry/api/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "path": "dist/compiled/watchpack/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/nanoid/LICENSE",
+          "sha256": "da4db1480d9beea3483a2eda5c53b22238d0827d57da162b48f122e04d2d9987"
+        },
+        {
+          "path": "dist/compiled/loader-utils2/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/acorn/LICENSE",
+          "sha256": "76a876cf886ff9be2a8b5e2e86514fed06223c8c9f0c1e9ee9606e93841e00b7"
+        },
+        {
+          "path": "dist/compiled/regenerator-runtime/LICENSE",
+          "sha256": "51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd"
+        },
+        {
+          "path": "dist/compiled/timers-browserify/LICENSE",
+          "sha256": "d5f14c3258420dfe5a3b641a143d6e6dd90eabb5962244d937e25699c3a45ec9"
+        },
+        {
+          "path": "dist/compiled/browserify-zlib/LICENSE",
+          "sha256": "ddd770379e07bf0574dfaa4485be80a23b3248b36d09f33ec79276c09b829daf"
+        },
+        {
+          "path": "dist/compiled/react-server-dom-turbopack/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/ignore-loader/LICENSE",
+          "sha256": "62ba766e9b50f9b175b0229f4ea03e93730c9180408acec50dd617e9ae1fa059"
+        },
+        {
+          "path": "dist/compiled/string_decoder/LICENSE",
+          "sha256": "11f2aafb37d06b3ee5bdaf06e9811141d0da05263c316f3d627f45c20d43261b"
+        },
+        {
+          "path": "dist/compiled/superstruct/LICENSE",
+          "sha256": "0f644bc01d85e4b1958bdfe5a851704bd886404c78188d4d6fba43dc8293bc91"
+        },
+        {
+          "path": "dist/compiled/icss-utils/LICENSE",
+          "sha256": "b2b54c738525e98cc42d4a1c239c9d8421507816acce98950e81d0943daae68e"
+        },
+        {
+          "path": "dist/compiled/picomatch/LICENSE",
+          "sha256": "d0cd141b0c322fded5dfad1d4645bb2fedfc05b7321fe1009469638190d59ef9"
+        },
+        {
+          "path": "dist/compiled/write-file-atomic/LICENSE",
+          "sha256": "ea7f376fe7a1fc28572b83ac8f806d92effb31852b9981bc9ba9d5266caa6b28"
+        },
+        {
+          "path": "dist/compiled/comment-json/LICENSE",
+          "sha256": "9dbd86998d3cdafc1d8c298aea636146568d05d429b81386e60cfce11e6cedb6"
+        },
+        {
+          "path": "dist/compiled/serve-handler/LICENSE",
+          "sha256": "be8ba42db3b7c3dbb064bcdc1bbbb191c0a39c8851c2a53564e97c7eea301bca"
+        },
+        {
+          "path": "dist/compiled/stream-http/LICENSE",
+          "sha256": "a0e6357a5e8ea65827addeb383e0948a1874d2f46bc7feaf6349b7a376ed6e98"
+        },
+        {
+          "path": "dist/compiled/postcss-scss/LICENSE",
+          "sha256": "c4630ac8b89cb317ac5bdd60ac5e4e185eab9bd5151a0c7b3afa41aa83d7ec9b"
+        },
+        {
+          "path": "dist/compiled/ora/LICENSE",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        },
+        {
+          "path": "dist/compiled/jsonwebtoken/LICENSE",
+          "sha256": "2144eb6894cb440fde6b2b3aaae3b617c8f1dc9bb19813079dcf62ec6c517042"
+        },
+        {
+          "path": "dist/compiled/fresh/LICENSE",
+          "sha256": "a0ec0dab16b3666f24950f86d257930ac2ad475557b4bfe245620e0817d8a45d"
+        },
+        {
+          "path": "dist/compiled/path-browserify/LICENSE",
+          "sha256": "a22b9d5763f574e5db347c30acc0b33eaf4846767c03d2e27d012e864e79a824"
+        },
+        {
+          "path": "dist/compiled/querystring-es3/LICENSE",
+          "sha256": "cb72d9714ddc21e758d63f423be0caddf909d23ccbb10a2f5201a870818e4f57"
+        },
+        {
+          "path": "dist/compiled/scheduler/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/os-browserify/LICENSE",
+          "sha256": "d25d1d6d28c35cb6f358e2833e405c4e53fec2fa24d156323ddea5cd438d3407"
+        },
+        {
+          "path": "dist/compiled/postcss-preset-env/LICENSE",
+          "sha256": "597756adcb51f243ef4fb386920377f61d012ace0904364e1a8ee9aaec6afc84"
+        },
+        {
+          "path": "dist/compiled/path-to-regexp/LICENSE",
+          "sha256": "4eeb3271453a891df609e5a9f4ee79a68307f730c13417a3bfeffa604ac8cf25"
+        },
+        {
+          "path": "dist/compiled/p-limit/LICENSE",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        },
+        {
+          "path": "dist/compiled/react-refresh/LICENSE",
+          "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+        },
+        {
+          "path": "dist/compiled/find-up/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/assert/LICENSE",
+          "sha256": "6239c6144c31e58cf925c34483606969c555574d64ffa96518ab5d7f45c75d43"
+        },
+        {
+          "path": "dist/compiled/postcss-modules-local-by-default/LICENSE",
+          "sha256": "dd40f37957ddcb6a6157f40b677d6f43697583f956144fbce25443e35630453e"
+        },
+        {
+          "path": "dist/compiled/react-server-dom-webpack-experimental/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/postcss-modules-values/LICENSE",
+          "sha256": "655287aefbf8e292057318c385d77767b1dd9819c87709fd26730b7090efe4d9"
+        },
+        {
+          "path": "dist/compiled/@mswjs/interceptors/ClientRequest/LICENSE",
+          "sha256": "bb3a5cb8fb224f632970e31425348f556f7a83b165d5384ea5e142575f5c412e"
+        },
+        {
+          "path": "dist/compiled/crypto-browserify/LICENSE",
+          "sha256": "6134c69bc22c8289252e70de3af20bd67071233459055be74d83acfcc4865e7e"
+        },
+        {
+          "path": "dist/compiled/lodash.curry/LICENSE",
+          "sha256": "ffd8b33b354585f4ce119f19c53728281e48a97b074491eb6bf6d5c5ff305272"
+        },
+        {
+          "path": "dist/compiled/stream-browserify/LICENSE",
+          "sha256": "96e5193183476a03da6667d217ce14110191d26ee105338086e94339edf40d5a"
+        },
+        {
+          "path": "dist/compiled/gzip-size/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/react-dom/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/webpack/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/babel/LICENSE",
+          "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+        },
+        {
+          "path": "dist/compiled/webpack-sources1/LICENSE",
+          "sha256": "214d0ac13edb475ec426df1979d96fd46b443debc466c0fb592e32152ae5a940"
+        },
+        {
+          "path": "dist/compiled/@napi-rs/triples/LICENSE",
+          "sha256": "7b34e99bc43641767fded49f7f03563ffd50c689b1f3b0d50700b4727bc4ae24"
+        },
+        {
+          "path": "dist/compiled/raw-body/LICENSE",
+          "sha256": "c8e6bca7230689d536a3bd7158f66e9c4f89f95d0748743a0370ac229e9023ad"
+        },
+        {
+          "path": "dist/compiled/semver/LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        },
+        {
+          "path": "dist/compiled/postcss-value-parser/LICENSE",
+          "sha256": "3687447039151857a6ba378db062172c7f33d4aa70a615c87a43a9c50e990485"
+        },
+        {
+          "path": "dist/compiled/safe-stable-stringify/LICENSE",
+          "sha256": "3a6d6de49d284a36c5d271ef0e62eca1838cc460dd7630e3f2c347c8f5b2232a"
+        },
+        {
+          "path": "dist/compiled/postcss-modules-scope/LICENSE",
+          "sha256": "7774c8c4a3f750b294b416818062201a404fc2d6c8756d8b89a1688e24b5d5a7"
+        },
+        {
+          "path": "dist/compiled/zod-validation-error/LICENSE",
+          "sha256": "03cc9a630489a2544b799548a0e8b134f382fe09fa06dc22b339091b28b8f4a8"
+        },
+        {
+          "path": "dist/compiled/react-server-dom-webpack/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/@babel/runtime/LICENSE",
+          "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+        },
+        {
+          "path": "dist/compiled/shell-quote/LICENSE",
+          "sha256": "8bb16db1b047019e4395965f2cf3611b06c34bf86dc2d0210b3c3f91b53c21fe"
+        },
+        {
+          "path": "dist/compiled/image-size/LICENSE",
+          "sha256": "3109783dad7527b490aabc49c3cb148573c19b41b843e70cf9388a93f3d7fccd"
+        },
+        {
+          "path": "dist/compiled/compression/LICENSE",
+          "sha256": "23d466b1b134b415b66fa50c6526b4cf3e7b9258554da88d3abb371721e7ce68"
+        },
+        {
+          "path": "dist/compiled/json5/LICENSE",
+          "sha256": "53e59feb13058722d977c699eb0407c7bce2f93c949b681bbd2ff31698535927"
+        },
+        {
+          "path": "dist/compiled/postcss-modules-extract-imports/LICENSE",
+          "sha256": "9e534cfb7f7ae1300e16fe1ee7d203fdfe707dc932429c37246f747c3699ee14"
+        },
+        {
+          "path": "dist/compiled/cross-spawn/LICENSE",
+          "sha256": "aaa78451b6fecd1b9c4594c796c133c0e90cad100372ff8bc6de615e9ef9adf1"
+        },
+        {
+          "path": "dist/compiled/ua-parser-js/LICENSE",
+          "sha256": "fb9548e36708f09ae0cc1047ebd8153928bfe5bed67e4051f0ace552bdcbf0b3"
+        },
+        {
+          "path": "dist/compiled/native-url/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "dist/compiled/ipaddr.js/LICENSE",
+          "sha256": "62568a2d1337b77171ecca9db10579163446de1ba6151678e81f06cdc199971b"
+        },
+        {
+          "path": "dist/compiled/source-map08/LICENSE",
+          "sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd"
+        },
+        {
+          "path": "dist/compiled/glob/LICENSE",
+          "sha256": "6236fa0b88a4a0cce3dda0367979491b2052b3c8d6b1c10b3668de083e86a7f0"
+        },
+        {
+          "path": "dist/compiled/cookie/LICENSE",
+          "sha256": "c02110eedc16c7114f1a9bdc026c65626ce1d9c7e27fd51a8e0feee8a48a6858"
+        },
+        {
+          "path": "dist/compiled/neo-async/LICENSE",
+          "sha256": "811238ba7d85f6fe6b820703a32f92705bcf77bc352ddc3476783491c64a129a"
+        },
+        {
+          "path": "dist/compiled/mini-css-extract-plugin/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/source-map/LICENSE",
+          "sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd"
+        },
+        {
+          "path": "dist/compiled/schema-utils3/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/is-animated/LICENSE",
+          "sha256": "e08c030e1274fadc495c71e0489612f0c74673b69ae8e41460526c233a94a728"
+        },
+        {
+          "path": "dist/compiled/async-retry/LICENSE",
+          "sha256": "8cec82f7beeab8459fa6165c973f5cd6f89aceea7a07de0aa8fc30a9dd339a05"
+        },
+        {
+          "path": "dist/compiled/busboy/LICENSE",
+          "sha256": "d06b5d27bbbbe22c36b1fd88406b1208876e2d37d795f5b8eaed951a459a3111"
+        },
+        {
+          "path": "dist/compiled/@vercel/nft/LICENSE",
+          "sha256": "0b31f3a6ab66b272b7de451df39835f310a309a06b1a8aafb3a2fdab20adc166"
+        },
+        {
+          "path": "dist/compiled/@vercel/detect-agent/LICENSE",
+          "sha256": "b070d77bfb2c52a1dd6996de0ce5f64c49a0ca55c889b163a963ddf5cb001ee2"
+        },
+        {
+          "path": "dist/compiled/@vercel/routing-utils/LICENSE",
+          "sha256": "b070d77bfb2c52a1dd6996de0ce5f64c49a0ca55c889b163a963ddf5cb001ee2"
+        },
+        {
+          "path": "dist/compiled/@vercel/og/LICENSE",
+          "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+        },
+        {
+          "path": "dist/compiled/@vercel/og/satori/LICENSE",
+          "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
+        },
+        {
+          "path": "dist/compiled/@vercel/blob/LICENSE",
+          "sha256": "2b6fc3f4a995e6ad29f4e2ed8881a32979058b8d6557efaa6d86b7e985849f40"
+        },
+        {
+          "path": "dist/compiled/events/LICENSE",
+          "sha256": "631987b7616a325a5b97566c232418481ddf7dbb5ecadefb991e791876cc2599"
+        },
+        {
+          "path": "dist/compiled/terser/LICENSE",
+          "sha256": "901d0a7fcaccaae9917d165039c0473c354e5da2e0e94140dde67aad9ffb19da"
+        },
+        {
+          "path": "dist/compiled/node-html-parser/LICENSE",
+          "sha256": "ea75e9321945b7f0bc4644da1e404ad76ce55e9bc05cae3b2f5f2d973aede83b"
+        },
+        {
+          "path": "dist/compiled/postcss-flexbugs-fixes/LICENSE",
+          "sha256": "f26c92c1c16e78c6b1f7474792f7195b7abc851caccb4a73dcc5b3c31efc7321"
+        },
+        {
+          "path": "dist/compiled/https-browserify/LICENSE",
+          "sha256": "ff151c00207c908581639851dd8504ce4255be0650b2b236edec2aa90342b0cd"
+        },
+        {
+          "path": "dist/compiled/postcss-safe-parser/LICENSE",
+          "sha256": "c4630ac8b89cb317ac5bdd60ac5e4e185eab9bd5151a0c7b3afa41aa83d7ec9b"
+        },
+        {
+          "path": "dist/compiled/schema-utils2/LICENSE",
+          "sha256": "9068a8782d2fb4c6e432cfa25334efa56f722822180570802bf86e71b6003b1e"
+        },
+        {
+          "path": "dist/compiled/send/LICENSE",
+          "sha256": "25a328069fe771f8ed5b6f983ed4b0e6c84b3312ac0f69b28c3d52dc277962c9"
+        },
+        {
+          "path": "dist/compiled/domain-browser/LICENSE",
+          "sha256": "fc06db8dd5e7840db84ab328d9f58bdb91a56fbbf045bb977c11fcd07e2d8e3e"
+        },
+        {
+          "path": "dist/compiled/conf/LICENSE",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        },
+        {
+          "path": "dist/compiled/tar/LICENSE",
+          "sha256": "8a1af140fdfbf5afd3df27f7e662f989c5b963a300020dfafce42033cae9e004"
+        },
+        {
+          "path": "dist/compiled/@hapi/accept/LICENSE",
+          "sha256": "ff96bbd6a7408c166f16dbed7f2c87a8061e5a21289ec8f2d3069f8d3b15fc0a"
+        },
+        {
+          "path": "dist/compiled/httpxy/LICENSE",
+          "sha256": "4249bd020d1b5c503d20a196c1b686b3bdebcd1c7ac06909c546d9624c64f79b"
+        },
+        {
+          "path": "dist/compiled/react/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/p-queue/LICENSE",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        },
+        {
+          "path": "dist/compiled/devalue/LICENSE",
+          "sha256": "e399db7e952e45cae84f1b53d72ba8dbad2daaa7ab8cd1f0ab72fea5ab73b225"
+        },
+        {
+          "path": "dist/compiled/loader-runner/LICENSE",
+          "sha256": "498d39c83164cf8de195090f5564fc0308ab271344ca2f95484a7f1020952d00"
+        },
+        {
+          "path": "dist/compiled/ws/LICENSE",
+          "sha256": "dcd0a622a3a2c94fe3aa6238b76363f87df442afe788cbad966afe943ed62281"
+        },
+        {
+          "path": "dist/compiled/react-dom-experimental/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/process/LICENSE",
+          "sha256": "59a400d04c5078579acc27ddd6452c1bdf763f9506e01364700935fbb1a7c91b"
+        },
+        {
+          "path": "dist/compiled/edge-runtime/LICENSE",
+          "sha256": "e4f76a7a19ef2989dd79339bd3abf8afcf1d6f065e5a10c76c19415ffd727eb3"
+        },
+        {
+          "path": "dist/compiled/debug/LICENSE",
+          "sha256": "98c970de440dcfc77471610aec2377c9d9b0db2b3be6d1add524a586e1d7f422"
+        },
+        {
+          "path": "dist/compiled/buffer/LICENSE",
+          "sha256": "06bafa45fdad2579ba0e43b0c9b2c6290287c99c4203c300254a462b38a307f6"
+        },
+        {
+          "path": "dist/compiled/scheduler-experimental/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        },
+        {
+          "path": "dist/compiled/web-vitals-attribution/LICENSE",
+          "sha256": "bfdeded4040e05da31ca9b6239dc83bd23fa26ac8db87342a7ca4363f68916ff"
+        }
+      ]
+    },
+    {
+      "id": "object-assign@4.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/object-assign",
+      "source": "https://registry.npmjs.org/object-assign/4.1.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "6fb9754611c20f6649f68805e8c990e83261f29316e29de9e6cedae607b8634c"
+        }
+      ]
+    },
+    {
+      "id": "object-inspect@1.13.4",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/inspect-js/object-inspect.git"
+      },
+      "source": "https://registry.npmjs.org/object-inspect/1.13.4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd40cc437e28a3ad7bef2ad34e6b72e757b182e67bda1acadbab4ef0476f8232"
+        }
+      ]
+    },
+    {
+      "id": "on-finished@2.4.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/on-finished",
+      "source": "https://registry.npmjs.org/on-finished/2.4.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "8089bcc08845ec143e5761f4a101a65b8c792a0dedbfeeb90a15560c0b77f768"
+        }
+      ]
+    },
+    {
+      "id": "once@1.4.0",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/isaacs/once"
+      },
+      "source": "https://registry.npmjs.org/once/1.4.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ]
+    },
+    {
+      "id": "onetime@5.1.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/onetime",
+      "source": "https://registry.npmjs.org/onetime/5.1.2",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "parseurl@1.3.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "pillarjs/parseurl",
+      "source": "https://registry.npmjs.org/parseurl/1.3.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "11d017c3b9f1ee3f44caf7203035f0461d5b57e0db8ce1bc03a9af34fa7d3f6b"
+        }
+      ]
+    },
+    {
+      "id": "patch-console@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "vadimdemedes/patch-console",
+      "source": "https://registry.npmjs.org/patch-console/2.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "67726f6c8adeaf7d7e1a3af90fc88c76f7b9747552e5187a8ba62bf781297b49"
+        }
+      ]
+    },
+    {
+      "id": "path-key@3.1.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/path-key",
+      "source": "https://registry.npmjs.org/path-key/3.1.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        }
+      ]
+    },
+    {
+      "id": "path-to-regexp@8.4.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/pillarjs/path-to-regexp.git"
+      },
+      "source": "https://registry.npmjs.org/path-to-regexp/8.4.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4eeb3271453a891df609e5a9f4ee79a68307f730c13417a3bfeffa604ac8cf25"
+        }
+      ]
+    },
+    {
+      "id": "picocolors@1.1.1",
+      "license": "ISC",
+      "scopes": [
+        "web"
+      ],
+      "repository": "alexeyraspopov/picocolors",
+      "source": "https://registry.npmjs.org/picocolors/1.1.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "6582629e2979466878f6014313dcc2f3756c9616148682227ce3063dde310750"
+        }
+      ]
+    },
+    {
+      "id": "pkce-challenge@5.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/crouchcd/pkce-challenge.git"
+      },
+      "source": "https://registry.npmjs.org/pkce-challenge/5.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "feb87a2e0c305de3464cc44077da5393c52d8ca6362d37427157d04ec6f4510d"
+        }
+      ]
+    },
+    {
+      "id": "postcss@8.5.23",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": "postcss/postcss",
+      "source": "https://registry.npmjs.org/postcss/8.5.23",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5be1f3465bba68a626777f984878814aaf35e7ef8e9fd314d469bcf887050fb8"
+        }
+      ]
+    },
+    {
+      "id": "proxy-addr@2.0.7",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/proxy-addr",
+      "source": "https://registry.npmjs.org/proxy-addr/2.0.7",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a7996721249a136fbcfc1c201bcb5f414f38a701d4a24f28abe65e16cfcce813"
+        }
+      ]
+    },
+    {
+      "id": "qs@6.15.0",
+      "license": "BSD-3-Clause",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/ljharb/qs.git"
+      },
+      "source": "https://registry.npmjs.org/qs/6.15.0",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "e7dc37bf662d7f786efcb46c545615e70c1daf458a38385521c63cf6607cdfe1"
+        }
+      ]
+    },
+    {
+      "id": "range-parser@1.2.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/range-parser",
+      "source": "https://registry.npmjs.org/range-parser/1.2.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "f655e6291356ec0de7a8f0e69f294961a2cea86678ec94588be1e6a492e278ab"
+        }
+      ]
+    },
+    {
+      "id": "raw-body@3.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "stream-utils/raw-body",
+      "source": "https://registry.npmjs.org/raw-body/3.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "37876d7de8bdf5e5b9b58a697ebc34044624e493e6f49eff5c938e5226dcac6b"
+        }
+      ]
+    },
+    {
+      "id": "react-devtools-core@8.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/react/react.git",
+        "directory": "packages/react-devtools-core"
+      },
+      "source": "https://registry.npmjs.org/react-devtools-core/8.0.0",
+      "notices": [
+        {
+          "path": "https://github.com/react/react/blob/1d34f91dfde6bba84d08b683aaba164c7194dacb/LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "react-dom@19.3.0",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/react/react.git",
+        "directory": "packages/react-dom"
+      },
+      "source": "https://registry.npmjs.org/react-dom/19.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "react-reconciler@0.33.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/react-reconciler"
+      },
+      "source": "https://registry.npmjs.org/react-reconciler/0.33.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "react@19.3.0",
+      "license": "MIT",
+      "scopes": [
+        "cli",
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/react/react.git",
+        "directory": "packages/react"
+      },
+      "source": "https://registry.npmjs.org/react/19.3.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "require-from-string@2.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "floatdrop/require-from-string",
+      "source": "https://registry.npmjs.org/require-from-string/2.0.2",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "6ee0feb1f6ef996ff5a68600f8cf98909cf412d39ef3cdceaefd87d636fa1b7f"
+        }
+      ]
+    },
+    {
+      "id": "restore-cursor@4.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/restore-cursor",
+      "source": "https://registry.npmjs.org/restore-cursor/4.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "router@2.2.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "pillarjs/router",
+      "source": "https://registry.npmjs.org/router/2.2.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "d0bca4e517157b7a6120c085f5fe43a35b90c095e3bbeb9e67f220c608506a16"
+        }
+      ]
+    },
+    {
+      "id": "safer-buffer@2.1.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ChALkeR/safer-buffer.git"
+      },
+      "source": "https://registry.npmjs.org/safer-buffer/2.1.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4bc935e71be198c67ddf3c2b5fddb195f6edc182bfc155a96a6db61b44b494b9"
+        }
+      ]
+    },
+    {
+      "id": "scheduler@0.27.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/facebook/react.git",
+        "directory": "packages/scheduler"
+      },
+      "source": "https://registry.npmjs.org/scheduler/0.27.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "scheduler@0.28.0",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/react/react.git",
+        "directory": "packages/scheduler"
+      },
+      "source": "https://registry.npmjs.org/scheduler/0.28.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93"
+        }
+      ]
+    },
+    {
+      "id": "semver@7.8.5",
+      "license": "ISC",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/npm/node-semver.git"
+      },
+      "source": "https://registry.npmjs.org/semver/7.8.5",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ]
+    },
+    {
+      "id": "send@1.2.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "pillarjs/send",
+      "source": "https://registry.npmjs.org/send/1.2.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "25a328069fe771f8ed5b6f983ed4b0e6c84b3312ac0f69b28c3d52dc277962c9"
+        }
+      ]
+    },
+    {
+      "id": "serve-static@2.2.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "expressjs/serve-static",
+      "source": "https://registry.npmjs.org/serve-static/2.2.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "63b9a188d7d43e64b0558b7115255045b9fe20a5fc3ff483421cb899e7f52bcb"
+        }
+      ]
+    },
+    {
+      "id": "setprototypeof@1.2.0",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/wesleytodd/setprototypeof.git"
+      },
+      "source": "https://registry.npmjs.org/setprototypeof/1.2.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "76d6d1ea0c268da37dd3c961b4fcfb23dee8417fff9e8786d4d44c585b781b69"
+        }
+      ]
+    },
+    {
+      "id": "sharp@0.35.4",
+      "license": "Apache-2.0",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/lovell/sharp.git"
+      },
+      "source": "https://registry.npmjs.org/sharp/0.35.4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+        }
+      ]
+    },
+    {
+      "id": "shebang-command@2.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "kevva/shebang-command",
+      "source": "https://registry.npmjs.org/shebang-command/2.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "69dee148a2cc470554dfa7142e830662062394d0fe67cddd379aba90dc60d6b3"
+        }
+      ]
+    },
+    {
+      "id": "shebang-regex@3.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/shebang-regex",
+      "source": "https://registry.npmjs.org/shebang-regex/3.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+        }
+      ]
+    },
+    {
+      "id": "shell-quote@1.8.3",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "http://github.com/ljharb/shell-quote.git"
+      },
+      "source": "https://registry.npmjs.org/shell-quote/1.8.3",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "8bb16db1b047019e4395965f2cf3611b06c34bf86dc2d0210b3c3f91b53c21fe"
+        }
+      ]
+    },
+    {
+      "id": "side-channel-list@1.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/side-channel-list.git"
+      },
+      "source": "https://registry.npmjs.org/side-channel-list/1.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "side-channel-map@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/side-channel-map.git"
+      },
+      "source": "https://registry.npmjs.org/side-channel-map/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "5e325595b4ea8cfec3802f545b1def5d7b73e4a5b8e9ba63e32a320f67732292"
+        }
+      ]
+    },
+    {
+      "id": "side-channel-weakmap@1.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/side-channel-weakmap.git"
+      },
+      "source": "https://registry.npmjs.org/side-channel-weakmap/1.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc3f455254c0af0655cc3ff46a41ed644b67599f6043346169d285bf2b3cf3b"
+        }
+      ]
+    },
+    {
+      "id": "side-channel@1.1.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/side-channel.git"
+      },
+      "source": "https://registry.npmjs.org/side-channel/1.1.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc3f455254c0af0655cc3ff46a41ed644b67599f6043346169d285bf2b3cf3b"
+        }
+      ]
+    },
+    {
+      "id": "signal-exit@3.0.7",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/tapjs/signal-exit.git"
+      },
+      "source": "https://registry.npmjs.org/signal-exit/3.0.7",
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "e05b1eaf5b5f99b7ad75cd1f38858ff9a311780b97715ead67936d60bf96aa7e"
+        }
+      ]
+    },
+    {
+      "id": "slice-ansi@9.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/slice-ansi",
+      "source": "https://registry.npmjs.org/slice-ansi/9.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "c91d87c3bca16ab6d96d82da08edc54377d14b679547a331eecc4adef3c353c8"
+        }
+      ]
+    },
+    {
+      "id": "source-map-js@1.2.1",
+      "license": "BSD-3-Clause",
+      "scopes": [
+        "web"
+      ],
+      "repository": "7rulnik/source-map-js",
+      "source": "https://registry.npmjs.org/source-map-js/1.2.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd"
+        }
+      ]
+    },
+    {
+      "id": "stack-utils@2.0.6",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "tapjs/stack-utils",
+      "source": "https://registry.npmjs.org/stack-utils/2.0.6",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "9be2ec8089dfa4059a78e4e3e0443c416b2d63dedffb246c7473d0f3d763c6c4"
+        }
+      ]
+    },
+    {
+      "id": "statuses@2.0.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/statuses",
+      "source": "https://registry.npmjs.org/statuses/2.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "512cfa4d5e7a7569c7ae4dd95241cb6ae2aaf648ef9ebd080c01bd24868d26e9"
+        }
+      ]
+    },
+    {
+      "id": "string-width@8.2.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/string-width",
+      "source": "https://registry.npmjs.org/string-width/8.2.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "strip-ansi@7.2.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/strip-ansi",
+      "source": "https://registry.npmjs.org/strip-ansi/7.2.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "styled-jsx@5.1.6",
+      "license": "MIT",
+      "scopes": [
+        "web"
+      ],
+      "repository": "vercel/styled-jsx",
+      "source": "https://registry.npmjs.org/styled-jsx/5.1.6",
+      "notices": [
+        {
+          "path": "license.md",
+          "sha256": "24d4a4580df855c345705b3016404f0c9da7e7674dc3b21a3ce7d0e5d0c37e2d"
+        }
+      ]
+    },
+    {
+      "id": "tagged-tag@1.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/tagged-tag",
+      "source": "https://registry.npmjs.org/tagged-tag/1.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "terminal-size@4.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/terminal-size",
+      "source": "https://registry.npmjs.org/terminal-size/4.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "tldts-core@7.4.13",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/remusao/tldts.git"
+      },
+      "source": "https://registry.npmjs.org/tldts-core/7.4.13",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c64182d48160db948b6aa97a984f1a32974ce4d2053900361264cd33853796cb"
+        }
+      ]
+    },
+    {
+      "id": "tldts@7.4.13",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/remusao/tldts.git"
+      },
+      "source": "https://registry.npmjs.org/tldts/7.4.13",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "c64182d48160db948b6aa97a984f1a32974ce4d2053900361264cd33853796cb"
+        }
+      ]
+    },
+    {
+      "id": "toidentifier@1.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "component/toidentifier",
+      "source": "https://registry.npmjs.org/toidentifier/1.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a832d679750e49ab433626ab196350b89964b60eb0d3edd3341887c7d5f4c128"
+        }
+      ]
+    },
+    {
+      "id": "tslib@2.8.1",
+      "license": "0BSD",
+      "scopes": [
+        "web"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/tslib.git"
+      },
+      "source": "https://registry.npmjs.org/tslib/2.8.1",
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+        }
+      ]
+    },
+    {
+      "id": "type-fest@5.5.0",
+      "license": "(MIT OR CC0-1.0)",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/type-fest",
+      "source": "https://registry.npmjs.org/type-fest/5.5.0",
+      "notices": [
+        {
+          "path": "license-cc0",
+          "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+        },
+        {
+          "path": "license-mit",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "type-is@2.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/type-is",
+      "source": "https://registry.npmjs.org/type-is/2.0.1",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "23d466b1b134b415b66fa50c6526b4cf3e7b9258554da88d3abb371721e7ce68"
+        }
+      ]
+    },
+    {
+      "id": "typescript@7.0.2",
+      "license": "Apache-2.0",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/TypeScript.git"
+      },
+      "source": "https://registry.npmjs.org/typescript/7.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+        },
+        {
+          "path": "NOTICE.txt",
+          "sha256": "f5c708b59114507b8b27b48181b6883d106bbca0c1634bbee45b5e344237b66b"
+        },
+        {
+          "path": "vendor/vscode-jsonrpc/License.txt",
+          "sha256": "ec9ee83580841e8eb687aca9867f221503809ba6426c7f876ede17d91b9fcfd0"
+        }
+      ]
+    },
+    {
+      "id": "undici-types@7.18.2",
+      "license": "MIT",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nodejs/undici.git"
+      },
+      "source": "https://registry.npmjs.org/undici-types/7.18.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "a6db8096b2707bc0102d256917d4d33f298ba36d8c3f25de067a2b5bb379db27"
+        }
+      ]
+    },
+    {
+      "id": "unpipe@1.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "stream-utils/unpipe",
+      "source": "https://registry.npmjs.org/unpipe/1.0.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "1a526fbe8d8577f5a4b1c2821842b55b7c0e18862531c62ae4ce69c9b19b74b6"
+        }
+      ]
+    },
+    {
+      "id": "vary@1.1.2",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "jshttp/vary",
+      "source": "https://registry.npmjs.org/vary/1.1.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "bd47ce7b88c7759630d1e2b9fcfa170a0f1fde522be09e13fb1581a79d090400"
+        }
+      ]
+    },
+    {
+      "id": "which@2.0.2",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/isaacs/node-which.git"
+      },
+      "source": "https://registry.npmjs.org/which/2.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ]
+    },
+    {
+      "id": "widest-line@6.0.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "sindresorhus/widest-line",
+      "source": "https://registry.npmjs.org/widest-line/6.0.0",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "wrap-ansi@10.0.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "chalk/wrap-ansi",
+      "source": "https://registry.npmjs.org/wrap-ansi/10.0.1",
+      "notices": [
+        {
+          "path": "license",
+          "sha256": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3"
+        }
+      ]
+    },
+    {
+      "id": "wrappy@1.0.2",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/npm/wrappy"
+      },
+      "source": "https://registry.npmjs.org/wrappy/1.0.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "4ec3d4c66cd87f5c8d8ad911b10f99bf27cb00cdfcff82621956e379186b016b"
+        }
+      ]
+    },
+    {
+      "id": "ws@7.5.10",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": "websockets/ws",
+      "source": "https://registry.npmjs.org/ws/7.5.10",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "3de284c8e6fa7e8437eff6f53695471e0332129a5b42a79361e17b7637de94b3"
+        }
+      ]
+    },
+    {
+      "id": "ws@8.20.0",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/websockets/ws.git"
+      },
+      "source": "https://registry.npmjs.org/ws/8.20.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef"
+        }
+      ]
+    },
+    {
+      "id": "yoga-layout@3.2.1",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git@github.com:facebook/yoga.git"
+      },
+      "source": "https://registry.npmjs.org/yoga-layout/3.2.1",
+      "notices": [
+        {
+          "path": "https://github.com/facebook/yoga/blob/v3.2.1/LICENSE",
+          "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+        }
+      ]
+    },
+    {
+      "id": "zod-to-json-schema@3.25.2",
+      "license": "ISC",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/StefanTerdell/zod-to-json-schema"
+      },
+      "source": "https://registry.npmjs.org/zod-to-json-schema/3.25.2",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "80d3168ad2f70f6f5bb2ab22b23414707abf6f0a392034891481ae36a1a429d4"
+        }
+      ]
+    },
+    {
+      "id": "zod@4.6.5",
+      "license": "MIT",
+      "scopes": [
+        "cli"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/colinhacks/zod.git"
+      },
+      "source": "https://registry.npmjs.org/zod/4.6.5",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "3f1189b28e3866e0d979968d466b78f813f76827cfdca1fbb124cc0a5c8841f8"
+        }
+      ]
+    }
+  ],
+  "nonHost": [
+    {
+      "id": "@emnapi/runtime@1.11.3",
+      "url": "https://registry.npmjs.org/%40emnapi%2Fruntime/1.11.3",
+      "license": "MIT",
+      "gitHead": "b2011ea96d28fe60a6b8eabb82c2d6264daf7460",
+      "repository": {
+        "url": "git+https://github.com/toyobayashi/emnapi.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "84257ae3b0531eb2aec1ffa23d70700da007ba95",
+        "tarball": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.3.tgz",
+        "fileCount": 17,
+        "integrity": "sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==",
+        "signatures": [
+          {
+            "sig": "MEQCIB8A6N45bbXcp+oCyg560JsxZlXWVB8fwK5VAa/ADK9bAiBEO4lqKOqBLwDnBG1rsLEdgC8Sv8IJASoDzfctkpE8dA==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCIFka0RlVA92mx6qxeVux6yN5HO9D4CR8vbjFclJK8XY9AiAKJNuRwkSXbFgIchdNrSsUxeb3Fc0JotO0frWMJ+e7eg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@emnapi%2fruntime@1.11.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 436901
+      }
+    },
+    {
+      "id": "@img/sharp-darwin-x64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-darwin-x64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/darwin-x64"
+      },
+      "dist": {
+        "shasum": "76c49ff04fb3f9d846b0d0575841b7ee59beec68",
+        "tarball": "https://registry.npmjs.org/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-hWniXY3bG5qKpkKrAwPe4y+VTPmf086YQAnkxWh7uA1YrlRouWGa0M0Mxj3ZjnXFkv7/TD1bTy9lGUK26vRvWw==",
+        "signatures": [
+          {
+            "sig": "MEUCIAQs5U1/+JtXs/qquu8NCkhNmyTQrbu7Tax4VO6/W5r/AiEA8ohtIURBjK/C0es1KROQBHtOBd8Tr25ExcCw81Jd2wg=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIGCmwaYrd0Mr38NN5o5Y7sfjAb43Yo4fK7sHiurlDshyAiEA23EEw/XY4uTXwjYTtYpt5vuAlreHjAYLgayVoFsFS3E=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-darwin-x64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 267259
+      },
+      "os": [
+        "darwin"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-freebsd-wasm32@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-freebsd-wasm32/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/freebsd-wasm32"
+      },
+      "dist": {
+        "shasum": "ba55fd603c5d1d01a1cb14ffb4d970bc6ced80e1",
+        "tarball": "https://registry.npmjs.org/@img/sharp-freebsd-wasm32/-/sharp-freebsd-wasm32-0.35.4.tgz",
+        "fileCount": 9,
+        "integrity": "sha512-lIsKw/BU+kjB4eZjxrYrZmwOJYi3Ajrv66iAlBmUPyKc3HpnloevB1g3wxGD9P/5BbQ1brBGl65VRRrCvQDEqA==",
+        "signatures": [
+          {
+            "sig": "MEQCIDK+vdHetBy6cY7CzeJGajQPOA+ajsYHxLdYqNleM3LnAiBNXSH4OAxDi4KAXpfCD/29dZoNzI/4dDDP3NOZFy1J0A==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-freebsd-wasm32@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 12416
+      },
+      "os": [
+        "freebsd"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-darwin-x64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-darwin-x64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/darwin-x64"
+      },
+      "dist": {
+        "shasum": "1461e6fb310a869b3c13504589b8dd5c06624da8",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-darwin-x64/-/sharp-libvips-darwin-x64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-FVJZ5mITMobmXIz/hPDTw0EintTW5H3WfrxwLqEqjiIihlu+hVRyGrFQ60xl0Lxn7Bt3zdpevPaQi0HEzqz9fw==",
+        "signatures": [
+          {
+            "sig": "MEYCIQC54uBIku0Hy6DMJZeueGfb7ZPpvCugM2H0yyadri5AHQIhANny1byrU5MgQuavNUfxIpmae4AF8c5KLnF7C0LChuMX",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQC/ly82kaXT4BZ6THSThUWDaNy+pvtm71TfE6C8WFjgZAIgaTaX4S9b9ijctjGzXApMb8IuZtYSZTuY0HUTCUZZiCs=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-darwin-x64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 20310662
+      },
+      "os": [
+        "darwin"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-arm@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-arm/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-arm"
+      },
+      "dist": {
+        "shasum": "71032941b9fcbf8ebc3c1b62949927b844cbad62",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-arm/-/sharp-libvips-linux-arm-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-3rbU4vqXXc3hY/OiXdl52xZvT0F1yEngWfvqudtPJg/KkyiaQw2DRsFrNzpmLvfavbwOq3qXn36GP8obHRULQA==",
+        "signatures": [
+          {
+            "sig": "MEUCIQD0N71uLPgMCIkQC8hwMUzJHX+fisyuYrWb4KLIqYMCKwIgOvkH7zc+EMWSnf4EeTAPG1gykqY5DtCZSbzqpX/I7W8=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQCuD2NVtsJZz18s8VI7iqxOH0zfabrxvOxe1UpmEVrQuwIgXSR9HdTj+gxmXs1d6WkxkanLqVBmXDKXRVhjCRFZ98I=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-arm@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 14955260
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-arm64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-arm64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-arm64"
+      },
+      "dist": {
+        "shasum": "cb938a3971b9a36329bc99427f1e5b72e266ba2e",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-arm64/-/sharp-libvips-linux-arm64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-0DaL0A6Xu6sQSQFwe4iVCrKWU2cCTItnRsYsCdxAMm9NF6twAA9BKnoqy4hqz4+azQ0JHuA26qiUKsf1XJ/v5A==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDGi0KNdegxK6QWMrxbqvN7XRAJ137436G6iFHrxU5tYgIhAMRfd7AsRZMKhwEEiVWZNWDTxJX7tj9d4+9LqPcuVwk/",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQDw1rSKVk98WPzdjmBxaveZEfFkKFji8IX/I0bzITBF/QIhAIq5Gt6QDj8tL6dh+aYmR0fWqVdK7jA2yq7zFapX69cM",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-arm64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 18270951
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-ppc64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-ppc64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-ppc64"
+      },
+      "dist": {
+        "shasum": "8246d2dec15234fd1cc54cc55dcba1aebc26c414",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-ppc64/-/sharp-libvips-linux-ppc64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-cdn1OvUBwsXhbC0zSzJnNzf5MZ/mTrobawDvNXBTxe8VtqKAm0sRuEY2Evzovb/w9JMk4TvRxqt1mekSuJz64w==",
+        "signatures": [
+          {
+            "sig": "MEQCIFbMx0d7nLvmZeRihfN943uEsxHvnB7Q8qXO0UxVEZwZAiBxvce+sY4YVEGsg0EBr9NL0U2ptf/oz5JI7zIoHyydjg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQCQMEq5kifdlMx/AfdXR6aYTdYW3SjDaB6C1qbgzgvKWQIgctlycAc2/BRVENul9XOV4YoHIu1botycCvkDYEW2RLM=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-ppc64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 19581065
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "ppc64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-riscv64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-riscv64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-riscv64"
+      },
+      "dist": {
+        "shasum": "59ff663c2aa6b418857357cd77ca4ccaece95876",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-riscv64/-/sharp-libvips-linux-riscv64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-HjPVx7yKz+0lqdhDlTw1tt90wamBoxhiXpvl1XZpJLiHH4RCJ5yDTqH+VlYPv2fwFs89JFw4c1IexYOcQUi4IQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIC+34iRpXtrB54koEm57KoJvSc6BVYGJo4i0D+/fn931AiEAsnoulYu52Sm4Q1Q7gtIp9Uy8ettmIqhLySFlu0wdhTQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQCaZTz5YMZMW6ZjeW4IikWJQ+OPWEwVVZLZQsghb7kaxAIgA3OwIpjv1AX3HQ3x2pih19rbMNNeMOrM87JAiMs45js=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-riscv64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 15087485
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "riscv64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-s390x@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-s390x/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-s390x"
+      },
+      "dist": {
+        "shasum": "bc17451f80d9f31663b3e906149f159a0ecb1ca8",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-s390x/-/sharp-libvips-linux-s390x-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-neWLh+3yCNThxnfy3c4BbVBeGgt9aftno+XbT56iK28RgeDs3UOFWviLWlUu0bArYVYJaFDK+RRohbicUNCm8Q==",
+        "signatures": [
+          {
+            "sig": "MEYCIQC+iPxW9iG3CZ3oMvDc1gL3PzZqlBN+zZdDCBLy3N9LtAIhAMy3BxUCw03cWLdKyy+ILTUsiLGrm4Ywa8Yp79Bl5QeD",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIEGgj4+BIc0TtbRK2hpfRHhL+OEVMjOoCdpI3ChYaz54AiEAiCkjbzJOdSbeY+rla+tns6VffqVbjFXkNtalcWpPTSQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-s390x@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 17278658
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "s390x"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linux-x64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linux-x64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linux-x64"
+      },
+      "dist": {
+        "shasum": "c7d1f83bc1cfe222cd9dc927f3c5137aa9791e76",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-4vKmvAst9nrowcqquKFAyZJUDolUaIp8uRiN0mWFguJ1IplC9/pitXtlnnlU4aa/eJw3J7i67V+pwUL+wZGdsA==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDCrat8xh2Oor59AhPgo8aRjw1IwVxYAzlXKloKtjphYwIhANYqYkFgvSVWq9vn5OcBXTapWLtTsSRRHfYZkZf2ZgiN",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIDJgXvEz+BQTnWCKnT/MchEMrCEXzumzL8pHVG4qFCy7AiEAgV5H++2l1L/Buvo98U7ewEp9yNrHR9JmE5o7p34m93E=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linux-x64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 18633310
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linuxmusl-arm64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linuxmusl-arm64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linuxmusl-arm64"
+      },
+      "dist": {
+        "shasum": "303dfe2a8e6d1fd279ead559f4d2ccff2545e2a2",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-arm64/-/sharp-libvips-linuxmusl-arm64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-Y9kQaLMuNoB0bPYOOdcZMaseNrFpPodIWWMrx+CZyydf2xn68j9WYc6sWWRrDwNkzCQjKYfc68L7jKjGlHMibw==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDrbOlBJDraB+lyvkmVL7Vh+ezsYeXakGmBmtQ1GWANYAIgJs+880lvuGXI2afd9VEGm1RSsLeyRTZAFtXqn5JlJ1w=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQCVYq/2g4HZTBJHOjU7UPyoYxl/MxVoyTAk4zOW4nCUfQIhAIdBVtAaxHP6wnGMCZh2cSsQRzyccuOg37PEDTFyEIkh",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linuxmusl-arm64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 18659008
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@img/sharp-libvips-linuxmusl-x64@1.3.3",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-libvips-linuxmusl-x64/1.3.3",
+      "license": "LGPL-3.0-or-later",
+      "gitHead": "6e5971d333377743163edc3ad9e5d0b897abcbc9",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp-libvips.git",
+        "type": "git",
+        "directory": "npm/linuxmusl-x64"
+      },
+      "dist": {
+        "shasum": "3750f70ad46ad87e4a08ee8d372ab9a7e17e2b6c",
+        "tarball": "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.3.3.tgz",
+        "fileCount": 6,
+        "integrity": "sha512-fj8Mv0HHfD1Rr+4I68+3agJynxDWtBFgicTbSOb9Bke6pIwzGcJ+RX/yHjmiEGFMCavY/dxvem7MyNaJF+wDiw==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDC+wB91/H7pKYcESyWBmPQn+w8eEqCPRpt40JsI2J1cwIhAJBgm0T+ey/gcohjmjaTRGthhN3RTHZcqQoYZEn//izf",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIGUSAGpvjS2frtl4niJ1oCHkyU5WfIkyfAVQuYFq5QYPAiEAo1luSrz8tWM8mqgy2XOqnSgWuN2aMQuGvZ3CXDGMW0Q=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-libvips-linuxmusl-x64@1.3.3",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 18861559
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-arm@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-arm/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-arm"
+      },
+      "dist": {
+        "shasum": "de8da0da2ee552267cae771597332a863378e43b",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-arm/-/sharp-linux-arm-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-7OAS8gI0EReKGVN2HssHlM6umJgxF5VI3xN0p9FA91p/YO+ou5hiNghLdZ5BEHztwaaK5+bLKRf8x/o2L2nk9A==",
+        "signatures": [
+          {
+            "sig": "MEUCICzQoNFrMrapSdxT3BnqvYL4zoi1cnRnRqcEOeSswYs+AiEA+ewDyHhvGoX5839Xw298eShyEzpCWMmfM8zdsc/dhjQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDS+yvqhqKmDdeOEQm7QcPX2r1N4rROK6DcLQv/s2VsWQIgR7+9HwatPeup2igTPd6xGz/21gOfDp1Fg3RB2sO2Yqg=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-arm@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 215808
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-arm64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-arm64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-arm64"
+      },
+      "dist": {
+        "shasum": "c2f53bf913fa1b46762b192c527a2b3647a211a8",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-De4jpEnAU8Hd5oT0j1G3uL4ZvTuipVMn7YC6vPaJhy6/7EwEae0SVAoBrUMYQbkLGDm85taVWwuPc1a44LTzCQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIHN/lS8oXH3jkFV18f6QdbU3kXpG74O0jDT6Qr/I0piDAiEA+Wx41VkFx6kZynmGk+uPulCEww3hbmHn9zpn0OnEOZ8=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQDd/CSqEDtxVSyxg4oi2IMsTyIIwIaie4OhP9G0eCEaZwIhAP+L3DpfoHwBwZRcn+OKsBQx7ii+mT88va+zq/DFyx/R",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-arm64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 542174
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-ppc64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-ppc64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-ppc64"
+      },
+      "dist": {
+        "shasum": "c40d7c5f8ce216c35224c58edcef8e6445935256",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-2oYZJeIl4kCcMGk4ouZVjnkCtFrpQFlNEtJ6GbxzhHQchwH0NH/qEb9ykmOl29dqwMq+JhFdZn+1ak2FKhI9fQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIQCRpOg356JEN7xZAyPFpuXIkW5etk5mIeH+K2VTENGihAIgUuDffQDN+yqjoRwLd1tS/6/KtOx8HwLjkTYPPfTwp/U=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQClzvaoRW7wUlfVya8Ja7m2/d3kmgraKY6acHiJfq8NAAIhALwC6hUbtXWqKsTRDQDZYGIPYOpDzw7EHBkTaJQc2dtX",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-ppc64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 344708
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "ppc64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-riscv64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-riscv64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-riscv64"
+      },
+      "dist": {
+        "shasum": "032ca206e713b1179efe0e18d525188c67277730",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-cPbNChoRURAWdebDIHSenxRpgEdy7JkPydSnUxRm9VvKD7m0/xVaR/8Fzlu81pk5nHEvHH87UZUA7cTtwnbJSA==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCE8zHHYQCwqMjQgCGzbAireJ7fg5N70V5tD2XO6ED/DQIhAOBF4xdgOCr/dh7UQFdv/oK2oMzXRUkc+coYITfXsbj9",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQCvXhq8HaqFsTfpBAyKxGunR7R1wLBS1938RRmY1HSY1gIhAJQGMMy4Yi2iz4g6V7k5wm4ra4wgF64w2pn1UMuk5muV",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-riscv64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 221634
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "riscv64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-s390x@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-s390x/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-s390x"
+      },
+      "dist": {
+        "shasum": "19dac7501a15c8748bc7a11219fca391e424b6d7",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-RY0JFY8Fd6RonCBtHz+DvadaPkXDSI1AUn6yWL9TipqkZ1vY8w8evqdgyDFnkm4/K1ve1TvZiaePP5oSd4+WVQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIHHvSonmK4RUf61G2UFMR2cuwO1Sfe8UfS7SHhdj07jzAiEA4gbgIOj74ExtSaCTVoXoScN+KtBqnV37Iedrh3w36O8=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCIBIgRqTZBjqFrBeuZJOyAMicZpCa3MrUz3BKDKRtYUm8AiBQ/T0f3Yij5hdgUVfbMLMsILrwQRnHObmtHo8+jeHvwg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-s390x@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 270844
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "s390x"
+      ]
+    },
+    {
+      "id": "@img/sharp-linux-x64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linux-x64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linux-x64"
+      },
+      "dist": {
+        "shasum": "7d1d414d4a538e0704ba6b76ce6547e60f6211ce",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-9qvvEAuk8k89TfWUoX2htWjbAMX8p+NxCppjpcg5k6xMsjhBQPTsoIh36h9Qde4WRuGpJeYnOjdosDn/cnv+OA==",
+        "signatures": [
+          {
+            "sig": "MEQCIEK+Bcwtg53GB27iPNgBTwLTXdlVpCyq1b3jksBTOLbXAiAqpp6+KKlhQWUUOijCJ3G3je4f1VQgr3de5ow/0hs9cw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDAMZyPV/FZO3OvufuXW7mOc5Ta1XrPPIlv2wn5ZjjtYAIgae+DAGDmd7Mk7JUcK1yzC5Rh0qBdLQ88BlCedXfBB/o=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linux-x64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 427138
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linuxmusl-arm64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linuxmusl-arm64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linuxmusl-arm64"
+      },
+      "dist": {
+        "shasum": "9534c93807822f4282d079a322facc6db53d50f6",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-KB5jxpfWQTr0nc3xdHtWChdbifHrBGsd2SM62Eyxrl8afikm+f5qGBU75SJIZBT/S1MC8XyacdlXBMSWq6OURA==",
+        "signatures": [
+          {
+            "sig": "MEUCIBz+ioTe3JccOeWIJIF2zsBNFh8FvM2gOpjtmqThkvKpAiEA0OUECqr6iSY1Ldq6XEBJLa7aWFbWNJvO2tL2UwVnPR8=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCICQPg29uAGWjTtAFTMM0XoLt/qmXkWkj60OpkdsdaWOKAiAZG0jWrbiWJmFUdIgz0gU9XmKoT/Ct/QNVa+vLoRx/XA==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linuxmusl-arm64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 341907
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@img/sharp-linuxmusl-x64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-linuxmusl-x64/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/linuxmusl-x64"
+      },
+      "dist": {
+        "shasum": "f488e7a0291991bff643cef82b5afd3cfd70fcf2",
+        "tarball": "https://registry.npmjs.org/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.35.4.tgz",
+        "fileCount": 5,
+        "integrity": "sha512-f+eZJZIQNEEd26RPSW+76chwOf1XtA2Y/O+5ocVyLliHkeih3e+jhLVBdNTd2rS3IbNXK8+ug93Vf5ZXtF5Lxg==",
+        "signatures": [
+          {
+            "sig": "MEUCIHmBTT4HSmn/iqZSxi/IZFRVAowRvXQuHRVvxHrnOv3OAiEAhyy4fGKTQJurNx4Mz8EenPnRIihV3AkEpohQtBfcEL0=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQDm15aRWjU/gGLYgczr9P9gCicnofYlgGp+TadQ6MF/rgIhALBOrM3c4rSEl/wDiI9Zfz5pfY8o+jVzVFR8N69aPDkA",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-linuxmusl-x64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 309279
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@img/sharp-wasm32@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-wasm32/0.35.4",
+      "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/wasm32"
+      },
+      "dist": {
+        "shasum": "81f71f3fc0d8447dc3af6cb378e24e758ff54225",
+        "tarball": "https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.35.4.tgz",
+        "fileCount": 7,
+        "integrity": "sha512-zQnl4Kwp7Q6NHsENtU2T/00Zi+w3AQNwz3+UaTyVBy2FpXrzXzGjndpK61onhZjRtRpQXxCTeqw19bVyXOh7jA==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCUhMPS8Vyj9qk+NLztHmXQEUrMCqFTXF20QKCViTYvOQIhAMm+Tq6bLZBXKHTJhA1HpR902LmG2n+s2toUaxyFujWQ",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIDWEAgVflZrSSPtuTiMuHq6eknAibpdsLdbij2QyVhK8AiEA2EbKdw1EN3IMJBDjCw15/ZB6lRSUgAQDDxiKJyNywVA=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-wasm32@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 9167141
+      }
+    },
+    {
+      "id": "@img/sharp-webcontainers-wasm32@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-webcontainers-wasm32/0.35.4",
+      "license": "Apache-2.0",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/webcontainers-wasm32"
+      },
+      "dist": {
+        "shasum": "77d2e8892d3a3825f0dc95ab02ceb613cb213286",
+        "tarball": "https://registry.npmjs.org/@img/sharp-webcontainers-wasm32/-/sharp-webcontainers-wasm32-0.35.4.tgz",
+        "fileCount": 9,
+        "integrity": "sha512-ESfNkywmCfPNyaZjxooddJQiQ+l/nTpGEOGthxiLnIHXC/CmcBixnfwUleX9mCz9ovrUUvKMap/pm8RYbzfwaA==",
+        "signatures": [
+          {
+            "sig": "MEUCIBjvUPa6u5HBwfMnOvnOmTyQXjglF9hoZrOkvL5Hy0DWAiEA7maeOlMoeJrCOlQi50pWRVlPWjVyi44tWnNaFiHe0kw=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIHTeTLxeBOJD9KxGgSZB12VDBREXI4uSfkUKAkVokvsjAiEAjxiU3R0TZYvMASbTRZipiULfSP9tGGXdDwI/PJgwla0=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-webcontainers-wasm32@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 12446
+      },
+      "cpu": [
+        "wasm32"
+      ]
+    },
+    {
+      "id": "@img/sharp-win32-arm64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-win32-arm64/0.35.4",
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/win32-arm64"
+      },
+      "dist": {
+        "shasum": "4101b44e3fb97d6f1a73c2a9c6142d491d1aa831",
+        "tarball": "https://registry.npmjs.org/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.35.4.tgz",
+        "fileCount": 8,
+        "integrity": "sha512-iNdlBX9gLVvqe2I3uIJSIKTq6wckP/DYxZtcqxm09x5Gi24DnFBmPAWZmr60ZyYMG0xlzo6goG3670ar+RXvRw==",
+        "signatures": [
+          {
+            "sig": "MEYCIQC8l8pLrSdmI6i6R8doGMEdLLWCtUn8FCsY60qK6C+xTQIhALiqbw54mw0beXTYIbvkR28HdQ7He31gQB9BeEh+yjR4",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCIEo0R22e5j7wWMFCTgEEVhDOJ6Qdj/xaLRdTQ6N13l1qAiBZPT75qTZRUtUu02ExBWU698BkxzLsisSP4lHYpuLfaw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-win32-arm64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 16722996
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@img/sharp-win32-ia32@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-win32-ia32/0.35.4",
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/win32-ia32"
+      },
+      "dist": {
+        "shasum": "8d4755bd26d5ff34fb89c7907bd89c080a5dc9f5",
+        "tarball": "https://registry.npmjs.org/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.35.4.tgz",
+        "fileCount": 8,
+        "integrity": "sha512-kqRsbaa5CS6KHlpxnN7WhE6vAAugXyZButpRdvDWetlv6Qv4N9WTcrWzF7tXfB9T7MsoadqdI8hmwLq6UlLvtw==",
+        "signatures": [
+          {
+            "sig": "MEUCIFqdg4P77ZK1mSwzVuGK1SlG0HryhLup06iwmi6baMrYAiEA7Q3wi0KqiyHrlykFCbkc81rM4sKGQAZY67l1Bwzkx5Y=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDCLBf18W2MVCwqgcDub7iOcUY5PNgGyRF3zbiXrhr83AIgPMQH9HaayMkbcGfRnRtHuWQYlIkdr/U1oLN/TH944RU=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-win32-ia32@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 18703418
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "ia32"
+      ]
+    },
+    {
+      "id": "@img/sharp-win32-x64@0.35.4",
+      "url": "https://registry.npmjs.org/%40img%2Fsharp-win32-x64/0.35.4",
+      "license": "Apache-2.0 AND LGPL-3.0-or-later",
+      "gitHead": "7f1a0a22cc285fe180766f4935d50b55af6e8432",
+      "repository": {
+        "url": "git+https://github.com/lovell/sharp.git",
+        "type": "git",
+        "directory": "npm/win32-x64"
+      },
+      "dist": {
+        "shasum": "0b67bd0b1f01123a982afcc6ba0dc00b877b8a0a",
+        "tarball": "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.35.4.tgz",
+        "fileCount": 8,
+        "integrity": "sha512-XtmnYhBcrORsJ4XJngyzr/EWP0hRZLAZRFaApdKuviyqF78+ylxh2y06ZmtULAMOnObJ3ucpN0AcwSWnMowTRg==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDII+t9tTqtqHUcKhrqy5JxCOLwNmKRfKeqz2etonyRMgIhAJa+H+wNz2YzWyu48q690Q2RfTFbqKWWfQycThaIDlc4",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQCRK1xG+4nkFBNGd3RW9WhIyYw2kYC+PVsDQyJINDcgVgIhAP/qIgQ2zdDEOTPZ0ySyG3ruHlZg3Nd0inrSpVf7W9/+",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@img%2fsharp-win32-x64@0.35.4",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 19407388
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@next/swc-darwin-x64@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-darwin-x64/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/darwin-x64"
+      },
+      "dist": {
+        "shasum": "ed3a7b1f4ab757f03d306f21d187b951107c4940",
+        "tarball": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-76VaGYvf6HPa5/w12yLkE3dXTn9AfdEviI79oEL3aZoAmRLc9rWitjWqyjViVysK/ht/y9YKzFkBrUdi/wGkow==",
+        "signatures": [
+          {
+            "sig": "MEYCIQD/S2h83m9HrO3bCjXQctMVg8dGaOSie3GksIEYPaWz0gIhAOk8frWxgCDoHhWOXrpXbjzr4w6RrFqh9c/WK7C5hZAu",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEYCIQDxPr2KzrKP1hWNZXyged4KnoMLCQcPonEiR77j8Ka8ewIhAJWN61kWzT8e2hKX3Z78hjqow1RIEpK1Z5g1IWKyEp2f",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-darwin-x64@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 88559295
+      },
+      "os": [
+        "darwin"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@next/swc-linux-arm64-gnu@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-gnu/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/linux-arm64-gnu"
+      },
+      "dist": {
+        "shasum": "c116c0edc9da69e286b1cf1fc7d55601de1f7362",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-zKDELJ5jSQMHeO/hmXUQsAzagX4bQD4OiMi3pQ5FbUj+yK506oLVHnKA2YXMlbg1EHHqJYtyePOgByIDXD1lqw==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDn3/j5aMVJcy6dH/lxdp3hHOP+YNqog/sccx9A88bL0AIgNhMo6oWWCUwQ7z8pCja9wZSlFM/mhKJvStewOAj4xvQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCICOqyciy5Sx+VPDDOWzZVGlPPkuDEQDqsCD7A8PYJJZdAiA7aAe5BVnMDPd7TwN2O0yH+Lo4s67D3w+Z+XyZY9zsFQ==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-gnu@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 89858626
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@next/swc-linux-arm64-musl@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-musl/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/linux-arm64-musl"
+      },
+      "dist": {
+        "shasum": "dc9902a8c4bec1ba3d3a6af294e288f54c12e34c",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-7Vql0pgzCoHagv6+FNOZoqmJqA52c6zeVbhtS/47qFozO1MSx4ms7x7GHiciY8R5CDsSMKMQjJEryoJLcsBIbA==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDPuY+cBjuYYgnFnyR9pipaDH3hlc1r6tMsAwRSJvlJNQIgeRXFgzxBlHL6IohAsehm4AXTztcp4dUYHKrOYiQTkko=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDImssNOelhEVXfYV+5c4C3PXrNHnSXc3ppx+946fYIkQIgRPb1quHxy1o0x7HrGBX34A0b9DX7+abj+AoxfJ1wZQQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-musl@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 87531727
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@next/swc-linux-x64-gnu@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-gnu/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/linux-x64-gnu"
+      },
+      "dist": {
+        "shasum": "c092cb89504ac782edb42b253195a73dcfaf2251",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-NH/xzehyHEFWE2nlcZon7TB/0+H4shfWCi7S1zka815XCOhJDYZhoeJtOYy0dh0WVRWACVXSyGNFFytoMxUhRg==",
+        "signatures": [
+          {
+            "sig": "MEQCIGGfQWQqB0q0B2LhvP0p5PWu/XjfGRUrr/CljFgEhtpyAiAZ0nYLQMNR7wenx5DTdJWwqKDVZvZuNiZ+jbjM/EifQA==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDyNIwRQkFPCC2HkWrvSm2WUv9ErSrVmshtjuk0UUlD/wIgDWSki5VH0428tL2ATviVs6ZJJpnlvg5Y446MEOTYVZM=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-gnu@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 96732103
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@next/swc-linux-x64-musl@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-musl/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/linux-x64-musl"
+      },
+      "dist": {
+        "shasum": "22e553dee247026244d486d311efd07e4986f9af",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-lV4+EhWMfS8jcC+EH2nn/Cm5cn6XsgbE07bU9tMH8fCo0tNAqhyzi1b5wQ/Tn6NGFTvKDY65w3ZH95EjwBRAnQ==",
+        "signatures": [
+          {
+            "sig": "MEMCH2aYuf+UvaWepTNeghP8AGdysW8f8dDMhjQRtCNzwD4CIFBa0edupuXpHVUxYoaKrKMn+MQ4YUja5pNIKDc4s9Kh",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQCYcOgRhHg69w5t060jBYgMPd3l4sutSEe3/lbxhVyKLQIgJ2tBzWJqRR6c2dOOGMv2gRoAtnHn+1gkg2rRF7U2T60=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-musl@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 94830721
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@next/swc-win32-arm64-msvc@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-arm64-msvc/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/win32-arm64-msvc"
+      },
+      "dist": {
+        "shasum": "22fb04be07b602f475b7e4ec7e4b3940551ff749",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-/wKzAREX2RF++MhicjDbg8tGn2AiBIM0+EFeTFKoUEUbW5D6amCJehd5Z5G1H5/gxNdgnwoXMcHz24H/c2tGkQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIH4VxUB+cd9i1keLQZUbbecQ4VJ9tVJVgkZvbjYAkYvOAiEAjUuq5TRYmEu9Rn4GG8Gmp7MbF8PPvnI8hBFVE2CT+yM=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEUCIQDhFKpvzMEwi5ODCS/6yw1ursCgR/I+/vs7vNogDrwJEAIgYjo/PhDBlezZFvxJ42XuWxfjvIfGjzMb7lSDrzBai7o=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-arm64-msvc@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 94419467
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@next/swc-win32-x64-msvc@16.3.5",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-x64-msvc/16.3.5",
+      "license": "MIT",
+      "repository": {
+        "url": "git+https://github.com/vercel/next.js.git",
+        "type": "git",
+        "directory": "crates/next-napi-bindings/npm/win32-x64-msvc"
+      },
+      "dist": {
+        "shasum": "e137de36cddf64742f739ccb9092c4bcd48d2683",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.3.5.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-LNdCHzgLFc+UeqMS84LzXPaeBRKyqDN9OMyFAr1OrB0XrNw78IRrEVtZvvA7245W/HsaoeVOQX9jPjPk8jojwA==",
+        "signatures": [
+          {
+            "sig": "MEUCIGURppyUbh684GQFgZlmRDW0Icowpy8BoA/nZVAwm+HqAiEA4+1Lv/1t7nh7SOZ0OP8h1n8umoM9Du9r5jvdcD8umoo=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          },
+          {
+            "sig": "MEQCIExpTdg9ZEALWEN5WMQJzyXJGNNaTMs3H8uy9mtkeJt7AiAu/L8ve2kppya3P7EvK4VhtCMp5zrxUHJYICxlyjHcHw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "attestations": {
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-x64-msvc@16.3.5",
+          "provenance": {
+            "predicateType": "https://slsa.dev/provenance/v1"
+          }
+        },
+        "unpackedSize": 106189317
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-aix-ppc64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-aix-ppc64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "cdc7ce81d60f1e09034960ddfb1fb880d7a776b6",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-aix-ppc64/-/typescript-aix-ppc64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDFfab4TqYcPVeJjPbb8twLmr+ltRxKlwvn+y5nMwo5OAIhAOfoPiSer7SWUwvl2n8Hm1wMpOBMVZxl8y57WyVUso74",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 33009213
+      },
+      "os": [
+        "aix"
+      ],
+      "cpu": [
+        "ppc64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-darwin-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-darwin-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "38d1c9172800a91d707bec64d2a370a016634db4",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-darwin-x64/-/typescript-darwin-x64-7.0.2.tgz",
+        "fileCount": 113,
+        "integrity": "sha512-SZ9xZInqApNlNGc9s0W1VSsktYSOe9cFqNOIqmN1Gs8SmkjKZYFt017G4VwPxASInODuAdbTW7sXiFUf893RgA==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDmVtnm2a6LFzNpH2VaZcNLiPM0JB8+CmyOGxEXTtlH/AIhAIzXutwxrxUrIl2r4mzhdGBGnCcREMGLRlmc+x7l3/K6",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 28815671
+      },
+      "os": [
+        "darwin"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-freebsd-arm64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-freebsd-arm64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "f1ff8810030b35d2b5be0db6a2dc650460ea94fa",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-freebsd-arm64/-/typescript-freebsd-arm64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-W5NH4y/J0plIIS5b2xvTEkU7JFxyqdMAOgf+Ilhl0vHQXKO5dZoxd+C/jEtq56c4F3wk71RB4BMRQ2XdI+bwYQ==",
+        "signatures": [
+          {
+            "sig": "MEQCIAfn1EQBST3Oo7yeFXYIq0sZW+t8Jg9thk+XcLTIcTXQAiAQvSmJZPfpMEX0kDy5pXXfhpmQTK7xVg5bz6upHKIeDA==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26651680
+      },
+      "os": [
+        "freebsd"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-freebsd-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-freebsd-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "3d86b03f353c5b1ba95162eb6ce35533bfc294bd",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-freebsd-x64/-/typescript-freebsd-x64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-UMGDx5sTpzNw3WiPebH7l90IWfJggEd+egHt/q6p7/Cm3zqoV7VxkGXt+3DxPIw8CcmvAB0j3sVVfbhX+M4Tpw==",
+        "signatures": [
+          {
+            "sig": "MEUCIG7HG6/907r7uX+hYMSTCdVMrWFchB7sc7lnRxy8bs3ZAiEAzHrTueakacqd6+tSvlyY67UO4Wbx/JkidbY/SFdO3MI=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27868184
+      },
+      "os": [
+        "freebsd"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-arm@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-arm/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "ad94b41e1aee2a4dcc6a298c7b67c43345fde32e",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-arm/-/typescript-linux-arm-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-gffT3xPz9sR7j/YJExkyPntrI0P2EP9XbOyWzth2/Gs0RstK+90RBcO0ncXoXy/beYll1SXw846Nf2zdnEz0QQ==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCqS03foik5JsWnFKVJvmVdqrzcgIuVSFhfW9UGQKv4qQIhAPyw2QxkS2vP8/VtQFgeuNYO2vQvYa81Hf+REIY46l4m",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26782726
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-arm64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-arm64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "d9334d96d6dac6ff85da9c865588948de939e91f",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-arm64/-/typescript-linux-arm64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ==",
+        "signatures": [
+          {
+            "sig": "MEQCIAhJGq1zfqaEWMsX7RqdIjOT1THiTvTp9LeUh9+uc1epAiAFDEmum2ySqE73uf/64WSMwFR54uo3w0pKAo1+UCpAnw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26717198
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-loong64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-loong64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "2965aee4fc873360139d893daafe6397a29138ad",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-loong64/-/typescript-linux-loong64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-uEHck9i8hoAzXPiYRib1O7miOnz23SxIeVl6F4LXox+qov1K35jHcEW6VHKvZI+pyvl7fZEP4MCU5LYvIq1GuQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIQCGw3HwwqRuy3iTSkzwBOyWDwYOL+l4Cwss0wu9+jRPywIgIr8Oy1aG5uorK6jt8A7KT5MHxSExl+JwPI1rcKlAvYE=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27700246
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "loong64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-mips64el@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-mips64el/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "1a887a311bed3a833f80bfd4a9ed37c271936cf0",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-mips64el/-/typescript-linux-mips64el-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-R4KvAMnE43W5Qeqb0Ly56O3mWMWIAgsMyz36DCaycd5nbg/9kzm0liw3JocfRqyJY0KPmzFjbswozXyW0DnIYA==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDln1QvaioFnekfCQvZrBNQ71mch8/xTgVlhwL4FCdJEQIgYSE3pcZDKBlYkMbmiDDyFkXIyiJjn5TOWt6eamUgeac=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 30190618
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "mips64el"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-ppc64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-ppc64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "8b63c9b2f445b393eb4e43ec21da225dade3577d",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-ppc64/-/typescript-linux-ppc64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-DORx5b3sd/4S7eayxm4FQv+A7CrkUIGRaHiwI8oiHTAI1fAPWhF4J0vAlkC8biAlHSVVwxMQ3tjZ2/DVbnQiiA==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCKhHdwepBO+Jcw6st3lC9xJ/de3wkO06sPMh1XZoNeiwIhAPibrczt3li5PFDRxnRKpBZ040EhTlfdfa+38YIxUCGX",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27700238
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "ppc64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-riscv64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-riscv64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "b6e8a35c289b3ea97a92a41d461aaeed0d3b36e1",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-riscv64/-/typescript-linux-riscv64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-wf0jqEDOjrPRnKwYRyyJDRo11KMbvMFrU+q4zqKyChODBzvlkbhNQfKvLxQCcwTpdDaXSHZTVuh0JoCrKCUMHQ==",
+        "signatures": [
+          {
+            "sig": "MEYCIQC3r9ECTp0Zz46rALiu6k86cYSiaZeZk8WCXc15UlWXegIhAKpo93BgMYK/ryql7jbafTOQo5rVR8BLoRu+0GN0UV8I",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 25930774
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "riscv64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-s390x@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-s390x/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "2ef96693be4861f6d17965427e5b009cbbed1a3e",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-s390x/-/typescript-linux-s390x-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-IkwJc3L7yhytWd/ewjyxNDfOmswCm9GWMJT/ue/dU4aZNbwZeYAetq42VyLmsmSjvoX7z74X6ZaYCtzAr0EuGw==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDsM99VKwXQoezsmeJnZd4IjPuswNF26eibjSNfCcn0vwIgRHYhuIeCFelAdZ6Nese86U/lEPVEyrdRRlyM/tFBrb8=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 28945422
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "s390x"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-linux-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-linux-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "73269cb0baba50aea0ca060445a6b88e583f1ce2",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==",
+        "signatures": [
+          {
+            "sig": "MEQCID5HnnxMfpqvK60MvUY0mrH43XXckjsaCowg3RUutmw7AiB8k8eQ1fJRg/fgDXqFeQApMd2iZuIXimCW7bduggkezw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27945990
+      },
+      "os": [
+        "linux"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-netbsd-arm64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-netbsd-arm64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "3a3649f97fafa210b4e6e3798c15e06605c8a901",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-netbsd-arm64/-/typescript-netbsd-arm64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-+polYF4MF04aPpO5FTkHran9yUQDSXqy5GiSDKpsll5jy3l3+g9QLhpf39T+ePtefhXLOGrLl0QIjkQP6VnelA==",
+        "signatures": [
+          {
+            "sig": "MEUCICE5g5++ct/o1OrTAcSgAI8pPSCQD1RW+nqZu7uMKR9hAiEAuT7TNeNkXGr4iYthsoI9xkLoZ6c1ok9LOs2iTXCr6sI=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26586149
+      },
+      "os": [
+        "netbsd"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-netbsd-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-netbsd-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "47ec59491a40c470d2807dc4d2b825528fd979ab",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-netbsd-x64/-/typescript-netbsd-x64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-8YIT0EHM/3dq10ZOVF/A7pc/YSMtbcecct4rWtexrnSCHOPcpC2KTLXfTCR6vDpnSiY12heNb1GiN/wu+T/FyA==",
+        "signatures": [
+          {
+            "sig": "MEQCIDp3bz5Hhse2KNJ/qzpY4r5JJlBr9Ttly/ocQ9KvW6sxAiAojB9c7INPnGLsJb8BucGSeW9ej+XujUHtrcsgbFl5CQ==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27819037
+      },
+      "os": [
+        "netbsd"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-openbsd-arm64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-openbsd-arm64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "796be8da0bd989d8a3fb96f2801e38a8365b4baf",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-openbsd-arm64/-/typescript-openbsd-arm64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-APT8+ClYnuYm1u9+kgGXoMj2VzWzcymwh2gNSQVySHfkRDGOTVkoWLjCmOQSaO+PoqQ57B0flRp9SA+7GnnkzQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIFgbXnd224QupIWei1yVHxS3G5OWgrZgi4DHqVj5gEo4AiEA7ng4LxxZTIEfdUe4tGH87w2q+DWDY190zYiWAzYhVsQ=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26586257
+      },
+      "os": [
+        "openbsd"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-openbsd-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-openbsd-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "d37fe2a729eb942c076c454ee7f1815faf7d560f",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-openbsd-x64/-/typescript-openbsd-x64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-yX7s+Q0Dln0Dt9tEzZsAjXXR/+ytBM7AlglaqyeMPxQszJ1JhlJdZ6jLA+IzldHtflX81em7lDao1xXu+aRRkg==",
+        "signatures": [
+          {
+            "sig": "MEYCIQDp8H+lKQuL9wg9ysnWsHYL5KvT2vAPGPnLARrR1hRMmQIhALj3Y3NncduFaxUs+TrsOsiy+IvuKYVLt4ZbnvEDPiNX",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27856009
+      },
+      "os": [
+        "openbsd"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-sunos-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-sunos-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "aba8d3464c3565a7044789baba96916bd4ab2c88",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-sunos-x64/-/typescript-sunos-x64-7.0.2.tgz",
+        "fileCount": 114,
+        "integrity": "sha512-dLJDGaLZ1D4HPQn62u1n8mBDkJREwMsAkCdkwd4Ieqw+x3TUyTsqY0YiBCtE6H6OzzgGk3iuZ3vFWRS+E8/d1g==",
+        "signatures": [
+          {
+            "sig": "MEQCIAN532SW1fuVc+7H47ac/qdB/cO3sFp9eevJgwpzos21AiA6adUjNwKYO/EQJIJejPzr9qYpNSkSvgc3Mdx4G3varw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 27790445
+      },
+      "os": [
+        "sunos"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-win32-arm64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-win32-arm64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "b9de50a17196383f62620b5f9d0a2f34ad3b60d7",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-win32-arm64/-/typescript-win32-arm64-7.0.2.tgz",
+        "fileCount": 113,
+        "integrity": "sha512-Gyl1Vy6OsWesLzmq+EP0Fb7b4Nid5232AvcA2SFcdYreldpNtYFFofPjnt62y9hQy7VTaZp65ICJjuAQRaVcIQ==",
+        "signatures": [
+          {
+            "sig": "MEQCIArEQ6mIX+py/Gf9uZfRYnapFw+oGbQBCpmR2mjIKfP3AiBpGM8bOVMJgGQBkrpMtkKEMbbYZgj59DCW0vMOL6iY8g==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 26801387
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "arm64"
+      ]
+    },
+    {
+      "id": "@typescript/typescript-win32-x64@7.0.2",
+      "url": "https://registry.npmjs.org/%40typescript%2Ftypescript-win32-x64/7.0.2",
+      "license": "Apache-2.0",
+      "gitHead": "2bd066d87f5bafd315be9f40889d0a60b9e58e0b",
+      "repository": {
+        "url": "git+https://github.com/microsoft/TypeScript.git",
+        "type": "git"
+      },
+      "dist": {
+        "shasum": "cf3b7b0d6ce5635daca4c8e01c189cdcde47ec3c",
+        "tarball": "https://registry.npmjs.org/@typescript/typescript-win32-x64/-/typescript-win32-x64-7.0.2.tgz",
+        "fileCount": 113,
+        "integrity": "sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCejaFPdN4+nrJel8G4t696g8/DIzcEu88WSFGLH9Im1AIhAKf17fZYO91ZLCdVQe+waE51Qyf8HfJovH3mdbZ2aBAH",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 28365027
+      },
+      "os": [
+        "win32"
+      ],
+      "cpu": [
+        "x64"
+      ]
+    }
+  ],
+  "openReview": [
+    {
+      "scope": "native",
+      "item": "Bun runtime",
+      "reason": "Full linked-library notices and exact corresponding-source/relink validation remain unverified. Upstream list and source instructions are collected. This is not an established incompatibility or violation and does not itself block builds."
+    },
+    {
+      "scope": "web",
+      "item": "client-only@0.0.1",
+      "reason": "MIT metadata but no shipped license text or precise source commit in npm metadata; authorship notice not yet verified."
+    },
+    {
+      "scope": "web distribution",
+      "item": "sharp-libvips optional native binaries",
+      "reason": "Upstream notice summary collected; complete native library source/notice review depends on target. They are not part of CLI npm/native bundles."
+    },
+    {
+      "scope": "non-host optional packages",
+      "item": "51 lock entries",
+      "reason": "Exact registry version/license/source metadata collected, package archive notice texts not all inspected. Inspect the packages used by each deployment target."
+    }
+  ],
+  "licenseTextSha256": "d8a6cc31abc16b6748c7a21f21611f5a1ec33f67d22ca23d7da1c19b95496bee"
+}

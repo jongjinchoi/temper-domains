@@ -1,7 +1,7 @@
 // Opt-in real installations in a new, retained temporary root. Never run in bun test.
-// Homebrew: TEMPER_REAL_INSTALL=1 node tests/update/real-install.mjs homebrew <brew-source> <0.6.1-arm64-archive> <sha256>
-// npm: TEMPER_REAL_INSTALL=1 node tests/update/real-install.mjs npm
-// The starting code is this checkout built with a 0.6.0 TEST version; the target is published 0.6.1.
+// Arguments: npm <test-start-version> <expected-target-version>
+// or: homebrew <test-start-version> <expected-target-version> <brew-source> <arm64-archive> <sha256>
+// Starting code is this checkout with a TEST version, never an old release binary.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -10,11 +10,11 @@ import { cp, mkdir, mkdtemp, readFile, realpath, symlink, writeFile } from "node
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArguments, requireVersion, requireDigest } from './real-contract.mjs';
 
 assert.equal(process.env.TEMPER_REAL_INSTALL, "1", "Explicit opt-in required; this test installs real packages in a temporary prefix");
 const checkout = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const [channel, brewSource, archive, expectedHash] = process.argv.slice(2);
-assert.ok(channel === "homebrew" || channel === "npm");
+const { channel, startVersion, targetVersion, brewSource, archive, expectedHash } = parseArguments(process.argv.slice(2));
 const root = await realpath(await mkdtemp(join(tmpdir(), "temper-real-update-")));
 console.log(`Retained evidence: ${root}`);
 const home = join(root, "home");
@@ -40,15 +40,48 @@ async function commit(cwd, message) {
 let command;
 let server;
 const sourceHashes = {};
-for (const path of (await git(["ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", "src"], checkout)).split("\0").filter(Boolean).sort()) {
+for (const path of (await git(["ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", "src", "package.json", "bun.lock", "tests/update/real*"], checkout)).split("\0").filter(Boolean).sort()) {
   sourceHashes[path] = createHash("sha256").update(await readFile(join(checkout, path))).digest("hex");
 }
+await writeFile(join(root, 'source.json'), JSON.stringify({ checkout, sourceCommit: await git(['rev-parse', 'HEAD'], checkout), sourceHashes, mode: 'current-checkout-with-test-version', startVersion, targetVersion }, null, 2));
 try {
+  const get = async url => {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    assert.ok(response.ok, `Preflight HTTP ${response.status}: ${url}`);
+    return response;
+  };
+  let publication;
+  if (channel === 'npm') {
+    const metadata = await (await get('https://registry.npmjs.org/temper-domains/latest')).json();
+    requireVersion(metadata.version, targetVersion, 'published npm version');
+    assert.equal(metadata.name, 'temper-domains');
+    const bytes = Buffer.from(await (await get(metadata.dist.tarball)).arrayBuffer());
+    const integrity = /^sha512-([A-Za-z0-9+/=]+)$/.exec(metadata.dist.integrity ?? '');
+    assert.ok(integrity, 'Expected npm SHA-512 integrity');
+    requireDigest(bytes, integrity[1], 'sha512', 'base64');
+    const path = join(root, 'published.tgz'); await writeFile(path, bytes);
+    const manifest = JSON.parse(await run('tar', ['-xOf', path, 'package/package.json']));
+    assert.equal(manifest.name, 'temper-domains');
+    requireVersion(manifest.version, targetVersion, 'npm archive version');
+    publication = { version: metadata.version, integrity: metadata.dist.integrity, url: metadata.dist.tarball };
+  } else {
+    const formula = await (await get('https://raw.githubusercontent.com/jongjinchoi/homebrew-temper-domains/main/Formula/temper.rb')).text();
+    requireVersion(formula.match(/^\s*version "([^"]+)"/m)?.[1], targetVersion, 'published Homebrew version');
+    const arm64 = formula.match(/url "([^"]*temper-bun-darwin-arm64\.tar\.gz)"\s+sha256 "([a-f0-9]{64})"/);
+    assert.ok(arm64, 'Published macOS ARM64 archive/hash not found');
+    requireVersion(arm64[2], expectedHash, 'published archive hash');
+    publication = { version: targetVersion, url: arm64[1], sha256: expectedHash };
+  }
+  await writeFile(join(root, 'preflight.json'), JSON.stringify(publication, null, 2));
   if (channel === "homebrew") {
     assert.equal(process.platform, "darwin"); assert.equal(process.arch, "arm64");
     assert.ok(brewSource && archive && /^[a-f0-9]{64}$/.test(expectedHash ?? ""));
     const targetBytes = await readFile(archive);
-    assert.equal(createHash("sha256").update(targetBytes).digest("hex"), expectedHash);
+    requireDigest(targetBytes, expectedHash);
+    const targetRoot = join(root, 'verified-target'); await mkdir(targetRoot);
+    // Extract only the expected binary from the hash-verified release archive.
+    await run('tar', ['-xzf', resolve(archive), '-C', targetRoot, 'temper']);
+    requireVersion(await run(join(targetRoot, 'temper'), ['--version']), targetVersion, 'Homebrew archive binary');
     const brewRoot = join(root, "brew");
     await run("git", ["clone", "-q", "--shared", resolve(brewSource), brewRoot]);
     const rubyVersion = (await readFile(join(brewRoot, "Library/Homebrew/vendor/portable-ruby-version"), "utf8")).trim();
@@ -59,7 +92,7 @@ try {
     Object.assign(env, { HOMEBREW_TEMP: join(root, "build"), HOMEBREW_CACHE: join(root, "cache"), HOMEBREW_LOGS: join(root, "logs"), HOMEBREW_NO_AUTO_UPDATE: "1", HOMEBREW_NO_ANALYTICS: "1", HOMEBREW_NO_INSTALL_FROM_API: "1", HOMEBREW_NO_ENV_HINTS: "1", PATH: `${brewRoot}/bin:${env.PATH}` });
     await mkdir(env.HOMEBREW_TEMP, { recursive: true });
     const source = join(root, "source"); await mkdir(source);
-    await run("bun", ["build", "--compile", "--define", 'PKG_VERSION="0.6.0"', "src/index.ts", "--outfile", join(source, "temper")]);
+    await run("bun", ["build", "--compile", "--define", `PKG_VERSION=${JSON.stringify(startVersion)}`, "src/index.ts", "--outfile", join(source, "temper")]);
     const startArchive = join(root, "start.tar.gz");
     await run("tar", ["-czf", startArchive, "-C", source, "temper"]);
     const startBytes = await readFile(startArchive);
@@ -70,7 +103,7 @@ try {
     const formula = (version, path, bytes) => `class Temper < Formula\n  desc "Disposable real updater fixture"\n  homepage "https://github.com/jongjinchoi/temper-domains"\n  url "http://127.0.0.1:${port}/${path}"\n  version "${version}"\n  sha256 "${createHash("sha256").update(bytes).digest("hex")}"\n  def install\n    bin.install "temper"\n  end\nend\n`;
     const remote = join(root, "tap-remote"); await mkdir(join(remote, "Formula"), { recursive: true });
     await git(["init", "-qb", "main"], remote);
-    await writeFile(join(remote, "Formula/temper.rb"), formula("0.6.0", "start.tar.gz", startBytes));
+    await writeFile(join(remote, "Formula/temper.rb"), formula(startVersion, "start.tar.gz", startBytes));
     await commit(remote, "test starting installation");
     const tap = join(brewRoot, "Library/Taps/jongjinchoi/homebrew-temper-domains");
     await run("git", ["clone", "-q", remote, tap]);
@@ -94,7 +127,7 @@ try {
     const brew = join(brewRoot, "bin/brew");
     await run(brew, ["trust", "--formula", "jongjinchoi/temper-domains/temper"]);
     await run(brew, ["install", "--formula", "jongjinchoi/temper-domains/temper", "--quiet"]);
-    await writeFile(join(remote, "Formula/temper.rb"), formula("0.6.1", "target.tar.gz", targetBytes));
+    await writeFile(join(remote, "Formula/temper.rb"), formula(targetVersion, "target.tar.gz", targetBytes));
     await commit(remote, "test published target mirror");
     await run(brew, ["info", "--json=v2", "--formula", "jongjinchoi/temper-domains/temper"]);
     command = [join(brewRoot, "bin/temper")];
@@ -102,15 +135,16 @@ try {
     const prefix = join(root, "npm-prefix");
     const pkg = JSON.parse(await readFile(join(checkout, "package.json"), "utf8"));
     const staging = join(root, "package"); await mkdir(join(staging, "dist/npm"), { recursive: true });
-    await run("bun", ["build", "src/index.ts", "--target=node", "--packages=external", "--define", 'PKG_VERSION="0.6.0"', "--outfile", join(staging, "dist/npm/index.js")]);
-    await writeFile(join(staging, "package.json"), JSON.stringify({ name: pkg.name, version: "0.6.0", type: "module", bin: pkg.bin, dependencies: pkg.dependencies, files: ["dist/npm"] }));
+    await run("bun", ["build", "src/index.ts", "--target=node", "--packages=external", "--define", `PKG_VERSION=${JSON.stringify(startVersion)}`, "--outfile", join(staging, "dist/npm/index.js")]);
+    await writeFile(join(staging, "package.json"), JSON.stringify({ name: pkg.name, version: startVersion, type: "module", bin: pkg.bin, dependencies: pkg.dependencies, files: ["dist/npm"] }));
     const packed = JSON.parse(await run("npm", ["pack", "--json", "--ignore-scripts"], { cwd: staging }))[0].filename;
     await run("npm", ["install", "--global", "--prefix", prefix, join(staging, packed), "--no-audit", "--no-fund"]);
     Object.assign(env, { npm_config_prefix: prefix, PATH: `${prefix}/bin:${env.PATH}` });
     command = [process.execPath, join(prefix, "lib/node_modules/temper-domains/dist/npm/index.js")];
   }
-  await writeFile(join(root, "session.json"), JSON.stringify({ command, env }, null, 2), { mode: 0o600 });
-  console.log(`Starting actual ${channel} CLI update; source version is test-only 0.6.0`);
+  requireVersion(await run(command[0], [...command.slice(1), '--version']), startVersion, 'starting binary');
+  await writeFile(join(root, "session.json"), JSON.stringify({ command, env, startVersion, targetVersion }, null, 2), { mode: 0o600 });
+  console.log(`Starting actual ${channel} CLI update; current checkout with test-only version ${startVersion}, expected ${targetVersion}`);
   if (process.env.TEMPER_TEST_INTERACTIVE === "1") {
     assert.ok(process.stdin.isTTY && process.stdout.isTTY, "Live mode requires a terminal");
     console.log("LIVE isolated installation. Select Update now to install, or Later to leave it unchanged.");
@@ -121,7 +155,7 @@ try {
     await run("python3", ["tests/update/real-cli-pty.py", root]);
   }
   const after = await run(command[0], [...command.slice(1), "--version"]);
-  assert.equal(after, "0.6.1");
-  await writeFile(join(root, "result.json"), JSON.stringify({ channel, checkout, sourceCommit: await git(["rev-parse", "HEAD"], checkout), sourceHashes, startVersion: "0.6.0 (test define)", installed: after, archiveSHA256: expectedHash ?? null }, null, 2));
+  await writeFile(join(root, "result.json"), JSON.stringify({ channel, mode: 'current-checkout-with-test-version', startVersion, expected: targetVersion, installed: after, verified: after === targetVersion, archiveSHA256: expectedHash ?? null }, null, 2));
+  requireVersion(after, targetVersion, 'installed version');
   console.log(`Real ${channel} update verified: ${after}; ${root}`);
 } finally { server?.close(); }
