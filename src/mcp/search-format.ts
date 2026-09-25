@@ -1,4 +1,5 @@
 import type { CheckSummary, DomainResult } from "../checker/types.ts";
+import { lookupNotice } from "../utils/lookup-notice.ts";
 
 export function formatSelectedResults(names: readonly string[], suffixes: readonly string[], results: readonly DomainResult[], summary?: CheckSummary): string {
   const lines = [`Selected extensions: ${suffixes.map(s => `.${s}`).join(", ")}`, "Lookup results may differ from final purchase availability.", ""];
@@ -8,6 +9,7 @@ export function formatSelectedResults(names: readonly string[], suffixes: readon
     const r = byDomain.get(domain);
     if (!r) { lines.push(`${domain}  unresolved — no result returned`); continue; }
     lines.push(`${r.domain}  ${r.status}${r.status === "available" && r.confidence === "low" ? " (review required)" : ""}  ${r.method}  ${r.responseTime}ms${r.confidence ? `  ${r.confidence} confidence` : ""}${r.reason ? `; ${r.reason}` : ""}${r.error ? `; ${r.error}` : ""}${r.terminationReason ? `; ${r.terminationReason}` : ""}`);
+    if (lookupNotice(r)) lines.push(`  ${lookupNotice(r)}`);
   }
   if (summary) lines.push(`\nCoverage: ${summary.requested} requested, ${summary.attempted} attempted, ${summary.answered} answered, ${summary.unresolved} unresolved in ${(summary.elapsedMs / 1000).toFixed(1)}s`);
   return lines.join("\n");

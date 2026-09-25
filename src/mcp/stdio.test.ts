@@ -36,6 +36,24 @@ test("stdio tool schemas reject invalid input while preserving error responses",
   }
 });
 
+test("lookup tools return validated structured results alongside the original text", async () => {
+  const { tools } = await client.listTools();
+  expect(tools.find(t => t.name === "check_domain_availability")!.inputSchema.properties).toHaveProperty("resume");
+  for (const [name, args] of [
+    ["search_domain", { name: "structured", tlds: ["com"] }],
+    ["search_names", { names: ["structured"], tlds: ["net"] }],
+    ["check_domain_availability", { domains: ["structured.dev"], resume: true }],
+  ] as const) {
+    expect(tools.find(t => t.name === name)!.outputSchema).toBeDefined();
+    const response = await client.callTool({ name, arguments: args });
+    expect(response.isError).not.toBe(true);
+    const payload = response.structuredContent as any;
+    expect(payload).toMatchObject({ schemaVersion: 1, summary: { requested: 1, answered: 1, unresolved: 0 }, retryPlan: { eligible: [], deferred: [], maxPerCall: 100, requiresUserRequest: true } });
+    expect(payload.rows[0].status).toBe("available");
+    expect(JSON.parse((response.content as { text: string }[])[1]!.text)).toEqual(payload);
+  }
+});
+
 test("supported TLD discovery returns the search catalog without network lookups", async () => {
   const { tools } = await client.listTools();
   const tool = tools.find((tool) => tool.name === "list_supported_tlds");

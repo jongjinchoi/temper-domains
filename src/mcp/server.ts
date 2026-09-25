@@ -1,4 +1,5 @@
 import { lookupNotice } from "../utils/lookup-notice.ts";
+import { lookupOutputSchema, lookupResult } from "./lookup-result.ts";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -24,10 +25,10 @@ TOOL ROUTING RULES:
 - When extensions are explicitly selected, pass only those suffixes in tlds to search_domain or search_names. Do not add default TLDs. Do not combine tlds and extended.
 - For industry, purpose or region discovery, use list_supported_tlds with view=categories (facet optional), then view=extensions and the relevant filters. Explain classification inclusion evidence, then search the user's chosen suffixes. Do not turn contextual geography into an unrequested strict filter.
 - Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
-- Use check_domain_availability only for full domains explicitly provided by the user, such as "lockway.com".
+- Use check_domain_availability for full domains explicitly provided by the user, such as "lockway.com", or set resume=true for exact unresolved domains from a prior result when the user asks to resume them.
 - Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
 
-Respect reported lookup waits: server_cooldown with attempts=0 means this domain was not queried because of a previous server limit. retryAt is the earliest retry time, not a success guarantee; retryAtSource distinguishes server guidance from Temper policy. Local CLI/MCP processes sharing the same home share cooldown state. Do not change homes, endpoints or protocols to bypass a cooldown, or automatically replay deferred queries. State coordination errors need repair before retrying.
+Respect reported lookup waits: server_cooldown with attempts=0 means this domain was not queried because of a previous server limit. retryAt is the earliest retry time, not a success guarantee; retryAtSource distinguishes server guidance from Temper policy. Local CLI/MCP processes sharing the same home share cooldown state. Do not change homes, endpoints or protocols to bypass a cooldown, or automatically replay deferred queries. State coordination errors need repair before retrying. Structured lookup results include a retryPlan; resume only on user request, at most 100 exact domains per call, and never silently truncate or automatically repeat the remaining pages. A resumed call makes one pass and stops queued work for each newly limited server. Each lookup call has a server-owned budget of at most 30 seconds, independent of progress notifications. Update older Temper processes and reconnect MCP clients when state versions differ; do not delete cooldown state.
 
 When a user asks for domain name suggestions without a specific name:
 
@@ -66,7 +67,7 @@ export const SEARCH_NAMES_DESCRIPTION =
   "Check up to 8 bare name candidates across TLDs. Use this for AI-generated names before considering exact domains. Default 30 TLDs first; 60 with extended=true. Set tlds to search only chosen suffixes, including co.uk. Cannot combine tlds with extended; max 480 names × suffixes.";
 
 export const CHECK_DOMAIN_AVAILABILITY_DESCRIPTION =
-  "Check availability for full domain names explicitly provided by the user using RDAP/WHOIS. Max 100 domains. Do not infer, append, or choose TLDs; use search_domain or search_names for bare names.";
+  "Check availability for full domain names explicitly provided by the user using RDAP/WHOIS, or use resume=true for exact unresolved domains from a prior result when the user asks to resume. Max 100 domains per call; never silently truncate larger selections. Do not infer, append, or choose TLDs; use search_domain or search_names for bare names.";
 
 const server = new McpServer(
   { name: "temper", version: VERSION },
@@ -444,6 +445,7 @@ server.registerTool("list_supported_tlds", {
 
 server.registerTool("search_domain", {
   description: SEARCH_DOMAIN_DESCRIPTION,
+  outputSchema: lookupOutputSchema,
   inputSchema: z.strictObject({
     name: z.string().describe("Domain name without TLD, e.g. 'gethalden'"),
     extended: z.boolean().optional().describe("Check 60 TLDs instead of 30"),
@@ -471,7 +473,7 @@ server.registerTool("search_domain", {
       results.push(result);
     }
     const text = selected !== undefined ? formatSelectedResults([normalized.name], tlds, results, summary) : formatResults(normalized.name, results, tlds, summary);
-    return { content: [{ type: "text" as const, text }] };
+    return lookupResult(text, results, summary);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -480,6 +482,7 @@ server.registerTool("search_domain", {
 
 server.registerTool("search_names", {
   description: SEARCH_NAMES_DESCRIPTION,
+  outputSchema: lookupOutputSchema,
   inputSchema: z.strictObject({
     names: z
       .array(z.string())
@@ -508,7 +511,7 @@ server.registerTool("search_names", {
     const startedAt = performance.now();
     const groups = await checkSuggestionMatrix(normalized.names, tlds, { concurrency: 20, signal: extra.signal });
     const summary = summarizeResults(groups.flatMap(group => group.results), normalized.names.length * tlds.length, performance.now() - startedAt);
-    return { content: [{ type: "text" as const, text: selected !== undefined ? formatSelectedResults(normalized.names, tlds, groups.flatMap(group => group.results), summary) : formatSearchNamesResults(groups, tlds) + "\n" + formatCoverage(summary) }] };
+    return lookupResult(selected !== undefined ? formatSelectedResults(normalized.names, tlds, groups.flatMap(group => group.results), summary) : formatSearchNamesResults(groups, tlds) + "\n" + formatCoverage(summary), groups.flatMap(group => group.results), summary);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -546,6 +549,7 @@ server.registerTool("open_registrar", {
 const SUGGEST_TLDS = ["com", "dev", "io", "app", "ai"];
 
 server.registerTool("suggest_domain", {
+  outputSchema: lookupOutputSchema,
   description: "Generate 15 name combinations (prefixes: get/use/try/my/go/join, suffixes: app/labs/hq/ly/dev/hub/run/kit) and check availability across .com/.dev/.io/.app/.ai using RDAP/WHOIS.",
   inputSchema: { name: z.string().describe("Base name, e.g. 'gethalden'") },
 }, async ({ name }, extra) => {
@@ -568,7 +572,7 @@ server.registerTool("suggest_domain", {
       onSummary: value => { summary = value; },
     });
 
-    return { content: [{ type: "text" as const, text: formatSuggestDomainResults(groups, SUGGEST_TLDS) + (summary ? "\n" + formatCoverage(summary) : "") }] };
+    return lookupResult(formatSuggestDomainResults(groups, SUGGEST_TLDS) + (summary ? "\n" + formatCoverage(summary) : ""), groups.flatMap(group => group.results), summary);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };
@@ -577,13 +581,15 @@ server.registerTool("suggest_domain", {
 
 server.registerTool("check_domain_availability", {
   description: CHECK_DOMAIN_AVAILABILITY_DESCRIPTION,
+  outputSchema: lookupOutputSchema,
   inputSchema: {
+    resume: z.boolean().optional().describe("Only when the user asks to resume exact unresolved domains from a prior result. One pass; no automatic repetition. Maximum 100 domains per call."),
     domains: z
       .array(z.string())
       .max(100)
-      .describe("List of full domain names explicitly provided by the user, e.g. ['gethalden.com', 'usegethalden.dev']. Do not append or infer TLDs."),
+      .describe("Full domains explicitly provided by the user, or exact prior unresolved domains for a user-requested resume. Do not append or infer TLDs."),
   },
-}, async ({ domains }, extra) => {
+}, async ({ domains, resume }, extra) => {
   try {
     const bareDomains = findBareDomainInputs(domains);
     if (bareDomains.length > 0) {
@@ -595,11 +601,11 @@ server.registerTool("check_domain_availability", {
 
     const results: DomainResult[] = [];
     let summary: CheckSummary | undefined;
-    for await (const result of checkFullDomains(domains, { concurrency: 20, signal: extra.signal, onSummary: value => { summary = value; } })) {
+    for await (const result of checkFullDomains(domains, { concurrency: 20, resume, ...(resume ? { timeoutMs: 30000 } : {}), signal: extra.signal, onSummary: value => { summary = value; } })) {
       results.push(result);
     }
 
-    return { content: [{ type: "text" as const, text: formatFullDomainResults(domains, results) + (summary ? "\n" + formatCoverage(summary) : "") }] };
+    return lookupResult(formatFullDomainResults(domains, results) + (summary ? "\n" + formatCoverage(summary) : ""), results, summary);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return { content: [{ type: "text" as const, text: `Error: ${message}` }], isError: true };

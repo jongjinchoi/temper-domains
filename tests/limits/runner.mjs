@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createServer as createWhoisServer } from 'node:net';
-import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
@@ -36,12 +36,33 @@ try {
       onStart?.(child);
       let stdout = '', stderr = '';
       child.stdout.on('data', data => { stdout += data; }); child.stderr.on('data', data => { stderr += data; });
-      const timer = setTimeout(() => { child.kill(); reject(new Error('CLI test timeout')); }, 15000);
+      const timer = setTimeout(() => { child.kill(); reject(new Error('CLI test timeout')); }, 20000);
       child.on('error', reject);
       child.on('exit', code => { clearTimeout(timer); code === 0 ? resolve(stdout) : reject(new Error(`${runtime} ${code}: ${stderr}\n${stdout}`)); });
     });
-    const search = name => cli(['search', name, '--tlds', 'com', '--format', 'json']).then(JSON.parse);
+    const search = name => cli(['search', name, '--tlds', 'com', '--format', 'json', '--timeout', '15']).then(JSON.parse);
     status = 429; wait = '86400'; responseDelay = 0; requests = [];
+    const file = join(home, '.temper/state/lookup-limits.json');
+    await mkdir(join(home, '.temper/state'), { recursive: true });
+    const until = Date.now() + 86400000;
+    const legacy = { version: 1, servers: { [origin]: { generation: 4, observedAt: Date.now(), strikes: 1,
+      blockedUntil: until, nextStart: until, source: 'server', kind: 'rate_limited',
+      leases: [{ id: 'old-process', pid: process.pid, expires: until, generation: 4, probe: true }] } } };
+    const raw = JSON.stringify(legacy);
+    await writeFile(file, raw);
+    assert.equal((await search('activelegacy'))[0].terminationReason, 'limit_state_error');
+    assert.equal(await readFile(file, 'utf8'), raw);
+    legacy.servers[origin].leases = [];
+    await writeFile(file, JSON.stringify(legacy));
+    assert.equal((await search('migratedwait'))[0].terminationReason, 'server_cooldown');
+    const migrated = JSON.parse(await readFile(file, 'utf8'));
+    assert.equal(migrated.version, 2);
+    assert.equal(migrated.servers[origin].blockedUntil, until);
+    assert.equal(migrated.servers[origin].nextStart, until);
+    assert.equal(requests.length, 0);
+    // End the migration fixture; the following independent scenario starts from
+    // an empty private test state, never a user's cooldown file.
+    await writeFile(file, JSON.stringify({ version: 2, servers: {} }));
     const first = (await search('initial'))[0];
     assert.equal(first.terminationReason, 'rate_limited', JSON.stringify(first)); assert.equal(first.attempts, 1); assert.equal(first.retryAtSource, 'server');
     assert.equal(requests.length, 1);
@@ -50,13 +71,17 @@ try {
     const client = new Client({ name: 'shared-limit-regression', version: '1.0.0' });
     try {
       await client.connect(new StdioClientTransport({ command: runtime, args: [...prefix, 'mcp'], env }));
-      const result = await client.callTool({ name: 'check_domain_availability', arguments: { domains: ['other.com', 'other.net'] } });
+      const result = await client.callTool({ name: 'check_domain_availability', arguments: { domains: ['other.com', 'other.net'], resume: true } });
       assert.match(JSON.stringify(result), /Not sent: previous server limit/);
       assert.match(JSON.stringify(result), /attempts: 0/);
       assert.match(JSON.stringify(result), /server Retry-After/);
+      assert.equal(result.structuredContent.schemaVersion, 1);
+      assert.deepEqual(result.structuredContent.retryPlan.deferred, ['other.com', 'other.net']);
+      assert.deepEqual(result.structuredContent.retryPlan.eligible, []);
+      assert.equal(result.structuredContent.retryPlan.nextRetryAt, first.retryAt);
+      assert.equal(result.structuredContent.summary.attempted, 0);
     } finally { await client.close(); }
     assert.equal(requests.length, 1, 'new CLI and MCP processes must not transmit during cooldown');
-    const file = join(home, '.temper/state/lookup-limits.json');
     const state = JSON.parse(await readFile(file, 'utf8'));
     assert.equal(state.servers[origin].strikes, 1);
     assert.deepEqual(state.servers[origin].leases, []);
@@ -78,9 +103,9 @@ try {
     const successful = await Promise.all([search('successone'), search('successtwo'), search('successthree')]);
     assert.ok(successful.flat().every(r => r.status === 'available'));
     assert.equal(requests.length, 3);
-    assert.ok(requests[1].at - requests[0].at >= 440, 'the second request must wait for the probe response');
-    assert.ok(requests[2].at - requests[1].at >= 290, 'normal starts retain the shared 300ms interval');
-    assert.equal(JSON.parse(await readFile(file, 'utf8')).servers[origin].strikes, 0);
+    assert.ok(requests[1].at - requests[0].at >= 2390, 'recovery spacing must be shared across processes');
+    assert.ok(requests[2].at - requests[1].at >= 2390, 'a single valid answer cannot restore normal speed');
+    assert.equal(JSON.parse(await readFile(file, 'utf8')).servers[origin].strikes, 2);
     whoisRequests = 0;
     const whoisFirst = JSON.parse(await cli(['search', 'whoisone', '--tlds', 'io', '--format', 'json']))[0];
     assert.equal(whoisRequests, 1, 'WHOIS must reach our loopback fixture');
@@ -114,7 +139,7 @@ try {
     const damaged = (await search('damaged'))[0];
     assert.equal(damaged.terminationReason, 'limit_state_error'); assert.equal(damaged.attempts, 0); assert.equal(requests.length, 0);
     assert.equal(await readFile(file, 'utf8'), '{broken');
-    console.log(`${runtime}: CLI -> restarted CLI/detail -> MCP shared cooldown, one probe, recovery, spacing, WHOIS, killed-process leases and corruption passed`);
+    console.log(`${runtime}: v1 active-lease refusal and migration, CLI -> restarted CLI/detail -> MCP cooldown, gradual recovery spacing, WHOIS, killed-process leases and corruption passed`);
   }
 } finally {
   await new Promise(resolve => whoisServer.close(resolve));
