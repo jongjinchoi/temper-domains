@@ -44,6 +44,8 @@ jobs:
       - run: bun ci
       - run: bun run web:typecheck
       - run: bun run web:build
+        env:
+          TEMPER_PUBLIC_BUILD: '1'
 
   node-compatibility:
     runs-on: ubuntu-latest

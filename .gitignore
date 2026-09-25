@@ -10,6 +10,9 @@ dist
 .next
 next-env.d.ts
 
+# Vercel project metadata and build output
+.vercel/
+
 # code coverage
 coverage
 *.lcov

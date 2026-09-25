@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { sourceIdentity } from "../scripts/source-revision.mjs";
+import { websiteSourceUrl } from "../scripts/source-revision.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootPkg = JSON.parse(
   readFileSync(resolve(__dirname, "../package.json"), "utf-8"),
 );
-const source = sourceIdentity(resolve(__dirname, '..'));
+const sourceUrl = websiteSourceUrl(resolve(__dirname, '..'));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,7 +15,7 @@ const nextConfig = {
   trailingSlash: true,
   env: {
     NEXT_PUBLIC_TEMPER_VERSION: rootPkg.version,
-    NEXT_PUBLIC_TEMPER_SOURCE_URL: source.sourceUrl ?? '',
+    NEXT_PUBLIC_TEMPER_SOURCE_URL: sourceUrl ?? '',
   },
 };
 
