@@ -37,13 +37,13 @@ export default function FrameBox({ title, hints, minHeight, children }: PropsWit
           borderTop={false}
           paddingX={1}
         >
-          {hints.map((hint, i) => (
+          <Text>{hints.map((hint, i) => (
             <Text key={`${hint.key}-${hint.action}`}>
               {i > 0 ? <Text color={theme.dim}> · </Text> : null}
               <Text color={theme.blue} bold>{hint.key}</Text>
               <Text color={theme.text}> {hint.action}</Text>
             </Text>
-          ))}
+          ))}</Text>
         </Box>
       )}
     </Box>

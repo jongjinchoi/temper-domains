@@ -5,7 +5,7 @@ import * as fs from "node:fs/promises";
 if (process.env.TEMPER_TEST_FAIL_RENAME) {
   mock.module("node:fs/promises", () => ({ ...fs, rename: async () => { throw new Error("test rename failed"); } }));
 }
-const { addHistory, loadHistory, removeHistoryAt } = await import("../../src/config/history.ts");
+const { addHistory, loadHistory, removeHistoryAt, replaceHistoryEntry } = await import("../../src/config/history.ts");
 const [operation, query, gate] = process.argv.slice(2);
 const entry = (name: string) => ({ query: name, timestamp: "2026-09-20T00:00:00Z", available: 1, total: 1 });
 if (gate) {
@@ -16,7 +16,10 @@ if (gate) {
   }
 }
 try {
-  if (operation === "stale-delete") {
+  if (operation === "replace") {
+    const expected = entry(query!);
+    await replaceHistoryEntry(expected, { ...expected, available: 0 });
+  } else if (operation === "stale-delete") {
     const snapshot = await loadHistory();
     await addHistory(entry("new"));
     await removeHistoryAt(0, snapshot);

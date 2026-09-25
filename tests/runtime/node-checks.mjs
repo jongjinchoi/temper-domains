@@ -217,7 +217,13 @@ test("Node SearchView shows a filtered match immediately after scrolling at 24 r
     while (!frame.includes("Search complete") && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10));
     assert.match(text(), /30\/30 answered/);
     for (let i = 0; i < 20; i++) await key("j");
-    assert.match(text(), /↑ 5 more/);
+    const scrolled = text();
+    assert.match(scrolled, /▸\s+acme\.live/);
+    assert.ok(scrolled.split("\n").length <= 24, "controls and selected row must fit in the terminal");
+    const above = Number(scrolled.match(/↑ (\d+) more/)?.[1] ?? 0);
+    const below = Number(scrolled.match(/↓ (\d+) more/)?.[1] ?? 0);
+    const shown = scrolled.split("\n").filter(line => /acme\.[a-z.]+\s+✓ available/.test(line)).length;
+    assert.equal(above + shown + below, 30);
     await key("/"); await key("com");
     assert.match(text(), /1 of 30 matches/);
     assert.match(text(), /acme\.com/);

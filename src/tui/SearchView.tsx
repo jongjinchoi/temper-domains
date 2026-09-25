@@ -13,20 +13,49 @@ import ResultRow from "./ResultRow.tsx";
 import Spinner from "./Spinner.tsx";
 import WhoisView from "./WhoisView.tsx";
 import { theme } from "./theme.ts";
+import { canResume, isAnswered } from "../checker/retry.ts";
+import { RESUME_BUDGET_MS, type SearchSession } from "./search-session.ts";
 
-type ScreenState = "searching" | "failed" | "selecting" | "filtering" | "registrar" | "detail";
+type ScreenState = "searching" | "failed" | "selecting" | "filtering" | "registrar" | "detail" | "resume";
 
 interface Props {
   query: string;
   tlds?: readonly string[];
   onlyAvailable?: boolean;
   timeoutMs?: number;
+  session?: SearchSession;
   onBack?: () => void;
   onNavigate?: (screen: string) => void;
   onQuit?: () => void;
 }
 
-const CHROME_LINES = 8;
+function hintsFor(state: ScreenState, navigate: boolean, resuming: boolean) {
+  if (state === "resume") return [{ key: "enter", action: "resume once" }, { key: "esc", action: "cancel" }];
+  if (state === "searching") return [{ key: "ctrl+c", action: "cancel" }, { key: "esc", action: resuming ? "stop resume" : "back" }];
+  if (state === "filtering") return [{ key: "esc", action: "clear" }, { key: "enter", action: "confirm" }];
+  if (state === "registrar") return [{ key: "c/p/n/v", action: "select" }, { key: "esc", action: "cancel" }];
+  if (state === "detail") return [{ key: "esc", action: "back" }, { key: "q", action: "quit" }];
+  return [
+    { key: "j/k", action: "move" }, { key: "/", action: "filter" },
+    { key: "r/R", action: "resume" }, { key: "u", action: "unresolved" },
+    { key: "enter", action: "registrar" }, { key: "i", action: "info" }, { key: "a", action: "add" },
+    ...(navigate ? [{ key: "s", action: "suggest" }, { key: "h", action: "history" }, { key: "w", action: "watchlist" }] : [{ key: "esc", action: "back" }]),
+    { key: "q", action: "quit" },
+  ];
+}
+
+// These labels use ASCII and single-column separators. Reserve their wrapped
+// lines before choosing the list viewport, including resume confirmation.
+function wrappedLines(text: string, width: number): number {
+  let lines = 1, used = 0;
+  for (const word of text.split(/\s+/)) {
+    if (used && used + 1 + word.length > width) { lines++; used = 0; }
+    if (used) used++;
+    used += word.length;
+    while (used > width) { lines++; used -= width; }
+  }
+  return lines;
+}
 
 type Position = { cursor: number; offset: number };
 
@@ -40,33 +69,43 @@ function normalizePosition(position: Position, count: number, capacity: number):
   return { cursor, offset };
 }
 
-export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, onBack, onNavigate, onQuit }: Props) {
+export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, session: owner, onBack, onNavigate, onQuit }: Props) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [termRows, setTermRows] = useState(stdout.rows ?? 40);
+  const [termColumns, setTermColumns] = useState(stdout.columns ?? 80);
   const allDomains = useMemo(() => tlds.map((tld) => `${query}.${tld}`.toLowerCase()), [query, tlds]);
 
   useEffect(() => {
-    const onResize = () => setTermRows(stdout.rows ?? 40);
+    const onResize = () => { setTermRows(stdout.rows ?? 40); setTermColumns(stdout.columns ?? 80); };
     stdout.on("resize", onResize);
     return () => { stdout.off("resize", onResize); };
   }, [stdout]);
 
-  const { results, count, elapsed, done, error, historyError } = useSearchExecution(query, tlds, timeoutMs);
+  const { results, totalAttempts, count, roundTotal, resuming, elapsed, done, error, historyError, session } = useSearchExecution(query, tlds, timeoutMs, owner);
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [position, setPosition] = useState<Position>({ cursor: 0, offset: 0 });
   const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean } | null>(null);
   const [filterText, setFilterText] = useState("");
+  const [unresolvedOnly, setUnresolvedOnly] = useState(false);
+  const [resumeDomains, setResumeDomains] = useState<string[]>([]);
+  const resumeWaits = resumeDomains.map(domain => Date.parse(results.get(domain)?.retryAt ?? "") - Date.now());
   const hasLimits = [...results.values()].some(result => result.retryAt);
-  const maxVisible = Math.max(5, termRows - CHROME_LINES - (hasLimits ? 2 : 0));
+  const currentHints = hintsFor(screenState, !!onNavigate, resuming);
+  const contentWidth = Math.max(1, termColumns - 4);
+  const footerLines = wrappedLines(currentHints.map(hint => `${hint.key} ${hint.action}`).join(" · "), contentWidth);
+  const extraLines = (hasLimits ? 2 : 0) + (historyError ? 1 : 0)
+    + (confirmation ? 1 + wrappedLines(confirmation.text, contentWidth) : 0)
+    + (screenState === "resume" ? 3 : screenState === "filtering" ? 3 : screenState === "searching" ? 1 : 0);
+  const capacity = termRows - 8 - footerLines - extraLines;
 
   useEffect(() => {
     setScreenState(done ? (error ? "failed" : "selecting") : "searching");
   }, [done, error]);
 
   // Filter domains early so keyboard handler can reference it
-  let displayDomains = onlyAvailable && screenState !== "searching"
+  let displayDomains = unresolvedOnly ? allDomains.filter(d => !results.has(d) || !isAnswered(results.get(d)!)) : onlyAvailable && screenState !== "searching"
     ? allDomains.filter((d) => results.get(d)?.status === "available")
     : allDomains;
 
@@ -74,6 +113,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     displayDomains = displayDomains.filter((d) => d.includes(filterText));
   }
   if (error) displayDomains = displayDomains.filter((domain) => results.has(domain));
+  const maxVisible = Math.max(1, capacity - (displayDomains.length > capacity ? 2 : 0));
   const { cursor, offset: viewOffset } = normalizePosition(position, displayDomains.length, maxVisible);
   const visibleCount = Math.min(maxVisible, displayDomains.length);
   const selectedDomain = displayDomains[cursor];
@@ -109,16 +149,36 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         onQuit ? onQuit() : exit();
         return;
       }
+      if (screenState === "resume") {
+        if (key.escape) setScreenState("selecting");
+        else if (key.return) {
+          try {
+            const run = session.resume(resumeDomains);
+            setScreenState("searching");
+            void run.then(() => { if (session.getSnapshot().done) setScreenState(session.getSnapshot().error ? "failed" : "selecting"); });
+          }
+          catch (error) { setConfirmation({ text: String(error instanceof Error ? error.message : error), error: true }); setScreenState("selecting"); }
+        }
+        return;
+      }
       if (key.escape) {
+        if (!done && resuming) { session.cancel(); return; }
         onBack ? onBack() : (onQuit ? onQuit() : exit());
         return;
       }
 
-      if (screenState === "selecting") {
+      if (screenState === "selecting" || screenState === "failed") {
         if (key.downArrow || input === "j") {
           move(1);
         } else if (key.upArrow || input === "k") {
           move(-1);
+        } else if (input === "r" || input === "R") {
+          const candidates = (input === "r" ? selectedDomain ? [selectedDomain] : [] : displayDomains)
+            .filter(domain => results.has(domain) && canResume(results.get(domain)!));
+          if (candidates.length) { setResumeDomains(candidates); setScreenState("resume"); }
+          else setConfirmation({ text: "No resumable candidates in this selection. Use u to show unresolved results." });
+        } else if (input === "u") {
+          setUnresolvedOnly(value => !value); setPosition({ cursor: 0, offset: 0 });
         } else if (input === "/" ) {
           setScreenState("filtering");
           setFilterText("");
@@ -153,7 +213,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           const domain = selectedDomain;
           if (domain) {
             const result = results.get(domain);
-            if (result && result.status === "available") {
+            if (result && (result.status === "available" || !isAnswered(result))) {
               setScreenState("registrar");
             }
           }
@@ -186,63 +246,17 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
   const hasMore = viewOffset + visibleCount < displayDomains.length;
   const hasLess = viewOffset > 0;
 
-  const searchingHints = [
-    { key: "ctrl+c", action: "cancel" },
-    { key: "esc", action: "back" },
-  ];
-  const selectingHints = onNavigate
-    ? [
-        { key: "j/k", action: "move" },
-        { key: "/", action: "filter" },
-        { key: "enter", action: "buy" },
-        { key: "i", action: "info" },
-        { key: "a", action: "add" },
-        { key: "s", action: "suggest" },
-        { key: "h", action: "history" },
-        { key: "w", action: "watchlist" },
-        { key: "q", action: "quit" },
-      ]
-    : [
-        { key: "j/k", action: "move" },
-        { key: "/", action: "filter" },
-        { key: "enter", action: "buy" },
-        { key: "i", action: "info" },
-        { key: "a", action: "add" },
-        { key: "esc", action: "back" },
-        { key: "q", action: "quit" },
-      ];
-  const filteringHints = [
-    { key: "esc", action: "clear" },
-    { key: "enter", action: "confirm" },
-  ];
-  const registrarHints = [
-    { key: "c/p/n/v", action: "select" },
-    { key: "esc", action: "cancel" },
-  ];
-
-  const detailHints = [
-    { key: "esc", action: "back" },
-    { key: "q", action: "quit" },
-  ];
-  const currentHints =
-    screenState === "failed" ? [{ key: "esc", action: "back" }, { key: "q", action: "quit" }] :
-    screenState === "searching" ? searchingHints :
-    screenState === "filtering" ? filteringHints :
-    screenState === "registrar" ? registrarHints :
-    screenState === "detail" ? detailHints :
-    selectingHints;
-
   return (
     <FrameBox title={`temper search ${query}`} hints={currentHints}>
       {/* Header */}
       <Box marginBottom={1}>
-        {error ? (
+        {error && screenState !== "resume" ? (
           <Text color={theme.red}>Search failed: {error}</Text>
         ) : screenState === "searching" ? (
           <Text>
             <Spinner />
-            <Text color={theme.text}> Searching {total} TLDs...  </Text>
-            <Text color={theme.lavender}>{count}/{total}</Text>
+            <Text color={theme.text}> {resuming ? "Resuming" : "Searching"} {roundTotal} {resuming ? "candidates" : "TLDs"}...  </Text>
+            <Text color={theme.lavender}>{count}/{roundTotal}</Text>
             <Text color={theme.dim}>  ({elapsedSec}s elapsed)</Text>
           </Text>
         ) : (
@@ -257,6 +271,10 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
       {done && !error && <Text color={theme.dim}>Confirm purchase availability and pricing with a registrar.</Text>}
       {historyError && <Text color={theme.yellow}>History was not saved: {historyError}</Text>}
+      {screenState === "resume" && <Box flexDirection="column" marginBottom={1}>
+        <Text color={theme.yellow}>Resume {resumeDomains.length} unresolved candidate{resumeDomains.length === 1 ? "" : "s"} once? Maximum {RESUME_BUDGET_MS / 1000}s.</Text>
+        <Text color={theme.dim}>Waiting: {resumeWaits.filter(wait => wait > 0).length}; beyond budget: {resumeWaits.filter(wait => wait >= RESUME_BUDGET_MS).length}. Existing answers stay; server waits apply.</Text>
+      </Box>}
 
       {/* Filter input */}
       {screenState === "filtering" && (
@@ -280,6 +298,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
       ) : screenState === "registrar" && selectedDomain ? (
         <RegistrarModal
           domain={selectedDomain}
+          needsConfirmation={results.get(selectedDomain)?.status !== "available" || results.get(selectedDomain)?.confidence === "low"}
           onSelect={handleRegistrarSelect}
           onCancel={handleRegistrarCancel}
         />
@@ -304,12 +323,12 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
       {hasLimits && screenState !== "detail" && screenState !== "registrar" && selectedDomain &&
         lookupNoticeLines(results.get(selectedDomain) ?? {}, true).map((line, index) =>
-          <Text key={index} color={theme.yellow} wrap="truncate-end">{line}</Text>)}
+          <Text key={index} color={theme.yellow} wrap="truncate-end">{line}{index === 1 ? `; session attempts: ${totalAttempts.get(selectedDomain) ?? 0}` : ""}</Text>)}
 
       {/* Progress bar during search */}
       {screenState === "searching" && (
         <Box marginTop={1}>
-          <ProgressBar current={count} total={total} />
+          <ProgressBar current={count} total={roundTotal} />
         </Box>
       )}
 

@@ -82,6 +82,17 @@ export async function addHistory(entry: HistoryEntry): Promise<void> {
   await updateHistory(history => [entry, ...history].slice(0, MAX_ENTRIES));
 }
 
+export async function replaceHistoryEntry(expected: HistoryEntry, replacement: HistoryEntry): Promise<boolean> {
+  let changed = false;
+  await updateHistory(history => {
+    const matches = history.map((entry, index) => JSON.stringify(entry) === JSON.stringify(expected) ? index : -1).filter(index => index >= 0);
+    if (matches.length !== 1) return history;
+    changed = true;
+    return history.map((entry, index) => index === matches[0] ? replacement : entry);
+  });
+  return changed;
+}
+
 export async function removeHistoryAt(index: number, expected: readonly HistoryEntry[]): Promise<HistoryEntry[]> {
   return updateHistory(history => {
     if (JSON.stringify(history) !== JSON.stringify(expected)) throw new HistoryConflictError(history);

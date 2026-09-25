@@ -20,6 +20,17 @@ function worker(operation: string, query = "acme", gate = "", extraEnv: Record<s
 }
 const entries = async () => JSON.parse(await readFile(file, "utf8")) as ReturnType<typeof entry>[];
 
+test("resume replaces only its exact history entry and never resurrects missing or ambiguous entries", async () => {
+  for (const original of [[entry("other"), entry("selected")], [entry("other")], [entry("selected"), entry("selected")]]) {
+    await writeFile(file, JSON.stringify(original));
+    expect((await worker("replace", "selected"))[0]).toBe(0);
+    const saved = await entries();
+    if (original.length === 2 && original[0]!.query === "other") {
+      expect(saved).toEqual([entry("other"), { ...entry("selected"), available: 0 }]);
+    } else expect(saved).toEqual(original);
+  }
+});
+
 test("separate processes preserve every successful history addition", async () => {
   const gate = join(home, "start");
   const jobs = Array.from({ length: 12 }, (_, i) => worker("add", `name${i}`, gate));

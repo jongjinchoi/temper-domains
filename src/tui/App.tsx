@@ -1,5 +1,7 @@
 import { useApp } from "ink";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { SearchSession } from "./search-session.ts";
+import { DEFAULT_TLDS } from "../checker/types.ts";
 import HistoryView from "./HistoryView.tsx";
 import SearchView from "./SearchView.tsx";
 import SuggestView from "./SuggestView.tsx";
@@ -17,6 +19,7 @@ interface Props {
 export default function App({ query, tlds, onlyAvailable, timeoutMs }: Props) {
   const { exit } = useApp();
   const [screen, setScreen] = useState<Screen>("search");
+  const search = useMemo(() => new SearchSession(query, tlds ?? DEFAULT_TLDS, timeoutMs), [query, tlds, timeoutMs]);
 
   const quit = () => exit();
   const back = () => setScreen("search");
@@ -29,6 +32,7 @@ export default function App({ query, tlds, onlyAvailable, timeoutMs }: Props) {
           tlds={tlds}
           onlyAvailable={onlyAvailable}
           timeoutMs={timeoutMs}
+          session={search}
           onNavigate={(s: string) => setScreen(s as Screen)}
           onQuit={quit}
         />

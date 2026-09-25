@@ -16,11 +16,46 @@ async function scenario(name: string, helper = "tui-worker.tsx") {
   } finally { await rm(home, { recursive: true, force: true }); }
 }
 
+function expectViewport(frame: string, rows: number) {
+  expect(frame.split("\n").length).toBeLessThanOrEqual(rows);
+  const above = Number(frame.match(/↑ (\d+) more/)?.[1] ?? 0);
+  const below = Number(frame.match(/↓ (\d+) more/)?.[1] ?? 0);
+  const shown = frame.split("\n").filter(line => /acme\.[a-z.]+\s+✓ available/.test(line)).length;
+  expect(above + shown + below).toBe(30);
+}
+
+test("resume confirmation and footer remain visible for a full unresolved list in a 24-row terminal", async () => {
+  const result = await scenario("search-resume-many");
+  expect(result.frames.confirm).toContain("Resume 30 unresolved candidates once? Maximum 120s.");
+  expect(result.frames.confirm).toContain("enter resume once");
+  expect(result.frames.confirm.split("\n").length).toBeLessThanOrEqual(24);
+  expect(result.frames.initial.split("\n").length).toBeLessThanOrEqual(24);
+  expect(result.unhandled).toEqual([]);
+});
+
 test("uppercase search renders the completed domain status", async () => {
   const result = await scenario("uppercase");
   expect(result.frame).toContain("acme.com");
   expect(result.frame).toContain("available");
   expect(result.frame).not.toContain("checking");
+});
+
+test("explicit resume retains completed rows through cancel and screen navigation without duplicate history", async () => {
+  const result = await scenario("search-resume");
+  expect(result.frames.initial).toContain("1/2 answered");
+  expect(result.frames.registrar).toContain("Confirm availability");
+  expect(result.frames.registrar).not.toContain("✓ available");
+  expect(result.frames.confirm).toContain("1 unresolved");
+  expect(result.frames.confirm).toContain("120s");
+  expect(result.frames.confirm).toContain("Waiting: 0; beyond budget: 0");
+  expect(result.frames.running).toContain("Resuming");
+  expect(result.frames.cancelled).toContain("acme.com");
+  expect(result.frames.recovered).toContain("2/2 answered");
+  expect(result.frames.returned).toContain("2/2 answered");
+  expect(JSON.parse(result.frames.requests)).toEqual(["acme.com", "acme.net", "acme.net", "acme.net"]);
+  expect(result.history).toHaveLength(1);
+  expect(result.history[0].available).toBe(2);
+  expect(result.unhandled).toEqual([]);
 });
 
 test("bootstrap failure becomes an error screen without a successful history entry", async () => {
@@ -149,7 +184,7 @@ test("leaving init during a pending save allows storage cleanup without rejectio
 
 test("scrolling then filtering shows the match immediately and actions use that domain", async () => {
   const result = await scenario("search-filter");
-  expect(result.frames.scrolled).toContain("↑ 5 more");
+  expectViewport(result.frames.scrolled, 24);
   expect(result.frames.filtered).toContain("1 of 30 matches");
   expect(result.frames.filtered).toContain("acme.com");
   expect(result.frames.filtered).not.toContain("↑");
@@ -166,7 +201,7 @@ test("scrolling then filtering shows the match immediately and actions use that 
   expect(result.opened[0]).toContain("acme.com");
   expect(result.watch.map((entry: { domain: string }) => entry.domain)).toEqual(["acme.com"]);
   expect(result.frames.cleared).toMatch(/▸\s+acme.com/);
-  expect(result.frames.cleared).toContain("↓ 14 more");
+  expectViewport(result.frames.cleared, 24);
   expect(result.unhandled).toEqual([]);
 }, 10000);
 
@@ -177,8 +212,9 @@ test("resizing a scrolled list keeps selection visible and updates hidden counts
   expect(result.frames.expanded).not.toContain("↑");
   expect(result.frames.expanded).not.toContain("↓");
   expect(result.frames.shrunk).toContain(selected);
-  expect(result.frames.shrunk).toContain("↑ 11 more");
-  expect(result.frames.shrunk).toContain("↓ 9 more");
+  expectViewport(result.frames.scrolled, 24);
+  expectViewport(result.frames.expanded, 40);
+  expectViewport(result.frames.shrunk, 18);
 });
 
 test.each(["none", "one", "some"])("available-only completion keeps %s results selectable", async size => {
@@ -228,6 +264,8 @@ test("cooldown results show request counts, wait source and retry time in search
   expect(result.frames.queued).toContain("Not sent: previous server limit");
   expect(result.frames.queued).toContain("attempts: 0");
   expect(result.frames.queued).toContain("server Retry-After");
+  expect(result.frames.first).toContain("session attempts: 1");
+  expect(result.frames.queued).toContain("session attempts: 0");
   expect(result.frames.detail).toContain("Retry no earlier than");
   expect(result.unhandled).toEqual([]);
 });

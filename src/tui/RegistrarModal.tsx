@@ -4,6 +4,7 @@ import { theme } from "./theme.ts";
 
 interface Props {
   domain: string;
+  needsConfirmation?: boolean;
   onSelect: (registrar: Registrar) => void;
   onCancel: () => void;
 }
@@ -22,7 +23,7 @@ const BRAND_COLORS: Record<string, string> = {
   vercel: "text",
 };
 
-export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
+export default function RegistrarModal({ domain, needsConfirmation = false, onSelect, onCancel }: Props) {
   useInput((input, key) => {
     if (key.escape) {
       onCancel();
@@ -39,7 +40,7 @@ export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
       <Box marginBottom={1}>
         <Text color={theme.dim}>Selected:  </Text>
         <Text color={theme.green}>{domain}</Text>
-        <Text color={theme.green}>  ✓ available</Text>
+        <Text color={needsConfirmation ? theme.yellow : theme.green}>{needsConfirmation ? "  Confirm availability and pricing" : "  ✓ available"}</Text>
       </Box>
 
       <Box
@@ -50,7 +51,7 @@ export default function RegistrarModal({ domain, onSelect, onCancel }: Props) {
         paddingY={1}
       >
         <Box marginBottom={1}>
-          <Text color={theme.text} bold>Where to buy?</Text>
+          <Text color={theme.text} bold>{needsConfirmation ? "Where to check?" : "Where to buy?"}</Text>
         </Box>
 
         {REGISTRAR_META.map((r) => {

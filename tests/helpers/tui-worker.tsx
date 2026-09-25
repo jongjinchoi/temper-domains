@@ -7,6 +7,7 @@ import { join } from "node:path";
 import React from "react";
 import { render } from "ink";
 import SearchView from "../../src/tui/SearchView.tsx";
+import App from "../../src/tui/App.tsx";
 import SuggestView from "../../src/tui/SuggestView.tsx";
 import HistoryView from "../../src/tui/HistoryView.tsx";
 import WatchlistView from "../../src/tui/WatchlistView.tsx";
@@ -30,11 +31,25 @@ process.on("unhandledRejection", (error) => unhandled.push(String(error)));
 Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
 let started = 0;
 let aborted = 0;
+const requests: string[] = [];
 globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
   if (String(input) === "https://data.iana.org/rdap/dns.json") {
     if (scenario === "bootstrap" || scenario === "suggest-bootstrap") throw new Error("test bootstrap unavailable");
     if (scenario === "search-cooldown") return Response.json({ services: [[["com", "net"], ["https://shared.test/"]]] });
     return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
+  }
+  if (scenario === "search-resume-many") throw new Error("test temporary connection failure");
+  if (scenario === "search-resume") {
+    const domain = String(input).split("/").at(-1)!;
+    requests.push(domain);
+    if (domain === "acme.net") {
+      const n = requests.filter(value => value === domain).length;
+      if (n === 1) throw new Error("test temporary connection failure");
+      if (n === 2) return new Promise<Response>((_resolve, reject) => {
+        started++;
+        init!.signal!.addEventListener("abort", () => { aborted++; reject(init!.signal!.reason); }, { once: true });
+      });
+    }
   }
   if (scenario === "search-cooldown" || scenario === "suggest-cooldown") return new Response(null, { status: 429, headers: { "Retry-After": "86400" } });
   if (scenario === "suggest-cancel") {
@@ -67,6 +82,8 @@ const element = scenario === "suggest"
   : scenario === "watch-corrupt" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
+  : scenario === "search-resume" ? <App query="Acme" tlds={["com", "net"]} />
+  : scenario === "search-resume-many" ? <App query="Acme" />
   : scenario === "search-cooldown" ? <SearchView query="Acme" tlds={["com", "net"]} />
   : scenario === "search-composite" ? <SearchView query="Acme" tlds={["uk", "co.uk"]} />
   : scenario?.startsWith("search-") ? <SearchView query="Acme" tlds={DEFAULT_TLDS} onlyAvailable={scenario.startsWith("search-available-")} />
@@ -90,7 +107,19 @@ try {
       for (let i = 0; i < 20; i++) await key("j");
       frames.scrolled = plain();
     }
-    if (scenario === "search-cooldown") {
+    if (scenario === "search-resume-many") {
+      frames.initial = plain(); await key("R"); frames.confirm = plain();
+    } else if (scenario === "search-resume") {
+      frames.initial = plain();
+      await key("j"); await key("\r"); frames.registrar = plain(); await key("\x1b");
+      await key("r"); frames.confirm = plain(); await key("\r");
+      await until(() => started === 1); frames.running = plain();
+      await key("\x1b"); await until(() => aborted === 1); frames.cancelled = plain();
+      await key("r"); await key("\r"); await until(() => frame.includes("2/2 answered")); frames.recovered = plain();
+      await key("h"); await until(() => frame.includes("Recent searches")); await key("\x1b");
+      await until(() => frame.includes("2/2 answered")); frames.returned = plain();
+      frames.requests = JSON.stringify(requests);
+    } else if (scenario === "search-cooldown") {
       frames.first = plain();
       await key("j"); frames.queued = plain();
       await key("i"); await until(() => frame.includes("Not sent: previous server limit"));
