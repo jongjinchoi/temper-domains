@@ -5,6 +5,7 @@ import { automaticUpdatesEnabled, compareStableVersions } from "./policy.ts";
 import { displayInvocation } from "./process.ts";
 import { performUpdate, updateCommands } from "./runner.ts";
 import type { PromptOutcome } from "../tui/UpdatePrompt.tsx";
+import { updateCheckFailureMessage } from "./errors.ts";
 
 async function prompt(result: UpdateCheck): Promise<PromptOutcome> {
   const { render } = await import("ink");
@@ -37,7 +38,7 @@ function reportOutcome(outcome: PromptOutcome, command: string): void {
 // Returns true when the command must stop (updated, cancelled, or installer failed).
 export async function maybeUpdate(command: string, format?: string): Promise<boolean> {
   if (!automaticUpdatesEnabled(command, format, Boolean(process.stdin.isTTY), Boolean(process.stdout.isTTY), process.env)) return false;
-  const result = await checkForUpdate(true, { onFailure: () => console.error("Could not check for updates. Try temper update --check.") });
+  const result = await checkForUpdate(true, { onFailure: error => console.error(`Could not check for updates: ${updateCheckFailureMessage(error)} Try temper update --check.`) });
   if (!result?.latest || compareStableVersions(result.latest, result.current) <= 0) return false;
   const outcome = await prompt(result);
   if (outcome.kind === "later") return false;

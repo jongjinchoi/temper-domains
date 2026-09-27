@@ -87,6 +87,9 @@ Update checks contact npm or the Homebrew tap without sending domain names or hi
 ## Update and browser failures
 
 A failed automatic update check reports briefly and continues the original command.
+The notice distinguishes installation discovery, published-version requests, and
+timeouts; HTTP failures include their status code. Run `temper update --check` to
+retry explicitly. An update-check failure does not mean an installation was attempted.
 See [update installation rules](cli.md#updates) for supported installations and cancellation behavior.
 A successful browser-opening request does not verify that a registrar page loaded or that a purchase is available.
 If opening fails or cannot be confirmed, use the displayed URL manually.

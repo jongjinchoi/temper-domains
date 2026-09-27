@@ -7,6 +7,8 @@ import { detectInstallation, npmInvocation } from "../../src/update/installation
 import { runProcess } from "../../src/update/process.ts";
 import { performUpdate } from "../../src/update/runner.ts";
 import { checkForUpdate } from "../../src/update/check.ts";
+import { UpdateCheckError, updateCheckFailureMessage } from "../../src/update/errors.ts";
+import { fetchLatestVersion } from "../../src/update/versions.ts";
 
 const directory = await mkdtemp(join(tmpdir(), "temper-updater-runtime-"));
 const home = await realpath(directory);
@@ -51,6 +53,28 @@ else if (args[0] === 'install') {
   assert.equal((await checkForUpdate(true, checkOptions))?.latest, "0.5.0");
   assert.equal((await checkForUpdate(true, checkOptions))?.latest, "0.5.0");
   assert.equal(requests, 2);
+  const denied = Object.assign(new Error("private installation path"), { code: "EACCES" });
+  let failure: unknown;
+  assert.equal(await checkForUpdate(true, { ...checkOptions, detect: async () => { throw denied; }, onFailure: error => { failure = error; } }), null);
+  assert.ok(failure instanceof UpdateCheckError);
+  assert.equal(failure.stage, "installation"); assert.equal(failure.cause, denied);
+  assert.match(updateCheckFailureMessage(failure), /installation.*EACCES/i);
+  assert.doesNotMatch(updateCheckFailureMessage(failure), /private/);
+  await assert.rejects(checkForUpdate(false, { ...checkOptions,
+    latest: (channel, signal) => fetchLatestVersion(channel, signal, async () => new Response("private body", { status: 503 })),
+  }), error => error instanceof UpdateCheckError && error.stage === "version" && error.httpStatus === 503 && /HTTP 503/.test(error.message));
+  for (const phase of ["installation", "version"] as const) {
+    let reason: unknown;
+    const waiting = (signal: AbortSignal): Promise<never> => new Promise((_, reject) => signal.addEventListener("abort", () => {
+      reason = signal.reason; reject(new DOMException("Aborted", "AbortError"));
+    }, { once: true }));
+    assert.equal(await checkForUpdate(true, { ...checkOptions, automaticTimeout: 25,
+      ...(phase === "installation" ? { detect: waiting } : { latest: (_channel: string, signal: AbortSignal) => waiting(signal) }),
+      onFailure: error => { failure = error; },
+    }), null);
+    assert.ok(failure instanceof UpdateCheckError);
+    assert.equal(failure.kind, "timeout"); assert.equal(failure.stage, phase); assert.equal(failure, reason);
+  }
   const result = await performUpdate(installation, "0.5.0", { lockDirectory: home, confirmTarget: async () => { throw new Error("npm must not change the approved target"); }, execute: async command => { await runProcess(command); } });
   assert.deepEqual(result, { status: "updated", version: "0.5.0" });
   assert.equal((await runProcess({ file: process.execPath, args: [entry, "--version"] })).stdout.trim(), "0.5.0");

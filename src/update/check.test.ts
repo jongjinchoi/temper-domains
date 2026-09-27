@@ -67,3 +67,21 @@ test("automatic failure is reported and the next invocation can discover an upda
   latest = "0.5.2";
   expect((await checkForUpdate(true, deps))?.latest).toBe("0.5.2");
 });
+
+test("check errors retain their stage and cause, including an abort racing the timeout", async () => {
+  const original = Object.assign(new Error("private installation path"), { code: "EACCES" });
+  let failure: unknown;
+  const deps = { entry: "/test/temper", current: "0.7.0", onFailure: (error: unknown) => { failure = error; } };
+  expect(await checkForUpdate(true, { ...deps, detect: async () => { throw original; } })).toBeNull();
+  expect(failure).toMatchObject({ stage: "installation", kind: "failed", cause: original });
+  await expect(checkForUpdate(false, { ...deps, detect: async () => { throw original; } }))
+    .rejects.toMatchObject({ stage: "installation", cause: original });
+  let reason: unknown;
+  expect(await checkForUpdate(true, { ...deps, automaticTimeout: 25,
+    detect: async signal => new Promise<Installation>((_, reject) => signal.addEventListener("abort", () => {
+      reason = signal.reason; reject(new DOMException("Aborted", "AbortError"));
+    }, { once: true })),
+  })).toBeNull();
+  expect(failure).toMatchObject({ stage: "installation", kind: "timeout" });
+  expect(failure).toBe(reason);
+});

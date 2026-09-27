@@ -65,7 +65,8 @@ in both workspaces so root typechecking does not download a separate compiler.
   detection uses the actual entry and verified package ownership.
 - Interactive bare `temper` and search/suggest/whois/list check on every invocation;
   search arguments are validated before checking. The automatic deadline is 2s;
-  failures produce a brief notice and continue. Later skips only this invocation.
+  failures identify the check stage and distinguish timeout, HTTP and invalid-response
+  failures before continuing. Raw remote bodies are not printed. Later skips only this invocation.
   `TEMPER_NO_UPDATE_CHECK=1` disables automatic checks.
   MCP/JSON/pipes/CI/help/version/offline commands are excluded.
 - Bare `temper` displays a themed welcome box and exits successfully. `temper help`

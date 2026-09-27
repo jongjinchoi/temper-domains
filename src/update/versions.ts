@@ -1,4 +1,5 @@
 import { parseStableVersion } from "./policy.ts";
+import { UpdateCheckError } from "./errors.ts";
 
 export const FORMULA = "jongjinchoi/temper-domains/temper";
 export type ReleaseChannel = "npm" | "homebrew";
@@ -28,10 +29,10 @@ export async function fetchLatestVersion(channel: ReleaseChannel, signal: AbortS
     "https://raw.githubusercontent.com/jongjinchoi/homebrew-temper-domains/HEAD/Formula/temper.rb";
   signal.throwIfAborted();
   const response = await request(url, { signal, redirect: "error", headers: { Accept: channel === "npm" ? "application/json" : "text/plain" } });
-  if (!response.ok) throw new Error(`Version check failed (HTTP ${response.status})`);
+  if (!response.ok) throw new UpdateCheckError("version", "http", { httpStatus: response.status });
   // Read with a bound even when the server omits Content-Length.
   const reader = response.body?.getReader();
-  if (!reader) throw new Error("Empty version response");
+  if (!reader) throw new UpdateCheckError("version", "invalid_response", { cause: new Error("Empty version response") });
   const decoder = new TextDecoder();
   let text = "";
   try {
@@ -40,12 +41,14 @@ export async function fetchLatestVersion(channel: ReleaseChannel, signal: AbortS
       const { done, value } = await reader.read();
       if (done) break;
       text += decoder.decode(value, { stream: true });
-      if (text.length > 512 * 1024) throw new Error("Version response is too large");
+      if (text.length > 512 * 1024) throw new UpdateCheckError("version", "invalid_response", { cause: new Error("Version response is too large") });
     }
     text += decoder.decode();
   } finally { await reader.cancel().catch(() => {}); }
-  if (channel === "homebrew") return parseFormulaVersion(text);
-  const data = JSON.parse(text);
-  if (data?.name !== "temper-domains" || !parseStableVersion(data?.version)) throw new Error("Registry returned no valid stable Temper version");
-  return data.version;
+  try {
+    if (channel === "homebrew") return parseFormulaVersion(text);
+    const data = JSON.parse(text);
+    if (data?.name !== "temper-domains" || !parseStableVersion(data?.version)) throw new Error("Registry returned no valid stable Temper version");
+    return data.version;
+  } catch (cause) { throw new UpdateCheckError("version", "invalid_response", { cause }); }
 }
