@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import { buildInventory } from "./inventory.ts";
 import { browseExtensions, listCategories, categoryOverview } from "./catalog.ts";
-import { normalizeSuffixSelection, resolveExplicitSelection, resolveCategorySelection, assertCandidateLimit } from "./selection.ts";
+import { normalizeSuffixSelection, resolveExplicitSelection, resolveCategorySelection } from "./selection.ts";
+import { assertCandidateLimit } from "./input.ts";
 
 test("inventory preserves ICANN patterns and exceptions without selling PRIVATE namespaces", () => {
   const data = buildInventory("# Version 1\nCOM\nUK\nCK\nDE\n", `// ===BEGIN ICANN DOMAINS===\ncom\nuk\nco.uk\nde\n*.ck\n!www.ck\n// ===END ICANN DOMAINS===\n// ===BEGIN PRIVATE DOMAINS===\nblogspot.com\n// ===END PRIVATE DOMAINS===`, "2026-09-21T00:00:00Z");

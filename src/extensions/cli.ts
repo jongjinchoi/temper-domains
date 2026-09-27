@@ -1,14 +1,8 @@
 import { browseExtensions, categoryOverview, listCategories } from "./catalog.ts";
+import { splitFilter } from "./input.ts";
 import type { Facet } from "./types.ts";
 
 interface Options { categories?: true | string; category?: string; purpose?: string; region?: string; query?: string; cursor?: string; limit?: string; format?: string }
-export function splitFilter(value: string | undefined): string[] | undefined {
-  if (value === undefined) return undefined;
-  const parts = value.split(",").map(s => s.trim());
-  if (parts.some(s => !s)) throw new Error("Classification filters must not contain empty values");
-  return [...new Set(parts)];
-}
-
 export function extensionCommand(opts: Options): string {
   if (opts.format && !["text", "json"].includes(opts.format)) throw new Error("Use --format text or json");
   if (opts.categories !== undefined) {

@@ -6,8 +6,7 @@ import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
-import { resolveExplicitSelection, resolveCategorySelection, assertCandidateLimit, validateSearchCombinations } from "./extensions/selection.ts";
-import { extensionCommand, splitFilter } from "./extensions/cli.ts";
+import { assertCandidateLimit, validateSearchCombinations, splitFilter } from "./extensions/input.ts";
 import { maybeUpdate, updateCommand } from "./update/cli.ts";
 
 const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
@@ -40,10 +39,6 @@ function validateDomainOrExit(domain: string, argName: string): string {
     );
   }
   return clean;
-}
-
-function validateTldsOrExit(rawTlds: string): string[] {
-  return resolveExplicitSelection(rawTlds.split(","));
 }
 
 function parseTimeoutMsOrExit(value: string, argName: string): number {
@@ -94,10 +89,12 @@ program
     let tlds: string[] | undefined;
     if (opts.category !== undefined) {
       if (opts.tlds !== undefined || opts.extended !== undefined) throw new Error("--category cannot be combined with --tlds or --extended");
+      const { resolveCategorySelection } = await import("./extensions/selection.ts");
       tlds = resolveCategorySelection({ industries: splitFilter(opts.category) });
       assertCandidateLimit(queries.length, tlds.length);
     } else if (opts.tlds !== undefined) {
-      tlds = validateTldsOrExit(opts.tlds);
+      const { resolveExplicitSelection } = await import("./extensions/selection.ts");
+      tlds = resolveExplicitSelection(opts.tlds.split(","));
     } else if (opts.extended) {
       const { EXTENDED_TLDS } = await import("./checker/types.ts");
       tlds = [...EXTENDED_TLDS];
@@ -304,7 +301,10 @@ program
   .option("--cursor <cursor>", "Continue the same filtered listing")
   .option("-f, --format <format>", "Output format (text, json)", "text")
   .addHelpText("after", "\nExamples:\n  temper extensions --categories\n  temper extensions --categories industry\n  temper extensions --category design-arts\n  temper extensions --purpose store\n  temper extensions --region GB\n  temper extensions --query co.uk\n  temper search mybrand --tlds design,studio,co.uk\n  temper search mybrand --category design-arts")
-  .action(opts => console.log(extensionCommand(opts)));
+  .action(async opts => {
+    const { extensionCommand } = await import("./extensions/cli.ts");
+    console.log(extensionCommand(opts));
+  });
 
 // --- config ---
 const configCmd = program

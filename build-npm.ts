@@ -1,18 +1,22 @@
 import { verifyBundledCheckerSignatures } from "./scripts/checker-fingerprint.ts";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, rm } from "node:fs/promises";
 import { collectSource } from "./scripts/source-package.ts";
-import { createHash } from 'node:crypto';
+import { npmRuntimeFiles } from "./scripts/npm-build-record.ts";
 
 await verifyBundledCheckerSignatures();
 const source = collectSource();
 
 const pkg = JSON.parse(await readFile("./package.json", "utf-8")) as { version: string };
 
+// Only generated npm output is replaced; old content-hashed chunks must not ship.
+await rm("./dist/npm", { recursive: true, force: true });
+
 const result = await Bun.build({
   entrypoints: ["./src/index.ts"],
   outdir: "./dist/npm",
   target: "node",
   format: "esm",
+  splitting: true,
   packages: "external",
   sourcemap: "linked",
   define: {
@@ -35,4 +39,4 @@ if (!content.startsWith("#!/")) {
 
 console.log("✓ dist/npm/index.js");
 await writeFile('./dist/npm-build.json', JSON.stringify({ snapshot: source.snapshot, bun: Bun.version,
-  binarySha256: createHash('sha256').update(await readFile(indexPath)).digest('hex') }) + '\n');
+  files: npmRuntimeFiles('./dist/npm') }) + '\n');

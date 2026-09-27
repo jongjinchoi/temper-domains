@@ -13,8 +13,7 @@ import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
 import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
-import { browseExtensions, categoryOverview, listCategories, catalogStats, catalogVersion } from "../extensions/catalog.ts";
-import { assertCandidateLimit, resolveExplicitSelection, validateSearchCombinations } from "../extensions/selection.ts";
+import { assertCandidateLimit, validateSearchCombinations } from "../extensions/input.ts";
 import { formatSelectedResults } from "./search-format.ts";
 
 export const MCP_INSTRUCTIONS = `temper is a domain availability search tool.
@@ -415,8 +414,9 @@ server.registerTool("list_supported_tlds", {
   description: "Discover extensions offline. No arguments returns the default/additional/extended search bundles. view=categories returns facet navigation, or classifications with facet=industry|purpose|region. view=extensions lists supported extensions with classification reviews, offering evidence and dated lookup verification, filtered by query/industries/purposes/regions, with cursor paging (default 50, max 100). Unclassified extensions remain selectable. Listing does not query domains. Lookup results may differ from final purchase availability.",
   inputSchema: discoverySchema,
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-}, (args) => {
+}, async (args) => {
   try {
+    const { browseExtensions, categoryOverview, listCategories, catalogStats, catalogVersion } = await import("../extensions/catalog.ts");
     const { view = "presets", facet, ...filters } = args;
     const hasFilters = Object.values(filters).some(value => value !== undefined);
     let catalog: Record<string, unknown>;
@@ -463,7 +463,7 @@ server.registerTool("search_domain", {
     }
 
     if (selected !== undefined && extended !== undefined) throw new Error("tlds and extended cannot be combined");
-    const tlds = selected !== undefined ? resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    const tlds = selected !== undefined ? (await import("../extensions/selection.ts")).resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     if (selected !== undefined) {
       assertCandidateLimit(1, tlds.length);
       validateSearchCombinations([normalized.name], tlds);
@@ -504,7 +504,7 @@ server.registerTool("search_names", {
     }
 
     if (selected !== undefined && extended !== undefined) throw new Error("tlds and extended cannot be combined");
-    const tlds = selected !== undefined ? resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
+    const tlds = selected !== undefined ? (await import("../extensions/selection.ts")).resolveExplicitSelection(selected) : extended ? EXTENDED_TLDS : DEFAULT_TLDS;
     if (selected !== undefined) {
       assertCandidateLimit(normalized.names.length, tlds.length);
       validateSearchCombinations(normalized.names, tlds);

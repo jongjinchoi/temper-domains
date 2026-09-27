@@ -112,6 +112,11 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Extended search checks 60 TLDs.
 - npm package version is sourced from `package.json`; source and bundled CLI version output should match.
 - npm installs expose the `temper` binary and require Node.js >= 22.12.0.
+- Extension data is loaded only by catalog discovery or explicit/category suffix
+  selection. Default/extended search validation and MCP initialization do not
+  initialize the catalog. npm builds split JavaScript chunks; packaging verifies
+  the complete generated JS/source-map file set and hashes against the build
+  record. Native builds remain standalone executables.
 - Binary releases target macOS, Linux, and Windows; the Homebrew tap covers macOS and Linux.
 - CLI/MCP searches automatically budget 5–30s, including bootstrap, using queued
   local queue and shared recovery spacing plus a 5s request window. This estimate does not guarantee
