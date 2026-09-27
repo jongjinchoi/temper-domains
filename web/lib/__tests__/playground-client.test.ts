@@ -4,6 +4,57 @@ import { runLiveSearch } from "../playground-client.ts";
 const originalFetch = globalThis.fetch;
 afterEach(() => { globalThis.fetch = originalFetch; });
 
+async function httpError(response: Response, signal = new AbortController().signal) {
+  globalThis.fetch = (async () => response) as typeof fetch;
+  const events: string[] = [];
+  await runLiveSearch("example.com", {
+    onRow: () => events.push("row"), onDone: () => events.push("done"),
+    onError: message => events.push(message),
+  }, signal);
+  return events;
+}
+
+test.each(["invalid domain label", "invalid tlds"])("preserves the HTTP error explanation: %s", async error => {
+  expect(await httpError(Response.json({ error: ` ${error} ` }, { status: 400 })))
+    .toEqual([`HTTP 400: ${error}`]);
+});
+
+test.each(["<html>Bad gateway</html>", "{", "", "null", "[]", "42", '{"error":42}', '{"error":"   "}', '{}'])(
+  "retains HTTP status for an unusable error body: %s", async body => {
+    expect(await httpError(new Response(body, { status: 502 }))).toEqual(["HTTP 502"]);
+  },
+);
+
+test("retains HTTP status when reading the error body fails", async () => {
+  const body = new ReadableStream({ start(controller) { controller.error(new Error("Read failed")); } });
+  expect(await httpError(new Response(body, { status: 502 }))).toEqual(["HTTP 502"]);
+});
+
+test("retains the fallback for a successful response without a body", async () => {
+  expect(await httpError(new Response(null, { status: 204 }))).toEqual(["HTTP 204"]);
+});
+
+test.each(["resolve", "reject"])("ignores an HTTP error body that settles after cancellation: %s", async mode => {
+  const controller = new AbortController();
+  const response = Response.json({ error: "invalid domain label" }, { status: 400 });
+  let beginRead!: () => void;
+  const reading = new Promise<void>(resolve => { beginRead = resolve; });
+  let finishRead!: () => void;
+  const gate = new Promise<void>(resolve => { finishRead = resolve; });
+  response.json = async () => {
+    beginRead();
+    await gate;
+    if (mode === "reject") throw new DOMException("Cancelled", "AbortError");
+    return { error: "invalid domain label" };
+  };
+  const pending = httpError(response, controller.signal);
+  // The race also lets the old implementation finish, so its callback is asserted below.
+  await Promise.race([reading, pending]);
+  controller.abort();
+  finishRead();
+  expect(await pending).toEqual([]);
+});
+
 async function stream(chunks: string[], signal = new AbortController().signal) {
   globalThis.fetch = (async () => new Response(new ReadableStream({
     start(controller) {

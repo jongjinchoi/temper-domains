@@ -72,7 +72,21 @@ export async function runLiveSearch(
     return;
   }
 
-  if (!res.ok || !res.body) {
+  if (!res.ok) {
+    if (signal.aborted) return;
+    let message = `HTTP ${res.status}`;
+    try {
+      const body: unknown = await res.json();
+      if (body && typeof body === "object" && !Array.isArray(body) && "error" in body &&
+          typeof body.error === "string" && body.error.trim()) {
+        message += `: ${body.error.trim()}`;
+      }
+    } catch { /* Keep the HTTP status when the error body cannot be read as JSON. */ }
+    if (!signal.aborted) callbacks.onError(message);
+    return;
+  }
+
+  if (!res.body) {
     callbacks.onError(`HTTP ${res.status}`);
     return;
   }

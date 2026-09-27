@@ -1,4 +1,4 @@
-// Run against a local built/dev server. The API is intercepted: no registry calls.
+// Run against a local built/dev server. Only invalid input reaches the API; valid queries are intercepted.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const { chromium } = await import(process.env.TEMPER_PLAYWRIGHT_MODULE || 'playwright');
@@ -10,6 +10,7 @@ const result = '{"domain":"acme.com","tld":"com","status":"available","method":"
 let held;
 await page.route('**/api/check/**', async route => {
   const name = new URL(route.request().url()).searchParams.get('name');
+  if (name === 'example.com') return route.continue();
   if (name === 'hold') { held = route; return; }
   if (name === 'partial') return route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: [
     { domain: 'partial.com', tld: 'com', status: 'available', method: 'rdap', responseTime: 10 },
@@ -82,6 +83,20 @@ try {
   }
   const region = page.locator('#play');
   const input = region.locator('input');
+  await input.fill('example.com');
+  const invalidResponse = page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return url.pathname === '/api/check/' && url.searchParams.get('name') === 'example.com';
+  });
+  await input.press('Enter');
+  const response = await invalidResponse;
+  assert.equal(response.status(), 400);
+  assert.deepEqual(await response.json(), { error: 'invalid domain label' });
+  await page.waitForFunction(() => document.querySelector('#play').textContent.includes('HTTP 400: invalid domain label'));
+  await page.waitForFunction(() => document.querySelector('#play input') === document.activeElement);
+  await input.fill('acme'); await input.press('Enter');
+  await page.waitForFunction(() => document.querySelector('#play').textContent.includes('1 available'));
+  assert.doesNotMatch(await region.textContent(), /HTTP 400/);
   await input.fill('hold');
   await input.press('Enter');
   await page.waitForFunction(() => document.querySelector('#play').textContent.includes('resolving'));
@@ -107,5 +122,5 @@ try {
   await page.waitForFunction(() => document.querySelector('#play input') === document.activeElement);
   assert.equal(await input.evaluate(el => el === document.activeElement), true, 'failure must restore focus');
   assert.deepEqual(errors, []);
-  console.log('PASS: license/notices/source/JSON-LD/llms, 390/1440 layout, clipboard and lookup interaction contracts (intercepted API)');
+  console.log('PASS: license/notices/source/JSON-LD/llms, 390/1440 layout, clipboard, actual HTTP 400 guidance/recovery and mocked lookup interactions');
 } finally { await browser.close(); }
