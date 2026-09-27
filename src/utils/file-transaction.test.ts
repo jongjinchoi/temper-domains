@@ -24,6 +24,15 @@ test("Bun and Node preserve data before replacement and clean up after close fai
         expect((await readdir(dir)).filter(name => name !== "build").sort()).toEqual(failure === "unlink" ? ["data", "data.lock"] : ["data"]);
         if (failure === "unlink") await rm(path + ".lock");
       }
+      const path = join(dir, "data");
+      const original = '{"version":2,"servers":{}}';
+      await writeFile(path, original);
+      const child = Bun.spawn([runtime!, worker!, path, "lock-close", "policy"], { stdout: "pipe", stderr: "pipe" });
+      const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+      expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+      expect(JSON.parse(stdout)).toMatchObject({ kind: "ServerCooldown", injected: 1, cleanup: ["Error: injected lock-close"] });
+      expect(await readFile(path, "utf8")).toBe(original);
+      expect((await readdir(dir)).filter(name => name !== "build")).toEqual(["data"]);
     }
   } finally { await rm(dir, { recursive: true, force: true }); }
 }, 15000);

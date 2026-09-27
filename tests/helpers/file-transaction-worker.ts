@@ -40,8 +40,15 @@ if (process.versions.bun) {
 }
 const { withFileTransaction } = await import("../../src/utils/file-transaction.ts");
 try {
+  if (process.argv[4] === "policy") {
+    const { FileLimitStore } = await import("../../src/checker/limit-store.ts");
+    const { ServerCooldown } = await import("../../src/checker/limits.ts");
+    await new FileLimitStore(path).update(() => { throw new ServerCooldown(100000, "server", "rate_limited"); });
+  } else {
   await withFileTransaction(path, { deadline: Date.now() + 1000, busyMessage: "busy" }, async tx => { await tx.replace("new"); });
+  }
   console.log(JSON.stringify({ committed: true, injected }));
 } catch (error) {
-  console.log(JSON.stringify({ message: String(error), committed: (error as { committed?: boolean }).committed, injected }));
+  console.log(JSON.stringify({ message: String(error), committed: (error as { committed?: boolean }).committed, injected,
+    kind: (error as Error).constructor.name, cleanup: (error as Error).cause instanceof AggregateError ? (error as Error & { cause: AggregateError }).cause.errors.map(String) : undefined }));
 }

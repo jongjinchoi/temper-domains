@@ -20,6 +20,10 @@ test('checker fingerprints ignore web dependencies but retain transitive checker
     writeFileSync(join(root, 'bun.lock'), JSON.stringify(lock));
     expect(await scopedCheckerFingerprint('rdap', root)).not.toBe(before);
     cpSync(join(project, 'bun.lock'), join(root, 'bun.lock'));
+    const transaction = join(root, 'src/utils/file-transaction.ts');
+    writeFileSync(transaction, readFileSync(transaction, 'utf8') + '\n// changed transaction\n');
+    expect(await scopedCheckerFingerprint('rdap', root)).not.toBe(before);
+    cpSync(join(project, 'src/utils/file-transaction.ts'), transaction);
     writeFileSync(join(root, 'src/checker/rdap.ts'), 'export const changed = true;');
     expect(await scopedCheckerFingerprint('rdap', root)).not.toBe(before);
     const catalog = JSON.parse(readFileSync(join(project, 'src/extensions/data/catalog.json'), 'utf8'));

@@ -1,8 +1,6 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { open, rename, unlink } from "node:fs/promises";
-import { randomUUID } from "node:crypto";
-import { setTimeout as delay } from "node:timers/promises";
+import { FileTransactionError, withFileTransaction } from "../utils/file-transaction.ts";
 import { ensureConfigDir, readValidatedJson } from "../utils/fs.ts";
 
 const HISTORY_FILE = join(homedir(), ".temper", "history.json");
@@ -34,47 +32,29 @@ export async function loadHistory(): Promise<HistoryEntry[]> {
   )) ?? [];
 }
 
-async function saveHistory(history: HistoryEntry[]): Promise<void> {
-  const temporary = `${HISTORY_FILE}.${randomUUID()}.tmp`;
-  const file = await open(temporary, "wx", 0o600);
-  try {
-    try {
-      await file.writeFile(JSON.stringify(history, null, 2) + "\n", "utf8");
-      await file.sync();
-    } finally {
-      await file.close();
-    }
-    await rename(temporary, HISTORY_FILE);
-  } finally {
-    await unlink(temporary).catch((error: NodeJS.ErrnoException) => {
-      if (error.code !== "ENOENT") throw error;
-    });
-  }
-}
-
 async function updateHistory(update: (history: HistoryEntry[]) => HistoryEntry[]): Promise<HistoryEntry[]> {
   await ensureConfigDir();
   const lockPath = `${HISTORY_FILE}.lock`;
-  const deadline = Date.now() + 5000;
-  let lock;
-  while (!lock) {
-    try {
-      lock = await open(lockPath, "wx", 0o600);
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-      if (Date.now() >= deadline) {
-        throw new Error(`History is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`);
-      }
-      await delay(25);
-    }
-  }
   try {
-    await lock.writeFile(`${process.pid}\n`);
-    const history = update(await loadHistory());
-    await saveHistory(history);
-    return history;
-  } finally {
-    try { await lock.close(); } finally { await unlink(lockPath); }
+    return await withFileTransaction(HISTORY_FILE, {
+      deadline: Date.now() + 5000,
+      busyMessage: `History is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`,
+    }, async transaction => {
+      const history = update(await loadHistory());
+      await transaction.replace(JSON.stringify(history, null, 2) + "\n");
+      return history;
+    });
+  } catch (error) {
+    if (error instanceof FileTransactionError && error.cause instanceof HistoryConflictError) {
+      // Keep the typed conflict/current rows; retain any independent cleanup failure.
+      const conflict = error.cause;
+      if (error.errors.length > 1) {
+        conflict.cause = new AggregateError(error.errors.slice(1), "History cleanup failed");
+        conflict.message += ` Cleanup failed: ${error.errors.slice(1).map(String).join("; ")}`;
+      }
+      throw conflict;
+    }
+    throw error;
   }
 }
 

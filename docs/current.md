@@ -212,6 +212,10 @@ in both workspaces so root typechecking does not download a separate compiler.
   Config partial updates read the latest settings under the lock, preserving
   other fields. Config symlinks retain the link and replace its resolved target;
   the temporary file and lock are placed beside that target.
+- Config, history, watchlist and lookup-limit storage share the file transaction
+  helper. Closing handles and removing owned temporary/lock files are independent
+  cleanup attempts. Errors retain whether replacement committed and all cleanup
+  causes; typed history conflicts and lookup policy rejections retain their identity.
 - A lock waits up to 5s. A crashed writer may leave `config.json.lock`,
   `watchlist.json.lock` or `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
