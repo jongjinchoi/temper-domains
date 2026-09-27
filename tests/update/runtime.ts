@@ -9,6 +9,7 @@ import { performUpdate } from "../../src/update/runner.ts";
 import { checkForUpdate } from "../../src/update/check.ts";
 import { UpdateCheckError, updateCheckFailureMessage } from "../../src/update/errors.ts";
 import { fetchLatestVersion } from "../../src/update/versions.ts";
+import { checkLockCleanup } from "./lock-cleanup.ts";
 
 const directory = await mkdtemp(join(tmpdir(), "temper-updater-runtime-"));
 const home = await realpath(directory);
@@ -106,3 +107,6 @@ else if (args[0] === 'install') {
   process.env.PATH = oldPath;
   await rm(directory, { recursive: true, force: true });
 }
+
+// Run I/O failure contracts in this existing Bun/Node CI entry as well.
+await checkLockCleanup();

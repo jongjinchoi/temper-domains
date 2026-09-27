@@ -9,6 +9,15 @@ const directories: string[] = [];
 async function temporary() { const dir = await mkdtemp(join(tmpdir(), "temper-updater-")); directories.push(dir); return dir; }
 afterEach(async () => { await Promise.all(directories.splice(0).map(dir => rm(dir, { recursive: true, force: true }))); });
 
+for (const mode of ["close", "unlink", "both", "none"]) {
+  test(`lock cleanup ${mode} preserves work results, original errors and future access`, async () => {
+    const child = Bun.spawn([process.execPath, "tests/helpers/update-lock-worker.ts", mode], { stdout: "pipe", stderr: "pipe" });
+    const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+    expect({ code, err }).toEqual({ code: 0, err: "" });
+    expect(out).toContain("contracts passed");
+  });
+}
+
 test("release lookup uses each installation channel and rejects invalid responses", async () => {
   const urls: string[] = [];
   const request = (async (url: string | URL | Request) => { urls.push(String(url)); return new Response(JSON.stringify({ name: "temper-domains", version: "0.5.0" })); }) as typeof fetch;
@@ -44,5 +53,5 @@ test("only one updater can hold an installation lock and failures release it", a
     await expect(withInstallLock(dir, "install-a", async () => {})).rejects.toThrow("already");
   });
   await expect(withInstallLock(dir, "install-a", async () => { throw new Error("failed install"); })).rejects.toThrow("failed install");
-  expect(await withInstallLock(dir, "install-a", async () => 42)).toBe(42);
+  expect(await withInstallLock(dir, "install-a", async () => 42)).toEqual({ value: 42 });
 });

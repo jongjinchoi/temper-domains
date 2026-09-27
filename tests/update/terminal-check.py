@@ -15,7 +15,7 @@ import re
 
 runtime, entry = sys.argv[1:3]
 columns = int(os.environ.get("TEMPER_TEST_COLUMNS", "80"))
-scenarios = sys.argv[3:] or ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure", "resize", "preflight-ctrlc", "preflight-escape")
+scenarios = sys.argv[3:] or ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure", "resize", "preflight-ctrlc", "preflight-escape", "cleanup-close", "cleanup-unlink", "cleanup-failed")
 for scenario in scenarios:
     with tempfile.TemporaryDirectory(prefix="temper-update-pty-") as home:
         result_path = os.path.join(home, "result.json")
@@ -86,9 +86,20 @@ for scenario in scenarios:
             assert os.path.exists(result_path), data.decode(errors="replace")
             with open(result_path) as file:
                 result = json.load(file)
-            expected = "cancelled" if scenario.startswith("preflight-") else {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed", "resize": "updated"}[scenario]
+            expected = "cancelled" if scenario.startswith("preflight-") else {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed", "resize": "updated", "cleanup-close": "updated", "cleanup-unlink": "updated", "cleanup-failed": "failed"}[scenario]
             assert result["result"]["kind"] == expected, result
             assert result["raw"] is False, result
+            if scenario.startswith("cleanup-"):
+                assert result["executions"] == 1, result
+                assert len(result["locks"]) == (0 if scenario == "cleanup-close" else 1), result
+                if scenario == "cleanup-failed":
+                    message = result["result"]["message"]
+                    assert "lock cleanup" in message and "injected close failure" in message and "injected unlink failure" in message, result
+                    assert message.index("exit 7") < message.index("lock cleanup"), result
+                else:
+                    cleanup = result["result"]["cleanup"]
+                    assert [item["operation"] for item in cleanup["failures"]] == [scenario.removeprefix("cleanup-")], result
+                    assert os.path.dirname(cleanup["path"]) == os.path.realpath(home), result
             if scenario.startswith("preflight-"):
                 assert result["executions"] == 0 and result["locks"] == [], result
             elif scenario not in ("later", "cancel"):

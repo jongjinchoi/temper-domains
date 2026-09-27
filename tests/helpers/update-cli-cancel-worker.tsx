@@ -5,11 +5,19 @@ import { mkdtemp, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PassThrough, Writable } from "node:stream";
+import { injectUpdateLockFaults } from "./update-lock-faults.ts";
 
 const home = await realpath(await mkdtemp(join(tmpdir(), "temper-update-cli-cancel-")));
+const scenario = process.argv[2] ?? "cancel";
+const { faults, restore } = await injectUpdateLockFaults(home);
+faults.close = scenario.endsWith("close") || scenario.endsWith("both");
+faults.unlink = scenario.endsWith("unlink") || scenario.endsWith("both");
 const entry = join(home, "index.js");
 await writeFile(entry, "");
 let frame = "", raw = false, executions = 0, queries = 0;
+const reportedRaw: boolean[] = [];
+const reportError = console.error;
+console.error = (...args) => { reportedRaw.push(raw); reportError(...args); };
 let release: (() => void) | undefined;
 const stdout = new Writable({ write(chunk, _encoding, callback) { frame += String(chunk); callback(); } });
 Object.assign(stdout, { isTTY: true, columns: 110, rows: 30 });
@@ -24,9 +32,12 @@ mock.module("../../src/update/check.ts", () => ({ checkForUpdate: async () => ({
     node: process.execPath, npm: { file: "never-execute-npm", args: [] }, guidance: "" } }) }));
 mock.module("../../src/update/process.ts", () => ({ ...processes, runProcess: async () => {
   if (++queries === 1) await new Promise<void>(resolve => { release = resolve; });
-  return { stdout: queries === 1 ? "0.4.1" : "0.5.0", stderr: "" };
+  return { stdout: scenario.startsWith("current") || queries > 1 ? "0.5.0" : "0.4.1", stderr: "" };
 } }));
-mock.module("../../src/update/installer.ts", () => ({ runInstaller: async () => { executions++; } }));
+mock.module("../../src/update/installer.ts", () => ({ runInstaller: async () => {
+  executions++;
+  if (scenario.startsWith("failed")) throw new Error("installer checksum mismatch");
+} }));
 Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
 Object.defineProperty(process.stdout, "isTTY", { value: true, configurable: true });
 for (const key of ["CI", "CONTINUOUS_INTEGRATION", "BUILD_NUMBER", "TEMPER_NO_UPDATE_CHECK"]) delete process.env[key];
@@ -42,8 +53,10 @@ try {
   await until(() => frame.includes("Update now"));
   stdin.write("\x1b[A"); await new Promise(resolve => setTimeout(resolve, 30)); stdin.write("\r");
   await until(() => Boolean(release));
-  stdin.write("\x03"); await new Promise(resolve => setTimeout(resolve, 30)); release!();
+  if (scenario.startsWith("cancel")) { stdin.write("\x03"); await new Promise(resolve => setTimeout(resolve, 30)); }
+  release!();
   const stopped = await pending;
   const locks = (await readdir(home)).filter(name => name.endsWith(".lock"));
-  console.log(JSON.stringify({ stopped, executions, raw, locks }));
-} finally { await rm(home, { recursive: true, force: true }); }
+  console.log((scenario === "cancel" ? "" : "RESULT:") + JSON.stringify({ stopped, executions, raw, locks,
+    ...(scenario === "cancel" ? {} : { frame, home, reportedRaw }) }));
+} finally { await restore(); await rm(home, { recursive: true, force: true }); }

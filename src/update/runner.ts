@@ -2,7 +2,7 @@ import { realpath } from "node:fs/promises";
 import { join } from "node:path";
 import { brewReadEnvironment, isWithin, type Installation, type Query } from "./installation.ts";
 import { compareStableVersions, parseStableVersion } from "./policy.ts";
-import { runProcess, withInstallLock, type Invocation } from "./process.ts";
+import { runProcess, withInstallLock, type Invocation, type InstallLockCleanup } from "./process.ts";
 import { FORMULA, parseBrewInfo } from "./versions.ts";
 import type { InstallerContext } from "./presentation.ts";
 
@@ -22,7 +22,7 @@ export interface UpdateExecution {
   onStage?: (stage: UpdateStage) => Promise<void>;
 }
 export type UpdateStage = "refreshing" | "installing" | "verifying";
-export type UpdateOutcome = { status: "updated" | "current"; version: string } | { status: "cancelled" };
+export type UpdateOutcome = ({ status: "updated" | "current"; version: string } | { status: "cancelled" }) & { cleanup?: InstallLockCleanup };
 
 export async function performUpdate(installation: Installation, target: string, options: UpdateExecution): Promise<UpdateOutcome> {
   if (installation.kind === "manual") throw new Error(installation.guidance);
@@ -87,7 +87,7 @@ export async function performUpdate(installation: Installation, target: string, 
     if (compareStableVersions(after, expected) !== 0) throw new Error(`Update verification failed: expected ${expected}, found ${after}. Check this installation before retrying.`);
     return { status: "updated", version: after };
   };
-  return withInstallLock(options.lockDirectory, installation.identity, async () => {
+  const result = await withInstallLock<UpdateOutcome>(options.lockDirectory, installation.identity, async () => {
     try { return await update(); }
     catch (error) {
       // Keep post-install failures and lock cleanup failures visible. Only the
@@ -96,4 +96,5 @@ export async function performUpdate(installation: Installation, target: string, 
       throw error;
     }
   });
+  return result.cleanup ? { ...result.value, cleanup: result.cleanup } : result.value;
 }

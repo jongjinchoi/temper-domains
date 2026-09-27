@@ -2,7 +2,7 @@ import { loadConfig } from "../config/config.ts";
 import { setTheme } from "../tui/theme.ts";
 import { checkForUpdate, type UpdateCheck } from "./check.ts";
 import { automaticUpdatesEnabled, compareStableVersions } from "./policy.ts";
-import { displayInvocation } from "./process.ts";
+import { displayInvocation, formatInstallLockCleanup } from "./process.ts";
 import { performUpdate, updateCommands } from "./runner.ts";
 import type { PromptOutcome } from "../tui/UpdatePrompt.tsx";
 import { updateCheckFailureMessage } from "./errors.ts";
@@ -32,6 +32,10 @@ function reportOutcome(outcome: PromptOutcome, command: string): void {
     process.exitCode = 1;
   } else if (outcome.kind === "cancelled") {
     console.error("Update cancelled."); process.exitCode = 130;
+  }
+  if (outcome.cleanup) {
+    console.error(formatInstallLockCleanup(outcome.cleanup));
+    process.exitCode = 1;
   }
 }
 

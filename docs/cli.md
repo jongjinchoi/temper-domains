@@ -64,6 +64,12 @@ There is no `--yes` option. After installation verification, Temper exits: **run
 Failure or cancellation does not imply rollback. Errors, warnings and installer prompts remain visible.
 Esc/Ctrl+C during the pre-install checks cancels before installation and waits for cleanup.
 During installation, Ctrl+C is handled by the installer; successful installation is still verified.
+Verified completion exits with code 0; pre-install cancellation exits with code 130.
+If lock cleanup fails, Temper retains the verified version or cancellation result,
+reports the cleanup error separately and exits with code 1. This does not by itself
+mean installation failed. When lock removal fails, the message identifies the path;
+if that file remains, check its owner and confirm no updater is running before
+removing only that lock. An installation error and a cleanup error are both reported.
 Set `TEMPER_NO_UPDATE_CHECK=1` to disable automatic checks; manual checks still work.
 Queries send no domain names/history, but the version service sees connection metadata such as IP.
 See [update behavior and output details](current.md#current-behavior-notes).

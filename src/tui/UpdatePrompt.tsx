@@ -1,13 +1,13 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useRef, useState } from "react";
-import type { Invocation } from "../update/process.ts";
+import type { Invocation, InstallLockCleanup } from "../update/process.ts";
 import { runInstaller } from "../update/installer.ts";
 import { progressLabel, progressRows, type InstallerContext } from "../update/presentation.ts";
 import { theme } from "./theme.ts";
 import type { UpdateOutcome, UpdateStage } from "../update/runner.ts";
 import Spinner from "./Spinner.tsx";
 
-export type PromptOutcome = { kind: "later" | "cancelled" } | { kind: "updated" | "current"; version: string } | { kind: "failed"; message: string };
+export type PromptOutcome = ({ kind: "later" | "cancelled" } | { kind: "updated" | "current"; version: string } | { kind: "failed"; message: string }) & { cleanup?: InstallLockCleanup };
 interface Props {
   current: string;
   latest: string;
@@ -51,7 +51,8 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
         },
         controller.signal,
       );
-      finish(result.status === "cancelled" ? { kind: "cancelled" } : { kind: result.status, version: result.version });
+      const outcome: PromptOutcome = result.status === "cancelled" ? { kind: "cancelled" } : { kind: result.status, version: result.version };
+      finish(result.cleanup ? { ...outcome, cleanup: result.cleanup } : outcome);
     } catch (error) {
       finish({ kind: "failed", message: error instanceof Error ? error.message : String(error) });
     }

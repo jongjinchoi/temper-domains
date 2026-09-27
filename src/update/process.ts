@@ -50,13 +50,42 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
   });
 }
 
-export async function withInstallLock<T>(directory: string, identity: string, work: () => Promise<T>): Promise<T> {
+export interface InstallLockCleanup {
+  path: string;
+  failures: { operation: "close" | "unlink"; error: unknown }[];
+}
+
+export function formatInstallLockCleanup(cleanup: InstallLockCleanup): string {
+  const details = cleanup.failures.map(({ operation, error }) => {
+    const code = error && typeof error === "object" && "code" in error && typeof error.code === "string" ? `${error.code}: ` : "";
+    return `${operation}: ${code}${error instanceof Error ? error.message : String(error)}`;
+  }).join("; ");
+  const recovery = cleanup.failures.some(failure => failure.operation === "unlink")
+    ? `Could not confirm removal of ${cleanup.path}. If this file remains, check its owner. Remove this file only after confirming no updater is running.`
+    : `The lock file was removed: ${cleanup.path}.`;
+  return `Update lock cleanup failed (${details}). ${recovery}`;
+}
+
+export async function withInstallLock<T>(directory: string, identity: string, work: () => Promise<T>): Promise<{ value: T; cleanup?: InstallLockCleanup }> {
   await mkdir(directory, { recursive: true });
   const path = join(directory, `update-${createHash("sha256").update(identity).digest("hex")}.lock`);
   const lock = await open(path, "wx", 0o600).catch((error: NodeJS.ErrnoException) => {
     if (error.code === "EEXIST") throw new Error(`An update is already running or its lock remains: ${path}. Remove this file only after confirming no updater is running.`);
     throw error;
   });
-  try { await lock.writeFile(`${process.pid}\n`); return await work(); }
-  finally { await lock.close(); await unlink(path); }
+  let result: { ok: true; value: T } | { ok: false; error: unknown };
+  try { await lock.writeFile(`${process.pid}\n`); result = { ok: true, value: await work() }; }
+  catch (error) { result = { ok: false, error }; }
+  const cleanup: InstallLockCleanup = { path, failures: [] };
+  // Each cleanup step must run even if the previous one rejects. Cleanup must
+  // not overwrite a verified result, cancellation, or the original failure.
+  try { await lock.close(); } catch (error) { cleanup.failures.push({ operation: "close", error }); }
+  try { await unlink(path); } catch (error) { cleanup.failures.push({ operation: "unlink", error }); }
+  if (!result.ok) {
+    if (cleanup.failures.length === 0) throw result.error;
+    const message = result.error instanceof Error ? result.error.message : String(result.error);
+    throw new AggregateError([result.error, ...cleanup.failures.map(failure => failure.error)],
+      `${message}\n${formatInstallLockCleanup(cleanup)}`, { cause: result.error });
+  }
+  return cleanup.failures.length ? { value: result.value, cleanup } : { value: result.value };
 }
