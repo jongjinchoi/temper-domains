@@ -8,11 +8,26 @@ work=$(mktemp -d)
 temporary_formula=$(mktemp "${FORMULA}.XXXXXX")
 trap 'rm -rf "$work"; rm -f "$temporary_formula"' EXIT
 
+# Exactly what the formula installs; keep in sync with nativeArchiveFiles in
+# scripts/source-package.ts (scripts/homebrew-formula.test.ts checks both).
+EXPECTED_FILES=$'LICENSE\nSOURCE.md\nTHIRD_PARTY_NOTICES.md\ntemper'
+
 archive_sha() {
   local target=$1
   local archive="$work/$target.tar.gz"
+  local listing
   curl --fail --show-error --silent --location --retry 3 --output "$archive" "$BASE_URL/temper-$target.tar.gz" || return $?
-  tar -tzf "$archive" > /dev/null || return $?
+  listing=$(tar -tzf "$archive" | sed 's#^\./##' | LC_ALL=C sort) || return $?
+  if [[ "$listing" != "$EXPECTED_FILES" ]]; then
+    echo "Unexpected files in temper-$target.tar.gz:" >&2
+    echo "$listing" >&2
+    return 1
+  fi
+  # The mode column starts with "-" for a regular file; the owner must be able to execute it.
+  tar -tvzf "$archive" temper | awk '$1 ~ /^-..x/ { ok = 1 } END { exit !ok }' || {
+    echo "temper is not an executable regular file in temper-$target.tar.gz" >&2
+    return 1
+  }
   shasum -a 256 "$archive" | awk '{print $1}'
 }
 SHA_DARWIN_ARM64=$(archive_sha bun-darwin-arm64)

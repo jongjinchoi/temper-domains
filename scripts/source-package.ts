@@ -69,6 +69,11 @@ export function nativeBinaryName(target: string) {
   return `temper-${target}${target === 'bun-windows-x64' ? '.exe' : ''}`;
 }
 
+// The exact release archive contents; scripts/update-homebrew.sh checks the same set.
+export function nativeArchiveFiles(target: string): string[] {
+  return [target === 'bun-windows-x64' ? 'temper.exe' : 'temper', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'SOURCE.md'];
+}
+
 export function verifyNativeIdentity(record: { snapshot: string; binarySha256: string; bun: string }, snapshot: string, binary: Uint8Array) {
   if (record.snapshot !== snapshot) throw new Error('Native binary source differs from the packaging source; rebuild it');
   if (record.binarySha256 !== createHash('sha256').update(binary).digest('hex')) throw new Error('Native binary differs from its build record');
@@ -78,7 +83,8 @@ if (import.meta.main) {
   const target = process.argv[2];
   if (!/^bun-(darwin-(arm64|x64)|linux-(arm64|x64)|windows-x64)$/.test(target ?? '')) throw new Error('Supply a supported Bun target');
   const root = resolve(import.meta.dir, '..'), stage = mkdtempSync(join(tmpdir(), 'temper-binary-'));
-  const executable = target!.includes('windows') ? 'temper.exe' : 'temper';
+  const files = nativeArchiveFiles(target!);
+  const executable = files[0]!;
   try {
     const binaryPath = join(root, 'dist/bin', nativeBinaryName(target!));
     const record = JSON.parse(readFileSync(`${binaryPath}.source.json`, 'utf8'));
@@ -87,6 +93,6 @@ if (import.meta.main) {
     copyFileSync(binaryPath, join(stage, executable));
     for (const path of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) copyFileSync(join(root, path), join(stage, path));
     writeFileSync(join(stage, 'SOURCE.md'), description);
-    execFileSync('tar', ['-czf', join(root, 'dist', `temper-${target}.tar.gz`), '-C', stage, executable, 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'SOURCE.md']);
+    execFileSync('tar', ['-czf', join(root, 'dist', `temper-${target}.tar.gz`), '-C', stage, ...files]);
   } finally { rmSync(stage, { recursive: true, force: true }); }
 }
