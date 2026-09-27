@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "lockSha256": "febbacc37d37c8b9f11a4ff875b7dfb62776977e2028d5ec528bb54210a8bfa6",
-  "lockEntries": 218,
+  "lockSha256": "c7746e85821335f89c8f8361872326a7d2d086c656f448447f3ad6a4fbec9626",
+  "lockEntries": 220,
   "packages": [
     {
       "id": "@alcalzone/ansi-tokenize@0.3.1",
@@ -2326,6 +2326,54 @@
         {
           "path": "LICENSE",
           "sha256": "feb87a2e0c305de3464cc44077da5393c52d8ca6362d37427157d04ec6f4510d"
+        }
+      ]
+    },
+    {
+      "id": "playwright-core@1.63.0",
+      "license": "Apache-2.0",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/microsoft/playwright.git"
+      },
+      "source": "https://registry.npmjs.org/playwright-core/1.63.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "45873d00a0dd243596deb4aa23b2493b3d1f0671921bf2538ea431d7380220eb"
+        },
+        {
+          "path": "NOTICE",
+          "sha256": "6d602191187b35b9b01d2cffa01c8469c2c8d9de8a96f1bf868e0f264f51c81d"
+        },
+        {
+          "path": "ThirdPartyNotices.txt",
+          "sha256": "a549d329bad8806fe279f0ecae0fc0270dec7e7c2dc8ec10f90e394f7c32b144"
+        }
+      ]
+    },
+    {
+      "id": "playwright@1.63.0",
+      "license": "Apache-2.0",
+      "scopes": [],
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/microsoft/playwright.git"
+      },
+      "source": "https://registry.npmjs.org/playwright/1.63.0",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "45873d00a0dd243596deb4aa23b2493b3d1f0671921bf2538ea431d7380220eb"
+        },
+        {
+          "path": "NOTICE",
+          "sha256": "6d602191187b35b9b01d2cffa01c8469c2c8d9de8a96f1bf868e0f264f51c81d"
+        },
+        {
+          "path": "ThirdPartyNotices.txt",
+          "sha256": "b17ac0bd6f4b8207e440639cc8e0ba1bf1d9eaf9b12236764ab93b346c7abd8e"
         }
       ]
     },
