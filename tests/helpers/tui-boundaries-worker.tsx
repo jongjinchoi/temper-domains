@@ -6,6 +6,7 @@ import { PassThrough, Writable } from "node:stream";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 const mode = process.argv[2]!;
+const race = mode.startsWith('watch-delete-result-race-');
 process.env.TZ = "Asia/Seoul";
 const home = process.env.TEMPER_TEST_HOME!;
 Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
@@ -16,10 +17,21 @@ const row = (domain: string) => ({ domain, tld: domain.split('.').at(-1)!, statu
 });
 const suggested: string[][] = [];
 const lookups: string[][] = [];
+// Race mode releases each lookup result explicitly, in the order the test chooses.
+const released: string[] = [];
+let wakeLookup: (() => void) | undefined;
+const releaseLookup = (domain: string) => { released.push(domain); wakeLookup?.(); };
 mock.module("../../src/checker/checker.ts", () => ({
   checkFullDomains: async function* (domains: string[], options: any = {}) {
     lookups.push(domains);
     if (mode === "escape") { await new Promise<void>(resolve => options.signal.addEventListener("abort", () => resolve(), { once: true })); return; }
+    if (race) {
+      for (let emitted = 0; emitted < domains.length;) {
+        if (released.length) { emitted++; yield row(released.shift()!); }
+        else await new Promise<void>(resolve => { wakeLookup = resolve; });
+      }
+      return;
+    }
     for (const domain of domains) yield row(domain);
   },
   checkSuggestionMatrix: async (names: string[], tlds: string[], options: any = {}) => {
@@ -29,9 +41,10 @@ mock.module("../../src/checker/checker.ts", () => ({
 }));
 mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: async (url: string) => ({ kind: 'accepted', url }) }));
 let entries = (mode === "watch-height" ? Array.from({ length: 30 }, (_, i) => `item${i}.com`)
-  : mode === 'watch-compact-keys' ? ['a.com', 'b.com', 'c.com'] : ['only.com'])
+  : mode === 'watch-compact-keys' ? ['a.com', 'b.com', 'c.com'] : race ? ['a.com', 'b.com'] : ['only.com'])
   .map(domain => ({ domain, addedAt: '2026-09-27T00:00:00Z' }));
 let rejectDelete: ((error: Error) => void) | undefined;
+let finishDelete: (() => void) | undefined;
 let resolveAdd: (() => void) | undefined;
 let releaseLoad: (() => void) | undefined;
 let loads = 0;
@@ -48,6 +61,7 @@ mock.module("../../src/config/watchlist.ts", () => ({
     deleted.push(domain);
     if (mode === "watch-race") await new Promise((_resolve, reject) => { rejectDelete = reject; });
     else {
+      if (race) await new Promise<void>(resolve => { finishDelete = resolve; });
       if (mode === 'watch-reload-failure') throw new Error('Controlled delete failure');
       entries = entries.filter(e => e.domain !== domain);
       if (mode === 'watch-committed-failure') throw new Error('Controlled cleanup failure');
@@ -84,7 +98,7 @@ async function until(label: string, predicate: () => boolean) {
 async function key(value: string) { input.write(value); await view.waitUntilRenderFlush(); await Bun.sleep(20); }
 const frames: Record<string, string> = {};
 try {
-  await until('initial', () => mode.startsWith('history') ? plain().includes('sample0')
+  await until('initial', () => mode.startsWith('history') ? plain().includes('sample0') : race ? plain().includes('b.com')
     : mode.startsWith('watch-') ? plain().includes(mode.endsWith('-long') ? 'error' : 'available')
     : mode.startsWith('suggest') ? plain().includes('names checked') : mode === 'escape' ? plain().includes('Searching') : plain().includes('Search complete'));
   frames.initial = plain();
@@ -215,6 +229,19 @@ try {
     assert.deepEqual(await historyQueries(), ['sample0', 'sample1', 'sample2']);
     assert.equal(lookups.length, lookupCount);
     assert.match(plain(), /Enlarge terminal to show the list/);
+  }
+  if (race) {
+    const gap = mode.slice('watch-delete-result-race-'.length);
+    await key('d'); await until('delete started', () => !!finishDelete);
+    // b.com's result is queued before the a.com deletion completes.
+    releaseLookup('b.com');
+    if (gap === 'macro') await new Promise(resolve => setImmediate(resolve));
+    else for (let i = 0; i < Number(gap); i++) await Promise.resolve();
+    finishDelete!();
+    await until('delete applied', () => !plain().includes('a.com'));
+    await Bun.sleep(30); await view.waitUntilRenderFlush();
+    frames.race = plain();
+    assert.match(plain(), /b\.com\s+✓ available/);
   }
   console.log(JSON.stringify({ frames }));
 } finally { view.unmount(); view.cleanup(); }

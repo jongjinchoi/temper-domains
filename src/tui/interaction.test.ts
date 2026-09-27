@@ -32,6 +32,10 @@ test.each(['watch-compact-keys', 'history-compact-keys', 'suggest-compact-keys',
   await scenario(mode, 'tui-boundaries-worker.tsx');
 }, 15000);
 
+test.each(['1', '3', '6', '12', 'macro'])("watchlist deletion keeps a result queued %s ticks earlier", async gap => {
+  await scenario(`watch-delete-result-race-${gap}`, 'tui-boundaries-worker.tsx');
+}, 15000);
+
 test.each(['watch-long', 'suggest-long'])("wrapped error viewport: %s", async mode => {
   await scenario(mode, 'tui-boundaries-worker.tsx');
 });

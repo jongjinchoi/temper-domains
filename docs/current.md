@@ -201,6 +201,9 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Watchlist deletion is serialized with pending refresh requests and reconciles
   storage after failure. Reads started before a deletion cannot replace current
   rows. Action errors stay alongside rows; no old whole-list snapshot is restored.
+  Rows, selection and errors live in one pure reducer (`src/tui/watchlist-state.ts`);
+  lookup results and deletion completions apply to the latest queued state, so a
+  result arriving just before a deletion completes is kept.
   Search notifications share an action ID and timer lifecycle so stale completions
   and timers cannot overwrite newer feedback.
 - Config, watchlist and history updates serialize the full read/modify/write operation with an

@@ -1,18 +1,12 @@
 import { Box, Text, useApp, useInput } from "ink";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { checkFullDomains } from "../checker/checker.ts";
-import type { DomainResult, DomainStatus } from "../checker/types.ts";
-import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist.ts";
+import { loadWatchlist, removeWatch } from "../config/watchlist.ts";
 import FrameBox from "./FrameBox.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
-import { normalizePosition } from "./list-position.ts";
 import ListViewport from "./ListViewport.tsx";
 import { useListViewport } from "./hooks/useListViewport.ts";
-
-interface WatchItem extends WatchEntry {
-  status: DomainStatus | "checking";
-  result?: DomainResult;
-}
+import { initialWatchlistState, watchlistReducer } from "./watchlist-state.ts";
 
 interface Props {
   onBack?: () => void;
@@ -21,33 +15,23 @@ interface Props {
 
 export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const { exit } = useApp();
-  const [items, setItems] = useState<WatchItem[]>([]);
-  const [cursor, setCursor] = useState(0);
+  // Rows, selection and errors change together; async completions dispatch
+  // against the latest queued state instead of a render-time snapshot.
+  const [{ items, cursor, loadError, actionError }, dispatch] = useReducer(watchlistReducer, initialWatchlistState);
   const [loaded, setLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
   const [pendingDomain, setPendingDomain] = useState<string | null>(null);
   const viewport = useListViewport();
+  // Async flow control only; these do not mirror rendered state.
   const deleting = useRef(false);
   const refreshQueued = useRef(false);
-  const currentItems = useRef(items);
-  currentItems.current = items;
-  const selected = useRef({ domain: items[cursor]?.domain, cursor });
-  selected.current = { domain: items[cursor]?.domain, cursor };
   const cancelledRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const runIdRef = useRef(0);
   const mutationId = useRef(0);
 
-  const replaceItems = (next: WatchItem[]) => {
-    const index = next.findIndex(item => item.domain === selected.current.domain);
-    setCursor(normalizePosition({ cursor: index >= 0 ? index : selected.current.cursor, offset: 0 }, next.length, 1).cursor);
-    setItems(next);
-  };
-
   const checkAll = async (preserveActionError = false) => {
     if (deleting.current) { refreshQueued.current = true; return; }
-    if (!preserveActionError) setActionError(null);
+    dispatch({ type: "loadStarted", preserveActionError });
     abortRef.current?.abort();
     const runId = ++runIdRef.current;
     const beforeMutation = mutationId.current;
@@ -55,12 +39,10 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     abortRef.current = abortController;
     let entriesLoaded = false;
     try {
-      setLoadError(null);
       const watchlist = await loadWatchlist();
       if (cancelledRef.current || runId !== runIdRef.current) return;
       if (beforeMutation !== mutationId.current) return;
-      const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
-      replaceItems(initial);
+      dispatch({ type: "loaded", entries: watchlist });
       setLoaded(true);
       entriesLoaded = true;
       for await (const result of checkFullDomains(
@@ -68,38 +50,14 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
         { concurrency: 10, timeoutMs: 8000, signal: abortController.signal },
       )) {
         if (cancelledRef.current || runId !== runIdRef.current) return;
-        setItems((prev) => {
-          const idx = prev.findIndex((item) => item.domain === result.domain);
-          if (idx < 0) return prev;
-          const next = [...prev];
-          next[idx] = { ...next[idx]!, status: result.status, result };
-          return next;
-        });
+        dispatch({ type: "result", result });
       }
     } catch (err) {
       if (cancelledRef.current || runId !== runIdRef.current) return;
       if (!entriesLoaded && beforeMutation !== mutationId.current) return;
       const error = err instanceof Error ? err.message : String(err);
-      if (!entriesLoaded) {
-        if (currentItems.current.length) setActionError(error);
-        else setLoadError(error);
-      }
+      dispatch({ type: "loadFailed", error, entriesLoaded });
       setLoaded(true);
-      setItems((prev) => prev.map((item) => item.status === "checking"
-        ? {
-            ...item,
-            status: "error",
-            result: {
-              domain: item.domain,
-              tld: item.domain.split(".").pop() ?? "",
-              status: "error",
-              method: "rdap",
-              responseTime: 0,
-              error,
-            },
-          }
-        : item,
-      ));
     }
   };
 
@@ -108,22 +66,21 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     deleting.current = true;
     mutationId.current++;
     setPendingDomain(domain);
-    setActionError(null);
+    dispatch({ type: "deleteStarted" });
     try {
       await removeWatch(domain);
       if (cancelledRef.current) return;
-      replaceItems(currentItems.current.filter(item => item.domain !== domain));
+      dispatch({ type: "removed", domain });
     } catch (error) {
       if (cancelledRef.current) return;
       const message = error instanceof Error ? error.message : String(error);
-      setActionError(message);
+      dispatch({ type: "deleteFailed", error: message });
       try {
         const stored = await loadWatchlist();
         if (cancelledRef.current) return;
-        const previous = new Map(currentItems.current.map(item => [item.domain, item]));
-        replaceItems(stored.map(entry => previous.get(entry.domain) ?? { ...entry, status: "error" }));
+        dispatch({ type: "reconciled", entries: stored });
       } catch {
-        if (!cancelledRef.current) setActionError(`${message}. Could not reload the watchlist; press r to retry.`);
+        if (!cancelledRef.current) dispatch({ type: "reloadFailed", error: message });
       }
     } finally {
       deleting.current = false;
@@ -156,9 +113,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       // Row actions require the selected row to be on screen.
       if (!viewport.visible) return;
       if (key.downArrow || input === "j") {
-        setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, items.length, 1).cursor);
+        dispatch({ type: "move", delta: 1 });
       } else if (key.upArrow || input === "k") {
-        setCursor((prev) => Math.max(prev - 1, 0));
+        dispatch({ type: "move", delta: -1 });
       } else if (input === "d" && !loadError) {
         const item = items[cursor];
         if (item) void deleteItem(item.domain);
