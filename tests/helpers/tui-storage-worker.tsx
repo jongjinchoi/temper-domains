@@ -60,6 +60,7 @@ try {
   } else if (mode !== "search-history") {
     await until(() => frame.includes(mode.startsWith("history") ? "selected" : "acme.com"));
     if (!mode.startsWith("history")) await until(() => frame.includes("available"));
+    if (mode === "search-add") await until(() => frame.includes("a add"));
     await original.writeFile(target, mode === "history-conflict" ? JSON.stringify([{ ...entry, query: "new" }, entry]) : "{");
     input.write(mode === "search-add" ? "a" : "d");
   }
