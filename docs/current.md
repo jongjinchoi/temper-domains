@@ -191,6 +191,15 @@ in both workspaces so root typechecking does not download a separate compiler.
   deduplicated builder across CLI/TUI/MCP; invalid combined labels stop preflight.
 - WHOIS uses a per-connection UTF-8 StringDecoder and an 8 MiB received-byte cap.
   Oversized responses fail as invalid_response without parsing partial content.
+- History renders both date and time in the local timezone; stored timestamps stay UTC.
+  History, watchlist and suggestions use a terminal-bounded frame and measured
+  list viewport. Search shares list position normalization. Oversized rows prompt
+  terminal enlargement instead of silently hiding the size limitation.
+- Watchlist deletion is serialized with pending refresh requests and reconciles
+  storage after failure. Reads started before a deletion cannot replace current
+  rows. Action errors stay alongside rows; no old whole-list snapshot is restored.
+  Search notifications share an action ID and timer lifecycle so stale completions
+  and timers cannot overwrite newer feedback.
 - Config, watchlist and history updates serialize the full read/modify/write operation with an
   exclusive local lock and replace the data file only after a temporary file
   is written, synced and closed. Watchlist domain keys are case-insensitive.

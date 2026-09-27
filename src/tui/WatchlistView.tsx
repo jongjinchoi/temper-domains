@@ -5,6 +5,8 @@ import type { DomainResult, DomainStatus } from "../checker/types.ts";
 import { type WatchEntry, loadWatchlist, removeWatch } from "../config/watchlist.ts";
 import FrameBox from "./FrameBox.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
+import { normalizePosition } from "./list-position.ts";
+import ListViewport from "./ListViewport.tsx";
 
 interface WatchItem extends WatchEntry {
   status: DomainStatus | "checking";
@@ -22,13 +24,31 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [pendingDomain, setPendingDomain] = useState<string | null>(null);
+  const deleting = useRef(false);
+  const refreshQueued = useRef(false);
+  const currentItems = useRef(items);
+  currentItems.current = items;
+  const selected = useRef({ domain: items[cursor]?.domain, cursor });
+  selected.current = { domain: items[cursor]?.domain, cursor };
   const cancelledRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const runIdRef = useRef(0);
+  const mutationId = useRef(0);
 
-  const checkAll = async () => {
+  const replaceItems = (next: WatchItem[]) => {
+    const index = next.findIndex(item => item.domain === selected.current.domain);
+    setCursor(normalizePosition({ cursor: index >= 0 ? index : selected.current.cursor, offset: 0 }, next.length, 1).cursor);
+    setItems(next);
+  };
+
+  const checkAll = async (preserveActionError = false) => {
+    if (deleting.current) { refreshQueued.current = true; return; }
+    if (!preserveActionError) setActionError(null);
     abortRef.current?.abort();
     const runId = ++runIdRef.current;
+    const beforeMutation = mutationId.current;
     const abortController = new AbortController();
     abortRef.current = abortController;
     let entriesLoaded = false;
@@ -36,8 +56,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       setLoadError(null);
       const watchlist = await loadWatchlist();
       if (cancelledRef.current || runId !== runIdRef.current) return;
+      if (beforeMutation !== mutationId.current) return;
       const initial: WatchItem[] = watchlist.map((e) => ({ ...e, status: "checking" }));
-      setItems(initial);
+      replaceItems(initial);
       setLoaded(true);
       entriesLoaded = true;
       for await (const result of checkFullDomains(
@@ -55,8 +76,12 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       }
     } catch (err) {
       if (cancelledRef.current || runId !== runIdRef.current) return;
+      if (!entriesLoaded && beforeMutation !== mutationId.current) return;
       const error = err instanceof Error ? err.message : String(err);
-      if (!entriesLoaded) setLoadError(error);
+      if (!entriesLoaded) {
+        if (currentItems.current.length) setActionError(error);
+        else setLoadError(error);
+      }
       setLoaded(true);
       setItems((prev) => prev.map((item) => item.status === "checking"
         ? {
@@ -76,6 +101,37 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     }
   };
 
+  const deleteItem = async (domain: string) => {
+    if (deleting.current) return;
+    deleting.current = true;
+    mutationId.current++;
+    setPendingDomain(domain);
+    setActionError(null);
+    try {
+      await removeWatch(domain);
+      if (cancelledRef.current) return;
+      replaceItems(currentItems.current.filter(item => item.domain !== domain));
+    } catch (error) {
+      if (cancelledRef.current) return;
+      const message = error instanceof Error ? error.message : String(error);
+      setActionError(message);
+      try {
+        const stored = await loadWatchlist();
+        if (cancelledRef.current) return;
+        const previous = new Map(currentItems.current.map(item => [item.domain, item]));
+        replaceItems(stored.map(entry => previous.get(entry.domain) ?? { ...entry, status: "error" }));
+      } catch {
+        if (!cancelledRef.current) setActionError(`${message}. Could not reload the watchlist; press r to retry.`);
+      }
+    } finally {
+      deleting.current = false;
+      if (!cancelledRef.current) {
+        setPendingDomain(null);
+        if (refreshQueued.current) { refreshQueued.current = false; void checkAll(true); }
+      }
+    }
+  };
+
   useEffect(() => {
     cancelledRef.current = false;
     checkAll();
@@ -90,7 +146,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
       if (key.downArrow || input === "j") {
-        setCursor((prev) => Math.min(prev + 1, items.length - 1));
+        setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, items.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (input === "r") {
@@ -98,17 +154,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
         checkAll();
       } else if (input === "d" && !loadError) {
         const item = items[cursor];
-        if (item) {
-          const idx = cursor;
-          const original = items;
-          const next = items.filter((_, i) => i !== idx);
-          setItems(next);
-          setCursor((prev) => Math.min(prev, next.length - 1));
-          removeWatch(item.domain).catch((error: unknown) => {
-            setItems(original);
-            setLoadError(error instanceof Error ? error.message : String(error));
-          });
-        }
+        if (item) void deleteItem(item.domain);
       }
     },
     { isActive: process.stdin.isTTY === true },
@@ -132,20 +178,23 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   if (!loaded) return null;
 
   if (loadError) {
-    return <FrameBox title="Watchlist" hints={hints}><Text color={theme.red}>{loadError}</Text></FrameBox>;
+    return <FrameBox fit title="Watchlist" hints={hints}><Text color={theme.red}>{loadError}</Text></FrameBox>;
   }
 
   if (items.length === 0) {
     return (
-      <FrameBox title="Watchlist" hints={[{ key: "q", action: "quit" }]}>
+      <FrameBox fit title="Watchlist" hints={hints}>
+        {actionError && <Text color={theme.red}>{actionError}</Text>}
         <Text color={theme.dim}>Watchlist is empty. Use: temper watch {"<domain>"}</Text>
       </FrameBox>
     );
   }
 
   return (
-    <FrameBox title="Watchlist" hints={hints}>
-      {items.map((item, i) => {
+    <FrameBox fit title="Watchlist" hints={hints}>
+      {actionError && <Text color={theme.red}>{actionError}</Text>}
+      {pendingDomain && <Text color={theme.dim}>Removing {pendingDomain}...</Text>}
+      <ListViewport cursor={cursor} rows={items.map((item, i) => {
         const isSelected = i === cursor;
         const { icon, color } = item.status === "checking"
           ? { icon: "…", color: theme.dim }
@@ -155,18 +204,18 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
           ? ` ${item.result.method} ${item.result.responseTime}ms${item.result.error ? ` ${item.result.error}` : ""}`
           : "";
 
-        return (
-          <Box key={item.domain}>
-            {isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}
+        return { key: item.domain, content: (
+          <Box>
+            <Box width={2} flexShrink={0}>{isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}</Box>
             <Text color={theme.text}>{item.domain.padEnd(22)}</Text>
             <Text color={color}>{icon} {item.status.padEnd(12)}</Text>
             {detail && <Text color={theme.dim}>{detail.padEnd(18)}</Text>}
             <Text color={theme.dim}>{addedAgo}</Text>
           </Box>
-        );
-      })}
+        ) };
+      })} />
 
-      <Box marginTop={1}>
+      <Box marginTop={1} flexShrink={0}>
         <Text color={theme.dim}>{items.length} watched · ~/.temper/watchlist.json</Text>
       </Box>
     </FrameBox>

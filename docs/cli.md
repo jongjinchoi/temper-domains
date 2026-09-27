@@ -99,7 +99,8 @@ temper search gethalden writeholt --format json   # multiple keywords in JSON mo
 Navigate with `j`/`k`, press `Enter` to choose a registrar, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
 
 Search and WHOIS accept only `--format tui` or `--format json`; other values
-exit with an error before starting a lookup.
+exit with an error before starting a lookup. `Esc` quits a root search, returns
+from a nested search, or stops an active resume as indicated by the footer.
 
 Use `r` to resume the selected retryable unresolved candidate, or `R` for those
 in the current filtered list. Invalid input, unsupported routes, invalid responses and
@@ -192,6 +193,12 @@ In search view, press `a` to add a domain to your watchlist, `h` to view history
 
 Watch accepts registrable domains, including `example.co.uk`, but rejects public
 suffixes and subdomains. Older unsupported entries remain visible and removable.
+During removal the row stays visible until saving finishes; a refresh requested
+in the meantime runs afterward. Failures appear alongside the current list.
+
+History timestamps use your local date and time. History, watchlist and suggestion
+lists scroll with `j`/`k` and adapt to terminal size. If the terminal cannot fit
+the content, enlarge it as prompted.
 
 ### Setup
 

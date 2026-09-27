@@ -9,6 +9,8 @@ import Spinner from "./Spinner.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 import { normalizeDomainKey } from "../utils/validate.ts";
 import { lookupNoticeLines } from "../utils/lookup-notice.ts";
+import ListViewport from "./ListViewport.tsx";
+import { normalizePosition } from "./list-position.ts";
 
 const CHECK_TLD = "com";
 
@@ -97,7 +99,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
       if (key.downArrow || input === "j") {
-        setCursor((prev) => Math.min(prev + 1, allNames.length - 1));
+        setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, allNames.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (key.return && done && allNames[cursor]) {
@@ -125,42 +127,39 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
         { key: "q", action: "quit" },
       ];
 
-  const renderGroup = (label: string, names: string[], offset: number) => (
-    <Box flexDirection="column" key={label} marginTop={1}>
-      <Box>
-        <Text color={theme.lavender} bold>{label}</Text>
-      </Box>
-      {names.map((name, i) => {
-        const globalIdx = offset + i;
-        const result = results.get(normalizeDomainKey(name));
-        const isSelected = globalIdx === cursor;
-        const style = result ? getStatusStyle(result.status) : null;
-        const detail = result?.error ? ` ${result.error}` : "";
+  const listRows = allNames.map((name, globalIdx) => {
+    const result = results.get(normalizeDomainKey(name));
+    const isSelected = globalIdx === cursor;
+    const style = result ? getStatusStyle(result.status) : null;
+    const detail = result?.error ? ` ${result.error}` : "";
 
-        return (
-          <Box key={name}>
-            {isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}
-            <Text color={theme.text}>{name.padEnd(20)}</Text>
-            {result == null ? (
-              <Text color={theme.dim}>… checking</Text>
-            ) : (
-              <Text color={style!.color}>{style!.icon} {result.status}{detail}</Text>
-            )}
-          </Box>
-        );
-      })}
-    </Box>
-  );
+    const label = globalIdx === 0 ? "BASE" : globalIdx === groups.base.length && groups.prefix.length ? "PREFIX"
+      : globalIdx === groups.base.length + groups.prefix.length && groups.suffix.length ? "SUFFIX" : null;
+    return { key: normalizeDomainKey(name), content: (
+      <Box flexDirection="column">
+        {label && <Text color={theme.lavender} bold>{label}</Text>}
+        <Box>
+          <Box width={2} flexShrink={0}>{isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}</Box>
+          <Text color={theme.text}>{name.padEnd(20)}</Text>
+          {result == null ? (
+            <Text color={theme.dim}>… checking</Text>
+          ) : (
+            <Text color={style!.color}>{style!.icon} {result.status}{detail}</Text>
+          )}
+        </Box>
+      </Box>
+    ) };
+  });
 
   if (selectedName) {
     return <SearchView query={selectedName} onBack={() => setSelectedName(null)} />;
   }
-  if (groups.error) return <FrameBox title={`Suggestions for "${query}"`} hints={hints}><Text color={theme.red}>{groups.error}</Text></FrameBox>;
+  if (groups.error) return <FrameBox fit title={`Suggestions for "${query}"`} hints={hints}><Text color={theme.red}>{groups.error}</Text></FrameBox>;
 
   return (
-    <FrameBox title={`Suggestions for "${query}"`} hints={hints}>
+    <FrameBox fit title={`Suggestions for "${query}"`} hints={hints}>
       {/* Header */}
-      <Box marginBottom={1}>
+      <Box marginBottom={1} flexShrink={0}>
         {!done ? (
           <Text>
             <Spinner />
@@ -178,9 +177,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       </Box>
 
       {/* Groups */}
-      {renderGroup("BASE", groups.base, 0)}
-      {renderGroup("PREFIX", groups.prefix, groups.base.length)}
-      {renderGroup("SUFFIX", groups.suffix, groups.base.length + groups.prefix.length)}
+      <ListViewport rows={listRows} cursor={cursor} />
 
       {lookupNoticeLines(results.get(normalizeDomainKey(allNames[cursor] ?? "")) ?? {}, true).map((line, index) => (
         <Text key={index} color={theme.yellow} wrap="truncate-end">{line}</Text>

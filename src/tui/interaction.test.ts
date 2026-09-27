@@ -24,6 +24,14 @@ function expectViewport(frame: string, rows: number) {
   expect(above + shown + below).toBe(30);
 }
 
+test.each(['history-date', 'history-height', 'watch-height', 'suggest-height', 'suggest-duplicate', 'escape', 'watch-cursor', 'watch-race', 'watch-load-race', 'watch-committed-failure', 'watch-reload-failure', 'notice-timer', 'notice-late'])("boundary regression: %s", async mode => {
+  await scenario(mode, 'tui-boundaries-worker.tsx');
+}, 15000);
+
+test.each(['watch-long', 'suggest-long'])("wrapped error viewport: %s", async mode => {
+  await scenario(mode, 'tui-boundaries-worker.tsx');
+});
+
 test.each(['accepted', 'unconfirmed', 'failed'])('browser %s feedback preserves search results without premature success', async outcome => {
   const result = await scenario(`search-browser-${outcome}`);
   expect(result.frames.pending).toContain('Requesting browser');

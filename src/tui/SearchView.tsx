@@ -1,6 +1,6 @@
 import { lookupNoticeLines } from "../utils/lookup-notice.ts";
 import { Box, Text, useApp, useInput, useStdout } from "ink";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_TLDS } from "../checker/types.ts";
 import { addWatch } from "../config/watchlist.ts";
 import { useSearchExecution } from "./hooks/useSearchExecution.ts";
@@ -15,6 +15,8 @@ import WhoisView from "./WhoisView.tsx";
 import { theme } from "./theme.ts";
 import { canResume, isAnswered } from "../checker/retry.ts";
 import { RESUME_BUDGET_MS, type SearchSession } from "./search-session.ts";
+import { normalizePosition, type Position } from "./list-position.ts";
+import { useNotice } from "./hooks/useNotice.ts";
 
 type ScreenState = "searching" | "failed" | "selecting" | "filtering" | "registrar" | "detail" | "resume";
 
@@ -29,9 +31,9 @@ interface Props {
   onQuit?: () => void;
 }
 
-function hintsFor(state: ScreenState, navigate: boolean, resuming: boolean) {
+function hintsFor(state: ScreenState, navigate: boolean, escapeAction: string) {
   if (state === "resume") return [{ key: "enter", action: "resume once" }, { key: "esc", action: "cancel" }];
-  if (state === "searching") return [{ key: "ctrl+c", action: "cancel" }, { key: "esc", action: resuming ? "stop resume" : "back" }];
+  if (state === "searching") return [{ key: "ctrl+c", action: "cancel" }, { key: "esc", action: escapeAction }];
   if (state === "filtering") return [{ key: "esc", action: "clear" }, { key: "enter", action: "confirm" }];
   if (state === "registrar") return [{ key: "c/p/n/v", action: "select" }, { key: "esc", action: "cancel" }];
   if (state === "detail") return [{ key: "esc", action: "back" }, { key: "q", action: "quit" }];
@@ -39,7 +41,7 @@ function hintsFor(state: ScreenState, navigate: boolean, resuming: boolean) {
     { key: "j/k", action: "move" }, { key: "/", action: "filter" },
     { key: "r/R", action: "resume" }, { key: "u", action: "unresolved" },
     { key: "enter", action: "registrar" }, { key: "i", action: "info" }, { key: "a", action: "add" },
-    ...(navigate ? [{ key: "s", action: "suggest" }, { key: "h", action: "history" }, { key: "w", action: "watchlist" }] : [{ key: "esc", action: "back" }]),
+    ...(navigate ? [{ key: "s", action: "suggest" }, { key: "h", action: "history" }, { key: "w", action: "watchlist" }] : [{ key: "esc", action: escapeAction }]),
     { key: "q", action: "quit" },
   ];
 }
@@ -55,18 +57,6 @@ function wrappedLines(text: string, width: number): number {
     while (used > width) { lines++; used -= width; }
   }
   return lines;
-}
-
-type Position = { cursor: number; offset: number };
-
-function normalizePosition(position: Position, count: number, capacity: number): Position {
-  if (count === 0) return { cursor: 0, offset: 0 };
-  const size = Math.min(capacity, count);
-  const cursor = Math.max(0, Math.min(position.cursor, count - 1));
-  let offset = Math.max(0, Math.min(position.offset, count - size));
-  if (cursor < offset) offset = cursor;
-  if (cursor >= offset + size) offset = cursor - size + 1;
-  return { cursor, offset };
 }
 
 export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable = false, timeoutMs, session: owner, onBack, onNavigate, onQuit }: Props) {
@@ -86,15 +76,14 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
 
   const [screenState, setScreenState] = useState<ScreenState>("searching");
   const [position, setPosition] = useState<Position>({ cursor: 0, offset: 0 });
-  const [confirmation, setConfirmation] = useState<{ text: string; error?: boolean; neutral?: boolean } | null>(null);
-  const browserRequest = useRef(0);
-  useEffect(() => () => { browserRequest.current++; }, []);
+  const { notice: confirmation, begin: beginNotice, complete: completeNotice, show: setConfirmation } = useNotice();
   const [filterText, setFilterText] = useState("");
   const [unresolvedOnly, setUnresolvedOnly] = useState(false);
   const [resumeDomains, setResumeDomains] = useState<string[]>([]);
   const resumeWaits = resumeDomains.map(domain => Date.parse(results.get(domain)?.retryAt ?? "") - Date.now());
   const hasLimits = [...results.values()].some(result => result.retryAt);
-  const currentHints = hintsFor(screenState, !!onNavigate, resuming);
+  const escapeAction = !done && resuming ? "stop resume" : onBack ? "back" : "quit";
+  const currentHints = hintsFor(screenState, !!onNavigate, escapeAction);
   const contentWidth = Math.max(1, termColumns - 4);
   const footerLines = wrappedLines(currentHints.map(hint => `${hint.key} ${hint.action}`).join(" · "), contentWidth);
   const extraLines = (hasLimits ? 2 : 0) + (historyError ? 1 : 0)
@@ -164,7 +153,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         return;
       }
       if (key.escape) {
-        if (!done && resuming) { session.cancel(); return; }
+        if (escapeAction === "stop resume") { session.cancel(); return; }
         onBack ? onBack() : (onQuit ? onQuit() : exit());
         return;
       }
@@ -194,15 +183,14 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
         } else if (input === "a") {
           const domain = selectedDomain;
           if (domain) {
+            const noticeId = beginNotice();
             addWatch(domain).then(
               () => {
-                setConfirmation({ text: `✓ Added ${domain} to watchlist` });
-                setTimeout(() => setConfirmation(null), 3000);
+                completeNotice(noticeId, { text: `✓ Added ${domain} to watchlist` }, 3000);
               },
               (err: unknown) => {
                 const msg = err instanceof Error ? err.message : String(err);
-                setConfirmation({ text: `✗ Failed to add ${domain}: ${msg}`, error: true });
-                setTimeout(() => setConfirmation(null), 5000);
+                completeNotice(noticeId, { text: `✗ Failed to add ${domain}: ${msg}`, error: true }, 5000);
               },
             );
           }
@@ -229,17 +217,16 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
     const domain = selectedDomain;
     if (!domain) return;
     const url = buildURL(registrar, domain);
-    const requestId = ++browserRequest.current;
-    setConfirmation({ text: `Requesting browser for ${domain}...`, neutral: true });
+    const requestId = beginNotice();
+    completeNotice(requestId, { text: `Requesting browser for ${domain}...`, neutral: true });
     setScreenState("selecting");
     try {
       const request = await openBrowser(url);
-      if (requestId !== browserRequest.current) return;
-      setConfirmation({ neutral: request.kind === "unconfirmed", text: request.kind === "accepted"
+      completeNotice(requestId, { neutral: request.kind === "unconfirmed", text: request.kind === "accepted"
         ? `Browser open request accepted: ${url}`
         : `Browser request unconfirmed. Open manually: ${url}` });
     } catch {
-      if (requestId === browserRequest.current) setConfirmation({ text: `Could not open browser. Open manually: ${url}`, error: true });
+      completeNotice(requestId, { text: `Could not open browser. Open manually: ${url}`, error: true });
     }
   };
 
