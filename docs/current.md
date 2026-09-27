@@ -195,6 +195,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   History, watchlist and suggestions use a terminal-bounded frame and measured
   list viewport. Search shares list position normalization. Oversized rows prompt
   terminal enlargement instead of silently hiding the size limitation.
+  Each list screen owns its viewport measurement, so its key handling and rendering
+  share one visibility value: while no row is on screen (compact frame or too-short
+  list area), j/k/d/Enter are ignored; esc, q and watchlist r still work.
 - Watchlist deletion is serialized with pending refresh requests and reconciles
   storage after failure. Reads started before a deletion cannot replace current
   rows. Action errors stay alongside rows; no old whole-list snapshot is restored.

@@ -2,6 +2,7 @@ import { Box, Text, useBoxMetrics, type DOMElement } from "ink";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { normalizePosition } from "./list-position.ts";
 import { theme } from "./theme.ts";
+import type { ListViewportState } from "./hooks/useListViewport.ts";
 
 interface Row { key: string; content: ReactNode }
 function MeasuredRow({ row, onMeasure }: { row: Row; onMeasure: (key: string, height: number) => void }) {
@@ -15,9 +16,9 @@ function MeasuredRow({ row, onMeasure }: { row: Row; onMeasure: (key: string, he
 
 // The enclosing frame owns the terminal height; this box receives the remaining
 // space after headers, notices and footer layout, including their wrapped lines.
-export default function ListViewport({ rows, cursor }: { rows: Row[]; cursor: number }) {
-  const ref = useRef<DOMElement>(null);
-  const { height, width, hasMeasured } = useBoxMetrics(ref);
+// The owning screen measures this box so its key handlers share `visible`.
+export default function ListViewport({ rows, cursor, viewport }: { rows: Row[]; cursor: number; viewport: ListViewportState }) {
+  const { height, width } = viewport.metrics;
   const [measurements, setMeasurements] = useState<{ width: number; heights: Map<string, number> }>({ width: 0, heights: new Map() });
   const heights = measurements.width === width ? measurements.heights : new Map<string, number>();
   const measure = useCallback((key: string, rowHeight: number) => setMeasurements(previous => {
@@ -39,8 +40,8 @@ export default function ListViewport({ rows, cursor }: { rows: Row[]; cursor: nu
   while (end < rows.length && (used + size(end) <= capacity || end === offset)) used += size(end++);
   useEffect(() => { offsetRef.current = offset; }, [offset]);
   const oversized = rows.length > 0 && size(selected) > capacity;
-  return <Box ref={ref} flexDirection="column" flexGrow={1} flexBasis={0} minHeight={0} overflow="hidden">
-    {hasMeasured && height >= 3 ? <>
+  return <Box ref={viewport.ref} flexDirection="column" flexGrow={1} flexBasis={0} minHeight={0} overflow="hidden">
+    {viewport.visible ? <>
       <Text color={theme.dim} wrap="truncate-end">{offset ? `↑ ${offset} more` : ' '}</Text>
       <Box height={capacity} flexShrink={0} flexDirection="column" overflow="hidden">
         {rows.slice(offset, end).map(row => <MeasuredRow key={row.key} row={row} onMeasure={measure} />)}

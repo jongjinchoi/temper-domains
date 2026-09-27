@@ -7,6 +7,7 @@ import FrameBox from "./FrameBox.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 import { normalizePosition } from "./list-position.ts";
 import ListViewport from "./ListViewport.tsx";
+import { useListViewport } from "./hooks/useListViewport.ts";
 
 interface WatchItem extends WatchEntry {
   status: DomainStatus | "checking";
@@ -26,6 +27,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingDomain, setPendingDomain] = useState<string | null>(null);
+  const viewport = useListViewport();
   const deleting = useRef(false);
   const refreshQueued = useRef(false);
   const currentItems = useRef(items);
@@ -145,13 +147,18 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     (input, key) => {
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
+      if (input === "r") {
+        // Refresh targets no row, including the empty and error screens.
+        cancelledRef.current = false;
+        checkAll();
+        return;
+      }
+      // Row actions require the selected row to be on screen.
+      if (!viewport.visible) return;
       if (key.downArrow || input === "j") {
         setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, items.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
-      } else if (input === "r") {
-        cancelledRef.current = false;
-        checkAll();
       } else if (input === "d" && !loadError) {
         const item = items[cursor];
         if (item) void deleteItem(item.domain);
@@ -194,7 +201,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
     <FrameBox fit title="Watchlist" hints={hints}>
       {actionError && <Text color={theme.red}>{actionError}</Text>}
       {pendingDomain && <Text color={theme.dim}>Removing {pendingDomain}...</Text>}
-      <ListViewport cursor={cursor} rows={items.map((item, i) => {
+      <ListViewport viewport={viewport} cursor={cursor} rows={items.map((item, i) => {
         const isSelected = i === cursor;
         const { icon, color } = item.status === "checking"
           ? { icon: "…", color: theme.dim }

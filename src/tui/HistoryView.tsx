@@ -7,6 +7,7 @@ import { theme } from "./theme.ts";
 import { formatHistoryTimestamp } from "./format-date.ts";
 import ListViewport from "./ListViewport.tsx";
 import { normalizePosition } from "./list-position.ts";
+import { useListViewport } from "./hooks/useListViewport.ts";
 
 interface Props {
   onBack?: () => void;
@@ -24,6 +25,7 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
   const [deletePending, setDeletePending] = useState(false);
   const deleting = useRef(false);
   const mounted = useRef(true);
+  const viewport = useListViewport();
 
   useEffect(() => {
     mounted.current = true;
@@ -44,7 +46,8 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
     (input, key) => {
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
-      if (deleting.current) return;
+      // Row actions require the selected row to be on screen.
+      if (deleting.current || !viewport.visible) return;
       if (key.downArrow || input === "j") {
         setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, history.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
@@ -120,7 +123,7 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
       </Box>
 
       {/* Rows */}
-      <ListViewport cursor={cursor} rows={history.map((entry, i) => {
+      <ListViewport viewport={viewport} cursor={cursor} rows={history.map((entry, i) => {
         const dateStr = formatHistoryTimestamp(entry.timestamp);
         const isSelected = i === cursor;
 

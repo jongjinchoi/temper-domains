@@ -11,6 +11,7 @@ import { normalizeDomainKey } from "../utils/validate.ts";
 import { lookupNoticeLines } from "../utils/lookup-notice.ts";
 import ListViewport from "./ListViewport.tsx";
 import { normalizePosition } from "./list-position.ts";
+import { useListViewport } from "./hooks/useListViewport.ts";
 
 const CHECK_TLD = "com";
 
@@ -36,6 +37,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
   const [elapsed, setElapsed] = useState(0);
   const [cursor, setCursor] = useState(0);
   const [selectedName, setSelectedName] = useState<string | null>(null);
+  const viewport = useListViewport();
 
   useEffect(() => {
     if (groups.error) { setDone(true); return; }
@@ -98,6 +100,8 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
     (input, key) => {
       if (input === "q") { onQuit ? onQuit() : exit(); return; }
       if (key.escape) { onBack ? onBack() : exit(); return; }
+      // Row actions require the selected row to be on screen.
+      if (!viewport.visible) return;
       if (key.downArrow || input === "j") {
         setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, allNames.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
@@ -177,7 +181,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
       </Box>
 
       {/* Groups */}
-      <ListViewport rows={listRows} cursor={cursor} />
+      <ListViewport viewport={viewport} rows={listRows} cursor={cursor} />
 
       {lookupNoticeLines(results.get(normalizeDomainKey(allNames[cursor] ?? "")) ?? {}, true).map((line, index) => (
         <Text key={index} color={theme.yellow} wrap="truncate-end">{line}</Text>

@@ -198,7 +198,9 @@ in the meantime runs afterward. Failures appear alongside the current list.
 
 History timestamps use your local date and time. History, watchlist and suggestion
 lists scroll with `j`/`k` and adapt to terminal size. If the terminal cannot fit
-the content, enlarge it as prompted.
+the content, enlarge it as prompted. While the list is not shown, `j`/`k`, `d`
+and `Enter` are ignored so nothing is removed or opened unseen; `esc`, `q` and
+the watchlist's `r` still work.
 
 ### Setup
 

@@ -28,6 +28,10 @@ test.each(['history-date', 'history-height', 'watch-height', 'suggest-height', '
   await scenario(mode, 'tui-boundaries-worker.tsx');
 }, 15000);
 
+test.each(['watch-compact-keys', 'history-compact-keys', 'suggest-compact-keys', 'history-hidden-list-keys'])("hidden list ignores row actions: %s", async mode => {
+  await scenario(mode, 'tui-boundaries-worker.tsx');
+}, 15000);
+
 test.each(['watch-long', 'suggest-long'])("wrapped error viewport: %s", async mode => {
   await scenario(mode, 'tui-boundaries-worker.tsx');
 });

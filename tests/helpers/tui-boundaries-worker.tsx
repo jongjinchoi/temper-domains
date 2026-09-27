@@ -3,7 +3,7 @@ import React from "react";
 import { render } from "ink";
 import { mock } from "bun:test";
 import { PassThrough, Writable } from "node:stream";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 const mode = process.argv[2]!;
 process.env.TZ = "Asia/Seoul";
@@ -15,8 +15,10 @@ const row = (domain: string) => ({ domain, tld: domain.split('.').at(-1)!, statu
   ...(mode.endsWith('-long') ? { error: 'Controlled failure '.repeat(12) + 'END-OF-DETAIL' } : {}),
 });
 const suggested: string[][] = [];
+const lookups: string[][] = [];
 mock.module("../../src/checker/checker.ts", () => ({
   checkFullDomains: async function* (domains: string[], options: any = {}) {
+    lookups.push(domains);
     if (mode === "escape") { await new Promise<void>(resolve => options.signal.addEventListener("abort", () => resolve(), { once: true })); return; }
     for (const domain of domains) yield row(domain);
   },
@@ -26,7 +28,8 @@ mock.module("../../src/checker/checker.ts", () => ({
   },
 }));
 mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: async (url: string) => ({ kind: 'accepted', url }) }));
-let entries = (mode === "watch-height" ? Array.from({ length: 30 }, (_, i) => `item${i}.com`) : ['only.com'])
+let entries = (mode === "watch-height" ? Array.from({ length: 30 }, (_, i) => `item${i}.com`)
+  : mode === 'watch-compact-keys' ? ['a.com', 'b.com', 'c.com'] : ['only.com'])
   .map(domain => ({ domain, addedAt: '2026-09-27T00:00:00Z' }));
 let rejectDelete: ((error: Error) => void) | undefined;
 let resolveAdd: (() => void) | undefined;
@@ -52,9 +55,12 @@ mock.module("../../src/config/watchlist.ts", () => ({
   },
 }));
 await mkdir(home + '/.temper', { recursive: true });
-await writeFile(home + '/.temper/history.json', JSON.stringify(Array.from({ length: mode === "history-height" ? 100 : 1 }, (_, i) => ({
+const historyFile = home + '/.temper/history.json';
+const historyLength = mode === "history-height" ? 100 : mode === 'history-compact-keys' || mode === 'history-hidden-list-keys' ? 3 : 1;
+await writeFile(historyFile, JSON.stringify(Array.from({ length: historyLength }, (_, i) => ({
   query: `sample${i}`, timestamp: '2026-09-27T23:30:00.000Z', available: 1, total: 1,
 }))));
+const historyQueries = async () => JSON.parse(await readFile(historyFile, 'utf8')).map((entry: { query: string }) => entry.query);
 const { default: HistoryView } = await import('../../src/tui/HistoryView.tsx');
 const { default: WatchlistView } = await import('../../src/tui/WatchlistView.tsx');
 const { default: SuggestView } = await import('../../src/tui/SuggestView.tsx');
@@ -67,7 +73,7 @@ const input = new PassThrough();
 Object.assign(input, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
 const element = mode.startsWith('history') ? <HistoryView /> : mode.startsWith('watch-') ? <WatchlistView />
   : mode === 'suggest-duplicate' ? <SuggestView query="Acme" prefixes={['Get', 'get']} suffixes={['App']} />
-  : mode === 'suggest-height' || mode === 'suggest-long' ? <SuggestView query={mode === 'suggest-long' ? '한글' : 'acme'} /> : mode === 'escape' ? <App query="acme" tlds={['com']} /> : <SearchView query="acme" tlds={['com']} />;
+  : mode === 'suggest-height' || mode === 'suggest-long' || mode === 'suggest-compact-keys' ? <SuggestView query={mode === 'suggest-long' ? '한글' : 'acme'} /> : mode === 'escape' ? <App query="acme" tlds={['com']} /> : <SearchView query="acme" tlds={['com']} />;
 const view = render(element, { stdout: output as any, stderr: output as any, stdin: input as any, debug: true, patchConsole: false, exitOnCtrlC: false });
 const plain = () => frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, '');
 async function until(label: string, predicate: () => boolean) {
@@ -78,7 +84,8 @@ async function until(label: string, predicate: () => boolean) {
 async function key(value: string) { input.write(value); await view.waitUntilRenderFlush(); await Bun.sleep(20); }
 const frames: Record<string, string> = {};
 try {
-  await until('initial', () => mode.startsWith('history') ? plain().includes('sample0') : mode.startsWith('watch-') ? plain().includes(mode.endsWith('-long') ? 'error' : 'available')
+  await until('initial', () => mode.startsWith('history') ? plain().includes('sample0')
+    : mode.startsWith('watch-') ? plain().includes(mode.endsWith('-long') ? 'error' : 'available')
     : mode.startsWith('suggest') ? plain().includes('names checked') : mode === 'escape' ? plain().includes('Searching') : plain().includes('Search complete'));
   frames.initial = plain();
   if (mode.endsWith('-long')) {
@@ -167,6 +174,47 @@ try {
     await view.waitUntilRenderFlush();
     assert.match(plain(), /Browser open request accepted/);
     frames.final = plain();
+  }
+  if (mode.endsWith('-compact-keys')) {
+    const first = mode === 'history-compact-keys' ? /▸\s*\S+ \S+\s+sample0\s/ : mode === 'watch-compact-keys' ? /▸\s+a\.com\s/ : /▸\s+acme\s/;
+    assert.match(plain(), first);
+    const lookupCount = lookups.length;
+    Object.assign(output, { columns: 20, rows: 8 }); output.emit('resize');
+    await until('compact', () => plain().includes('Enlarge terminal'));
+    // Row actions must not reach a list the screen does not show.
+    for (const value of ['j', 'd', '\r']) await key(value);
+    await Bun.sleep(50); await view.waitUntilRenderFlush();
+    frames.compact = plain();
+    assert.deepEqual(deleted, []);
+    assert.deepEqual(await historyQueries(), Array.from({ length: historyLength }, (_, i) => `sample${i}`));
+    assert.equal(lookups.length, lookupCount, 'Enter must not start a hidden search');
+    assert.match(plain(), /Enlarge terminal/);
+    Object.assign(output, { columns: 110, rows: 24 }); output.emit('resize');
+    await until('restored selection', () => first.test(plain()));
+    // Once the list is visible again, the same row actions work.
+    if (mode === 'watch-compact-keys') {
+      await key('d'); await until('deleted', () => !plain().includes('a.com'));
+      assert.deepEqual(deleted, ['a.com']);
+    } else if (mode === 'history-compact-keys') {
+      await key('d'); await until('deleted', () => !plain().includes('sample0'));
+      assert.deepEqual(await historyQueries(), ['sample1', 'sample2']);
+    } else {
+      await key('\r'); await until('search opened', () => plain().includes('temper search acme'));
+      assert.equal(lookups.length, lookupCount + 1);
+    }
+  }
+  if (mode === 'history-hidden-list-keys') {
+    Object.assign(output, { columns: 110, rows: 12 }); output.emit('resize');
+    // The frame still fits, but the measured list area cannot show a row.
+    await until('hidden list', () => plain().includes('Enlarge terminal to show the list'));
+    assert.doesNotMatch(plain(), /Enlarge terminal to view/);
+    const lookupCount = lookups.length;
+    for (const value of ['j', 'd', '\r']) await key(value);
+    await Bun.sleep(50); await view.waitUntilRenderFlush();
+    frames.hidden = plain();
+    assert.deepEqual(await historyQueries(), ['sample0', 'sample1', 'sample2']);
+    assert.equal(lookups.length, lookupCount);
+    assert.match(plain(), /Enlarge terminal to show the list/);
   }
   console.log(JSON.stringify({ frames }));
 } finally { view.unmount(); view.cleanup(); }
