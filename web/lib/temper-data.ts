@@ -1,4 +1,4 @@
-import { THEME_META, type ThemeName } from "../../src/tui/theme-meta.ts";
+import { THEME_META, THEME_PALETTES, type ThemeName } from "../../src/tui/theme-meta.ts";
 
 // SYNC SOURCES — change the source and rerun `bun test web/lib/__tests__/`
 // before shipping a change to these values.
@@ -6,8 +6,7 @@ import { THEME_META, type ThemeName } from "../../src/tui/theme-meta.ts";
 //   DEFAULT_TLDS_COUNT, EXTENDED_TLDS_COUNT  ← ../../src/checker/types.ts
 //   PLAYGROUND_TLDS                          ← playground-only subset, verified ⊆ EXTENDED_TLDS
 //   HERO_DEMO_TLDS                           ← hero CRT subset, verified ⊆ EXTENDED_TLDS
-//   THEMES (key + palette)                   ← ../../src/tui/theme.ts
-//   THEMES (label + desc)                    ← ../../src/tui/theme-meta.ts
+//   THEMES (key, label, desc, palette)       ← ../../src/tui/theme-meta.ts (derived)
 //   MCP_TOOLS                                ← ../../src/mcp/server.ts
 //   COMMANDS, KEYMAP                         ← ../../src/index.ts + docs/cli.md
 
@@ -44,17 +43,13 @@ export interface Theme {
   };
 }
 
-const THEME_PALETTES: Record<ThemeName, Theme["palette"]> = {
-  "temper-forge": { bg: "#1a1d23", fg: "#e8e6e3", accent: "#ff7a45", ok: "#64c896", tk: "#e64545", mu: "#6b7280" },
-  "seoul-night": { bg: "#14141f", fg: "#e8e3f0", accent: "#ff4d8d", ok: "#7ee787", tk: "#ff5e62", mu: "#5a5775" },
-  "catppuccin-mocha": { bg: "#1e1e2e", fg: "#cdd6f4", accent: "#cba6f7", ok: "#a6e3a1", tk: "#f38ba8", mu: "#6c7086" },
-  "dracula": { bg: "#282a36", fg: "#f8f8f2", accent: "#bd93f9", ok: "#50fa7b", tk: "#ff5555", mu: "#6272a4" },
-  "default": { bg: "#000000", fg: "#ffffff", accent: "#af87ff", ok: "#00af00", tk: "#ff0000", mu: "#666666" },
-  "catppuccin-latte": { bg: "#eff1f5", fg: "#4c4f69", accent: "#8839ef", ok: "#40a02b", tk: "#d20f39", mu: "#9ca0b0" },
-  "rose-pine-dawn": { bg: "#faf4ed", fg: "#464261", accent: "#907aa9", ok: "#286983", tk: "#b4637a", mu: "#9893a5" },
+// Web previews use the CLI palettes directly, so the two cannot drift.
+const previewPalette = (key: ThemeName): Theme["palette"] => {
+  const { base, text, primary, green, red, dim } = THEME_PALETTES[key];
+  return { bg: base, fg: text, accent: primary, ok: green, tk: red, mu: dim };
 };
 
-export const THEMES: Theme[] = THEME_META.map(meta => ({ ...meta, palette: THEME_PALETTES[meta.key] }));
+export const THEMES: Theme[] = THEME_META.map(meta => ({ ...meta, palette: previewPalette(meta.key) }));
 
 export const MCP_TOOLS = [
   "list_supported_tlds",
