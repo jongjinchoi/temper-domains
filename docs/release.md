@@ -44,6 +44,13 @@
 
 ## Release Steps
 
+The workflow defaults to `contents: read`. Only `source` and `release` receive
+`contents: write`; npm receives `id-token: write` for trusted publication.
+Homebrew pushes use the separate tap PAT, not the repository's `GITHUB_TOKEN`.
+Other checkouts do not persist credentials. Actions are pinned to full commit
+SHAs with version comments; when updating, resolve the intended tag in its
+official repository and review the new revision before changing the pin.
+
 ```bash
 # 1. package.json version 수정
 # ex) 0.2.2 → <next-version>
