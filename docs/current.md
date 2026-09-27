@@ -284,6 +284,14 @@ in both workspaces so root typechecking does not download a separate compiler.
   checker, including error rows. History save failures are shown separately from
   lookup results. History deletion checks the displayed snapshot under the lock;
   a changed list is refreshed for reselection without deleting an entry.
+  HistoryView owns its re-search session. Returning cancels further lookups,
+  waits for already-queued history saves (including cleanup), then reloads the
+  stored list and clamps the cursor. Save failures retain their original result
+  and diagnostics; a committed save with failed cleanup still reloads the new rows.
+  Pending refreshes and failed reads block row actions, while back/quit remain
+  available. A failed read retains the previous list until history is reopened;
+  completions after leaving the screen are ignored. The session's save queue
+  preserves the last write's rejection without blocking subsequent resume saves.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - The web demo supports Escape while searching, restores input focus after

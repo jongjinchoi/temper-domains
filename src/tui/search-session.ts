@@ -62,8 +62,11 @@ export class SearchSession {
     });
     this.update({ results, done: true });
   }
+  // Observe saves already queued by this session, including cleanup failures.
+  // A caller leaving the search cancels first so no later run can enqueue a save.
+  waitForHistory(): Promise<void> { return this.historyQueue; }
   private async saveHistory(): Promise<void> {
-    const next = this.historyQueue.then(async () => {
+    const next = this.historyQueue.catch(() => {}).then(async () => {
       if (this.historyGone || ![...this.state.totalAttempts.values()].some(n => n > 0)) return;
       const entry: HistoryEntry = { query: this.query, timestamp: this.historyEntry?.timestamp ?? new Date().toISOString(),
         available: [...this.state.results.values()].filter(row => row.status === "available").length, total: this.domains.length };
@@ -71,7 +74,7 @@ export class SearchSession {
       else if (!await this.history.replace(this.historyEntry, entry)) { this.historyGone = true; return; }
       this.historyEntry = entry;
     });
-    this.historyQueue = next.catch(() => {});
+    this.historyQueue = next;
     return next;
   }
   private async run(domains: readonly string[], resuming: boolean): Promise<void> {

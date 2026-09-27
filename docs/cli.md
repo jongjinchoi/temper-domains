@@ -210,6 +210,12 @@ the content, enlarge it as prompted. While the list is not shown, `j`/`k`, `d`
 and `Enter` are ignored so nothing is removed or opened unseen; `esc`, `q` and
 the watchlist's `r` still work.
 
+Returning from a history re-search waits for any history save already in progress,
+then reloads the list. Row actions pause during this refresh; you can still go back
+or quit. Save and cleanup errors remain visible alongside the reloaded list.
+If reloading fails, the previous list is retained with an error and row actions
+stay disabled. Resolve the error and reopen history to reload it.
+
 ### Setup
 
 ```bash

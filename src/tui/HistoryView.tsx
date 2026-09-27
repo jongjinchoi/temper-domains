@@ -9,6 +9,8 @@ import { formatHistoryTimestamp } from "./format-date.ts";
 import ListViewport from "./ListViewport.tsx";
 import { normalizePosition } from "./list-position.ts";
 import { useListViewport } from "./hooks/useListViewport.ts";
+import { DEFAULT_TLDS } from "../checker/types.ts";
+import { SearchSession } from "./search-session.ts";
 
 interface Props {
   onBack?: () => void;
@@ -21,10 +23,13 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
   const [cursor, setCursor] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [selectedQuery, setSelectedQuery] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<SearchSession | null>(null);
+  const [refreshPending, setRefreshPending] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deletePending, setDeletePending] = useState(false);
   const deleting = useRef(false);
+  const refreshing = useRef(false);
   const mounted = useRef(true);
   const viewport = useListViewport();
 
@@ -43,12 +48,39 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
     return () => { cancelled = true; mounted.current = false; };
   }, []);
 
+  const returnToHistory = async (session: SearchSession) => {
+    if (refreshing.current || !mounted.current) return;
+    refreshing.current = true;
+    setRefreshPending(true);
+    setSelectedSession(null);
+    setLoadError(null);
+    setDeleteError(null);
+    setSaveError(null);
+    session.cancel();
+    try {
+      try { await session.waitForHistory(); }
+      catch (error) { if (mounted.current) setSaveError(formatStorageError(error)); }
+      if (!mounted.current) return;
+      // Read even after a save error: replacement may have succeeded before
+      // cleanup failed, and the stored list is the authority for row actions.
+      const next = await loadHistory();
+      if (!mounted.current) return;
+      setHistory(next);
+      setCursor(previous => Math.max(0, Math.min(previous, next.length - 1)));
+    } catch (error) {
+      if (mounted.current) setLoadError(formatStorageError(error));
+    } finally {
+      refreshing.current = false;
+      if (mounted.current) setRefreshPending(false);
+    }
+  };
+
   useInput(
     (input, key) => {
-      if (input === "q") { onQuit ? onQuit() : exit(); return; }
-      if (key.escape) { onBack ? onBack() : exit(); return; }
+      if (input === "q") { mounted.current = false; onQuit ? onQuit() : exit(); return; }
+      if (key.escape) { mounted.current = false; onBack ? onBack() : exit(); return; }
       // Row actions require the selected row to be on screen.
-      if (deleting.current || !viewport.visible) return;
+      if (!loaded || refreshing.current || loadError || deleting.current || !viewport.visible) return;
       if (key.downArrow || input === "j") {
         setCursor((prev) => normalizePosition({ cursor: prev + 1, offset: 0 }, history.length, 1).cursor);
       } else if (key.upArrow || input === "k") {
@@ -74,49 +106,48 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
           if (mounted.current) setDeletePending(false);
         });
       } else if (key.return && history[cursor]) {
-        setSelectedQuery(history[cursor]!.query);
+        setSelectedSession(new SearchSession(history[cursor]!.query, DEFAULT_TLDS));
       }
     },
-    { isActive: !selectedQuery && process.stdin.isTTY === true },
+    { isActive: !selectedSession && process.stdin.isTTY === true },
   );
 
-  const hints = onBack
-    ? [
-        { key: "j/k", action: "move" },
-        { key: "enter", action: "re-search" },
-        { key: "d", action: "remove" },
-        { key: "esc", action: "back" },
-        { key: "q", action: "quit" },
-      ]
-    : [
-        { key: "j/k", action: "move" },
-        { key: "enter", action: "re-search" },
-        { key: "d", action: "remove" },
-        { key: "q", action: "quit" },
-      ];
+  const hints = [
+    ...(!refreshPending && !loadError ? [
+      { key: "j/k", action: "move" },
+      { key: "enter", action: "re-search" },
+      { key: "d", action: "remove" },
+    ] : []),
+    ...(onBack ? [{ key: "esc", action: "back" }] : []),
+    { key: "q", action: "quit" },
+  ];
 
   if (!loaded) return null;
 
-  if (loadError) {
-    return <FrameBox fit title="Recent searches" hints={hints}><Text color={theme.red}>{loadError}</Text></FrameBox>;
+  if (selectedSession) {
+    return <SearchView query={selectedSession.query} session={selectedSession}
+      onBack={() => { void returnToHistory(selectedSession); }} onQuit={onQuit} />;
   }
 
-  if (selectedQuery) {
-    return <SearchView query={selectedQuery} onBack={() => setSelectedQuery(null)} />;
-  }
+  const notices = <>
+    {saveError && <Text color={theme.yellow}>{saveError}</Text>}
+    {loadError && <Text color={theme.red}>Could not refresh history: {loadError}. Reopen history after resolving the error.</Text>}
+    {deleteError && <Text color={theme.red}>{deleteError}</Text>}
+    {refreshPending && <Text color={theme.dim}>Refreshing history...</Text>}
+  </>;
 
   if (history.length === 0) {
     return (
       <FrameBox fit title="Recent searches" hints={hints}>
-        {deleteError && <Text color={theme.red}>{deleteError}</Text>}
-        <Text color={theme.dim}>No search history yet.</Text>
+        {notices}
+        {!loadError && !refreshPending && <Text color={theme.dim}>No search history yet.</Text>}
       </FrameBox>
     );
   }
 
   return (
     <FrameBox fit title="Recent searches" hints={hints}>
-      {deleteError && <Text color={theme.red}>{deleteError}</Text>}
+      {notices}
       {deletePending && <Text color={theme.dim}>Deleting history entry...</Text>}
       {/* Table header */}
       <Box marginBottom={0} flexShrink={0}>

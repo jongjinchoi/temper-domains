@@ -8,6 +8,60 @@ const result = (domain: string, status: DomainResult["status"], attempts = 1): D
 });
 const history = { add: async () => {}, replace: async () => true };
 
+test.each([false, true])("history completion waits through cancellation and preserves rejection: %s", async fail => {
+  let release!: () => void, entered!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const writing = new Promise<void>(resolve => { entered = resolve; });
+  const failure = new Error("Controlled history save failure");
+  const session = new SearchSession("sample", ["com"], undefined, async function* () {
+    yield result("sample.com", "available");
+  }, { ...history, add: async () => { entered(); await gate; if (fail) throw failure; } });
+  const running = session.start();
+  try {
+    await writing;
+    session.cancel();
+    let settled = false;
+    const completion = session.waitForHistory().then(() => ({ ok: true }), error => ({ ok: false, error }))
+      .finally(() => { settled = true; });
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    release();
+    expect(await completion).toEqual(fail ? { ok: false, error: failure } : { ok: true });
+    if (fail) await expect(session.waitForHistory()).rejects.toBe(failure);
+  } finally { release(); await running; }
+});
+
+test("a rejected history write does not poison the next resume save", async () => {
+  let writes = 0;
+  const failure = new Error("Controlled first save failure");
+  const session = new SearchSession("sample", ["com"], undefined, async function* () {
+    yield result("sample.com", "rate_limited");
+  }, { ...history, add: async () => { if (++writes === 1) throw failure; } });
+  await session.start();
+  await expect(session.waitForHistory()).rejects.toBe(failure);
+  await session.resume(["sample.com"]);
+  await session.waitForHistory();
+  expect(writes).toBe(2);
+  expect(session.getSnapshot().historyError).toBe(null);
+});
+
+test("cancelling before history starts does not create a write or wait for the retired lookup", async () => {
+  let release!: () => void, entered!: () => void, writes = 0;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const checking = new Promise<void>(resolve => { entered = resolve; });
+  const session = new SearchSession("sample", ["com"], undefined, async function* () {
+    entered(); await gate; yield result("sample.com", "available");
+  }, { ...history, add: async () => { writes++; } });
+  const running = session.start();
+  try {
+    await checking;
+    session.cancel();
+    await session.waitForHistory();
+    expect(writes).toBe(0);
+  } finally { release(); await running; }
+  expect(writes).toBe(0);
+});
+
 test("session resumes only unresolved candidates and preserves original rows and cumulative attempts", async () => {
   const calls: string[][] = [];
   const session = new SearchSession("sample", ["com", "net"], undefined, async function* (domains) {

@@ -25,6 +25,12 @@ function expectViewport(frame: string, rows: number) {
   expect(above + shown + below).toBe(30);
 }
 
+test.each(["normal", "delayed", "write-failure", "cleanup-failure", "read-failure", "leave-save", "leave-read", "fast-reentry"])(
+  "history return reconciles storage and preserves failure boundaries: %s", async mode => {
+    await scenario(mode, "tui-history-return-worker.tsx");
+  },
+);
+
 test.each(["init", "watch", "history", "history-conflict", "search-add", "search-history"])("storage cleanup guidance reaches the %s screen", async mode => {
   const result = await scenario(mode, "tui-storage-worker.tsx");
   expect(result.injected).toBe(1);
