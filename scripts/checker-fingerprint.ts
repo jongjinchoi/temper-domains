@@ -1,8 +1,10 @@
 import { readFile, readdir } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { resolve, dirname, join } from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 import { hash } from '../src/extensions/inventory.ts';
 import { applyReviewEvidence } from '../src/extensions/evidence.ts';
 import type { Inventory } from '../src/extensions/types.ts';
+import { projectRuntimeCatalog } from '../src/extensions/runtime-snapshot.ts';
 type Lock = { workspaces: Record<string, { dependencies?: Record<string, string> }>; packages: Record<string, [string, string, { dependencies?: Record<string, string>; optionalDependencies?: Record<string, string>; peerDependencies?: Record<string, string> }, ...unknown[]]>; patchedDependencies?: Record<string, string> };
 
 export function checkerDependencyInputs(sources: string[], lock: Lock) {
@@ -53,15 +55,32 @@ export async function checkerSignatures() {
   return { rdap, whois };
 }
 
-export async function verifyBundledCheckerSignatures() {
-  const catalog = JSON.parse(await readFile(resolve(import.meta.dir, '../src/extensions/data/catalog.json'), 'utf8')) as Inventory;
+export const runtimeCatalogPath = (file: string) => join(dirname(file), 'runtime-catalog.json');
+
+export async function verifyCatalogEvidence(catalog: Inventory) {
   if (JSON.stringify(await checkerSignatures()) !== JSON.stringify(catalog.checkerSignatures)) {
     throw new Error('Checker sources changed. Preview and refresh the catalog verification metadata before building; old lookup evidence must not be labeled current.');
   }
-  applyReviewEvidence(catalog, {
-    sources: catalog.reviewSources ?? {},
-    classifications: Object.fromEntries(catalog.entries.flatMap(entry => entry.classificationReview ? [[entry.suffix, entry.classificationReview]] : [])),
-    lookups: Object.fromEntries(catalog.entries.flatMap(entry => entry.lookupVerification ? [[entry.suffix, entry.lookupVerification]] : [])),
+  // Validation may normalize stale unclassified reviews. Never mutate the
+  // saved evidence used to derive the runtime identity and exact projection.
+  const validation = structuredClone(catalog);
+  applyReviewEvidence(validation, {
+    sources: validation.reviewSources ?? {},
+    classifications: Object.fromEntries(validation.entries.flatMap(entry => entry.classificationReview ? [[entry.suffix, entry.classificationReview]] : [])),
+    lookups: Object.fromEntries(validation.entries.flatMap(entry => entry.lookupVerification ? [[entry.suffix, entry.lookupVerification]] : [])),
   });
+}
+
+export async function verifyBundledCheckerSignatures(file = resolve(import.meta.dir, '../src/extensions/data/catalog.json')) {
+  const catalog = JSON.parse(await readFile(file, 'utf8')) as Inventory;
+  await verifyCatalogEvidence(catalog);
+  const runtimeFile = runtimeCatalogPath(file);
+  const recovery = 'Run bun run catalog:update --runtime-only to preview, then --runtime-only --apply to regenerate from the unchanged full catalog.';
+  let runtime: unknown;
+  try { runtime = JSON.parse(await readFile(runtimeFile, 'utf8')); }
+  catch (cause) { throw new Error(`Cannot read runtime catalog ${runtimeFile}. ${recovery}`, { cause }); }
+  if (!isDeepStrictEqual(runtime, projectRuntimeCatalog(catalog))) {
+    throw new Error(`Runtime catalog differs from the full catalog or classification taxonomy: ${runtimeFile}. ${recovery}`);
+  }
 }
 if (import.meta.main) await verifyBundledCheckerSignatures();

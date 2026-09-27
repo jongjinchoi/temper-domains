@@ -516,13 +516,20 @@ support checks, not 756 successful live registry calls or a worldwide total.
 The inputs combine 1,062 registration suffixes from Porkbun, Dynadot and Gandi.
 Default 30/extended 60 are approved quick-search bundles within this catalog.
 
-The runtime snapshot is `src/extensions/data/catalog.json`. It contains IANA/
-PSL boundary data, offering evidence, classification reviews, lookup observations,
-full endpoint plans and checker signatures together.
+The full maintenance snapshot is `src/extensions/data/catalog.json`.
+`src/extensions/data/runtime-catalog.json` is its generated runtime projection:
+it keeps all discoverable entries and namespace exclusions, together with the
+complete IANA/PSL boundary data, endpoint plans, source metadata, classification
+reviews, lookup observations and checker signatures needed by those entries.
+It preserves direct selection outside the discovery list. The catalog version
+is calculated from the full snapshot and taxonomy during generation, so runtime
+loading does not serialize and hash the full maintenance data. Projection alone
+does not change the catalog version, existing cursors or evidence dates.
 `commercial.json`, `overrides.json`, `regions.json`, `captures.json` and
 `reviews.json` are maintained only under `data-sources/catalog/`.
-`src/extensions/data/` contains only the generated `catalog.json`; runtime does
-not mix separate maintenance inputs into an independently updated snapshot. Each
+Runtime imports only `runtime-catalog.json`; it does not combine it with the full
+snapshot or separate maintenance inputs. The corresponding-source archive retains
+both snapshots, the eight saved inputs and the generator. Each
 classification records its reason, source, evidence type and checked date.
 Entries without industry/purpose evidence remain explicitly unclassified.
 Registration qualification metadata is not collected, displayed or a search gate.
@@ -563,12 +570,32 @@ changes, classification/review changes, unclassified entries and source counts.
 Saved-source capture dates are preserved; `generatedAt` is the separate bundle
 generation date. Invalid data, stale assigned reviews, missing providers and
 unexpected large shrinkage fail without replacing the previous snapshot.
-A single temporary-file rename publishes all runtime evidence together.
+Both snapshots are prepared before replacement. The full snapshot is replaced
+first, then one temporary-file rename publishes all runtime evidence together.
+This is atomic per file, not across both files. A failure between replacements
+leaves a complete old runtime snapshot; the verification guard rejects the pair
+until the runtime snapshot is regenerated. Cleanup is attempted after ordinary
+failures; cleanup errors are reported. Abrupt termination can leave a temporary
+file, which is never consumed.
 Review the preview and Git diff; normal builds, installs and catalog browsing
 never run this command. The existing RDAP bootstrap network cache is separate.
+
+Regenerate only the runtime projection after such an interruption, or after a
+projection/taxonomy change, without changing full-snapshot or observation dates:
+
+```sh
+bun run catalog:update --runtime-only          # preview, no writes
+bun run catalog:update --runtime-only --apply  # replace only the runtime snapshot
+```
+
+This mode validates the full snapshot's checker and review evidence first. It
+cannot refresh stale checker signatures or relabel old server observations.
 `bun run catalog:verify` checks that bundled checker signatures match the sources
 and their resolved checker dependencies/configuration, and that assigned classifications match their captured evidence
-and the current classification rules. npm, standalone binary and web builds run this guard. Release
+and the current classification rules. It also compares the runtime snapshot with
+a fresh projection of the full snapshot and taxonomy, rejecting missing, invalid
+or inconsistent runtime data without rewriting either file. npm, standalone
+binary and web builds run this guard. Release
 verification also prepares the npm artifact before compiling platform binaries.
 Web-only and developer dependency changes are excluded from checker signatures.
 `src/utils/file-transaction.ts` and `src/utils/storage-error.ts` are included because

@@ -1,4 +1,4 @@
-import { checkerSignatures } from "./checker-fingerprint.ts";
+import { checkerSignatures, runtimeCatalogPath, verifyCatalogEvidence } from "./checker-fingerprint.ts";
 import { applyReviewEvidence } from "../src/extensions/evidence.ts";
 import { hash } from "../src/extensions/inventory.ts";
 import { readFile, writeFile, rename, mkdir, rm } from "node:fs/promises";
@@ -8,8 +8,44 @@ import { buildInventory, ROOT_SOURCE, PSL_SOURCE, RDAP_SOURCE } from "../src/ext
 import { buildCatalogSnapshot, supportedSuffixes } from "../src/extensions/snapshot.ts";
 import { catalogLookupPlan } from "../src/extensions/boundary.ts";
 import type { CommercialSource, EditorialData, Inventory, SourceCapture, ReviewEvidence } from "../src/extensions/types.ts";
+import { projectRuntimeCatalog } from "../src/extensions/runtime-snapshot.ts";
 
 export interface CatalogEvidence { commercial: CommercialSource[]; editorial: EditorialData; captures?: SourceCapture[]; reviews?: ReviewEvidence }
+
+// Prepare every file before publishing the full snapshot, then the standalone
+// runtime snapshot. This is atomic per file, not a multi-file transaction.
+async function publishCatalog(files: { file: string; data: unknown }[]) {
+  const prepared = files.map(({ file, data }) => ({ file, text: JSON.stringify(data) + '\n', temporary: `${file}.${randomUUID()}.tmp` }));
+  const failures: unknown[] = [];
+  let operation = '';
+  try {
+    for (const item of prepared) {
+      operation = `prepare ${item.file}`;
+      await mkdir(dirname(item.file), { recursive: true });
+      await writeFile(item.temporary, item.text, { flag: 'wx' });
+    }
+    for (const item of prepared) {
+      operation = `replace ${item.file}`;
+      await rename(item.temporary, item.file);
+    }
+  } catch (cause) { failures.push(new Error(`Could not ${operation}`, { cause })); }
+  finally {
+    for (const item of prepared) {
+      try { await rm(item.temporary, { force: true }); }
+      catch (cause) { failures.push(new Error(`Could not remove temporary catalog ${item.temporary}`, { cause })); }
+    }
+  }
+  if (failures.length) throw new AggregateError(failures, `Catalog publication did not finish cleanly (${operation}). Run catalog:verify; if the runtime differs, preview catalog:update --runtime-only and regenerate with --apply.`);
+}
+
+export async function regenerateRuntimeCatalog(file: string, apply = false) {
+  const full = JSON.parse(await readFile(file, 'utf8')) as Inventory;
+  // Do not require a matching runtime here: this path repairs missing/stale data.
+  await verifyCatalogEvidence(full);
+  const runtime = projectRuntimeCatalog(full);
+  if (apply) await publishCatalog([{ file: runtimeCatalogPath(file), data: runtime }]);
+  return runtime;
+}
 
 export function catalogChanges(old: Inventory | undefined, next: Inventory) {
   const before = new Set(old ? supportedSuffixes(old) : []);
@@ -62,23 +98,23 @@ export async function refreshCatalog(file: string, fetchText: (url: string) => P
       if (!current || current.suffixes.length < previous.suffixes.length * 0.9) throw new Error(`Incomplete commercial source: ${previous.provider}`);
     }
   }
-  if (!apply) return data;
-  await mkdir(dirname(file), { recursive: true });
-  const temporary = `${file}.${randomUUID()}.tmp`;
-  try {
-    await writeFile(temporary, JSON.stringify(data) + "\n", { flag: "wx" });
-    await rename(temporary, file);
-  } finally { await rm(temporary, { force: true }); }
+  const runtime = projectRuntimeCatalog(data);
+  if (apply) await publishCatalog([{ file, data }, { file: runtimeCatalogPath(file), data: runtime }]);
   return data;
 }
 
 if (import.meta.main) {
   const [input, mode, ...extra] = process.argv.slice(2);
-  if (!input || (mode !== undefined && mode !== "--apply") || extra.length) throw new Error("Usage: bun run catalog:update <input-directory> [--apply]. Preview is the default; all eight saved evidence files are required.");
-  const sourceDir = resolve(input);
-  const [root, psl, rdap, commercial, overrides, regions, captures, reviews] = await Promise.all(["roots.txt", "public_suffix_list.dat", "rdap.json", "commercial.json", "overrides.json", "regions.json", "captures.json", "reviews.json"].map(name => readFile(join(sourceDir, name), "utf8")));
+  if (!input || (mode !== undefined && mode !== "--apply") || extra.length) throw new Error("Usage: bun run catalog:update <input-directory> [--apply], or --runtime-only [--apply]. Preview is the default; a full refresh requires all eight saved evidence files.");
   const file = resolve(import.meta.dir, "../src/extensions/data/catalog.json");
-  const old = JSON.parse(await readFile(file, "utf8")) as Inventory;
-  const data = await refreshCatalog(file, async () => { throw new Error("Saved-input refresh must not download data"); }, new Date(), root, psl, rdap, { captures: JSON.parse(captures!), reviews: JSON.parse(reviews!), commercial: JSON.parse(commercial!), editorial: { overrides: JSON.parse(overrides!), regions: JSON.parse(regions!) } }, mode === "--apply");
-  console.log(JSON.stringify({ applied: mode === "--apply", ...catalogChanges(old, data) }, null, 2));
+  if (input === '--runtime-only') {
+    const runtime = await regenerateRuntimeCatalog(file, mode === '--apply');
+    console.log(JSON.stringify({ applied: mode === '--apply', runtimeOnly: true, catalogVersion: runtime.catalogVersion, entries: runtime.inventory.entries.length, checkedAt: runtime.inventory.checkedAt, generatedAt: runtime.inventory.generatedAt }, null, 2));
+  } else {
+    const sourceDir = resolve(input);
+    const [root, psl, rdap, commercial, overrides, regions, captures, reviews] = await Promise.all(["roots.txt", "public_suffix_list.dat", "rdap.json", "commercial.json", "overrides.json", "regions.json", "captures.json", "reviews.json"].map(name => readFile(join(sourceDir, name), "utf8")));
+    const old = JSON.parse(await readFile(file, "utf8")) as Inventory;
+    const data = await refreshCatalog(file, async () => { throw new Error("Saved-input refresh must not download data"); }, new Date(), root, psl, rdap, { captures: JSON.parse(captures!), reviews: JSON.parse(reviews!), commercial: JSON.parse(commercial!), editorial: { overrides: JSON.parse(overrides!), regions: JSON.parse(regions!) } }, mode === "--apply");
+    console.log(JSON.stringify({ applied: mode === "--apply", ...catalogChanges(old, data) }, null, 2));
+  }
 }

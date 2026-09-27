@@ -1,13 +1,14 @@
 import { verificationSummary } from "./evidence.ts";
 import { domainToASCII } from "node:url";
-import snapshot from "./data/catalog.json";
+import snapshot from "./data/runtime-catalog.json";
 import { hash } from "./inventory.ts";
 import { INDUSTRIES, PURPOSES, FACETS } from "./taxonomy.ts";
 import type { CatalogFilters, Category, ExtensionEntry, Facet, Inventory } from "./types.ts";
-import { lookupRoute, normalizeSuffix } from "./boundary.ts";
+import { lookupRoute } from "./boundary.ts";
+import { supportedCatalogEntries, type RuntimeCatalogSnapshot } from "./runtime-snapshot.ts";
 
-export const inventory = snapshot as Inventory;
-export const catalogVersion = hash(JSON.stringify(inventory) + JSON.stringify([INDUSTRIES, PURPOSES]) + JSON.stringify(inventory.entries.map(e => lookupRoute(e.suffix, inventory)))).slice(0, 16);
+export const inventory: Inventory = (snapshot as RuntimeCatalogSnapshot).inventory;
+export const catalogVersion = snapshot.catalogVersion;
 const enRegions = new Intl.DisplayNames(["en"], { type: "region" });
 const koRegions = new Intl.DisplayNames(["ko"], { type: "region" });
 export const entries: ExtensionEntry[] = inventory.entries;
@@ -15,10 +16,7 @@ export const entryBySuffix = new Map(entries.map(e => [e.suffix, e]));
 export function lookupSupport(suffix: string): "rdap" | "whois" | "unsupported" {
   return lookupRoute(suffix, inventory);
 }
-export const supportedEntries = entries.filter(e => {
-  if (!e.offers?.length || lookupSupport(e.suffix) === "unsupported") return false;
-  try { return normalizeSuffix(e.suffix, inventory) === e.suffix; } catch { return false; }
-}).sort((a, b) => a.suffix < b.suffix ? -1 : a.suffix > b.suffix ? 1 : 0);
+export const supportedEntries = supportedCatalogEntries(inventory);
 const regionCategories: Category[] = [...new Set(supportedEntries.flatMap(e => e.assignments.filter(a => a.facet === "region").map(a => a.id)))].sort().map(id => ({ id, name: enRegions.of(id) ?? id, nameKo: koRegions.of(id) ?? id, description: "Geographic association" }));
 
 export function categoriesFor(facet: Facet): Category[] {

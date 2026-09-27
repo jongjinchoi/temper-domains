@@ -15,6 +15,9 @@ test("light CLI paths and MCP initialization do not execute the catalog", async 
         build.onLoad({ filter: /extensions\/catalog\.ts$/ }, async args => ({
           contents: 'throw new Error("CATALOG_EXECUTED");\n' + await Bun.file(args.path).text(), loader: "ts",
         }));
+        build.onLoad({ filter: /extensions\/data\/catalog\.json$/ }, () => {
+          throw new Error('Full maintenance catalog must not be bundled into the CLI');
+        });
       } }] });
     expect(built.success).toBe(true);
     const entry = join(dir, "index.js");
