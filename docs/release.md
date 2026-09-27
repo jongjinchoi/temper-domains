@@ -66,7 +66,7 @@ git push origin main --tags
    - bun-linux-x64, bun-linux-arm64
    - bun-windows-x64
 4. **release** - 성공한 바이너리 `tar.gz` 업로드
-5. **homebrew** - `jongjinchoi/homebrew-temper-domains` Formula 자동 업데이트
+5. **homebrew** - 네 native archive의 다운로드·압축 검사를 모두 통과한 뒤 SHA를 넣어 `jongjinchoi/homebrew-temper-domains` Formula를 교체. 실패 시 기존 Formula 보존.
 
 Source 공개가 바이너리보다 먼저 완료될 수 있다. 채널별 결과를 따로 확인한다.
 Native 실패는 npm 게시를 중단하지 않으며, source 실패는 두 채널 모두 중단한다.

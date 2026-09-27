@@ -197,56 +197,23 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          path: release-source
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
           repository: jongjinchoi/homebrew-temper-domains
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
       - name: Update formula
+        shell: bash
+        working-directory: tap
         run: |
+          set -euo pipefail
           VERSION=${GITHUB_REF#refs/tags/v}
-          BASE_URL="https://github.com/jongjinchoi/temper-domains/releases/download/v${VERSION}"
-
-          SHA_DARWIN_ARM64=$(curl -sL "${BASE_URL}/temper-bun-darwin-arm64.tar.gz" | shasum -a 256 | awk '{print $1}')
-          SHA_DARWIN_X64=$(curl -sL "${BASE_URL}/temper-bun-darwin-x64.tar.gz" | shasum -a 256 | awk '{print $1}')
-          SHA_LINUX_X64=$(curl -sL "${BASE_URL}/temper-bun-linux-x64.tar.gz" | shasum -a 256 | awk '{print $1}')
-          SHA_LINUX_ARM64=$(curl -sL "${BASE_URL}/temper-bun-linux-arm64.tar.gz" | shasum -a 256 | awk '{print $1}')
-
-          cat > Formula/temper.rb << EOF
-          class Temper < Formula
-            desc "Never leave your terminal to find a domain"
-            homepage "https://github.com/jongjinchoi/temper-domains"
-            version "${VERSION}"
-            license "AGPL-3.0-only"
-
-            on_macos do
-              if Hardware::CPU.arm?
-                url "${BASE_URL}/temper-bun-darwin-arm64.tar.gz"
-                sha256 "${SHA_DARWIN_ARM64}"
-              else
-                url "${BASE_URL}/temper-bun-darwin-x64.tar.gz"
-                sha256 "${SHA_DARWIN_X64}"
-              end
-            end
-
-            on_linux do
-              if Hardware::CPU.arm?
-                url "${BASE_URL}/temper-bun-linux-arm64.tar.gz"
-                sha256 "${SHA_LINUX_ARM64}"
-              else
-                url "${BASE_URL}/temper-bun-linux-x64.tar.gz"
-                sha256 "${SHA_LINUX_X64}"
-              end
-            end
-
-            def install
-              bin.install "temper"
-              pkgshare.install "LICENSE", "THIRD_PARTY_NOTICES.md", "SOURCE.md"
-            end
-
-            test do
-              system "#{bin}/temper", "--version"
-            end
-          end
-          EOF
+          bash ../release-source/scripts/update-homebrew.sh "$VERSION" \
+            "https://github.com/jongjinchoi/temper-domains/releases/download/v${VERSION}" Formula/temper.rb
       - name: Commit and push
+        working-directory: tap
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           git config user.name "github-actions[bot]"
