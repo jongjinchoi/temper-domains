@@ -55,20 +55,29 @@ official repository and review the new revision before changing the pin.
 # 1. package.json version 수정
 # ex) 0.2.2 → <next-version>
 
-# 2. 커밋
+# 2. 변경 브랜치에서 커밋하고 PR 생성
 git add package.json
 git commit -m "chore: bump version to <next-version>"
 
-# 3. 태그 생성 + 푸시
-git tag v<next-version>
-git push origin main --tags
+# 3. PR의 CI / required 성공 및 최신 main 기준 검증 후 병합
+# main 반영 커밋의 CI 성공을 확인한 다음, 그 커밋에 태그 생성
+git fetch origin main
+git tag v<next-version> <verified-main-commit>
+git push origin v<next-version>
 ```
+
+GitHub의 main 규칙에는 PR 경유, 최신 base 기준 `CI / required` 필수 성공,
+관리자 포함 상시 우회 금지를 설정한다. 새 검사 이름의 실제 원격 성공 실행을
+확인한 뒤 규칙에 등록한다. 이 문서는 운영 절차이며 설정 완료의 증거가 아니다.
+Vercel의 운영 도메인 승격도 같은 main 커밋의 `CI / required`를 Deployment
+Checks로 연결한다. 현재 설정과 사용 가능 여부를 먼저 확인하며, 배포 빌드 완료와
+운영 도메인 승격을 구분한다. 설정 전에는 자동 차단이 보장되지 않는다.
 
 태그 푸시 후 GitHub Actions가 자동 실행:
 
-1. **verify** - `bun test`, `bun run typecheck`, `bun run docs:check`, `npm pack`; 게시할 npm tgz와 corresponding-source archive 생성
-2. **source** - GitHub Release 생성/확인, 실제 commit의 source archive 공개 및 파일 hash 확인. 한 번 내려받아 한 번 압축 해제하여 대조.
-3. **build / npm** - source 성공 뒤 독립 실행. npm은 verify가 만든 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드 (`PKG_VERSION`은 태그 버전으로 주입)
+1. **quality / verify** - quality는 같은 실행 커밋의 CI workflow를 호출해 root·web·Node 최소/LTS·OS updater 검사를 수행한다. verify는 태그·버전·복구 조건을 검사하고 `npm pack`으로 tgz와 corresponding-source archive를 만든다. tgz를 저장소 밖 임시 경로에 설치해 bin·버전·help·오프라인 목록을 확인한다.
+2. **source** - quality와 verify가 모두 성공해야 GitHub Release 생성/확인 및 실제 commit의 source archive 공개·파일 hash 확인을 수행한다. 한 번 내려받아 한 번 압축 해제하여 대조.
+3. **build / npm** - source 성공 뒤 독립 실행. npm은 검증한 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드하고 각 대상 OS/CPU에서 아카이브를 풀어 버전·help·오프라인 목록을 확인 (`PKG_VERSION`은 태그 버전으로 주입)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64
    - bun-windows-x64
@@ -92,7 +101,7 @@ GitHub Release가 이미 게시됐지만 npm 게시만 실패한 경우 기존 �
 gh workflow run release.yml --ref main -f release_tag=v0.4.0
 ```
 
-수동 실행은 verify와 npm job만 수행하며 바이너리·Homebrew를 재게시하지 않는다.
+수동 실행도 quality·verify·source를 거쳐 npm 게시를 복구하며 바이너리·Homebrew를 재게시하지 않는다.
 기존 공개 GitHub Release에 복구 빌드의 실제 커밋을 담은 소스 archive를 추가한다.
 기존 태그 빌드의 소스 archive를 덮어쓰지 않는다. 입력 태그와 package.json 버전이 같고, 태그가 현재 커밋의
 조상이며, 태그 이후 변경이 `release.yml`과 이 문서뿐일 때만 게시를 허용한다.
@@ -134,9 +143,16 @@ Local package checks do not publish or update the maintainer's installation:
 bun run build:npm
 npm pack --dry-run
 npm pack --pack-destination /path/to/temporary-directory
+bun tests/packaging/smoke.mjs npm /path/to/temporary-directory/temper-domains-<version>.tgz
 bun run build.ts bun-darwin-arm64
 bun run scripts/source-package.ts bun-darwin-arm64
+bun tests/packaging/smoke.mjs native bun-darwin-arm64 dist/temper-bun-darwin-arm64.tar.gz
 ```
+
+Native smoke는 해당 OS/CPU에서 실행해야 하며 다른 대상은 건너뛰지 않고 실패한다.
+npm smoke는 임시 경로에만 설치하고 종료 시 제거한다. npm 의존성 다운로드는
+가능하지만 도메인 조회·게시·사용자 전역 설치 변경은 수행하지 않는다.
+검사 전후 아카이브 SHA-256이 같은지 확인하여 실제 게시 입력을 보존한다.
 
 Check npm publication and the Homebrew formula separately: the CLI updater uses
 each installation channel's published version, not GitHub release presence alone.

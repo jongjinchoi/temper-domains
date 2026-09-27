@@ -29,6 +29,8 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Web dev: `bun run web:dev`
 - Web typecheck: `bun run web:typecheck`
 - Web build: `bun run web:build`
+- Browser contract: `bash tests/browser/run.sh` (after web build and `node node_modules/playwright/cli.js install chromium`)
+- Release artifact smoke: `bun tests/packaging/smoke.mjs npm <tgz>` or `bun tests/packaging/smoke.mjs native <target> <tar.gz>` on the target OS/CPU
 
 Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
 Ordinary npm/native compilation does not require Git or release metadata.
@@ -47,12 +49,24 @@ versions used for verification.
 directory. Child-process regression tests also use temporary homes. RDAP calls
 are mocked in tests; these tests do not query Production or update real user
 configuration. The browser check in `tests/browser/playground.mjs` targets a
-local server and intercepts `/api/check/`; it requires an available Playwright
-installation and browser, not a new product dependency.
+local server and intercepts valid `/api/check/` queries; invalid input exercises
+the real local HTTP 400 path. Playwright is a development dependency; install its
+Chromium separately. `tests/browser/run.sh` owns the local production server and
+stops it on exit. It does not use the hosted site.
+Package smoke installs npm artifacts only in a temporary directory, may download
+npm dependencies, and removes its own fixture afterward. Native smoke extracts
+the archive into a temporary directory. Both use isolated homes and offline CLI
+commands; neither publishes, queries registries for domains, nor changes a global installation.
 Transport checks start loopback TLS servers with temporary OpenSSL certificates,
 exercise Bun and Node, and do not query public registries.
 Shared cooldown checks also use temporary homes and loopback HTTP/WHOIS servers;
 they do not query public registries or change real user state.
+
+CI runs the shared cooldown and browser contracts. `CI / required` requires every
+root/web/Node/updater job to succeed. Release reuses CI at the same commit before
+publication and runs smoke checks on the artifacts it publishes. Branch rules
+and Vercel Deployment Checks must be configured separately; changing workflows
+does not itself enable remote enforcement.
 
 ## Source Of Truth
 

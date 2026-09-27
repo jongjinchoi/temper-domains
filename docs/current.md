@@ -367,16 +367,29 @@ The Node runtime checks above passed all nine cases on both Node 22.12.0 and
 24.21.0, including concurrent history writers and suggestion rendering. This is
 local evidence; GitHub Actions, publication and hosted Production were not run.
 
-For the browser check, start the locally built site, then run:
+CI also runs the shared CLI/MCP cooldown runner after the npm build, and the
+browser contract against a locally built production server. Browser tooling is
+a pinned development dependency; Chromium is installed separately:
 
 ```bash
-TEMPER_TEST_URL=http://127.0.0.1:3000 node tests/browser/playground.mjs
+node node_modules/playwright/cli.js install chromium
+bun run web:build
+bash tests/browser/run.sh
 ```
 
-This check requires Playwright/Chromium to be available. If installed outside
-the repository, set `TEMPER_PLAYWRIGHT_MODULE` to its ESM entry point. The script
-intercepts API calls and checks Escape, input focus, accessible name, incomplete
-streams, and page width at 390px/1440px. It does not access a hosted service.
+The runner starts and stops its own server (default port 3000; override with
+`TEMPER_TEST_PORT`). To check an already running local server, use
+`TEMPER_TEST_URL=http://127.0.0.1:3000 node tests/browser/playground.mjs`.
+The script intercepts valid lookup requests, checks actual invalid-input HTTP 400
+guidance and recovery, Escape, focus, incomplete streams and 390px/1440px layout.
+It does not query public registries or access the hosted site.
+
+The `CI / required` job succeeds only when root, web, both Node versions and
+all updater platforms succeed. Release calls the same checks at its own commit
+before any publication, then checks the actual npm package and each native
+archive before publishing that channel. See [the release guide](release.md).
+GitHub required-check rules and Vercel production promotion checks are separate
+remote settings: workflow configuration alone does not enable them.
 
 ### Previous dependency-upgrade verification — 2026-09-19 (before RDAP changes)
 
