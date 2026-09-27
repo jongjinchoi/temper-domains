@@ -1,14 +1,39 @@
 import React from "react";
 import { render } from "ink";
-import { writeFile } from "node:fs/promises";
+import { writeFile, realpath, readdir, access } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { UpdatePrompt } from "../../src/tui/UpdatePrompt.tsx";
 import { setTheme } from "../../src/tui/theme.ts";
+import { performUpdate } from "../../src/update/runner.ts";
 
 setTheme(process.env.TEMPER_TEST_THEME ?? "temper-forge");
 
 const [scenario, resultPath, childPath] = process.argv.slice(2);
 if (!resultPath || !childPath) throw new Error("Temporary result paths are required");
-const instance = render(<UpdatePrompt current="0.4.1" latest="0.5.0" installer={scenario === "npm-env" ? "npm" : "Homebrew"} onUpdate={async (execute, _confirmTarget, onStage) => {
+const preflight = scenario?.startsWith("preflight-");
+let executions = 0;
+const home = await realpath(dirname(resultPath));
+const entry = join(home, "entry.js");
+if (preflight) await writeFile(entry, "");
+const instance = render(<UpdatePrompt current="0.4.1" latest="0.5.0" installer={scenario === "npm-env" ? "npm" : "Homebrew"} onUpdate={async (execute, confirmTarget, onStage, signal) => {
+  if (preflight) {
+    let queries = 0;
+    return performUpdate({ kind: "npm", channel: "npm", identity: home, entry, root: home, prefix: home,
+      node: process.execPath, npm: { file: "never-execute-npm", args: [] }, guidance: "" }, "0.5.0", {
+      lockDirectory: home, signal, confirmTarget, onStage,
+      query: async () => {
+        if (++queries === 1) {
+          await writeFile(childPath + ".ready", "ready");
+          const deadline = Date.now() + 8000;
+          while (!await access(childPath + ".release").then(() => true, () => false)) {
+            if (Date.now() > deadline) throw new Error("Preflight gate not released");
+            await new Promise(resolve => setTimeout(resolve, 5));
+          }
+        }
+        return { stdout: queries === 1 ? "0.4.1" : "0.5.0", stderr: "" };
+      }, execute: async () => { executions++; },
+    });
+  }
   const behavior = scenario === "interrupt" ? "setTimeout(()=>{},30000)"
     : scenario === "input" || scenario === "unknown-input" ? `process.stdout.write(${JSON.stringify(scenario === "input" ? "Proceed? " : "Type a confirmation token: ")}); process.stdin.once('data',answer=>{console.log('ANSWER:'+answer.toString().trim());process.exit(0)})`
     : scenario === "logs" ? "for(let i=0;i<50000;i++)console.log('Removing: /tmp/cache/file... (120KB)');process.stdout.write('Remov');setTimeout(()=>{console.log('ing: /tmp/cache/file... (120KB)');process.stdout.write('\\x1b[2K\\r⠋ Formula temper (0.5.0) #### Downloading 10MB/20MB\\r');console.error('Warning: keep this diagnostic');process.exit(0)},70)"
@@ -23,4 +48,5 @@ const instance = render(<UpdatePrompt current="0.4.1" latest="0.5.0" installer={
 }} />, { exitOnCtrlC: false });
 const result = await instance.waitUntilExit();
 instance.cleanup();
-await writeFile(resultPath, JSON.stringify({ result, raw: process.stdin.isRaw === true }));
+const locks = (await readdir(home)).filter(name => name.endsWith(".lock"));
+await writeFile(resultPath, JSON.stringify({ result, raw: process.stdin.isRaw === true, executions, locks }));

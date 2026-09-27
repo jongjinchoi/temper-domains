@@ -1,5 +1,16 @@
 import { expect, test } from "bun:test";
 
+test.each(["preflight-escape", "preflight-ctrlc"])("%s waits for runner cleanup without starting an installer", async scenario => {
+  const child = Bun.spawn([process.execPath, "tests/helpers/update-prompt-worker.tsx", scenario], { stdout: "pipe", stderr: "pipe" });
+  const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+  expect({ code, err }).toEqual({ code: 0, err: "" });
+  const data = JSON.parse(out);
+  expect(data.executed).toBe(0);
+  expect(data.result).toEqual({ kind: "cancelled" });
+  expect(data.raw).toBe(false);
+  expect(data.locks).toEqual([]);
+});
+
 test.each(["later", "cancel", "success", "failure", "changed"])("update prompt %s preserves decisions and restores input", async scenario => {
   const child = Bun.spawn([process.execPath, "tests/helpers/update-prompt-worker.tsx", scenario], { stdout: "pipe", stderr: "pipe" });
   const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);

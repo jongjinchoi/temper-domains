@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "bun:test";
-import { mkdtemp, mkdir, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, realpath, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { performUpdate, updateCommands } from "./runner.ts";
@@ -19,6 +19,85 @@ async function setup(kind: "npm" | "homebrew") {
     { kind, channel: "homebrew", identity: home, entry, guidance: "", rack, brew: "/fake/brew" };
   return { home, installation, keg };
 }
+
+test.each(["query", "stage"])("npm cancellation during %s cannot start installation", async boundary => {
+  const { home, installation } = await setup("npm");
+  const controller = new AbortController(); let executions = 0;
+  const options = { lockDirectory: home, signal: controller.signal,
+    query: async () => { if (boundary === "query") controller.abort(); return { stdout: "0.4.1", stderr: "" }; },
+    onStage: async () => { if (boundary === "stage") controller.abort(); },
+    execute: async () => { executions++; }, confirmTarget: async () => true,
+  };
+  const result = await performUpdate(installation, "0.5.0", options);
+  expect(result).toEqual({ status: "cancelled" }); expect(executions).toBe(0);
+  expect((await readdir(home)).filter(name => name.endsWith(".lock"))).toEqual([]);
+});
+
+test("preflight forwards user cancellation to a pending child query and drains the lock", async () => {
+  const { home, installation } = await setup("npm");
+  const controller = new AbortController(); let executions = 0;
+  const options = { lockDirectory: home, signal: controller.signal,
+    query: async (_command: Invocation, options?: import("./process.ts").ProcessOptions) => {
+      const signal = options!.signal!;
+      return new Promise<{ stdout: string; stderr: string }>((_resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("User signal did not reach query")), 200);
+        signal.addEventListener("abort", () => { clearTimeout(timer); reject(signal.reason); }, { once: true });
+        controller.abort();
+      });
+    },
+    execute: async () => { executions++; }, confirmTarget: async () => true,
+  };
+  expect(await performUpdate(installation, "0.5.0", options)).toEqual({ status: "cancelled" });
+  expect(executions).toBe(0);
+  expect((await readdir(home)).filter(name => name.endsWith(".lock"))).toEqual([]);
+});
+
+test.each(["metadata", "confirmation", "stage"])("Homebrew cancellation at %s never upgrades after refresh", async boundary => {
+  const { home, installation, keg } = await setup("homebrew");
+  const controller = new AbortController(); const executed: string[] = []; let refreshed = false;
+  const options = { lockDirectory: home, signal: controller.signal,
+    query: async (command: Invocation) => {
+      if (command.args.includes("info")) {
+        if (refreshed && boundary === "metadata") controller.abort();
+        return { stdout: JSON.stringify({ formulae: [{ name: "temper", full_name: "jongjinchoi/temper-domains/temper", tap: "jongjinchoi/temper-domains", pinned: false, versions: { stable: refreshed ? "0.6.0" : "0.5.0" }, installed: [{ version: "0.4.1" }] }] }), stderr: "" };
+      }
+      return { stdout: command.args.includes("--prefix") ? keg : "0.4.1", stderr: "" };
+    },
+    execute: async (command: Invocation) => { executed.push(command.args[0]!); refreshed = true; },
+    confirmTarget: async () => { if (boundary === "confirmation") controller.abort(); return true; },
+    onStage: async (stage: string) => { if (boundary === "stage" && stage === "installing") controller.abort(); },
+  };
+  expect(await performUpdate(installation, "0.5.0", options)).toEqual({ status: "cancelled" });
+  expect(executed).toEqual(["update"]);
+});
+
+test.each(["0.5.0", "0.4.1"])("cancellation after installation still verifies the actual version %s", async installed => {
+  const { home, installation } = await setup("npm"); const controller = new AbortController(); let changed = false; let reads = 0;
+  const options = { lockDirectory: home, signal: controller.signal,
+    query: async (_command: Invocation, options?: import("./process.ts").ProcessOptions) => {
+      reads++; expect(options!.signal!.aborted).toBe(false);
+      return { stdout: changed ? installed : "0.4.1", stderr: "" };
+    },
+    execute: async () => { changed = true; controller.abort(); }, confirmTarget: async () => true,
+  };
+  const result = performUpdate(installation, "0.5.0", options);
+  if (installed === "0.5.0") expect(await result).toEqual({ status: "updated", version: installed });
+  else await expect(result).rejects.toThrow("verification failed");
+  expect(reads).toBe(2);
+});
+
+test("preflight timeout and an interrupted installer remain failures", async () => {
+  const { home, installation } = await setup("npm"); const controller = new AbortController();
+  const options = { lockDirectory: home, signal: controller.signal,
+    query: async () => { throw new DOMException("timed out", "TimeoutError"); },
+    execute: async () => {}, confirmTarget: async () => true,
+  };
+  await expect(performUpdate(installation, "0.5.0", options)).rejects.toThrow("timed out");
+  await expect(performUpdate(installation, "0.5.0", { ...options,
+    query: async () => ({ stdout: "0.4.1", stderr: "" }),
+    execute: async () => { controller.abort(); throw new Error("installer interrupted; may have changed files"); },
+  })).rejects.toThrow("installer interrupted");
+});
 
 test("npm installs the approved version and verifies the owned entry with a fresh process", async () => {
   const { home, installation } = await setup("npm");

@@ -15,7 +15,7 @@ import re
 
 runtime, entry = sys.argv[1:3]
 columns = int(os.environ.get("TEMPER_TEST_COLUMNS", "80"))
-scenarios = sys.argv[3:] or ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure", "resize")
+scenarios = sys.argv[3:] or ("later", "cancel", "success", "failure", "interrupt", "input", "logs", "npm-env", "unknown-input", "verify-failure", "resize", "preflight-ctrlc", "preflight-escape")
 for scenario in scenarios:
     with tempfile.TemporaryDirectory(prefix="temper-update-pty-") as home:
         result_path = os.path.join(home, "result.json")
@@ -57,6 +57,15 @@ for scenario in scenarios:
                 if scenario == "interrupt" and stage == 1 and b"CHILD_READY" in data:
                     os.write(fd, b"\x03")
                     stage = 2
+                if scenario.startswith("preflight-") and stage == 1 and os.path.exists(child_path + ".ready"):
+                    os.write(fd, b"\x1b" if scenario.endswith("escape") else b"\x03")
+                    time.sleep(0.08)
+                    os.write(fd, b"\x03")
+                    time.sleep(0.08)
+                    assert not os.path.exists(result_path), "Exited before query/lock cleanup"
+                    with open(child_path + ".release", "w") as file:
+                        file.write("release")
+                    stage = 2
                 if scenario == "resize" and stage == 1 and b"CHILD_READY" in data:
                     fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", 32, 24, 0, 0))
                     os.kill(pid, signal.SIGWINCH)
@@ -77,10 +86,12 @@ for scenario in scenarios:
             assert os.path.exists(result_path), data.decode(errors="replace")
             with open(result_path) as file:
                 result = json.load(file)
-            expected = {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed", "resize": "updated"}[scenario]
+            expected = "cancelled" if scenario.startswith("preflight-") else {"later": "later", "cancel": "cancelled", "success": "updated", "failure": "failed", "interrupt": "failed", "input": "updated", "logs": "updated", "npm-env": "updated", "unknown-input": "updated", "verify-failure": "failed", "resize": "updated"}[scenario]
             assert result["result"]["kind"] == expected, result
             assert result["raw"] is False, result
-            if scenario not in ("later", "cancel"):
+            if scenario.startswith("preflight-"):
+                assert result["executions"] == 0 and result["locks"] == [], result
+            elif scenario not in ("later", "cancel"):
                 with open(child_path) as file:
                     child = json.load(file)
                 assert child["tty"] is True and child["outputTTY"] is True and child["raw"] is False, child

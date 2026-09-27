@@ -3,6 +3,14 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+test("CLI forwards preflight cancellation through the real prompt and runner, then exits 130", async () => {
+  const child = Bun.spawn([process.execPath, "tests/helpers/update-cli-cancel-worker.tsx"], { stdout: "pipe", stderr: "pipe" });
+  const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+  expect(code).toBe(130);
+  expect(err.trim()).toBe("Update cancelled.");
+  expect(JSON.parse(out)).toEqual({ stopped: true, executions: 0, raw: false, locks: [] });
+});
+
 async function cli(args: string[]) {
   const home = await mkdtemp(join(tmpdir(), "temper-update-cli-"));
   try {

@@ -1,6 +1,6 @@
 // Real processes and filesystem, fake package manager. Never installs a package.
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, realpath, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { detectInstallation, npmInvocation } from "../../src/update/installation.ts";
@@ -75,6 +75,24 @@ else if (args[0] === 'install') {
     assert.ok(failure instanceof UpdateCheckError);
     assert.equal(failure.kind, "timeout"); assert.equal(failure.stage, phase); assert.equal(failure, reason);
   }
+  const controller = new AbortController();
+  const ready = join(home, "query-pid");
+  let queryPid = 0;
+  const pending = performUpdate(installation, "0.5.0", { lockDirectory: home, signal: controller.signal,
+    query: async (_command, options) => runProcess({ file: process.execPath, args: ["-e",
+      `require('node:fs').writeFileSync(${JSON.stringify(ready)}, String(process.pid));setInterval(()=>{},1000)`] }, options),
+    execute: async () => { throw new Error("Cancelled preflight must not install"); }, confirmTarget: async () => true,
+  });
+  const deadline = Date.now() + 5000;
+  while (!queryPid && Date.now() < deadline) {
+    queryPid = Number(await readFile(ready, "utf8").catch(() => "0"));
+    if (!queryPid) await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  assert.ok(queryPid, "Preflight child did not start");
+  controller.abort();
+  assert.deepEqual(await pending, { status: "cancelled" });
+  assert.throws(() => process.kill(queryPid, 0), { code: "ESRCH" });
+  assert.equal((await readdir(home)).some(name => name.endsWith(".lock")), false);
   const result = await performUpdate(installation, "0.5.0", { lockDirectory: home, confirmTarget: async () => { throw new Error("npm must not change the approved target"); }, execute: async command => { await runProcess(command); } });
   assert.deepEqual(result, { status: "updated", version: "0.5.0" });
   assert.equal((await runProcess({ file: process.execPath, args: [entry, "--version"] })).stdout.trim(), "0.5.0");

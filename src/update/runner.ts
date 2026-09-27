@@ -15,6 +15,7 @@ export function updateCommands(installation: Installation, version: string): Inv
 
 export interface UpdateExecution {
   lockDirectory: string;
+  signal?: AbortSignal;
   query?: Query;
   execute?: (command: Invocation, context: InstallerContext) => Promise<void>;
   confirmTarget: (version: string) => Promise<boolean>;
@@ -28,7 +29,16 @@ export async function performUpdate(installation: Installation, target: string, 
   if (!parseStableVersion(target)) throw new Error("Invalid update target version");
   const query = options.query ?? runProcess;
   const execute = options.execute ?? (async command => { await runProcess(command, { inherit: true }); });
-  const read = (command: Invocation) => query(command, { signal: AbortSignal.timeout(10_000), env: brewReadEnvironment() });
+  let installationStarted = false;
+  const checkCancellation = () => { if (!installationStarted) options.signal?.throwIfAborted(); };
+  const read = async (command: Invocation) => {
+    checkCancellation();
+    const timeout = AbortSignal.timeout(10_000);
+    const signal = options.signal && !installationStarted ? AbortSignal.any([options.signal, timeout]) : timeout;
+    const result = await query(command, { signal, env: brewReadEnvironment() });
+    checkCancellation();
+    return result;
+  };
   const installedVersion = async () => {
     let command: Invocation;
     if (installation.kind === "npm") {
@@ -45,7 +55,8 @@ export async function performUpdate(installation: Installation, target: string, 
     if (!parseStableVersion(version)) throw new Error("Installed version verification returned an invalid version");
     return version;
   };
-  return withInstallLock(options.lockDirectory, installation.identity, async () => {
+  const update = async (): Promise<UpdateOutcome> => {
+    checkCancellation();
     let expected = target;
     const before = await installedVersion();
     if (compareStableVersions(before, expected) >= 0) return { status: "current", version: before };
@@ -53,21 +64,36 @@ export async function performUpdate(installation: Installation, target: string, 
       const info = async () => parseBrewInfo((await read({ file: installation.brew, args: ["info", "--json=v2", "--formula", FORMULA] })).stdout);
       if ((await info()).pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
       await options.onStage?.("refreshing");
+      checkCancellation();
       await execute(updateCommands(installation, target)[0]!, { channel: "homebrew", stage: "refreshing", current: before, target });
       const refreshed = await info();
       if (refreshed.pinned) throw new Error("Temper is pinned in Homebrew. The pin has not been changed.");
       expected = refreshed.version;
       if (compareStableVersions(expected, before) <= 0) throw new Error("Homebrew metadata does not offer a newer version; no upgrade was started");
       if (expected !== target && !await options.confirmTarget(expected)) return { status: "cancelled" };
+      checkCancellation();
       await options.onStage?.("installing");
+      checkCancellation();
+      installationStarted = true;
       await execute(updateCommands(installation, expected)[1]!, { channel: "homebrew", stage: "installing", current: before, target: expected });
     } else {
       await options.onStage?.("installing");
+      checkCancellation();
+      installationStarted = true;
       await execute(updateCommands(installation, target)[0]!, { channel: "npm", stage: "installing", current: before, target });
     }
     await options.onStage?.("verifying");
     const after = await installedVersion();
     if (compareStableVersions(after, expected) !== 0) throw new Error(`Update verification failed: expected ${expected}, found ${after}. Check this installation before retrying.`);
     return { status: "updated", version: after };
+  };
+  return withInstallLock(options.lockDirectory, installation.identity, async () => {
+    try { return await update(); }
+    catch (error) {
+      // Keep post-install failures and lock cleanup failures visible. Only the
+      // pre-install user signal is a clean cancellation, not a query timeout.
+      if (!installationStarted && options.signal?.aborted) return { status: "cancelled" };
+      throw error;
+    }
   });
 }

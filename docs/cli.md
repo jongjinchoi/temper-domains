@@ -62,6 +62,8 @@ Detection uses the running installation; the command name `npx` alone does not i
 npm updates the same prefix. Homebrew refreshes metadata and asks again if the target changes.
 There is no `--yes` option. After installation verification, Temper exits: **run your command again**.
 Failure or cancellation does not imply rollback. Errors, warnings and installer prompts remain visible.
+Esc/Ctrl+C during the pre-install checks cancels before installation and waits for cleanup.
+During installation, Ctrl+C is handled by the installer; successful installation is still verified.
 Set `TEMPER_NO_UPDATE_CHECK=1` to disable automatic checks; manual checks still work.
 Queries send no domain names/history, but the version service sees connection metadata such as IP.
 See [update behavior and output details](current.md#current-behavior-notes).

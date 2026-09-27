@@ -16,7 +16,7 @@ async function prompt(result: UpdateCheck): Promise<PromptOutcome> {
     current: result.current, latest: result.latest!,
     installer: installation.kind === "homebrew" ? "Homebrew" : "npm",
     guidance: installation.kind === "manual" ? installation.guidance : undefined,
-    onUpdate: installation.kind === "manual" ? undefined : (execute, confirmTarget, onStage) => performUpdate(installation, result.latest!, { lockDirectory: result.lockDirectory, execute, confirmTarget, onStage }),
+    onUpdate: installation.kind === "manual" ? undefined : (execute, confirmTarget, onStage, signal) => performUpdate(installation, result.latest!, { lockDirectory: result.lockDirectory, execute, confirmTarget, onStage, signal }),
   }), { exitOnCtrlC: false });
   const outcome = await instance.waitUntilExit();
   instance.cleanup();

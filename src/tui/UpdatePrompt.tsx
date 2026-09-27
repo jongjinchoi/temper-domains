@@ -13,7 +13,7 @@ interface Props {
   latest: string;
   installer?: string;
   guidance?: string;
-  onUpdate?: (execute: (command: Invocation, context: InstallerContext) => Promise<void>, confirmTarget: (version: string) => Promise<boolean>, onStage: (stage: UpdateStage) => Promise<void>) => Promise<UpdateOutcome>;
+  onUpdate?: (execute: (command: Invocation, context: InstallerContext) => Promise<void>, confirmTarget: (version: string) => Promise<boolean>, onStage: (stage: UpdateStage) => Promise<void>, signal: AbortSignal) => Promise<UpdateOutcome>;
 }
 
 export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }: Props) {
@@ -24,6 +24,7 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
   const [stage, setStage] = useState<UpdateStage>("installing");
   const [outcome, setOutcome] = useState<PromptOutcome | null>(null);
   const busy = useRef(false);
+  const cancellation = useRef<AbortController | null>(null);
   useEffect(() => {
     if (outcome) void waitUntilRenderFlush().then(() => exit(outcome));
   }, [outcome, exit, waitUntilRenderFlush]);
@@ -32,6 +33,8 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
   const start = async () => {
     if (!onUpdate || busy.current) return;
     busy.current = true;
+    const controller = new AbortController();
+    cancellation.current = controller;
     setPhase("running");
     try {
       const result = await onUpdate(
@@ -46,6 +49,7 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
           await new Promise<void>(resolve => setImmediate(resolve));
           await waitUntilRenderFlush();
         },
+        controller.signal,
       );
       finish(result.status === "cancelled" ? { kind: "cancelled" } : { kind: result.status, version: result.version });
     } catch (error) {
@@ -53,12 +57,17 @@ export function UpdatePrompt({ current, latest, installer, guidance, onUpdate }:
     }
   };
   useInput((input, key) => {
-    if (outcome || phase === "running") return;
+    if (outcome) return;
     if (key.escape || (key.ctrl && input === "c")) {
+      if (phase === "running") {
+        if (stage !== "verifying") cancellation.current?.abort();
+        return;
+      }
       if (answer.current) { const resolve = answer.current; answer.current = null; setPhase("running"); resolve(false); }
       else finish({ kind: "cancelled" });
       return;
     }
+    if (phase === "running") return;
     if (key.upArrow || key.downArrow) setSelected(previous => previous === 0 ? 1 : 0);
     if (!key.return) return;
     if (answer.current) {

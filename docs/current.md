@@ -98,6 +98,11 @@ in both workspaces so root typechecking does not download a separate compiler.
   visible text, not log loss.
   Input prompts pause progress. The runner supplies refresh/install/verification
   stages; the final success still requires a fresh installed-version check.
+  Esc/Ctrl+C during pre-install queries cancels the query and waits for lock
+  cleanup before reporting cancellation (exit 130). Cancellation is checked again
+  after metadata, target confirmation and the stage render, before installation.
+  Installer handoff retains its own Ctrl+C handling; once installation starts,
+  failures remain failures and a successful install still requires verification.
   Update choice has no inner panel border. Ink and the installer relay share
   progress labels, theme color roles and blank-line spacing. During progress and
   completion, only the spinner and success check receive accent colors; body text
