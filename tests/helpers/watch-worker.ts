@@ -1,6 +1,17 @@
 import "./home.ts";
 import { mock } from "bun:test";
 import * as fs from "node:fs/promises";
+let injected = 0;
+if (process.env.TEMPER_TEST_FAIL_LOCK_CLOSE) {
+  const original = { ...fs };
+  mock.module("node:fs/promises", () => ({ ...original, open: async (...args: Parameters<typeof fs.open>) => {
+    const file = await original.open(...args);
+    if (!String(args[0]).endsWith(".lock")) return file;
+    const close = file.close.bind(file);
+    file.close = async () => { await close(); injected++; throw new Error("test lock close failed"); };
+    return file;
+  } }));
+}
 if (process.env.TEMPER_TEST_FAIL_RENAME) {
   mock.module("node:fs/promises", () => ({ ...fs, rename: async () => { throw new Error("test rename failed"); } }));
 }
@@ -24,3 +35,4 @@ try {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 }
+if (process.env.TEMPER_TEST_FAIL_LOCK_CLOSE && injected !== 1) throw new Error(`Injection count: ${injected}`);

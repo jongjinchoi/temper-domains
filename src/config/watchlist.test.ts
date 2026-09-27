@@ -81,6 +81,15 @@ test("failed replacement keeps the previous watchlist and releases temporary fil
   expect(await readdir(join(home, ".temper"))).toEqual(["watchlist.json"]);
 });
 
+test("lock close failure after saving still removes the owned lock", async () => {
+  const [code, error] = await worker("add", "acme.com", "", { TEMPER_TEST_FAIL_LOCK_CLOSE: "1" });
+  expect(code).toBe(1);
+  expect(error).toContain("test lock close failed");
+  expect(error).not.toContain("Injection count");
+  expect(JSON.parse(await readFile(file, "utf8"))[0].domain).toBe("acme.com");
+  expect(await readdir(join(home, ".temper"))).toEqual(["watchlist.json"]);
+});
+
 test("an existing lock prevents writes until the owner releases it", async () => {
   const lock = file + ".lock";
   await writeFile(lock, "another writer");
