@@ -95,6 +95,15 @@ async function until(label: string, predicate: () => boolean) {
   do { await view.waitUntilRenderFlush(); if (predicate()) return; await Bun.sleep(10); } while (Date.now() < deadline);
   throw new Error('Timed out: ' + label + '\n' + plain());
 }
+async function expectCompactScreen() {
+  // A bordered list can already contain the same warning before the resize.
+  await until('compact 20x8', () => plain().startsWith('Enlarge terminal'));
+  const compact = plain();
+  const rows = compact.trimEnd().split('\n').length;
+  const diagnostic = `Expected compact 20x8 screen; received ${rows} rows:\n${compact}`;
+  assert.ok(rows <= 8, diagnostic);
+  assert.match(compact, /q quit/, diagnostic);
+}
 async function key(value: string) { input.write(value); await view.waitUntilRenderFlush(); await Bun.sleep(20); }
 const frames: Record<string, string> = {};
 try {
@@ -133,9 +142,7 @@ try {
     assert.match(plain(), /▸/);
     frames.narrow = plain();
     Object.assign(output, { columns: 20, rows: 8 }); output.emit('resize');
-    await until('compact', () => plain().includes('Enlarge terminal'));
-    assert.ok(plain().trimEnd().split('\n').length <= 8);
-    assert.match(plain(), /q quit/);
+    await expectCompactScreen();
   }
   if (mode === 'escape') {
     assert.match(plain(), /esc quit/);
@@ -194,7 +201,7 @@ try {
     assert.match(plain(), first);
     const lookupCount = lookups.length;
     Object.assign(output, { columns: 20, rows: 8 }); output.emit('resize');
-    await until('compact', () => plain().includes('Enlarge terminal'));
+    await expectCompactScreen();
     // Row actions must not reach a list the screen does not show.
     for (const value of ['j', 'd', '\r']) await key(value);
     await Bun.sleep(50); await view.waitUntilRenderFlush();

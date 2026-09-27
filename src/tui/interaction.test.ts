@@ -4,11 +4,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { THEMES } from "../../web/lib/temper-data.ts";
 
-async function scenario(name: string, helper = "tui-worker.tsx") {
+async function scenario(name: string, helper = "tui-worker.tsx", env: NodeJS.ProcessEnv = {}) {
   const home = await mkdtemp(join(tmpdir(), "temper-tui-"));
   try {
     const child = Bun.spawn([process.execPath, `tests/helpers/${helper}`, name], {
-      cwd: import.meta.dir + "/../..", env: { ...process.env, TEMPER_TEST_HOME: home },
+      cwd: import.meta.dir + "/../..", env: { ...process.env, ...env, TEMPER_TEST_HOME: home },
       stdout: "pipe", stderr: "pipe",
     });
     const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
@@ -69,6 +69,10 @@ test.each(["init", "watch", "history", "history-conflict", "search-add", "search
 
 test.each(['history-date', 'history-height', 'watch-height', 'suggest-height', 'suggest-duplicate', 'escape', 'watch-cursor', 'watch-race', 'watch-load-race', 'watch-committed-failure', 'watch-reload-failure', 'notice-timer', 'notice-late'])("boundary regression: %s", async mode => {
   await scenario(mode, 'tui-boundaries-worker.tsx');
+}, 15000);
+
+test("history resize waits for the compact screen in CI", async () => {
+  await scenario('history-height', 'tui-boundaries-worker.tsx', { CI: 'true' });
 }, 15000);
 
 test.each(['watch-compact-keys', 'history-compact-keys', 'suggest-compact-keys', 'history-hidden-list-keys'])("hidden list ignores row actions: %s", async mode => {
