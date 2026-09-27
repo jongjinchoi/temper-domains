@@ -110,6 +110,13 @@ Search and WHOIS accept only `--format tui` or `--format json`; other values
 exit with an error before starting a lookup. `Esc` quits a root search, returns
 from a nested search, or stops an active resume as indicated by the footer.
 
+For search and WHOIS, `--timeout` accepts seconds rounded to the nearest
+millisecond. The rounded value must be between 1 and 2,147,483,647 milliseconds;
+out-of-range values exit with an input error before starting a lookup.
+Fractional seconds are supported: `0.0009` rounds to 1ms, while `0.0001` is
+rejected because it rounds to 0ms. A valid short timeout does not guarantee
+that a lookup can finish within it.
+
 Use `r` to resume the selected retryable unresolved candidate, or `R` for those
 in the current filtered list. Invalid input, unsupported routes, invalid responses and
 damaged limit state require correction instead. Confirmation shows a maximum 120s budget.

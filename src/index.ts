@@ -44,10 +44,11 @@ function validateDomainOrExit(domain: string, argName: string): string {
 
 function parseTimeoutMsOrExit(value: string, argName: string): number {
   const seconds = Number(value);
-  if (!Number.isFinite(seconds) || seconds <= 0) {
-    exitWithError(`invalid ${argName} '${value}'. Expected a positive number of seconds.`);
+  const timeoutMs = Math.round(seconds * 1000);
+  if (!Number.isFinite(seconds) || seconds <= 0 || !Number.isFinite(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647) {
+    exitWithError(`invalid ${argName} '${value}'. Expected seconds that round to between 1 and 2147483647 milliseconds.`);
   }
-  return Math.round(seconds * 1000);
+  return timeoutMs;
 }
 
 const program = new Command();

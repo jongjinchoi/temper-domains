@@ -1,6 +1,6 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
@@ -26,6 +26,41 @@ test("Node WHOIS preserves UTF-8 boundaries and enforces its byte limit", () => 
 function cli(args) {
   return spawnSync(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "dist/npm/index.js", ...args], { encoding: "utf8", env: process.env, timeout: 10000 });
 }
+
+test("Node CLI rejects invalid converted timeouts before requests or state writes", async () => {
+  const before = await requests();
+  const files = await readdir(home, { recursive: true });
+  for (const base of [['search', 'acme'], ['whois', 'acme.com']]) {
+    for (const format of ['tui', 'json']) {
+      for (const seconds of ['2147483.648', '1e308', 'Infinity', 'NaN', '0', '-1', '0.0001']) {
+        const result = cli([...base, '--format', format, '--timeout', seconds]);
+        assert.equal(result.status, 1, JSON.stringify({ base, format, seconds, ...result }));
+        assert.match(result.stderr, /invalid --timeout/);
+        assert.doesNotMatch(result.stderr, /TimeoutOverflow/);
+      }
+    }
+  }
+  assert.equal(await requests(), before);
+  assert.deepEqual(await readdir(home, { recursive: true }), files);
+});
+
+test("Node CLI preserves valid timeout boundaries and defaults", () => {
+  for (const base of [['search', 'acme', '--tlds', 'com'], ['whois', 'acme.com']]) {
+    for (const seconds of [undefined, '3', '1.2345', '2147483.647', '0.0005', '0.0009']) {
+      const result = cli([...base, '--format', 'json', ...(seconds === undefined ? [] : ['--timeout', seconds])]);
+      assert.equal(result.status, 0, result.stderr);
+      assert.doesNotMatch(result.stderr, /TimeoutOverflow|invalid --timeout/);
+      const output = JSON.parse(result.stdout);
+      const row = Array.isArray(output) ? output[0] : output;
+      if (seconds === '0.0005' || seconds === '0.0009') {
+        assert.ok(['available', 'slow'].includes(row.status), JSON.stringify(row));
+      } else {
+        assert.equal(row.status, 'available');
+        assert.equal(row.attempts, 1);
+      }
+    }
+  }
+});
 
 test("Node validation rejects URL syntax and preserves numeric and IDN labels", () => {
   for (const domain of invalid) assert.equal(isValidDomain(domain), false, domain);

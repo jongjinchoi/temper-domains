@@ -138,6 +138,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   local queue and shared recovery spacing plus a 5s request window. This estimate does not guarantee
   completion under congestion, slow responses or new server cooldowns. Explicit
   CLI search timeouts remain strict; detail uses 10s and hosted demo uses 3s.
+  Explicit CLI search/WHOIS timeouts are rounded from seconds to milliseconds;
+  the rounded value must be finite and between 1 and 2,147,483,647ms. Invalid
+  values are rejected before lookup, update checks or TUI rendering.
 - Actual requests share a process-local scheduler: at most 20 active requests,
   two per server origin and 300ms between starts. Local CLI/MCP additionally
   coordinate the per-server cap and interval across processes using the same
