@@ -1,4 +1,5 @@
 import { createConnection } from "node:net";
+import { StringDecoder } from "node:string_decoder";
 import type { DomainDetail, DomainResult, DomainStatus } from "./types.ts";
 import { getTld } from "../utils/domain.ts";
 
@@ -6,8 +7,12 @@ import { WHOIS_PROFILES } from "./services.ts";
 import { domainToASCII } from "node:url";
 import { abortReason } from "./run.ts";
 
+const MAX_WHOIS_BYTES = 8 * 1024 * 1024;
+class WhoisResponseTooLarge extends Error {}
+
 function failureReason(error: unknown, signal: AbortSignal, attempts: number) {
   if (signal.aborted) return abortReason(signal, attempts);
+  if (error instanceof WhoisResponseTooLarge) return "invalid_response" as const;
   return error instanceof Error && error.message === "whois timeout" ? "request_timeout" as const : "network_error" as const;
 }
 
@@ -26,6 +31,8 @@ async function whoisRaw(
     }
 
     let data = "";
+    let receivedBytes = 0;
+    const decoder = new StringDecoder("utf8");
     let settled = false;
     let socket: ReturnType<typeof createConnection> | null = null;
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -65,10 +72,18 @@ async function whoisRaw(
     });
 
     socket.on("data", (chunk) => {
-      data += chunk.toString();
+      if (settled) return;
+      receivedBytes += chunk.length;
+      if (receivedBytes > MAX_WHOIS_BYTES) {
+        fail(new WhoisResponseTooLarge("WHOIS response exceeded the 8 MiB limit"));
+        return;
+      }
+      data += decoder.write(chunk);
     });
 
     socket.on("end", () => {
+      if (settled) return;
+      data += decoder.end();
       succeed();
     });
 

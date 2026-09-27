@@ -1,10 +1,22 @@
 import { test, expect, describe } from "bun:test";
 import { detectStatus, parseWhoisRaw, whoisDetail, whoisLookup } from "./whois.ts";
 
+test("WHOIS preserves split UTF-8 and refuses oversized responses over real TCP", async () => {
+  const child = Bun.spawn([process.execPath, "tests/runtime/whois-boundaries.mjs"], { stdout: "pipe", stderr: "pipe" });
+  const [code, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+  expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+}, 15000);
+
 test("connection refusal retains a retryable reason through the search session", async () => {
   const child = Bun.spawn([process.execPath, "tests/runtime/whois-network.ts"], { stdout: "pipe", stderr: "pipe" });
   const error = await new Response(child.stderr).text();
   expect(await child.exited, error).toBe(0);
+});
+
+test("WHOIS cleans up once across success, abort, timeout, errors and late socket events", async () => {
+  const child = Bun.spawn([process.execPath, "tests/helpers/whois-lifecycle.ts"], { stdout: "pipe", stderr: "pipe" });
+  const [code, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+  expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
 });
 
 test("generic WHOIS notices are not denials and contradictory evidence stays unresolved", () => {

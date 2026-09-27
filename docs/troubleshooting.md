@@ -24,6 +24,10 @@ and show actual elapsed time. A completed stream can contain unresolved results.
 `available` means no registration record was found; confirm purchase availability,
 premium pricing, and restrictions with a registrar.
 
+WHOIS responses are limited to 8 MiB of received bytes. A larger response returns
+`invalid_response`; Temper discards the partial response rather than deriving an
+availability result from it. This error is not automatically retried.
+
 Local CLI and MCP commands share server cooldowns in
 `~/.temper/state/lookup-limits.json`. A server's `Retry-After`, including a
 24-hour wait, survives command restarts. If no valid wait is provided, Temper

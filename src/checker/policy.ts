@@ -32,7 +32,7 @@ const TERMINATION_MESSAGES: Record<TerminationReason, string> = {
   limit_state_error: "Could not safely coordinate lookup requests; repair the local state before retrying",
   rate_limited: "The lookup server asked us to wait before retrying",
   service_unavailable: "The lookup service is temporarily unavailable",
-  invalid_response: "The server did not return a valid matching RDAP domain response",
+  invalid_response: "The server did not return a valid matching domain response",
   network_error: "Could not complete the connection to the lookup server",
   http_error: "The lookup server returned an HTTP error",
   invalid_input: "Input is not a registrable domain",

@@ -183,6 +183,8 @@ in both workspaces so root typechecking does not download a separate compiler.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
+- WHOIS uses a per-connection UTF-8 StringDecoder and an 8 MiB received-byte cap.
+  Oversized responses fail as invalid_response without parsing partial content.
 - Config, watchlist and history updates serialize the full read/modify/write operation with an
   exclusive local lock and replace the data file only after a temporary file
   is written, synced and closed. Watchlist domain keys are case-insensitive.

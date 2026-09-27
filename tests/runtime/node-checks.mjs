@@ -17,6 +17,12 @@ const { isValidDomain, isValidDomainLabel, checkFullDomains, GET, addHistory, lo
 after(() => rm(home, { recursive: true, force: true }));
 const invalid = ["example.com/path", "example.com?x", "example.com#x", "example.com:443", "user@example.com", "%65xample.com", "example.com\\path", "foo..com", "example.com.", "example。com。", "foo。．com"];
 const requests = () => readFile(join(home, "requests"), "utf8").catch(() => "");
+test("Node WHOIS preserves UTF-8 boundaries and enforces its byte limit", () => {
+  const result = spawnSync(process.execPath, ['tests/runtime/whois-boundaries.mjs'], {
+    env: { ...process.env, TEMPER_WHOIS_MODULE: resolve('dist/test-runtime/entry.js') }, encoding: 'utf8', timeout: 15000,
+  });
+  assert.equal(result.status, 0, result.stderr);
+});
 function cli(args) {
   return spawnSync(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "dist/npm/index.js", ...args], { encoding: "utf8", env: process.env, timeout: 10000 });
 }
