@@ -48,6 +48,17 @@ test("deletion rejects a stale screen snapshot without deleting a different entr
   expect((await entries()).map(e => e.query)).toEqual(["new", "selected", "older"]);
 });
 
+test("a typed history conflict retains current rows and independent cleanup errors", async () => {
+  await writeFile(file, JSON.stringify([entry("selected"), entry("older")]));
+  const [code, stderr] = await worker("conflict-cleanup");
+  expect(code).toBe(1);
+  const conflict = JSON.parse(stderr);
+  expect(conflict).toMatchObject({ kind: "HistoryConflictError", injected: 1, cleanup: ["Error: history lock close failed"] });
+  expect(conflict.current).toEqual([entry("new"), entry("selected"), entry("older")]);
+  expect(await entries()).toEqual(conflict.current);
+  expect(await readdir(join(home, ".temper"))).toEqual(["history.json"]);
+});
+
 test("a successful deletion and concurrent additions preserve unrelated entries", async () => {
   await writeFile(file, JSON.stringify([entry("selected"), entry("older")]));
   const gate = join(home, "start");
