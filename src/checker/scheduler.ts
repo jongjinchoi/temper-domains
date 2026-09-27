@@ -1,7 +1,7 @@
 // Limits are client policy, not registry-advertised quotas. State is process-local.
 export interface RequestScope { concurrency: number; active: number }
 interface Job { scope: RequestScope; signal?: AbortSignal; start: () => void }
-interface ServerQueue { active: number; nextStart: number; blockedUntil: number; jobs: Job[] }
+interface ServerQueue { active: number; nextStart: number; jobs: Job[] }
 export const SERVER_INTERVAL_MS = 300;
 export function serverKey(url: string): string { return new URL(url).origin; }
 
@@ -16,16 +16,10 @@ export class RequestScheduler {
   private server(key: string): ServerQueue {
     let state = this.servers.get(key);
     if (!state) {
-      state = { active: 0, nextStart: 0, blockedUntil: 0, jobs: [] };
+      state = { active: 0, nextStart: 0, jobs: [] };
       this.servers.set(key, state);
     }
     return state;
-  }
-
-  backoff(key: string, delayMs: number): void {
-    const state = this.server(key);
-    state.blockedUntil = Math.max(state.blockedUntil, Date.now() + delayMs);
-    this.pump();
   }
 
   estimateWait(keys: readonly string[]): number {
@@ -34,7 +28,7 @@ export class RequestScheduler {
     let wait = 0;
     for (const [key, count] of counts) {
       const state = this.servers.get(key);
-      wait = Math.max(wait, Math.max(0, Math.max(state?.nextStart ?? 0, state?.blockedUntil ?? 0) - Date.now())
+      wait = Math.max(wait, Math.max(0, (state?.nextStart ?? 0) - Date.now())
         + ((state?.jobs.length ?? 0) + count - 1) * this.intervalMs);
     }
     return wait;
@@ -99,7 +93,7 @@ export class RequestScheduler {
       if (state.active >= this.perServer) continue;
       const index = state.jobs.findIndex(job => job.scope.active < job.scope.concurrency);
       if (index < 0) continue;
-      const delay = Math.max(state.nextStart, state.blockedUntil) - Date.now();
+      const delay = state.nextStart - Date.now();
       if (delay > 0) { wait = Math.min(wait, delay); continue; }
       state.jobs.splice(index, 1)[0]!.start();
       scanned = 0;
@@ -110,7 +104,7 @@ export class RequestScheduler {
     }
     const now = Date.now();
     for (const [key, state] of this.servers) {
-      if (!state.active && !state.jobs.length && Math.max(state.nextStart, state.blockedUntil) <= now) this.servers.delete(key);
+      if (!state.active && !state.jobs.length && state.nextStart <= now) this.servers.delete(key);
     }
   }
 }

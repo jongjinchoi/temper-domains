@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { setTimeout as delay } from "node:timers/promises";
 import type { RetryAtSource } from "./types.ts";
 
 export interface Lease { id: string; pid: number; expires: number; generation: number; probe: boolean }
@@ -54,14 +53,6 @@ export class LimitCoordinator {
       }
       return wait;
     }, signal);
-  }
-
-  async acquire(key: string, deadline: number, signal: AbortSignal): Promise<LimitPermit> {
-    while (true) {
-      const answer = await this.tryAcquire(key, deadline, signal);
-      if (answer.permit) return answer.permit;
-      await delay(Math.min(answer.wait, 100), undefined, { signal });
-    }
   }
 
   async tryAcquire(key: string, deadline: number, signal: AbortSignal): Promise<Admission> {

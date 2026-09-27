@@ -1,7 +1,6 @@
 import { mkdir, readFile, writeFile, rename, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { findRdapBootstrapKey } from "../utils/domain.ts";
 import { createBootstrapCache } from "./bootstrap-cache.ts";
 
 const CACHE_DIR = join(homedir(), ".temper", "cache");
@@ -20,13 +19,4 @@ const cache = createBootstrapCache({
   },
   async remove() { await rm(CACHE_FILE, { force: true }); },
 });
-let bootstrapMap: Map<string, string> | undefined;
-export async function getBootstrap(): Promise<Map<string, string>> {
-  bootstrapMap = await cache.get();
-  return bootstrapMap;
-}
-export interface RdapBootstrapMatch { rdapKey: string; rdapUrl: string | null }
-export function getRdapMatch(domain: string): RdapBootstrapMatch {
-  const rdapKey = findRdapBootstrapKey(domain, key => bootstrapMap?.has(key) ?? false);
-  return { rdapKey, rdapUrl: bootstrapMap?.get(rdapKey) ?? null };
-}
+export const getBootstrap = (): Promise<Map<string, string>> => cache.get();

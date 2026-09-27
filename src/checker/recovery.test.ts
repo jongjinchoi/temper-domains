@@ -1,3 +1,4 @@
+import { expectPermit } from "../../tests/helpers/limit-admission.ts";
 import { afterEach, expect, test } from "bun:test";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -15,13 +16,13 @@ test("one answer after repeated limits preserves the 2400ms admission boundary",
   let now = 100000;
   const store = new MemoryLimitStore();
   const limits = new LimitCoordinator(store, () => now, () => 0);
-  const first = await limits.acquire(key, now + 10000, signal);
+  const first = await expectPermit(limits.tryAcquire(key, now + 10000, signal));
   await first.limited("rate_limited", 0); await first.release();
   now += 1200;
-  const second = await limits.acquire(key, now + 10000, signal);
+  const second = await expectPermit(limits.tryAcquire(key, now + 10000, signal));
   await second.limited("rate_limited", 0); await second.release();
   now += 2400;
-  const recovered = await limits.acquire(key, now + 10000, signal);
+  const recovered = await expectPermit(limits.tryAcquire(key, now + 10000, signal));
   await recovered.answered(); await recovered.release();
   expect(await store.update(state => state.servers[key])).toMatchObject({
     level: 3, recovery: true, strikes: 2, successes: 1, leases: [],
@@ -37,20 +38,20 @@ test("one answer after repeated limits preserves the 2400ms admission boundary",
 test("an expired unanswered lease interrupts the recovery success streak", async () => {
   let now = 100000;
   const limits = new LimitCoordinator(new MemoryLimitStore(), () => now, () => 0);
-  const first = await limits.acquire(key, now + 1000, signal);
+  const first = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
   await first.limited("rate_limited", 0); await first.release();
   for (let i = 0; i < 7; i++) {
     now += 1200;
-    const permit = await limits.acquire(key, now + 1000, signal);
+    const permit = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
     await permit.answered(); await permit.release();
   }
   now += 1200;
-  await limits.acquire(key, now + 100, signal); // Simulate a process leaving no response/release.
+  await expectPermit(limits.tryAcquire(key, now + 100, signal)); // Simulate a process leaving no response/release.
   now += 31000;
-  const replacement = await limits.acquire(key, now + 1000, signal);
+  const replacement = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
   await replacement.answered(); await replacement.release();
   now += 1200;
-  const next = await limits.acquire(key, now + 1000, signal);
+  const next = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
   await next.release();
   expect(await limits.tryAcquire(key, now + 3000, signal)).toMatchObject({ wait: 1200 });
 });
@@ -59,20 +60,20 @@ test("recovery requires consecutive answers and a stable observation window", as
   let now = 100000;
   const store = new MemoryLimitStore();
   const limits = new LimitCoordinator(store, () => now, () => 0);
-  const first = await limits.acquire(key, now + 10000, signal);
+  const first = await expectPermit(limits.tryAcquire(key, now + 10000, signal));
   await first.limited("rate_limited", 0); await first.release();
   expect(await limits.tryAcquire(key, now + 10000, signal)).toMatchObject({ wait: 1200 });
   for (let i = 0; i < 8; i++) {
     now += 1200;
-    const permit = await limits.acquire(key, now + 1000, signal);
+    const permit = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
     await permit.answered(); await permit.release();
   }
   expect(await limits.tryAcquire(key, now + 10000, signal)).toMatchObject({ wait: 1200 });
   now = 131201;
-  const recovered = await limits.acquire(key, now + 1000, signal);
+  const recovered = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
   await recovered.answered(); await recovered.release();
   now += 1200;
-  const next = await limits.acquire(key, now + 1000, signal);
+  const next = await expectPermit(limits.tryAcquire(key, now + 1000, signal));
   await next.release(); // Failure must break the next recovery streak.
   expect(await limits.tryAcquire(key, now + 10000, signal)).toMatchObject({ wait: 600 });
   expect(await store.update(s => s.servers[key]!.strikes)).toBe(1);
@@ -89,7 +90,7 @@ test("v1 migration preserves waits and refuses a live old lease without changing
   expect(await readFile(path, "utf8")).toBe(raw);
   old.servers[key]!.leases = [];
   await writeFile(path, JSON.stringify(old));
-  await expect(new LimitCoordinator(new FileLimitStore(path)).acquire(key, Date.now() + 1000, signal)).rejects.toMatchObject({ until });
+  await expect(new LimitCoordinator(new FileLimitStore(path)).tryAcquire(key, Date.now() + 1000, signal)).rejects.toMatchObject({ until });
   const current = JSON.parse(await readFile(path, "utf8"));
   expect(current.version).toBe(2);
   expect(current.servers[key]).toMatchObject({ blockedUntil: until, nextStart: until + 1, generation: 3, strikes: 2 });
@@ -98,7 +99,7 @@ test("v1 migration preserves waits and refuses a live old lease without changing
 test("automatic budget estimates include shared recovery spacing without reserving a lease", async () => {
   let now = 100000;
   const store = new MemoryLimitStore(), limits = new LimitCoordinator(store, () => now, () => 0);
-  const first = await limits.acquire(key, now + 10000, signal);
+  const first = await expectPermit(limits.tryAcquire(key, now + 10000, signal));
   await first.limited("rate_limited", 0); await first.release();
   expect(await limits.estimateWait([key, key, key], signal)).toBe(3600);
   expect(await store.update(s => s.servers[key]!.leases.length)).toBe(0);
@@ -108,7 +109,7 @@ test("shared pacing does not occupy the only local slot while another server is 
   const blocked = `https://${crypto.randomUUID()}.test`;
   const ready = `https://${crypto.randomUUID()}.test`;
   const store = new MemoryLimitStore(), limits = new LimitCoordinator(store);
-  const permit = await limits.acquire(blocked, Date.now() + 2000, signal);
+  const permit = await expectPermit(limits.tryAcquire(blocked, Date.now() + 2000, signal));
   await permit.release();
   await store.update(s => { s.servers[blocked]!.nextStart = Date.now() + 450; });
   const order: string[] = [];

@@ -20,8 +20,6 @@ export function retryAfterDelay(value: string | null, now = Date.now()): number 
   return Number.isFinite(date) ? Math.max(0, date - now) : undefined;
 }
 
-export function parseRetryAfter(value: string | null, now = Date.now()): number { return retryAfterDelay(value, now) ?? 500; }
-
 function validateDomainResponse(value: unknown, domain: string): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid RDAP domain object");
   const data = value as Record<string, unknown>;

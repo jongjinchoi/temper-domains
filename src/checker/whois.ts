@@ -16,7 +16,6 @@ function failureReason(error: unknown, signal: AbortSignal, attempts: number) {
   return error instanceof Error && error.message === "whois timeout" ? "request_timeout" as const : "network_error" as const;
 }
 
-export function hasWhoisServer(tld: string): boolean { return Object.hasOwn(WHOIS_PROFILES, tld); }
 
 async function whoisRaw(
   host: string,

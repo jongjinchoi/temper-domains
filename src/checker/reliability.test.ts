@@ -135,7 +135,7 @@ test("an already cancelled run never starts bootstrap", async () => {
 });
 
 import { checkDomainBatch } from "./batch.ts";
-import { parseRetryAfter } from "./rdap.ts";
+import { retryAfterDelay } from "./rdap.ts";
 
 test("whole-run deadline includes bootstrap without cancelling the shared load", async () => {
   let finish!: (map: Map<string, string>) => void;
@@ -151,10 +151,18 @@ test("whole-run deadline includes bootstrap without cancelling the shared load",
 
 test("Retry-After parses HTTP dates and does not cap long delays", () => {
   const now = Date.UTC(2026, 8, 19, 0, 0, 0);
-  expect(parseRetryAfter("Sat, 19 Sep 2026 00:02:00 GMT", now)).toBe(120000);
-  expect(parseRetryAfter("3600", now)).toBe(3600000);
-  expect(parseRetryAfter("-1", now)).toBe(500);
-  expect(parseRetryAfter("1.5", now)).toBe(500);
+  expect(retryAfterDelay("Sat, 19 Sep 2026 00:02:00 GMT", now)).toBe(120000);
+  expect(retryAfterDelay("3600", now)).toBe(3600000);
+  expect(retryAfterDelay("-1", now)).toBeUndefined();
+  expect(retryAfterDelay("1.5", now)).toBeUndefined();
+});
+
+test.each(["-1", "1.5"])("invalid Retry-After %s uses the production client cooldown", async header => {
+  globalThis.fetch = (async () => new Response(null, { status: 429, headers: { "retry-after": header } })) as unknown as typeof fetch;
+  const before = Date.now();
+  const result = await rdapLookup("a.com", endpoint(), new AbortController().signal);
+  expect(result).toMatchObject({ status: "rate_limited", attempts: 1, retryAtSource: "client_policy" });
+  expect(Date.parse(result.retryAt!) - before).toBeGreaterThanOrEqual(60000);
 });
 
 test("IDN responses compare normalized domain identifiers", async () => {
