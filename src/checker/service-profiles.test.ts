@@ -29,8 +29,10 @@ test('WHOIS negative responses are explicit and do not match prose in a register
 import { lookupPlan } from './services.ts';
 import { parseBootstrap } from './bootstrap-cache.ts';
 test('routing uses official complete endpoint lists and verified WHOIS profiles', () => {
-  const registry = parseBootstrap({ services: [[['com'], ['https://first.example/', 'https://second.example/']], [['cr', 'sr', 'sn'], ['https://rdap.example/']]] });
+  const registry = parseBootstrap({ services: [[['com'], ['https://first.example/', 'https://second.example/']], [['cr', 'sr', 'sn', 'io'], ['https://rdap.example/']]] });
   expect(lookupPlan('example.com', registry).endpoints).toHaveLength(2);
   for (const root of ['cr', 'sr', 'sn']) expect(lookupPlan(`nic.${root}`, registry).method).toBe('whois');
+  expect(lookupPlan('example.io', registry).method).toBe('rdap');
+  expect(lookupPlan('example.io', new Map()).method).toBe('whois');
   expect(lookupPlan('example.unknown', registry).method).toBe('unsupported');
 });

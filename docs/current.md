@@ -178,6 +178,10 @@ in both workspaces so root typechecking does not download a separate compiler.
   legacy raw JSON is accepted and revalidated. no-store removes persisted data.
   Published alternate endpoints are retained; HTTPS is preferred. Automatic
   endpoint failover is not used to bypass a server cooldown.
+- Preferred WHOIS routes (`.cr`, `.sr`, `.sn`) do not load or wait for IANA bootstrap,
+  in either availability or detailed lookups. In mixed searches they proceed while
+  RDAP-dependent rows load bootstrap; all rows retain the same whole-search deadline.
+  Other WHOIS profiles still require bootstrap to determine whether RDAP takes priority.
 - RDAP server selection uses RFC 9224-style label-wise longest match, not only the final label.
 - Input validation rejects URL syntax before IDN conversion, checks numeric
   labels without interpreting them as IP addresses, and rejects empty labels

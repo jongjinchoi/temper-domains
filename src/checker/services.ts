@@ -14,6 +14,10 @@ export const WHOIS_PROFILES: Record<string, { host: string; parser: 'standard' |
 };
 export type RouteRegistry = Map<string, string> & { endpoints?: Map<string, readonly string[]> };
 export interface LookupPlan { key: string; method: 'rdap' | 'whois' | 'unsupported'; endpoints: readonly string[]; parser: string }
+// These profiles select WHOIS regardless of the IANA RDAP registry.
+export function preferredWhoisPlan(domain: string): LookupPlan | undefined {
+  return WHOIS_PROFILES[getTld(domain)]?.preferred ? lookupPlan(domain, new Map()) : undefined;
+}
 export function lookupPlan(domain: string, registry: RouteRegistry): LookupPlan {
   const key = findRdapBootstrapKey(domain, key => registry.has(key));
   const profile = WHOIS_PROFILES[getTld(domain)];

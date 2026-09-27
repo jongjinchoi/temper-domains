@@ -1,7 +1,7 @@
 import { localLimits } from "./limit-store.ts";
 import { ServerCooldown, LimitStateError, type LimitCoordinator } from "./limits.ts";
 import { runWhoisRequest } from "./whois-request.ts";
-import { lookupPlan } from "./services.ts";
+import { lookupPlan, preferredWhoisPlan } from "./services.ts";
 import { getBootstrap } from "./bootstrap.ts";
 import { createRun, waitWithSignal, abortReason } from "./run.ts";
 import { enrichDomainDetail, getDomainInputError } from "./policy.ts";
@@ -20,8 +20,7 @@ export async function domainDetail(domain: string, options: { timeoutMs?: number
     const inputError = getDomainInputError(domain);
     if (inputError) return { domain, status: "error", method, responseTime: 0, attempts: 0, terminationReason: "invalid_input", error: inputError };
     run.signal.throwIfAborted();
-    const map = await waitWithSignal(getBootstrap(), run.signal);
-    const plan = lookupPlan(domain, map);
+    const plan = preferredWhoisPlan(domain) ?? lookupPlan(domain, await waitWithSignal(getBootstrap(), run.signal));
     const key = plan.key;
     if (plan.method === "rdap") return enrichDomainDetail(await rdapDetail(domain, plan.endpoints, run.signal, run.context), key);
     method = "whois";
