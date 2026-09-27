@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { assertRecovery } from './assert-recovery.mjs';
 
 const root = await mkdtemp(join(tmpdir(), 'temper-shared-limit-'));
 let requests = [];
@@ -26,11 +27,13 @@ const whoisServer = createWhoisServer(socket => socket.once('data', () => {
 }));
 await new Promise(resolve => whoisServer.listen(0, '127.0.0.1', resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
+let activeRuntime, activeFile, activeTrace, phase;
 try {
   for (const runtime of ['bun', 'node']) {
+    activeRuntime = runtime; phase = 'migration and cooldown'; activeTrace = undefined;
     const home = await mkdtemp(join(root, `${runtime}-`));
     const env = { ...process.env, HOME: home, TEMPER_LIMIT_TEST_HOME: home, TEMPER_LIMIT_TEST_ORIGIN: origin, TEMPER_LIMIT_TEST_WHOIS_PORT: String(whoisServer.address().port), NO_COLOR: '1' };
-    const prefix = runtime === 'bun' ? ['--preload', resolve('tests/limits/preload.mjs'), resolve('src/index.ts')] : ['--import', resolve('tests/limits/preload.mjs'), resolve('dist/npm/index.js')];
+    const prefix = runtime === 'bun' ? ['--preload', resolve('tests/limits/trace-preload.mjs'), resolve('src/index.ts')] : ['--import', resolve('tests/limits/trace-preload.mjs'), resolve('dist/npm/index.js')];
     const cli = (args, onStart) => new Promise((resolve, reject) => {
       const child = spawn(runtime, [...prefix, ...args], { env, stdio: ['ignore', 'pipe', 'pipe'] });
       onStart?.(child);
@@ -43,6 +46,7 @@ try {
     const search = name => cli(['search', name, '--tlds', 'com', '--format', 'json', '--timeout', '15']).then(JSON.parse);
     status = 429; wait = '86400'; responseDelay = 0; requests = [];
     const file = join(home, '.temper/state/lookup-limits.json');
+    activeFile = file;
     await mkdir(join(home, '.temper/state'), { recursive: true });
     const until = Date.now() + 86400000;
     const legacy = { version: 1, servers: { [origin]: { generation: 4, observedAt: Date.now(), strikes: 1,
@@ -98,14 +102,25 @@ try {
     assert.equal(next.servers[origin].source, 'client_policy');
     assert.ok(next.servers[origin].blockedUntil - next.servers[origin].observedAt >= 120000);
     next.servers[origin].blockedUntil = Date.now() - 1;
-    await writeFile(file, JSON.stringify(next));
-    requests = []; status = 404; responseDelay = 450;
-    const successful = await Promise.all([search('successone'), search('successtwo'), search('successthree')]);
-    assert.ok(successful.flat().every(r => r.status === 'available'));
-    assert.equal(requests.length, 3);
-    assert.ok(requests[1].at - requests[0].at >= 2390, 'recovery spacing must be shared across processes');
-    assert.ok(requests[2].at - requests[1].at >= 2390, 'a single valid answer cannot restore normal speed');
-    assert.equal(JSON.parse(await readFile(file, 'utf8')).servers[origin].strikes, 2);
+    for (const injectedMs of [0, 200]) {
+      // Independent recovery trials restore only this private fixture.
+      phase = `recovery with ${injectedMs}ms before the second transmission`;
+      await writeFile(file, JSON.stringify(next));
+      activeTrace = join(home, `recovery-${injectedMs}.jsonl`);
+      await writeFile(activeTrace, '');
+      env.TEMPER_LIMIT_TEST_TRACE = activeTrace;
+      env.TEMPER_LIMIT_TEST_DELAY_MS = String(injectedMs);
+      requests = []; status = 404; responseDelay = 450;
+      const successful = await Promise.all([search('successone'), search('successtwo'), search('successthree')]);
+      const events = (await readFile(activeTrace, 'utf8')).trim().split('\n').map(line => JSON.parse(line));
+      const final = JSON.parse(await readFile(file, 'utf8')).servers[origin];
+      assert.ok(successful.flat().every(r => r.status === 'available'));
+      const gaps = assertRecovery({ events, requests, final, injectedMs });
+      console.log(JSON.stringify({ runtime, phase, ...gaps, level: final.level, successes: final.successes }));
+    }
+    delete env.TEMPER_LIMIT_TEST_TRACE;
+    delete env.TEMPER_LIMIT_TEST_DELAY_MS;
+    activeTrace = undefined; phase = 'WHOIS and process recovery';
     whoisRequests = 0;
     const closed = createWhoisServer();
     await new Promise(resolve => closed.listen(0, '127.0.0.1', resolve));
@@ -159,6 +174,14 @@ try {
     assert.equal(await readFile(file, 'utf8'), '{broken');
     console.log(`${runtime}: v1 active-lease refusal and migration, CLI -> restarted CLI/detail -> MCP cooldown, gradual recovery spacing, WHOIS, killed-process leases and corruption passed`);
   }
+} catch (error) {
+  // Preserve the evidence before the temporary home is removed, including when
+  // a child fails before the assertions can print its recovery trace.
+  console.error(JSON.stringify({ runtime: activeRuntime, phase, requests,
+    state: activeFile && await readFile(activeFile, 'utf8').catch(String),
+    trace: activeTrace && await readFile(activeTrace, 'utf8').catch(String),
+  }));
+  throw error;
 } finally {
   await new Promise(resolve => whoisServer.close(resolve));
   server.closeAllConnections(); await new Promise(resolve => server.close(resolve));

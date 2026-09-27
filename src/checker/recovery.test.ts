@@ -11,6 +11,29 @@ afterEach(() => { globalThis.fetch = originalFetch; });
 const signal = new AbortController().signal;
 const key = "https://recovery.test";
 
+test("one answer after repeated limits preserves the 2400ms admission boundary", async () => {
+  let now = 100000;
+  const store = new MemoryLimitStore();
+  const limits = new LimitCoordinator(store, () => now, () => 0);
+  const first = await limits.acquire(key, now + 10000, signal);
+  await first.limited("rate_limited", 0); await first.release();
+  now += 1200;
+  const second = await limits.acquire(key, now + 10000, signal);
+  await second.limited("rate_limited", 0); await second.release();
+  now += 2400;
+  const recovered = await limits.acquire(key, now + 10000, signal);
+  await recovered.answered(); await recovered.release();
+  expect(await store.update(state => state.servers[key])).toMatchObject({
+    level: 3, recovery: true, strikes: 2, successes: 1, leases: [],
+  });
+  now += 2399;
+  expect(await limits.tryAcquire(key, now + 10000, signal)).toEqual({ wait: 1 });
+  now++;
+  const admission = await limits.tryAcquire(key, now + 10000, signal);
+  expect(admission.permit).toBeDefined();
+  await admission.permit!.release();
+});
+
 test("an expired unanswered lease interrupts the recovery success streak", async () => {
   let now = 100000;
   const limits = new LimitCoordinator(new MemoryLimitStore(), () => now, () => 0);

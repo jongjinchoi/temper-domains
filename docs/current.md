@@ -531,6 +531,11 @@ evidence, not a consequence of these controlled tests passing.
 `node tests/limits/runner.mjs` (after `bun run build:npm`) checks shared state
 across real Bun/Node CLI and MCP processes using temporary homes and loopback
 HTTP/WHOIS servers. It covers persisted 24-hour waits, single-probe recovery,
-request spacing, process termination and corrupt-state refusal. No public
+shared admission spacing, process termination and corrupt-state refusal. Recovery
+checks inspect atomic state replacements, lease ownership and pacing levels;
+they run both without an injected delay and with a 200ms delay before the second
+transmission. Server arrival times are diagnostic observations, not the admission
+clock. Failures print the runtime, state and admission/transport/arrival trace
+before temporary files are removed. No public
 registry or real user state is used. Unit tests additionally cover parallel
 responses, cancellation, expired leases, lock contention and permission errors.
