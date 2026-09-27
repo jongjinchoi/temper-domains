@@ -72,6 +72,9 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Bare `temper` displays a themed welcome box and exits successfully. `temper help`
   and `temper --help` share boxed command/option help in interactive terminals;
   non-TTY/CI help stays plain text. Subcommand help uses the same renderer.
+- JSON search/detail and MCP do not read theme settings. Interactive help uses
+  the default theme with a stderr warning if settings cannot be read; config
+  editing and themed TUI commands still report damaged settings without replacing them.
 - npm version discovery uses registry.npmjs.org; Homebrew uses the published
   jongjinchoi/homebrew-temper-domains formula on raw.githubusercontent.com.
   Checks do not send domains/history. Old version-check cache files are ignored.
@@ -239,6 +242,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   `watchlist.json.lock` or `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
   confirming no temper commands are running, remove only that lock and retry.
+- Normal TUI exit awaits Ink teardown and returns without forcing process exit.
+  View cleanup cancels lookups; pending file transactions can finish their cleanup.
+  SIGKILL, process crashes and power loss can still leave a lock for manual recovery.
 - Config failures before replacement preserve the existing file. Failures while
   cleaning up after replacement explicitly report that the settings were saved.
   Init blocks duplicate saves, displays failures for retry, and keeps a post-save

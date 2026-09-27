@@ -83,9 +83,6 @@ program
   .action(async (queries: string[], opts) => {
     queries = queries.map((q) => validateLabelOrExit(q, "query"));
 
-    const config = await loadConfig();
-    setTheme(config.theme);
-
     // Explicit extensions keep precedence over the extended bundle.
     let tlds: string[] | undefined;
     if (opts.category !== undefined) {
@@ -120,6 +117,8 @@ program
       return;
     }
 
+    const config = await loadConfig();
+    setTheme(config.theme);
     if (await maybeUpdate("search", opts.format)) return;
 
     // TUI mode
@@ -140,9 +139,7 @@ program
       {},
     );
 
-    instance.waitUntilExit().then(() => {
-      process.exit(0);
-    });
+    await instance.waitUntilExit();
   });
 
 // --- suggest ---
@@ -177,9 +174,7 @@ program
       {},
     );
 
-    instance.waitUntilExit().then(() => {
-      process.exit(0);
-    });
+    await instance.waitUntilExit();
   });
 
 // --- init ---
@@ -196,9 +191,7 @@ program
 
     const instance = render(React.createElement(InitView, { currentConfig: config }), {});
 
-    instance.waitUntilExit().then(() => {
-      process.exit(0);
-    });
+    await instance.waitUntilExit();
   });
 
 // --- history ---
@@ -214,7 +207,7 @@ program
     const { default: HistoryView } = await import("./tui/HistoryView.tsx");
 
     const instance = render(React.createElement(HistoryView), {});
-    instance.waitUntilExit().then(() => process.exit(0));
+    await instance.waitUntilExit();
   });
 
 // --- watch ---
@@ -243,9 +236,6 @@ program
     const inputError = getDomainInputError(domain);
     if (inputError && opts.format !== "json") exitWithError(inputError);
 
-    const config = await loadConfig();
-    setTheme(config.theme);
-
     const timeoutMs = parseTimeoutMsOrExit(opts.timeout, "--timeout");
 
     if (opts.format === "json") {
@@ -255,6 +245,8 @@ program
       return;
     }
 
+    const config = await loadConfig();
+    setTheme(config.theme);
     if (await maybeUpdate("whois", opts.format)) return;
 
     const { render } = await import("ink");
@@ -266,9 +258,7 @@ program
       {},
     );
 
-    instance.waitUntilExit().then(() => {
-      process.exit(0);
-    });
+    await instance.waitUntilExit();
   });
 
 // --- list ---
@@ -286,7 +276,7 @@ program
     const { default: WatchlistView } = await import("./tui/WatchlistView.tsx");
 
     const instance = render(React.createElement(WatchlistView), {});
-    instance.waitUntilExit().then(() => process.exit(0));
+    await instance.waitUntilExit();
   });
 
 // --- extensions ---
@@ -350,9 +340,6 @@ program
   .command("mcp")
   .description("Start MCP server over stdio")
   .action(async () => {
-    const config = await loadConfig();
-    setTheme(config.theme);
-
     const { startMcpServer } = await import("./mcp/server.ts");
     await startMcpServer();
   });
@@ -362,8 +349,12 @@ program
 async function main(): Promise<void> {
   const requestedHelp = process.argv.slice(2).some(arg => arg === "--help" || arg === "-h") || process.argv[2] === "help";
   if (requestedHelp && !process.argv.includes("--version") && !process.argv.includes("-V") && process.stdout.isTTY && !process.env.CI && !process.env.CONTINUOUS_INTEGRATION && !process.env.BUILD_NUMBER) {
-    const config = await loadConfig();
-    setTheme(config.theme);
+    try {
+      const config = await loadConfig();
+      setTheme(config.theme);
+    } catch (error) {
+      console.error(`Could not read settings: ${formatStorageError(error)}`);
+    }
     const [{ renderToString, Text }, { createElement }, { TerminalPanel }] = await Promise.all([
       import("ink"), import("react"), import("./tui/TerminalPanel.tsx"),
     ]);
@@ -382,5 +373,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  exitWithError(formatStorageError(error));
+  console.error(`Error: ${formatStorageError(error)}`);
+  process.exitCode = 1;
 });

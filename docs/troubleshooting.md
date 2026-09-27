@@ -57,6 +57,17 @@ then remove only `lookup-limits.json.lock`. Request leases otherwise expire or
 are reclaimed after their process exits. Different homes, machines and hosted
 web instances do not share this local state; the web demo uses memory only.
 
+Normal TUI quit allows pending file transactions to finish. It does not repair a
+lock left by an earlier crash or forced termination. The same recovery rule applies
+to `config.json.lock`, `history.json.lock` and `watchlist.json.lock`: stop Temper
+processes, confirm the recorded owner is no longer running, then remove only the
+affected lock. Preserve the corresponding JSON file.
+
+Damaged or unreadable `~/.temper/config.json` does not prevent JSON search/detail,
+MCP or help. Interactive help warns and uses the default theme. Themed TUI commands
+and config writes still require the settings file to be repaired; they do not
+silently overwrite it with defaults.
+
 The shared state now uses version 2. Migration preserves existing waits and refuses
 to proceed while a live version-1 request lease exists. Update older Temper
 processes and reconnect MCP clients before using the new version together.
