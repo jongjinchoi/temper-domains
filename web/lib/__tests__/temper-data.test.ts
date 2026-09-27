@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../../src/checker/types.ts";
 import { THEME_NAMES } from "../../../src/tui/theme.ts";
+import { THEME_META } from "../../../src/tui/theme-meta.ts";
 import { getLiveDisplayStatus, type LiveResult } from "../playground-client.ts";
 import {
   COMMANDS,
@@ -41,12 +42,13 @@ describe("temper-data sync", () => {
     expect(THEMES.map((t) => t.key)).toEqual(THEME_NAMES);
   });
 
-  test('Default palette description matches CLI reference and setup choices', () => {
+  test('All theme metadata is shared and labels match the CLI reference', () => {
     const readme = readFileSync(join(import.meta.dir, '../../../docs/cli.md'), 'utf8');
-    const init = readFileSync(join(import.meta.dir, '../../../src/tui/InitView.tsx'), 'utf8');
-    const theme = THEMES.find(theme => theme.key === 'default')!;
-    expect(readme.includes(theme.desc)).toBe(true);
-    expect(init.includes(`desc: "${theme.desc}"`)).toBe(true);
+    expect(THEMES.map(({ key, label, desc }) => ({ key, label, desc }))).toEqual(THEME_META);
+    for (const theme of THEMES) {
+      expect(readme).toContain(theme.label);
+    }
+    expect(readme).toContain(THEMES.find(theme => theme.key === 'default')!.desc);
   });
 
   test("MCP_TOOLS matches registerTool calls in src/mcp/server.ts", () => {

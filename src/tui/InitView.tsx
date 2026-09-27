@@ -4,6 +4,7 @@ import { ConfigSaveError, saveConfig } from "../config/config.ts";
 import { REGISTRAR_META } from "../registrar/urls.ts";
 import FrameBox from "./FrameBox.tsx";
 import { setTheme, theme } from "./theme.ts";
+import { THEME_META } from "./theme-meta.ts";
 
 type Step = "registrar" | "theme" | "done";
 
@@ -12,16 +13,6 @@ const STEP_LABELS: Record<Step, { num: number; desc: string }> = {
   theme: { num: 2, desc: "Choose a theme" },
   done: { num: 3, desc: "Setup complete" },
 };
-
-const THEME_META = [
-  { name: "temper-forge", label: "Temper Forge", desc: "Fire × Iron" },
-  { name: "seoul-night", label: "Seoul Night", desc: "Neon × Han River" },
-  { name: "catppuccin-mocha", label: "Catppuccin", desc: "Soft pastels" },
-  { name: "dracula", label: "Dracula", desc: "High contrast" },
-  { name: "default", label: "Default", desc: "Classic terminal colors" },
-  { name: "catppuccin-latte", label: "Catppuccin Latte", desc: "Pastel light" },
-  { name: "rose-pine-dawn", label: "Rosé Pine Dawn", desc: "Warm natural light" },
-];
 
 interface Props {
   currentConfig?: { registrar: string; theme: string };
@@ -35,7 +26,7 @@ export default function InitView({ currentConfig }: Props) {
     ? Math.max(0, REGISTRAR_META.findIndex((r) => r.key === currentConfig.registrar))
     : 0;
   const initialThemeIdx = currentConfig
-    ? Math.max(0, THEME_META.findIndex((t) => t.name === currentConfig.theme))
+    ? Math.max(0, THEME_META.findIndex((t) => t.key === currentConfig.theme))
     : 0;
 
   const [cursor, setCursor] = useState(initialRegistrarIdx);
@@ -77,7 +68,7 @@ export default function InitView({ currentConfig }: Props) {
           setCursor(initialThemeIdx);
           setStep("theme");
         } else if (step === "theme") {
-          const themeName = THEME_META[cursor]!.name;
+          const themeName = THEME_META[cursor]!.key;
           const themeLabel = THEME_META[cursor]!.label;
           saving.current = true;
           setSavePending(true);
@@ -153,12 +144,12 @@ export default function InitView({ currentConfig }: Props) {
             <Text color={theme.text}>Select theme</Text>
           </Box>
           {THEME_META.map((t, i) => (
-            <Box key={t.name}>
+            <Box key={t.key}>
               <Text color={i === cursor ? theme.primary : theme.dim}>
                 {"  "}{i === cursor ? "●" : "○"}{" "}
               </Text>
               <Text color={i === cursor ? theme.text : theme.dim} bold={i === cursor}>
-                {t.label.padEnd(16)}
+                {t.label.padEnd(18)}
               </Text>
               <Text color={theme.dim}>{t.desc}</Text>
             </Box>

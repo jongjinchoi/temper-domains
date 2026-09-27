@@ -10,7 +10,8 @@ const scenario = process.argv[2];
 const directory = join(process.env.TEMPER_TEST_HOME!, ".temper");
 const path = join(directory, "config.json");
 const original = { ...fs };
-const initial = { theme: "temper-forge", registrar: "cloudflare" };
+const selectedTheme = scenario?.startsWith("init-theme-") ? scenario.slice("init-theme-".length) : undefined;
+const initial = { theme: selectedTheme ?? "temper-forge", registrar: "cloudflare" };
 await original.mkdir(directory, { recursive: true });
 await original.writeFile(path, JSON.stringify(initial));
 let replacements = 0;
@@ -47,12 +48,14 @@ async function until(predicate: () => boolean) {
 }
 let pendingFrame = "";
 let failureFrame = "";
+let themeFrame = "";
 try {
   await until(() => frame.includes("Choose your preferred registrar"));
   input.write("\r");
   await until(() => frame.includes("Choose a theme"));
-  input.write("j");
+  if (!selectedTheme) input.write("j");
   await Bun.sleep(50);
+  themeFrame = frame;
   if (scenario === "init-repeat" || scenario === "init-leave") await original.writeFile(path + ".lock", "test owner");
   if (scenario === "init-retry") await original.writeFile(path, "{");
   input.write("\r");
@@ -70,12 +73,14 @@ try {
     await original.writeFile(path, JSON.stringify(initial));
     input.write("\r");
     await until(() => frame.includes("Setup complete"));
+  } else if (selectedTheme) {
+    await until(() => frame.includes("Setup complete"));
   } else {
     await until(() => frame.includes("cleanup") || unhandled.length > 0);
     await Bun.sleep(2200);
   }
   const config = JSON.parse(await original.readFile(path, "utf8"));
-  const result = { frame, pendingFrame, failureFrame, config, replacements, unhandled, exited };
+  const result = { frame, pendingFrame, failureFrame, themeFrame, config, replacements, unhandled, exited };
   view.unmount();
   view.cleanup();
   console.log(JSON.stringify(result));

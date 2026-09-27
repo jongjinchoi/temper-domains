@@ -1,3 +1,4 @@
+import { THEME_META, type ThemeName } from "./theme-meta.ts";
 import type { DomainStatus } from "../checker/types.ts";
 
 export interface ThemePalette {
@@ -17,7 +18,7 @@ export interface ThemePalette {
   sapphire: string;
 }
 
-const PALETTES: Record<string, ThemePalette> = {
+const PALETTES: Record<ThemeName, ThemePalette> = {
   "temper-forge": {
     base: "#1a1d23", text: "#e8e6e3", primary: "#ff7a45",
     green: "#64c896", red: "#e64545", yellow: "#ffbf47", blue: "#7a8fc4",
@@ -62,15 +63,15 @@ const PALETTES: Record<string, ThemePalette> = {
   },
 };
 
-export const THEME_NAMES = Object.keys(PALETTES);
+export const THEME_NAMES: string[] = THEME_META.map(theme => theme.key);
 
 // Mutable theme object — setTheme() updates via Object.assign
 // All components import { theme } and see the updated values
-const defaultPalette = PALETTES["temper-forge"] ?? PALETTES[Object.keys(PALETTES)[0] ?? ""] as ThemePalette;
+const defaultPalette = PALETTES["temper-forge"];
 export const theme: ThemePalette = { ...defaultPalette } as ThemePalette;
 
 export function setTheme(name: string) {
-  Object.assign(theme, PALETTES[name] ?? PALETTES["temper-forge"]);
+  Object.assign(theme, PALETTES[name as ThemeName] ?? PALETTES["temper-forge"]);
 }
 
 interface StatusStyle {

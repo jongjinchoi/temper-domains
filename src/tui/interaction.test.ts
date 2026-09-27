@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { THEMES } from "../../web/lib/temper-data.ts";
 
 async function scenario(name: string, helper = "tui-worker.tsx") {
   const home = await mkdtemp(join(tmpdir(), "temper-tui-"));
@@ -191,6 +192,16 @@ test("failed deletion leaves the displayed entries and damaged file intact", asy
   expect(result.frame).toContain("repair");
   expect(result.frame).toContain("selected");
   expect(result.frame).toContain("older");
+  expect(result.unhandled).toEqual([]);
+});
+
+test.each(THEMES)("init displays and saves theme $key with its shared label", async selected => {
+  const result = await scenario(`init-theme-${selected.key}`, "init-worker.tsx");
+  expect(result.themeFrame).toContain(selected.label);
+  expect(result.themeFrame).toContain(selected.desc);
+  expect(result.frame).toContain(selected.label);
+  expect(result.config.theme).toBe(selected.key);
+  expect(result.replacements).toBe(1);
   expect(result.unhandled).toEqual([]);
 });
 
