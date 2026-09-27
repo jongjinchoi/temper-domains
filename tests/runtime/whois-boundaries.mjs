@@ -3,11 +3,12 @@ import net from 'node:net';
 import { syncBuiltinESMExports } from 'node:module';
 import assert from 'node:assert/strict';
 const connect = net.createConnection;
-let chunks = [], observed = [], next, peer;
+let chunks = [], observed = [], next, peer, stall = false;
 const server = net.createServer(socket => {
   peer = socket;
   socket.on('error', () => {}); // The size-limit client intentionally disconnects.
   socket.once('data', () => {
+    if (stall) return;
     const send = () => {
       const chunk = chunks.shift();
       if (!chunk) { socket.end(); return; }
@@ -68,7 +69,15 @@ try {
   }
   const oversized = await detail([Buffer.alloc(limit + 1, 32)]);
   assert.equal(oversized.terminationReason, 'invalid_response');
-  console.log('WHOIS UTF-8 boundaries and byte limit passed');
+  stall = true;
+  for (const lookup of [whoisLookup, whoisDetail]) {
+    const result = await lookup('sample.sn', new AbortController().signal, 20);
+    assert.equal(result.status, 'slow');
+    assert.equal(result.terminationReason, 'request_timeout');
+    assert.equal(result.attempts, 1);
+    assert.equal(result.error, 'whois timeout');
+  }
+  console.log('WHOIS UTF-8 boundaries, byte limit and request timeout passed');
 } finally {
   peer?.destroy();
   await new Promise(resolve => server.close(resolve));

@@ -150,13 +150,15 @@ export async function whoisLookup(
     return { domain, tld, status, method: "whois", responseTime, attempts, ...(status === "rate_limited" ? { error: whoisLimitMessage(raw), terminationReason: "rate_limited" as const } : {}), ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
+    const reason = failureReason(err, signal, attempts);
+    const status = ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error";
     if (signal.aborted) {
-      return { domain, tld, status: "slow", method: "whois", responseTime, attempts, terminationReason: failureReason(err, signal, attempts) };
+      return { domain, tld, status, method: "whois", responseTime, attempts, terminationReason: reason };
     }
     return {
-      domain, tld, status: "error", method: "whois", responseTime, attempts,
+      domain, tld, status, method: "whois", responseTime, attempts,
       error: err instanceof Error ? err.message : String(err),
-      terminationReason: failureReason(err, signal, attempts),
+      terminationReason: reason,
     };
   }
 }
@@ -274,14 +276,15 @@ export async function whoisDetail(
     };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
+    const reason = failureReason(err, signal, attempts);
     return {
       domain,
-      status: signal.aborted ? "slow" : "error",
+      status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
       method: "whois",
       responseTime,
       attempts,
       error: err instanceof Error ? err.message : String(err),
-      terminationReason: failureReason(err, signal, attempts),
+      terminationReason: reason,
     };
   }
 }
