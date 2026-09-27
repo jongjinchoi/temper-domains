@@ -58,6 +58,20 @@ test("watch additions and removals treat domain case consistently", async () => 
   expect(JSON.parse(await readFile(file, "utf8"))).toEqual([]);
 });
 
+test.each(["www.example.com", "co.uk"])("rejects nonregistrable addition %s without touching storage", async domain => {
+  const [code] = await worker("add", domain);
+  expect(code).toBe(1);
+  expect(await readdir(join(home, ".temper"))).toEqual([]);
+});
+
+test("legacy nonregistrable entries remain removable without losing valid entries", async () => {
+  const entries = ["co.uk", "www.example.com", "example.co.uk"].map(domain => ({ domain, addedAt: "2026-01-01T00:00:00Z" }));
+  await writeFile(file, JSON.stringify(entries));
+  expect((await worker("remove", "co.uk"))[0]).toBe(0);
+  expect((await worker("remove", "www.example.com"))[0]).toBe(0);
+  expect(JSON.parse(await readFile(file, "utf8"))).toEqual([entries[2]]);
+});
+
 test("failed replacement keeps the previous watchlist and releases temporary files", async () => {
   const content = '[{"domain":"old.com","addedAt":"2026-01-01T00:00:00Z"}]';
   await writeFile(file, content);

@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import { ensureConfigDir } from "../utils/fs.ts";
 import { isValidDomain, sanitizeDomain } from "../utils/validate.ts";
+import { getDomainInputError } from "../checker/policy.ts";
 
 const WATCHLIST_FILE = join(homedir(), ".temper", "watchlist.json");
 
@@ -77,7 +78,8 @@ async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]):
 
 export async function addWatch(input: string): Promise<void> {
   const domain = sanitizeDomain(input).toLowerCase();
-  if (!isValidDomain(domain)) throw new Error("Invalid watchlist domain");
+  const inputError = getDomainInputError(domain);
+  if (inputError) throw new Error(`Invalid watchlist domain: ${inputError}`);
   await updateWatchlist((list) => list.some((entry) => entry.domain === domain)
     ? list
     : [...list, { domain, addedAt: new Date().toISOString() }]);

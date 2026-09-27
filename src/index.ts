@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { Command } from "commander";
+import { Command, Option, InvalidArgumentError } from "commander";
+import { getDomainInputError } from "./checker/policy.ts";
+import { buildSuggestions, parseAffixes } from "./utils/suggestions.ts";
 import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
@@ -9,6 +11,11 @@ import { extensionCommand, splitFilter } from "./extensions/cli.ts";
 import { maybeUpdate, updateCommand } from "./update/cli.ts";
 
 const DEFAULT_WHOIS_TIMEOUT_SECONDS = 10;
+
+function affixOption(value: string): string[] {
+  try { return parseAffixes(value); }
+  catch (error) { throw new InvalidArgumentError(error instanceof Error ? error.message : String(error)); }
+}
 
 function exitWithError(message: string): never {
   console.error(`Error: ${message}`);
@@ -74,7 +81,7 @@ program
   .option("--category <ids>", "Search an industry classification (discover with extensions --categories industry)")
   .option("--extended", "Check 60 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
-  .option("-f, --format <format>", "Output format (tui, json)", "tui")
+  .addOption(new Option("-f, --format <format>", "Output format").choices(["tui", "json"]).default("tui"))
   .option("-t, --timeout <seconds>", "Whole-search timeout including bootstrap (default: automatic 5–30s)")
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
@@ -144,8 +151,8 @@ program
 program
   .command("suggest")
   .argument("[query]")
-  .option("-p, --prefixes <prefixes>", "Comma-separated prefixes (default: get,use,try,my,go,join)")
-  .option("-s, --suffixes <suffixes>", "Comma-separated suffixes (default: app,labs,hq,ly,dev,hub,run,kit)")
+  .option("-p, --prefixes <prefixes>", "Comma-separated prefixes (default: get,use,try,my,go,join)", affixOption)
+  .option("-s, --suffixes <suffixes>", "Comma-separated suffixes (default: app,labs,hq,ly,dev,hub,run,kit)", affixOption)
   .description("Generate name combinations and check availability")
   .action(async (query: string | undefined, opts) => {
     if (!query) {
@@ -154,12 +161,12 @@ program
     }
 
     query = validateLabelOrExit(query, "name");
+    const prefixes: string[] | undefined = opts.prefixes;
+    const suffixes: string[] | undefined = opts.suffixes;
+    buildSuggestions(query, prefixes, suffixes);
 
     const config = await loadConfig();
     setTheme(config.theme);
-
-    const prefixes = opts.prefixes?.split(",").map((s: string) => s.trim());
-    const suffixes = opts.suffixes?.split(",").map((s: string) => s.trim());
 
     if (await maybeUpdate("suggest")) return;
 
@@ -219,6 +226,8 @@ program
   .description("Add a domain to watchlist")
   .action(async (domain: string) => {
     domain = validateDomainOrExit(domain, "domain");
+    const inputError = getDomainInputError(domain);
+    if (inputError) exitWithError(inputError);
     const { addWatch } = await import("./config/watchlist.ts");
     await addWatch(domain);
     console.log(`  ✓ Added ${domain} to watchlist`);
@@ -228,11 +237,13 @@ program
 program
   .command("whois")
   .argument("<domain>")
-  .option("-f, --format <format>", "Output format (tui, json)", "tui")
+  .addOption(new Option("-f, --format <format>", "Output format").choices(["tui", "json"]).default("tui"))
   .option("-t, --timeout <seconds>", "Timeout in seconds", String(DEFAULT_WHOIS_TIMEOUT_SECONDS))
   .description("Show detailed WHOIS/RDAP info for a domain")
   .action(async (domain: string, opts) => {
     domain = validateDomainOrExit(domain, "domain");
+    const inputError = getDomainInputError(domain);
+    if (inputError && opts.format !== "json") exitWithError(inputError);
 
     const config = await loadConfig();
     setTheme(config.theme);

@@ -98,6 +98,9 @@ temper search gethalden writeholt --format json   # multiple keywords in JSON mo
 
 Navigate with `j`/`k`, press `Enter` to choose a registrar, `a` to add to watchlist, `/` to filter. Press `s` for suggestions, `h` for history, `w` for watchlist. `q` to quit. TUI mode shows one query at a time; use `--format json` for batch searches.
 
+Search and WHOIS accept only `--format tui` or `--format json`; other values
+exit with an error before starting a lookup.
+
 Use `r` to resume the selected retryable unresolved candidate, or `R` for those
 in the current filtered list. Invalid input, unsupported routes, invalid responses and
 damaged limit state require correction instead. Confirmation shows a maximum 120s budget.
@@ -123,12 +126,17 @@ result should be reviewed with a registrar before treating it as purchasable.
 
 ### Whois
 
-Look up detailed WHOIS/RDAP information for any domain. In search view, press `i` on any domain.
+Look up detailed WHOIS/RDAP information for a registrable domain. In search view, press `i` on a domain.
 
 ```bash
 temper whois example.com                         # TUI view
 temper whois example.com --format json           # JSON output
 ```
+
+Public suffixes such as `co.uk` and subdomains such as `www.example.com` are
+rejected before registry lookup. For these inputs, JSON mode retains an
+`invalid_input` result with `attempts: 0` and exit code 0; TUI mode exits with
+an input error. Malformed domain syntax is a CLI error in either mode.
 
 Shows registrar, registration/expiry dates, nameservers, DNSSEC status, and EPP status codes. Search and detail share the same official RDAP/WHOIS routes. HTTPS RDAP verifies TLS certificates and negotiates HTTP/2 or HTTP/1.1; HTTP routes and WHOIS are not encrypted by this transport. Reviewed WHOIS profiles cover namespaces without a usable RDAP route, including `.cr`, `.sr` and `.sn`. Detailed results also include confidence and review reasons; a missing registration record is not presented as guaranteed purchase availability.
 
@@ -164,6 +172,12 @@ Illustrative output; these are not current lookup results:
 Default prefixes: `get` `use` `try` `my` `go` `join`
 Default suffixes: `app` `labs` `hq` `ly` `dev` `hub` `run` `kit`
 
+Empty comma-separated entries are errors (for example, `-p get,,use`). Every
+combined name must be a valid domain label, at most 63 bytes after IDN conversion;
+otherwise the request is rejected before lookup. Hyphens are allowed inside a
+combined name. Duplicate names, including case variants, are checked and counted
+once, keeping the first occurrence in base/prefix/suffix order.
+
 <p align="center"><img src="https://raw.githubusercontent.com/jongjinchoi/temper-domains/main/assets/screenshots/suggest.png" width="600" /></p>
 
 ### Watchlist & History
@@ -175,6 +189,9 @@ temper watch gethalden.com    # add a domain to watchlist from CLI
 ```
 
 In search view, press `a` to add a domain to your watchlist, `h` to view history, `w` to view watchlist.
+
+Watch accepts registrable domains, including `example.co.uk`, but rejects public
+suffixes and subdomains. Older unsupported entries remain visible and removable.
 
 ### Setup
 
@@ -239,7 +256,8 @@ Options:
                            extensions --categories industry)
   --extended               Check 60 TLDs instead of 30
   -a, --only-available     Show only available domains
-  -f, --format <format>    Output format (tui, json) (default: "tui")
+  -f, --format <format>    Output format (choices: "tui", "json", default:
+                           "tui")
   -t, --timeout <seconds>  Whole-search timeout including bootstrap (default:
                            automatic 5–30s)
   -h, --help               display help for command
@@ -301,7 +319,8 @@ Usage: temper whois [options] <domain>
 Show detailed WHOIS/RDAP info for a domain
 
 Options:
-  -f, --format <format>    Output format (tui, json) (default: "tui")
+  -f, --format <format>    Output format (choices: "tui", "json", default:
+                           "tui")
   -t, --timeout <seconds>  Timeout in seconds (default: "10")
   -h, --help               display help for command
 ```

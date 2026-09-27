@@ -95,6 +95,9 @@ test("Node MCP rejects invalid full domains without querying registries", async 
   try {
     await client.connect(transport);
     const before = await requests();
+    const invalidSuggestion = await client.callTool({ name: "suggest_domain", arguments: { name: "x".repeat(63) } });
+    assert.equal(invalidSuggestion.isError, true);
+    assert.match(JSON.stringify(invalidSuggestion.content), /Invalid suggestion/);
     for (const domain of invalid.slice(0, 3)) {
       const detail = await client.callTool({ name: "whois_domain", arguments: { domain } });
       assert.equal(detail.isError, true);

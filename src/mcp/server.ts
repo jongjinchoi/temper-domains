@@ -1,4 +1,5 @@
 import { lookupNotice } from "../utils/lookup-notice.ts";
+import { buildSuggestions } from "../utils/suggestions.ts";
 import { lookupOutputSchema, lookupResult } from "./lookup-result.ts";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -6,7 +7,7 @@ import { z } from "zod";
 import { checkDomains, checkFullDomains, checkSuggestionMatrix } from "../checker/checker.ts";
 import { summarizeResults } from "../checker/stream.ts";
 import { getDomainInputError } from "../checker/policy.ts";
-import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES, DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
+import { DEFAULT_TLDS, EXTENDED_TLDS } from "../checker/types.ts";
 import type { CheckSummary, DomainDetail, DomainResult } from "../checker/types.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, REGISTRAR_URLS, buildURL } from "../registrar/urls.ts";
@@ -563,9 +564,7 @@ server.registerTool("suggest_domain", {
         isError: true,
       };
     }
-    const combinations = [normalized.name];
-    for (const p of DEFAULT_PREFIXES) combinations.push(`${p}${normalized.name}`);
-    for (const s of DEFAULT_SUFFIXES) combinations.push(`${normalized.name}${s}`);
+    const combinations = buildSuggestions(normalized.name).names;
 
     let summary: CheckSummary | undefined;
     const groups = await checkSuggestionMatrix(combinations, SUGGEST_TLDS, {

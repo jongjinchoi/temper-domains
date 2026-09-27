@@ -1,7 +1,7 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useMemo, useState } from "react";
 import { checkSuggestionMatrix } from "../checker/checker.ts";
-import { DEFAULT_PREFIXES, DEFAULT_SUFFIXES } from "../checker/types.ts";
+import { buildSuggestions } from "../utils/suggestions.ts";
 import type { DomainResult } from "../checker/types.ts";
 import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
@@ -23,20 +23,11 @@ interface Props {
 export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit }: Props) {
   const { exit } = useApp();
 
-  const pList = prefixes ?? DEFAULT_PREFIXES;
-  const sList = suffixes ?? DEFAULT_SUFFIXES;
-
   const groups = useMemo(() => {
-    const base = [query];
-    const prefix = pList.map((p) => `${p}${query}`);
-    const suffix = sList.map((s) => `${query}${s}`);
-    return { base, prefix, suffix };
-  }, [query, pList, sList]);
-
-  const allNames = useMemo(
-    () => [...groups.base, ...groups.prefix, ...groups.suffix],
-    [groups],
-  );
+    try { return { ...buildSuggestions(query, prefixes, suffixes), error: null }; }
+    catch (error) { return { base: [], prefix: [], suffix: [], names: [], error: error instanceof Error ? error.message : String(error) }; }
+  }, [query, prefixes, suffixes]);
+  const allNames = groups.names;
 
   const [results, setResults] = useState<Map<string, DomainResult>>(new Map());
   const [done, setDone] = useState(false);
@@ -45,6 +36,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
   const [selectedName, setSelectedName] = useState<string | null>(null);
 
   useEffect(() => {
+    if (groups.error) { setDone(true); return; }
     let cancelled = false;
     const abortController = new AbortController();
     const startTime = performance.now();
@@ -163,6 +155,7 @@ export default function SuggestView({ query, prefixes, suffixes, onBack, onQuit 
   if (selectedName) {
     return <SearchView query={selectedName} onBack={() => setSelectedName(null)} />;
   }
+  if (groups.error) return <FrameBox title={`Suggestions for "${query}"`} hints={hints}><Text color={theme.red}>{groups.error}</Text></FrameBox>;
 
   return (
     <FrameBox title={`Suggestions for "${query}"`} hints={hints}>
