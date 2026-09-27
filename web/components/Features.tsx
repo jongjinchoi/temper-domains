@@ -38,7 +38,7 @@ const FEATURES: Feature[] = [
   {
     badge: "№ 04 / INPUT",
     title: "Keyboard-first.",
-    body: "Vim nav. Single-key registrar select. Hit enter to buy.",
+    body: "Vim nav. Enter to choose a registrar and open its page.",
   },
   {
     badge: "№ 05 / OUTPUT",

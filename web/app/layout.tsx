@@ -115,7 +115,7 @@ const JSON_LD = {
   downloadUrl: `${GITHUB_URL}/releases`,
   featureList: [
     "30 TLDs checked per search (60 with --extended)",
-    "RDAP with WHOIS fallback",
+    "RDAP or WHOIS lookup routes selected by TLD",
     "MCP server for Codex, Claude, and Cursor",
     "Interactive TUI with vim-style navigation",
     "JSON output for shell piping",

@@ -54,7 +54,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 
 ## Commands
 
-- \`temper search <name>\` - check ${DEFAULT_TLDS_COUNT} TLDs, Enter to buy
+- \`temper search <name>\` - check ${DEFAULT_TLDS_COUNT} TLDs, Enter to choose a registrar and open its page (not a purchase)
 - \`temper extensions --categories\` - browse industry, purpose and region classifications
 - \`temper extensions --limit 100\` - browse the full supported catalog, following the next cursor
 - \`temper search <name> --tlds com,co.uk\` - search only the selected suffixes

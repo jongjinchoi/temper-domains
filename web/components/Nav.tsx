@@ -29,7 +29,7 @@ export default function Nav() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          ★ STAR / 5
+          ★ STAR
         </a>
       </div>
     </nav>
