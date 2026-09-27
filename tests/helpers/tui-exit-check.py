@@ -75,10 +75,8 @@ def terminal(env, args, mode='', key=b'q'):
             raw = not (termios.tcgetattr(slave)[3] & termios.ICANON)
             if raw and not sent:
                 if mode == 'init':
-                    if step == 0 and b'Choose your preferred registrar' in output:
+                    if step == 0 and b'Choose a theme' in output:
                         os.write(master, b'\r'); step = 1
-                    elif step == 1 and b'Choose a theme' in output:
-                        os.write(master, b'\r'); step = 2
                 elif mode == 'history' and step == 0 and b'reviewhistory' in output:
                     os.write(master, b'd'); step = 1
                 elif mode == 'watch' and step == 0 and b'Confirm purchase availability' in output:

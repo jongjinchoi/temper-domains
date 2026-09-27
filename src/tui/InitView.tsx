@@ -2,36 +2,30 @@ import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useRef, useState } from "react";
 import { saveConfig } from "../config/config.ts";
 import { FileTransactionError, formatStorageError } from "../utils/storage-error.ts";
-import { REGISTRAR_META } from "../registrar/urls.ts";
 import FrameBox from "./FrameBox.tsx";
 import { setTheme, theme } from "./theme.ts";
 import { THEME_META } from "./theme-meta.ts";
 
-type Step = "registrar" | "theme" | "done";
+type Step = "theme" | "done";
 
 const STEP_LABELS: Record<Step, { num: number; desc: string }> = {
-  registrar: { num: 1, desc: "Choose your preferred registrar" },
-  theme: { num: 2, desc: "Choose a theme" },
-  done: { num: 3, desc: "Setup complete" },
+  theme: { num: 1, desc: "Choose a theme" },
+  done: { num: 2, desc: "Setup complete" },
 };
 
 interface Props {
-  currentConfig?: { registrar: string; theme: string };
+  currentConfig?: { theme: string };
 }
 
 export default function InitView({ currentConfig }: Props) {
   const { exit } = useApp();
-  const [step, setStep] = useState<Step>("registrar");
+  const [step, setStep] = useState<Step>("theme");
 
-  const initialRegistrarIdx = currentConfig
-    ? Math.max(0, REGISTRAR_META.findIndex((r) => r.key === currentConfig.registrar))
-    : 0;
   const initialThemeIdx = currentConfig
     ? Math.max(0, THEME_META.findIndex((t) => t.key === currentConfig.theme))
     : 0;
 
-  const [cursor, setCursor] = useState(initialRegistrarIdx);
-  const [selectedRegistrar, setSelectedRegistrar] = useState(currentConfig?.registrar ?? "");
+  const [cursor, setCursor] = useState(initialThemeIdx);
   const [selectedTheme, setSelectedTheme] = useState("");
   const [savePending, setSavePending] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -57,30 +51,24 @@ export default function InitView({ currentConfig }: Props) {
       }
       if (step === "done" || saving.current) return;
 
-      const items = step === "registrar" ? REGISTRAR_META : THEME_META;
-
       if (key.downArrow || input === "j") {
-        setCursor((prev) => Math.min(prev + 1, items.length - 1));
+        setCursor((prev) => Math.min(prev + 1, THEME_META.length - 1));
       } else if (key.upArrow || input === "k") {
         setCursor((prev) => Math.max(prev - 1, 0));
       } else if (key.return) {
-        if (step === "registrar") {
-          setSelectedRegistrar(REGISTRAR_META[cursor]!.key);
-          setCursor(initialThemeIdx);
-          setStep("theme");
-        } else if (step === "theme") {
+        if (step === "theme") {
           const themeName = THEME_META[cursor]!.key;
           const themeLabel = THEME_META[cursor]!.label;
           saving.current = true;
           setSavePending(true);
           setSaveError(null);
           setSelectedTheme(themeLabel);
-          saveConfig({ registrar: selectedRegistrar, theme: themeName }).then(() => {
+          saveConfig({ theme: themeName }).then(() => {
             if (!mounted.current) return;
             setTheme(themeName);
             setStep("done");
             exitTimer.current = setTimeout(() => {
-              if (mounted.current) exit({ registrar: selectedRegistrar, theme: themeLabel });
+              if (mounted.current) exit({ theme: themeLabel });
             }, 2000);
           }).catch((error: unknown) => {
             if (!mounted.current) return;
@@ -105,39 +93,20 @@ export default function InitView({ currentConfig }: Props) {
       ? [{ key: "q", action: "quit" }]
       : savePending ? [{ key: "esc", action: "exit" }] : [
           { key: "j/k", action: "up/down" },
-          { key: "enter", action: "next" },
+          { key: "enter", action: "save" },
           { key: "esc", action: "cancel" },
         ];
 
   return (
     <FrameBox title="Welcome to temper" hints={hints} minHeight={10}>
       <Box marginBottom={1}>
-        <Text color={theme.lavender}>Step {stepInfo.num} of 3</Text>
+        <Text color={theme.lavender}>Step {stepInfo.num} of 2</Text>
         <Text color={theme.dim}>  ·  </Text>
         <Text color={theme.dim}>{stepInfo.desc}</Text>
       </Box>
 
       {savePending && <Text color={theme.dim}>Saving settings...</Text>}
       {saveError && <Text color={step === "done" ? theme.yellow : theme.red}>{saveError}</Text>}
-
-      {step === "registrar" && (
-        <Box flexDirection="column">
-          <Box marginBottom={1}>
-            <Text color={theme.text}>Select your preferred registrar</Text>
-          </Box>
-          {REGISTRAR_META.map((r, i) => (
-            <Box key={r.key}>
-              <Text color={i === cursor ? theme.primary : theme.dim}>
-                {"  "}{i === cursor ? "●" : "○"}{" "}
-              </Text>
-              <Text color={i === cursor ? theme.text : theme.dim} bold={i === cursor}>
-                {r.label.padEnd(14)}
-              </Text>
-              <Text color={theme.dim}>{r.description}</Text>
-            </Box>
-          ))}
-        </Box>
-      )}
 
       {step === "theme" && (
         <Box flexDirection="column">
@@ -162,10 +131,6 @@ export default function InitView({ currentConfig }: Props) {
         <Box flexDirection="column">
           <Text color={theme.green}>✓ Config saved to ~/.temper/config.json</Text>
           <Text>{""}</Text>
-          <Text>
-            <Text color={theme.dim}>  Registrar:  </Text>
-            <Text color={theme.text}>{selectedRegistrar}</Text>
-          </Text>
           <Text>
             <Text color={theme.dim}>  Theme:      </Text>
             <Text color={theme.text}>{selectedTheme}</Text>

@@ -295,6 +295,11 @@ in both workspaces so root typechecking does not download a separate compiler.
   available. A failed read retains the previous list until history is reopened;
   completions after leaving the screen are ignored. The session's save queue
   preserves the last write's rejection without blocking subsequent resume saves.
+- `temper init` selects and saves a theme, then shows completion (two steps).
+  It updates only the theme through the existing config transaction, preserving
+  the latest registrar and additional settings. The config schema and defaults
+  remain compatible: a new file still includes the default registrar field.
+  Search and MCP continue to require an explicit registrar choice.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - The web demo supports Escape while searching, restores input focus after

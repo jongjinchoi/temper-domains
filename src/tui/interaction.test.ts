@@ -237,6 +237,34 @@ test("failed deletion leaves the displayed entries and damaged file intact", asy
   expect(result.unhandled).toEqual([]);
 });
 
+test.each(["q", "escape"])("init starts with theme selection and cancels with %s without writing", async key => {
+  const result = await scenario(`init-cancel-${key}`, "init-worker.tsx");
+  expect(result.initialFrame).toContain("Step 1 of 2");
+  expect(result.initialFrame).toContain("Choose a theme");
+  expect(result.initialFrame).not.toContain("registrar");
+  expect(result.unchanged).toBe(true);
+  expect(result.replacements).toBe(0);
+  expect(result.exited).toBe(true);
+  expect(result.unhandled).toEqual([]);
+});
+
+test("init saves only the theme and preserves the latest registrar and additional fields", async () => {
+  const result = await scenario("init-preserve", "init-worker.tsx");
+  expect(result.config).toEqual({ theme: "seoul-night", registrar: "vercel", extra: "latest" });
+  expect(result.frame).toContain("Step 2 of 2");
+  expect(result.frame).not.toContain("Registrar:");
+  expect(result.replacements).toBe(1);
+  expect(result.unhandled).toEqual([]);
+});
+
+test("init creates a first config with the selected theme and compatible defaults", async () => {
+  const result = await scenario("init-fresh", "init-worker.tsx");
+  expect(result.config).toEqual({ theme: "seoul-night", registrar: "cloudflare" });
+  expect(result.frame).toContain("Step 2 of 2");
+  expect(result.replacements).toBe(1);
+  expect(result.unhandled).toEqual([]);
+});
+
 test.each(THEMES)("init displays and saves theme $key with its shared label", async selected => {
   const result = await scenario(`init-theme-${selected.key}`, "init-worker.tsx");
   expect(result.themeFrame).toContain(selected.label);

@@ -52,8 +52,6 @@ async function until(predicate: () => boolean) {
 }
 try {
   if (mode === "init") {
-    await until(() => frame.includes("Choose your preferred registrar"));
-    input.write("\r");
     await until(() => frame.includes("Choose a theme"));
     await original.writeFile(target, "{");
     input.write("\r");

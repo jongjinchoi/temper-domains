@@ -181,7 +181,7 @@ program
 // --- init ---
 program
   .command("init")
-  .description("Set up temper (registrar + theme)")
+  .description("Set up temper's theme")
   .action(async () => {
     const config = await loadConfig();
     setTheme(config.theme);

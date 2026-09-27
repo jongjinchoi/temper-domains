@@ -21,7 +21,7 @@ Commands:
   search [options] <queries...>  Search domain availability across TLDs
   suggest [options] [query]      Generate name combinations and check
                                  availability
-  init                           Set up temper (registrar + theme)
+  init                           Set up temper's theme
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
   whois [options] <domain>       Show detailed WHOIS/RDAP info for a domain
@@ -226,13 +226,16 @@ stay disabled. Resolve the error and reopen history to reload it.
 ### Setup
 
 ```bash
-temper init                           # first-time setup (registrar + theme)
+temper init                           # choose and save a theme
 temper config theme seoul-night       # change theme
 temper config theme --list            # list themes
 ```
 
-The saved registrar preselects `temper init`; search still asks you to choose
-`c`/`p`/`n`/`v`, and MCP `open_registrar` requires an explicit registrar.
+`temper init` starts with your current theme selected. Press Enter to save it
+and finish setup, or `q`/Escape to leave without saving before confirmation.
+Existing settings, including a previously saved registrar, are preserved.
+Search asks you to choose `c`/`p`/`n`/`v`, and MCP `open_registrar` requires an
+explicit registrar; neither uses the saved registrar as a default.
 Browser feedback confirms the OS opening request only, not that the page loaded.
 
 
@@ -313,7 +316,7 @@ Options:
 ```text
 Usage: temper init [options]
 
-Set up temper (registrar + theme)
+Set up temper's theme
 
 Options:
   -h, --help  display help for command
@@ -468,7 +471,7 @@ Commands:
   search [options] <queries...>  Search domain availability across TLDs
   suggest [options] [query]      Generate name combinations and check
                                  availability
-  init                           Set up temper (registrar + theme)
+  init                           Set up temper's theme
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
   whois [options] <domain>       Show detailed WHOIS/RDAP info for a domain

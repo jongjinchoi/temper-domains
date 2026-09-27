@@ -16,8 +16,8 @@ Set Theme "Catppuccin Mocha"
 
 Type "temper init"
 Enter
-Wait+Screen /Step 1 of 3/
-Wait+Screen /Select your preferred registrar/
+Wait+Screen /Step 1 of 2/
+Wait+Screen /Select theme/
 Sleep 1s
 Screenshot assets/screenshots/init.png
 Sleep 3s
