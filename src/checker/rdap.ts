@@ -1,4 +1,5 @@
 import { ServerCooldown, LimitStateError } from "./limits.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 import { rdapTransport, TransportError } from "./http-transport.ts";
 import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
 import { serverKey } from "./scheduler.ts";
@@ -132,12 +133,12 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
   } catch (error) {
     if (queuedAt !== undefined) queueTimeMs += performance.now() - queuedAt;
     if (error instanceof ServerCooldown) return row({ status: error.kind === "rate_limited" ? "rate_limited" : "error", terminationReason: "server_cooldown",
-      retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: error.message });
-    if (error instanceof LimitStateError) return row({ status: "error", terminationReason: "limit_state_error", error: error.message });
+      retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: formatStorageError(error) });
+    if (error instanceof LimitStateError) return row({ status: "error", terminationReason: "limit_state_error", error: formatStorageError(error) });
     const reason = terminationReason ?? (signal.aborted ? abortReason(signal, attempts)
       : error instanceof LookupAbort ? error.reason : error instanceof TransportError && error.kind === "payload" ? "invalid_response" : error instanceof DOMException && error.name === "TimeoutError" ? "deadline_before_start" : "network_error");
     return row({ status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
-      terminationReason: reason, error: error instanceof TransportError ? `${error.kind}: ${error.message}` : error instanceof Error ? error.message : String(error) });
+      terminationReason: reason, error: error instanceof TransportError ? `${error.kind}: ${error.message}` : formatStorageError(error) });
   }
 }
 

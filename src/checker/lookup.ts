@@ -7,6 +7,7 @@ import { rdapLookup } from "./rdap.ts";
 import type { DomainResult } from "./types.ts";
 import { whoisLookup } from "./whois.ts";
 import { getTld } from "../utils/domain.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 
 export async function lookupDomainAvailability(domain: string, rdapUrl: string | null, signal: AbortSignal,
   timeoutMs: number, rdapKey?: string, context?: LookupContext, endpoints?: readonly string[]): Promise<DomainResult> {
@@ -31,10 +32,10 @@ export async function lookupDomainAvailability(domain: string, rdapUrl: string |
       terminationReason: signal.aborted ? abortReason(signal, attempts) : result.status === "slow" || result.error === "whois timeout" ? "request_timeout" : result.terminationReason }, rdapKey);
   } catch (error) {
     if (error instanceof ServerCooldown) return enrichDomainResult({ domain, tld: getTld(domain), status: error.kind === "rate_limited" ? "rate_limited" : "error", method: "whois", responseTime: Math.round(performance.now() - queuedAt), attempts,
-      terminationReason: "server_cooldown", retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: error.message }, rdapKey);
+      terminationReason: "server_cooldown", retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: formatStorageError(error) }, rdapKey);
     return enrichDomainResult({ domain, tld: getTld(domain), status: signal.aborted ? "slow" : "error", method: "whois",
       responseTime: Math.round(performance.now() - queuedAt), attempts, queueTimeMs: Math.round(attempts ? queueTimeMs : performance.now() - queuedAt),
       terminationReason: signal.aborted ? abortReason(signal, attempts) : error instanceof LimitStateError ? "limit_state_error" : error instanceof DOMException && error.name === "TimeoutError" ? "deadline_before_start" : "network_error",
-      error: error instanceof Error ? error.message : String(error) }, rdapKey);
+      error: formatStorageError(error) }, rdapKey);
   }
 }

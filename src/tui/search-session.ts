@@ -4,6 +4,7 @@ import type { DomainResult } from "../checker/types.ts";
 import { addHistory, replaceHistoryEntry, type HistoryEntry } from "../config/history.ts";
 import { normalizeDomainKey } from "../utils/validate.ts";
 import { getTld } from "../utils/domain.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 
 export const RESUME_BUDGET_MS = 120000;
 interface Snapshot {
@@ -104,7 +105,7 @@ export class SearchSession {
       if (this.state.results.size && [...this.state.results.values()].every(row => row.terminationReason === "bootstrap_error")) {
         this.update({ error: [...this.state.results.values()][0]!.error ?? "Could not load the domain lookup server directory" });
       }
-      await this.saveHistory().catch(error => { if (this.epoch === epoch) this.update({ historyError: String(error instanceof Error ? error.message : error) }); });
+      await this.saveHistory().catch(error => { if (this.epoch === epoch) this.update({ historyError: formatStorageError(error) }); });
     } catch (error) {
       if (this.epoch === epoch) this.update({ error: String(error instanceof Error ? error.message : error) });
     } finally {

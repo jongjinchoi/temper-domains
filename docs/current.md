@@ -219,8 +219,17 @@ in both workspaces so root typechecking does not download a separate compiler.
   the temporary file and lock are placed beside that target.
 - Config, history, watchlist and lookup-limit storage share the file transaction
   helper. Closing handles and removing owned temporary/lock files are independent
-  cleanup attempts. Errors retain whether replacement committed and all cleanup
-  causes; typed history conflicts and lookup policy rejections retain their identity.
+  cleanup attempts. Replacement and cleanup I/O failures become one
+  FileTransactionError whose message names the store and its outcome once
+  ("<store> was saved, but cleanup failed" / "<store> was not saved"), records
+  `committed`, and adds lock-removal guidance when lock removal fails. Errors
+  raised by the store's own logic (damaged files, history conflicts, lookup policy
+  rejections, cancellation) pass through unchanged, with any cleanup failure as
+  their `cause`. Preparation I/O (including writing the lock's PID) is classified
+  as storage failure before the caller's operation runs. Supplemental cleanup
+  diagnostics preserve any previous cause separately from cleanup failures.
+  CLI, TUI and lookup-result boundaries format these diagnostics once without
+  changing the caller's message, conflict data, cancellation or cooldown type.
 - A lock waits up to 5s. A crashed writer may leave `config.json.lock`,
   `watchlist.json.lock` or `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
@@ -522,6 +531,9 @@ and their resolved checker dependencies/configuration, and that assigned classif
 and the current classification rules. npm, standalone binary and web builds run this guard. Release
 verification also prepares the npm artifact before compiling platform binaries.
 Web-only and developer dependency changes are excluded from checker signatures.
+`src/utils/file-transaction.ts` and `src/utils/storage-error.ts` are included because
+lookup-limit coordination uses them; changing either (even for config/history/watchlist storage) requires refreshing the
+signatures, and existing lookup observations then need rechecking.
 The migration from whole-lock fingerprints preserves existing evidence IDs only
 for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
 Refreshing signatures makes old

@@ -8,6 +8,7 @@ import { enrichDomainDetail, getDomainInputError } from "./policy.ts";
 import { rdapDetail } from "./rdap.ts";
 import type { DomainDetail } from "./types.ts";
 import { sanitizeDomain } from "../utils/validate.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 import { whoisDetail } from "./whois.ts";
 
 export async function domainDetail(domain: string, options: { timeoutMs?: number; signal?: AbortSignal; limits?: LimitCoordinator } = {}): Promise<DomainDetail> {
@@ -32,10 +33,10 @@ export async function domainDetail(domain: string, options: { timeoutMs?: number
       terminationReason: run.signal.aborted ? abortReason(run.signal, attempts) : detail.status === "slow" || detail.error === "whois timeout" ? "request_timeout" : detail.terminationReason }, key);
   } catch (error) {
     if (error instanceof ServerCooldown) return enrichDomainDetail({ domain, method, status: error.kind === "rate_limited" ? "rate_limited" : "error", responseTime: Math.round(performance.now() - run.startedAt), attempts,
-      terminationReason: "server_cooldown", retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: error.message });
+      terminationReason: "server_cooldown", retryAt: new Date(error.until).toISOString(), retryAtSource: error.source, error: formatStorageError(error) });
     return enrichDomainDetail({ domain, method, status: run.signal.aborted ? "slow" : "error", attempts,
       responseTime: Math.round(performance.now() - run.startedAt),
       terminationReason: run.signal.aborted ? abortReason(run.signal, attempts) : error instanceof LimitStateError ? "limit_state_error" : error instanceof DOMException && error.name === "TimeoutError" ? "deadline_before_start" : "bootstrap_error",
-      error: error instanceof Error ? error.message : String(error) });
+      error: formatStorageError(error) });
   } finally { run.close(); }
 }

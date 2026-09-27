@@ -1,6 +1,7 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useRef, useState } from "react";
-import { ConfigSaveError, saveConfig } from "../config/config.ts";
+import { saveConfig } from "../config/config.ts";
+import { FileTransactionError, formatStorageError } from "../utils/storage-error.ts";
 import { REGISTRAR_META } from "../registrar/urls.ts";
 import FrameBox from "./FrameBox.tsx";
 import { setTheme, theme } from "./theme.ts";
@@ -83,11 +84,11 @@ export default function InitView({ currentConfig }: Props) {
             }, 2000);
           }).catch((error: unknown) => {
             if (!mounted.current) return;
-            if (error instanceof ConfigSaveError && error.committed) {
+            if (error instanceof FileTransactionError && error.committed) {
               setTheme(themeName);
               setStep("done");
             }
-            setSaveError(error instanceof Error ? error.message : String(error));
+            setSaveError(formatStorageError(error));
           }).finally(() => {
             saving.current = false;
             if (mounted.current) setSavePending(false);

@@ -46,7 +46,8 @@ test.each(["{", "{}", '[{"domain":42}]'])("preserves invalid watchlist content: 
   await writeFile(file, content);
   const [code, error] = await worker("add", "acme.com");
   expect(code).toBe(1);
-  expect(error).toContain("watchlist");
+  // The repair guidance reaches the user verbatim, without a storage prefix.
+  expect(error.trim()).toBe(`Invalid watchlist: ${file}. Back up and repair this file before retrying; it has not been overwritten.`);
   expect(await readFile(file, "utf8")).toBe(content);
 });
 

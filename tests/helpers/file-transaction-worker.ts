@@ -6,6 +6,7 @@ const operation = process.argv[4];
 const cancellation = new AbortController();
 const original = { ...fs };
 let injected = 0;
+let callbackRan = false;
 const fail = () => { injected++; throw new Error(`injected ${failure}`); };
 const changed = {
   ...original,
@@ -15,6 +16,7 @@ const changed = {
     for (const method of ["writeFile", "sync", "close"] as const) {
       const bound = handle[method].bind(handle) as (...args: any[]) => Promise<any>;
       (handle as any)[method] = async (...values: any[]) => {
+        if (!temporary && method === "writeFile" && failure === "lock-write") fail();
         if (temporary && failure === method && injected === 0) {
           if (method === "close") await bound(...values);
           fail();
@@ -29,6 +31,7 @@ const changed = {
     if (failure === "rename") fail();
     await original.rename(...args);
     if (operation === "abort-commit" && injected === 0) { injected++; cancellation.abort(); }
+    if (operation === "abort-cleanup") cancellation.abort(new Error("custom cancellation", { cause: priorCause }));
   },
   unlink: async (...args: Parameters<typeof fs.unlink>) => {
     if (failure === "unlink" && String(args[0]).endsWith(".lock")) fail();
@@ -42,8 +45,12 @@ if (process.versions.bun) {
   mock.module("node:fs/promises", () => changed);
 }
 const { withFileTransaction } = await import("../../src/utils/file-transaction.ts");
+const { formatStorageError } = await import("../../src/utils/storage-error.ts");
+// A caller rejection must reach the caller as the same object.
+const priorCause = new Error("original private cause");
+const rejection = new RangeError("caller rejected", operation === "caller-cause" ? { cause: priorCause } : undefined);
 try {
-  if (operation === "abort-commit") {
+  if (operation === "abort-commit" || operation === "abort-cleanup") {
     const { FileLimitStore } = await import("../../src/checker/limit-store.ts");
     const { LimitCoordinator } = await import("../../src/checker/limits.ts");
     const limits = new LimitCoordinator(new FileLimitStore(path));
@@ -62,11 +69,22 @@ try {
         throw new ServerCooldown(100000, "server", "rate_limited");
       });
     } else {
-      await withFileTransaction(path, { deadline: Date.now() + 1000, busyMessage: "busy" }, async tx => { await tx.replace("new"); });
+      await withFileTransaction(path, { subject: "Test data", deadline: Date.now() + 1000, busyMessage: "busy" }, async tx => {
+        callbackRan = true;
+        if (operation === "caller-error" || operation === "caller-cause") throw rejection;
+        if (operation === "caller-undefined") throw undefined;
+        await tx.replace("new");
+      });
     }
     console.log(JSON.stringify({ committed: true, injected }));
   }
 } catch (error) {
-  console.log(JSON.stringify({ message: String(error), committed: (error as { committed?: boolean }).committed, injected,
-    kind: (error as Error).constructor.name, cleanup: (error as Error).cause instanceof AggregateError ? (error as Error & { cause: AggregateError }).cause.errors.map(String) : undefined }));
+  const cause = error instanceof Error ? error.cause : undefined;
+  console.log(JSON.stringify({ rejected: true, message: String(error), text: error instanceof Error ? error.message : String(error), display: formatStorageError(error),
+    same: error === rejection, committed: (error as { committed?: boolean } | undefined)?.committed, injected, callbackRan,
+    sameCancellation: error === cancellation.signal.reason,
+    diagnosticCommitted: (cause as { committed?: boolean } | undefined)?.committed,
+    priorPreserved: cause === priorCause || (cause instanceof Error && cause.cause === priorCause),
+    kind: error instanceof Error ? error.constructor.name : typeof error,
+    cleanup: cause instanceof AggregateError ? cause.errors.map(String) : undefined }));
 }

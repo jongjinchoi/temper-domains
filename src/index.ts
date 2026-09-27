@@ -6,6 +6,7 @@ import { loadConfig, saveConfig } from "./config/config.ts";
 import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
+import { formatStorageError } from "./utils/storage-error.ts";
 import { assertCandidateLimit, validateSearchCombinations, splitFilter } from "./extensions/input.ts";
 import { maybeUpdate, updateCommand } from "./update/cli.ts";
 
@@ -381,5 +382,5 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  exitWithError(error instanceof Error ? error.message : String(error));
+  exitWithError(formatStorageError(error));
 });

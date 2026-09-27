@@ -54,6 +54,6 @@ try {
   if (process.argv[2] !== "load") await saveConfig(JSON.parse(process.argv[2]!));
   console.log(JSON.stringify(await loadConfig()));
 } catch (error) {
-  console.error(JSON.stringify({ message: String(error), committed: (error as { committed?: boolean }).committed }));
+  console.error(JSON.stringify({ message: String(error), text: error instanceof Error ? error.message : String(error), committed: (error as { committed?: boolean }).committed }));
   process.exitCode = 1;
 }

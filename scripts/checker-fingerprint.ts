@@ -28,7 +28,7 @@ export async function scopedCheckerFingerprint(method?: "rdap" | "whois", root =
   let files = (await readdir(resolve(root, 'src/checker'))).filter(name => name.endsWith('.ts') && !name.endsWith('.test.ts')).map(name => `src/checker/${name}`);
   if (method === "rdap") files = files.filter(name => !name.endsWith("/whois.ts"));
   if (method === "whois") files = files.filter(name => !name.endsWith("/rdap.ts") && !name.endsWith("/http-transport.ts"));
-  files.push('src/utils/domain.ts', 'src/utils/validate.ts', 'src/utils/file-transaction.ts');
+  files.push('src/utils/domain.ts', 'src/utils/validate.ts', 'src/utils/file-transaction.ts', 'src/utils/storage-error.ts');
   const sources = await Promise.all(files.sort().map(async name => `${name}\n${await readFile(resolve(root, name), 'utf8')}`));
   const lock = Bun.JSONC.parse(await readFile(resolve(root, 'bun.lock'), 'utf8')) as Lock;
   const dependencies = checkerDependencyInputs(sources, lock);

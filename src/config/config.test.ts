@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, lstat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, lstat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -92,6 +92,20 @@ test("cleanup failure after replacement reports that config was saved", async ()
   expect(stderr).toContain("saved");
   expect(JSON.parse(await readFile(file, "utf8")).theme).toBe("dracula");
   expect(await Bun.file(file + ".lock").exists()).toBe(true);
+});
+
+test("save failures state the outcome once, with lock recovery guidance only when needed", async () => {
+  const lock = join(await realpath(join(home, ".temper")), "config.json.lock");
+  for (const [fail, expected] of [
+    ["cleanup", `Config was saved, but cleanup failed: test lock cleanup failed. After confirming no temper command is running, remove only ${lock} before the next attempt.`],
+    ["rename", "Config was not saved: test rename failed"],
+  ] as const) {
+    await writeFile(file, old);
+    await rm(lock, { force: true });
+    const [code, , stderr] = await worker({ theme: "dracula" }, { TEMPER_CONFIG_FAIL: fail }).result;
+    expect(code).toBe(1);
+    expect(JSON.parse(stderr).text).toBe(expected);
+  }
 });
 
 test("cleanup failure does not hide the original write failure", async () => {

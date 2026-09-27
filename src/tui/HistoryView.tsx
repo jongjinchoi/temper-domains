@@ -1,6 +1,7 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useRef, useState } from "react";
 import { type HistoryEntry, HistoryConflictError, loadHistory, removeHistoryAt } from "../config/history.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 import FrameBox from "./FrameBox.tsx";
 import SearchView from "./SearchView.tsx";
 import { theme } from "./theme.ts";
@@ -67,7 +68,7 @@ export default function HistoryView({ onBack, onQuit }: Props = {}) {
             setHistory(error.current);
             setCursor(0);
           }
-          setDeleteError(error instanceof Error ? error.message : String(error));
+          setDeleteError(formatStorageError(error));
         }).finally(() => {
           deleting.current = false;
           if (mounted.current) setDeletePending(false);

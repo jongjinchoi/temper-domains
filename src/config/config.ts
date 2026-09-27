@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { lstat, readlink, realpath } from "node:fs/promises";
-import { FileTransactionError, withFileTransaction } from "../utils/file-transaction.ts";
+import { withFileTransaction } from "../utils/file-transaction.ts";
 import { ensureConfigDir, readValidatedJson } from "../utils/fs.ts";
 
 const CONFIG_FILE = join(homedir(), ".temper", "config.json");
@@ -31,13 +31,6 @@ export async function loadConfig(): Promise<TemperConfig> {
   return readConfig(CONFIG_FILE);
 }
 
-export class ConfigSaveError extends Error {
-  constructor(message: string, public readonly committed: boolean) {
-    super(message);
-    this.name = "ConfigSaveError";
-  }
-}
-
 // Replace the target, not a user's symlink, including links to a missing file.
 async function configTarget(): Promise<string> {
   let path = CONFIG_FILE;
@@ -60,17 +53,13 @@ export async function saveConfig(partial: Partial<TemperConfig>): Promise<void> 
   const path = await configTarget();
   const lockPath = `${path}.lock`;
   const recovery = `Retry after other temper commands finish. If a command crashed, remove only ${lockPath} after confirming no temper command is running.`;
-  try {
-    await withFileTransaction(path, { deadline: Date.now() + 5000, busyMessage: `Config is busy: ${lockPath}. ${recovery}` }, async transaction => {
-      const merged = { ...await readConfig(path), ...partial };
-      await transaction.replace(JSON.stringify(merged, null, 2) + "\n");
+  // Storage failures surface as FileTransactionError with `committed`.
+  await withFileTransaction(path, { subject: "Config", deadline: Date.now() + 5000, busyMessage: `Config is busy: ${lockPath}. ${recovery}` }, async transaction => {
+    // A save that cannot read the current settings states that it did not save, once.
+    const current = await readConfig(path).catch((error: unknown) => {
+      throw new Error(`Config was not saved: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     });
-  } catch (error) {
-    if (!(error instanceof FileTransactionError)) throw error;
-    const cleanup = error.lockCleanupFailed
-      ? ` After confirming no temper command is running, remove only ${lockPath} before the next save.` : "";
-    const wrapped = new ConfigSaveError(`${error.committed ? "Config was saved, but cleanup failed" : "Config was not saved"}: ${error.message}${cleanup}`, error.committed);
-    wrapped.cause = error;
-    throw wrapped;
-  }
+    const merged = { ...current, ...partial };
+    await transaction.replace(JSON.stringify(merged, null, 2) + "\n");
+  });
 }

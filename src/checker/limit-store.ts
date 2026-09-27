@@ -39,7 +39,7 @@ export class FileLimitStore implements LimitStore {
       if (Date.now() >= deadline) throw new Error("State coordination timed out before the transaction started; retry after other temper commands finish");
       await mkdir(dirname(this.path), { recursive: true, mode: 0o700 });
       return await withFileTransaction(this.path, {
-        deadline, signal,
+        subject: `Lookup state (${this.path})`, deadline, signal,
         busyMessage: `State is busy. After confirming no temper process is running, remove only ${lockPath} and retry.`,
       }, async transaction => {
         const raw = await readFile(this.path, "utf8").catch((error: NodeJS.ErrnoException) => {
@@ -75,16 +75,18 @@ export class FileLimitStore implements LimitStore {
         return result as T;
       });
     } catch (error) {
-      const primary = error instanceof FileTransactionError ? error.cause : error;
-      // Policy/cancellation identity is part of the caller contract. Cleanup
-      // diagnostics remain attached without turning an unsent request into I/O.
-      if (primary instanceof ServerCooldown || primary instanceof DOMException || signal?.aborted) {
-        const rejection = signal?.aborted ? signal.reason : primary;
-        if (error instanceof FileTransactionError && error.errors.length > 1 && rejection instanceof Error) {
-          rejection.cause = new AggregateError(error.errors.slice(1), "Lookup state cleanup failed");
+      // Policy/cancellation identity is part of the caller contract. The helper
+      // passes them through unchanged, with any cleanup failure as their cause.
+      if (signal?.aborted) {
+        const reason: unknown = signal.reason;
+        if (reason !== error && error instanceof FileTransactionError && reason instanceof Error) {
+          reason.cause = new FileTransactionError(error.subject, error.failures, error.committed, error.lockPath, "supplemental", reason.cause);
         }
-        throw rejection;
+        throw reason;
       }
+      if (error instanceof ServerCooldown || error instanceof DOMException) throw error;
+      // Storage I/O already names this state file and its commit outcome.
+      if (error instanceof FileTransactionError) throw new LimitStateError(error.message, { cause: error });
       throw new LimitStateError(`Lookup state unavailable (${this.path}): ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
   }

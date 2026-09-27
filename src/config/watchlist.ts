@@ -38,6 +38,7 @@ async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]):
   await ensureConfigDir();
   const lockPath = `${WATCHLIST_FILE}.lock`;
   await withFileTransaction(WATCHLIST_FILE, {
+    subject: "Watchlist",
     deadline: Date.now() + 5000,
     busyMessage: `Watchlist is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`,
   }, async transaction => {

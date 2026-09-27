@@ -2,6 +2,7 @@ import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { checkFullDomains } from "../checker/checker.ts";
 import { loadWatchlist, removeWatch } from "../config/watchlist.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 import FrameBox from "./FrameBox.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 import ListViewport from "./ListViewport.tsx";
@@ -73,7 +74,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       dispatch({ type: "removed", domain });
     } catch (error) {
       if (cancelledRef.current) return;
-      const message = error instanceof Error ? error.message : String(error);
+      const message = formatStorageError(error);
       dispatch({ type: "deleteFailed", error: message });
       try {
         const stored = await loadWatchlist();

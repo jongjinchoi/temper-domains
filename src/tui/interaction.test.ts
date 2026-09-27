@@ -25,6 +25,24 @@ function expectViewport(frame: string, rows: number) {
   expect(above + shown + below).toBe(30);
 }
 
+test.each(["init", "watch", "history", "history-conflict", "search-add", "search-history"])("storage cleanup guidance reaches the %s screen", async mode => {
+  const result = await scenario(mode, "tui-storage-worker.tsx");
+  expect(result.injected).toBe(1);
+  expect(result.lock).toBe(true);
+  const compact = result.frame.replace(/[│\s]/g, "");
+  expect(compact.match(/storagecleanupdenied/g)).toHaveLength(1);
+  expect(compact.match(/removeonly/g)).toHaveLength(1);
+  expect(compact).toContain(result.lockPath.replace(/\s/g, ""));
+  if (mode === "history-conflict") {
+    expect(result.frame).toContain("History changed");
+    expect(result.frame).toContain("new");
+    expect(JSON.parse(result.data).map((row: { query: string }) => row.query)).toEqual(["new", "selected"]);
+  } else {
+    expect(result.data).toBe("{");
+    expect(result.frame).toMatch(/Invalid (data|watchlist)/);
+  }
+});
+
 test.each(['history-date', 'history-height', 'watch-height', 'suggest-height', 'suggest-duplicate', 'escape', 'watch-cursor', 'watch-race', 'watch-load-race', 'watch-committed-failure', 'watch-reload-failure', 'notice-timer', 'notice-late'])("boundary regression: %s", async mode => {
   await scenario(mode, 'tui-boundaries-worker.tsx');
 }, 15000);

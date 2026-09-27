@@ -3,6 +3,7 @@ import { Box, Text, useApp, useInput, useStdout } from "ink";
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_TLDS } from "../checker/types.ts";
 import { addWatch } from "../config/watchlist.ts";
+import { formatStorageError } from "../utils/storage-error.ts";
 import { useSearchExecution } from "./hooks/useSearchExecution.ts";
 import { openBrowser } from "../registrar/browser.ts";
 import { type Registrar, buildURL } from "../registrar/urls.ts";
@@ -189,7 +190,7 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
                 completeNotice(noticeId, { text: `✓ Added ${domain} to watchlist` }, 3000);
               },
               (err: unknown) => {
-                const msg = err instanceof Error ? err.message : String(err);
+                const msg = formatStorageError(err);
                 completeNotice(noticeId, { text: `✗ Failed to add ${domain}: ${msg}`, error: true }, 5000);
               },
             );

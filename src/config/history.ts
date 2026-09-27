@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { FileTransactionError, withFileTransaction } from "../utils/file-transaction.ts";
+import { withFileTransaction } from "../utils/file-transaction.ts";
 import { ensureConfigDir, readValidatedJson } from "../utils/fs.ts";
 
 const HISTORY_FILE = join(homedir(), ".temper", "history.json");
@@ -35,27 +35,15 @@ export async function loadHistory(): Promise<HistoryEntry[]> {
 async function updateHistory(update: (history: HistoryEntry[]) => HistoryEntry[]): Promise<HistoryEntry[]> {
   await ensureConfigDir();
   const lockPath = `${HISTORY_FILE}.lock`;
-  try {
-    return await withFileTransaction(HISTORY_FILE, {
-      deadline: Date.now() + 5000,
-      busyMessage: `History is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`,
-    }, async transaction => {
-      const history = update(await loadHistory());
-      await transaction.replace(JSON.stringify(history, null, 2) + "\n");
-      return history;
-    });
-  } catch (error) {
-    if (error instanceof FileTransactionError && error.cause instanceof HistoryConflictError) {
-      // Keep the typed conflict/current rows; retain any independent cleanup failure.
-      const conflict = error.cause;
-      if (error.errors.length > 1) {
-        conflict.cause = new AggregateError(error.errors.slice(1), "History cleanup failed");
-        conflict.message += ` Cleanup failed: ${error.errors.slice(1).map(String).join("; ")}`;
-      }
-      throw conflict;
-    }
-    throw error;
-  }
+  return withFileTransaction(HISTORY_FILE, {
+    subject: "History",
+    deadline: Date.now() + 5000,
+    busyMessage: `History is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`,
+  }, async transaction => {
+    const history = update(await loadHistory());
+    await transaction.replace(JSON.stringify(history, null, 2) + "\n");
+    return history;
+  });
 }
 
 export async function addHistory(entry: HistoryEntry): Promise<void> {
