@@ -25,6 +25,24 @@ function expectViewport(frame: string, rows: number) {
   expect(above + shown + below).toBe(30);
 }
 
+test.each([
+  ["invalid", "not disclosed"], ["future", "(in 3 days)"],
+  ["today", "(today)"], ["past", "(3 days ago)"], ["missing", undefined],
+])("WHOIS expiry display preserves parsed values: %s", async (mode, expected) => {
+  const result = await scenario(`whois-expiry-${mode}`);
+  const detail = result.frames.detail as string;
+  const expires = detail.split("\n").find(line => line.includes("Expires"));
+  if (expected === undefined) expect(expires).toBeUndefined();
+  else {
+    const value = mode === "invalid" ? expected : `${result.frames.expiry.slice(0, 10)} ${expected}`;
+    expect(expires?.replace(/[│\s]+/g, " ").trim()).toBe(`Expires ${value}`);
+  }
+  expect(detail).not.toContain("NaN");
+  expect(detail).toContain("taken");
+  expect(result.back).toBe(1);
+  expect(result.unhandled).toEqual([]);
+});
+
 test.each(["normal", "delayed", "write-failure", "cleanup-failure", "read-failure", "leave-save", "leave-read", "fast-reentry"])(
   "history return reconciles storage and preserves failure boundaries: %s", async mode => {
     await scenario(mode, "tui-history-return-worker.tsx");

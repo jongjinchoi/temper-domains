@@ -90,7 +90,9 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
     const date = formatDate(iso);
     if (!date || !iso) return undefined;
     try {
-      const days = Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      const timestamp = new Date(iso).getTime();
+      if (!Number.isFinite(timestamp)) return date;
+      const days = Math.ceil((timestamp - Date.now()) / (1000 * 60 * 60 * 24));
       if (days > 0) return `${date}  (in ${days} days)`;
       if (days === 0) return `${date}  (today)`;
       return `${date}  (${Math.abs(days)} days ago)`;

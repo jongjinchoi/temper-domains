@@ -11,10 +11,18 @@ import App from "../../src/tui/App.tsx";
 import SuggestView from "../../src/tui/SuggestView.tsx";
 import HistoryView from "../../src/tui/HistoryView.tsx";
 import WatchlistView from "../../src/tui/WatchlistView.tsx";
+import WhoisView from "../../src/tui/WhoisView.tsx";
 import { DEFAULT_TLDS, EXTENDED_TLDS } from "../../src/checker/types.ts";
 import { addHistory } from "../../src/config/history.ts";
 
 const scenario = process.argv[2];
+// Keep fixtures half a day away from relative-day boundaries without changing scheduler clocks.
+const expiryBase = Date.now();
+const expiryFixtures: Record<string, string | undefined> = {
+  invalid: "not disclosed", future: new Date(expiryBase + 2.5 * 86_400_000).toISOString(),
+  today: new Date(expiryBase - 0.5 * 86_400_000).toISOString(),
+  past: new Date(expiryBase - 3.5 * 86_400_000).toISOString(), missing: undefined,
+};
 const opened: string[] = [];
 let finishBrowser: (() => void) | undefined;
 mock.module("../../src/registrar/browser.ts", () => ({ openBrowser: async (url: string) => {
@@ -45,6 +53,13 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
     return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
   if (scenario === "search-resume-many") throw new Error("test temporary connection failure");
+  if (scenario?.startsWith("whois-expiry-")) {
+    const expiry = expiryFixtures[scenario.slice("whois-expiry-".length)];
+    return Response.json({ objectClassName: "domain", ldhName: "acme.com", events: [
+      { eventAction: "registration", eventDate: "2020-01-01T00:00:00Z" },
+      ...(expiry === undefined ? [] : [{ eventAction: "expiration", eventDate: expiry }]),
+    ] });
+  }
   if (scenario === "search-resume") {
     const domain = String(input).split("/").at(-1)!;
     requests.push(domain);
@@ -85,6 +100,7 @@ Object.assign(input, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
 let back = 0;
 const element = scenario === "suggest"
   ? <SuggestView query="Acme" prefixes={[]} suffixes={[]} onBack={() => back++} />
+  : scenario?.startsWith("whois-expiry-") ? <WhoisView domain="acme.com" onBack={() => back++} />
   : scenario === "watch-corrupt" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
@@ -107,7 +123,12 @@ const frames: Record<string, string> = {};
 const plain = () => frame.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
 async function key(value: string) { input.write(value); await Bun.sleep(60); }
 try {
-  if (scenario?.startsWith("search-")) {
+  if (scenario?.startsWith("whois-expiry-")) {
+    await until(() => frame.includes("Created"));
+    frames.expiry = expiryFixtures[scenario.slice("whois-expiry-".length)] ?? "";
+    frames.detail = plain();
+    await key("\x1b");
+  } else if (scenario?.startsWith("search-")) {
     await until(() => frame.includes("Search complete") || frame.includes("Partial results"));
     if (scenario === "search-filter" || scenario === "search-resize") {
       for (let i = 0; i < 20; i++) await key("j");
