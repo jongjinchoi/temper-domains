@@ -515,8 +515,9 @@ The runtime snapshot is `src/extensions/data/catalog.json`. It contains IANA/
 PSL boundary data, offering evidence, classification reviews, lookup observations,
 full endpoint plans and checker signatures together.
 `commercial.json`, `overrides.json`, `regions.json`, `captures.json` and
-`reviews.json` are maintenance inputs;
-runtime does not mix them into an independently updated snapshot. Each
+`reviews.json` are maintained only under `data-sources/catalog/`.
+`src/extensions/data/` contains only the generated `catalog.json`; runtime does
+not mix separate maintenance inputs into an independently updated snapshot. Each
 classification records its reason, source, evidence type and checked date.
 Entries without industry/purpose evidence remain explicitly unclassified.
 Registration qualification metadata is not collected, displayed or a search gate.
