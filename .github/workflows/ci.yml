@@ -4,16 +4,18 @@ on:
   push:
     branches: ["main"]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.workflow == 'CI' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.workflow == 'CI' }}
 
 jobs:
   root:
+    name: ${{ github.workflow }} / root
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -29,8 +31,10 @@ jobs:
       - run: bun run typecheck
       - run: bun run docs:check
       - run: bun run build:npm
+      - run: node tests/limits/runner.mjs
 
   web:
+    name: ${{ github.workflow }} / web
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -46,8 +50,11 @@ jobs:
       - run: bun run web:build
         env:
           TEMPER_PUBLIC_BUILD: '1'
+      - run: node node_modules/playwright/cli.js install --with-deps chromium
+      - run: bash tests/browser/run.sh
 
   node-compatibility:
+    name: ${{ github.workflow }} / Node ${{ matrix.node }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -71,6 +78,7 @@ jobs:
       - run: node tests/transport/runner.mjs
 
   updater-compatibility:
+    name: ${{ github.workflow }} / updater ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
@@ -99,3 +107,20 @@ jobs:
           python3 tests/update/startup-check.py bun src/index.ts
           bun run build:npm
           python3 tests/update/startup-check.py node dist/npm/index.js
+
+  required:
+    name: ${{ github.workflow }} / required
+    if: always()
+    needs: [root, web, node-compatibility, updater-compatibility]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every check to succeed
+        env:
+          ROOT: ${{ needs.root.result }}
+          WEB: ${{ needs.web.result }}
+          NODE: ${{ needs.node-compatibility.result }}
+          UPDATER: ${{ needs.updater-compatibility.result }}
+        run: |
+          for result in "$ROOT" "$WEB" "$NODE" "$UPDATER"; do
+            test "$result" = success || exit 1
+          done

@@ -2,9 +2,9 @@ import { expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-// Tags can move; a full commit SHA is the only immutable action reference.
+// Remote tags can move; local workflow references use the caller's commit.
 // Update pins by resolving the intended tag in the action's official repository.
-test("every workflow pins each action to one full commit SHA with its version comment", () => {
+test("workflows pin external actions and resolve local workflows at the same commit", () => {
   const directory = resolve(import.meta.dir, "../.github/workflows");
   const pins = new Map<string, Set<string>>();
   const invalid: string[] = [];
@@ -12,6 +12,12 @@ test("every workflow pins each action to one full commit SHA with its version co
     readFileSync(join(directory, name), "utf8").split("\n").forEach((line, index) => {
       const uses = /^\s*(?:-\s+)?uses:\s*(.+?)\s*$/.exec(line)?.[1];
       if (!uses) return;
+      const local = /^\.\/\.github\/workflows\/([\w.-]+\.ya?ml)$/.exec(uses);
+      if (local) {
+        const workflow = Bun.YAML.parse(readFileSync(join(directory, local[1]!), 'utf8')) as { on?: Record<string, unknown> };
+        expect(Object.hasOwn(workflow.on ?? {}, 'workflow_call')).toBe(true);
+        return;
+      }
       const pin = /^([\w.-]+\/[\w.-]+)@([0-9a-f]{40}) # v\d+(?:\.\d+){0,2}$/.exec(uses);
       if (!pin) { invalid.push(`${name}:${index + 1} ${uses}`); return; }
       pins.set(pin[1]!, (pins.get(pin[1]!) ?? new Set()).add(pin[2]!));

@@ -17,6 +17,9 @@ env:
   TEMPER_PUBLIC_BUILD: '1'
 
 jobs:
+  quality:
+    uses: ./.github/workflows/ci.yml
+
   verify:
     runs-on: ubuntu-latest
     steps:
@@ -47,10 +50,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun ci
-      - run: bun test
-      - run: bun run typecheck
-      - run: bun run docs:check
       - run: mkdir -p dist && npm pack --pack-destination dist
+      - run: bun tests/packaging/smoke.mjs npm dist/temper-domains-$(node -p 'require("./package.json").version').tgz
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-inputs
@@ -62,7 +63,7 @@ jobs:
   source:
     permissions:
       contents: write
-    needs: verify
+    needs: [quality, verify]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -97,6 +98,11 @@ jobs:
   build:
     if: github.event_name == 'push'
     needs: source
+    # The public source archive is created on Linux; keep checkout bytes identical.
+    env:
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
     strategy:
       fail-fast: false
       matrix:
@@ -104,13 +110,13 @@ jobs:
           - target: bun-darwin-arm64
             os: macos-latest
           - target: bun-darwin-x64
-            os: macos-latest
+            os: macos-15-intel
           - target: bun-linux-x64
             os: ubuntu-latest
           - target: bun-linux-arm64
-            os: ubuntu-latest
+            os: ubuntu-24.04-arm
           - target: bun-windows-x64
-            os: ubuntu-latest
+            os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -124,6 +130,8 @@ jobs:
         run: |
           bun run build.ts ${{ matrix.target }}
           bun run scripts/source-package.ts ${{ matrix.target }}
+      - name: Run the packaged binary on its target platform
+        run: bun tests/packaging/smoke.mjs native ${{ matrix.target }} dist/temper-${{ matrix.target }}.tar.gz
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: temper-${{ matrix.target }}
