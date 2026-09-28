@@ -385,9 +385,11 @@ guidance and recovery, Escape, focus, incomplete streams and 390px/1440px layout
 It does not query public registries or access the hosted site.
 
 The `CI / required` job succeeds only when root, web, both Node versions and
-all updater platforms succeed. Release calls the same checks at its own commit
-before any publication, then checks the actual npm package and each native
-archive before publishing that channel. See [the release guide](release.md).
+all updater platforms succeed. Release requires successful main-push CI evidence
+for its exact execution commit, including the current `CI / required` result,
+without running CI again. It then checks the actual npm package and each native
+archive before publishing that channel. Missing, failed or incomplete evidence
+blocks publication. See [the release guide](release.md).
 GitHub required-check rules and Vercel production promotion checks are separate
 remote settings: workflow configuration alone does not enable them.
 

@@ -44,7 +44,8 @@
 
 ## Release Steps
 
-The workflow defaults to `contents: read`. Only `source` and `release` receive
+The workflow defaults to `contents: read`. `verify` also receives `actions: read`
+to check the release commit's CI evidence. Only `source` and `release` receive
 `contents: write`; npm receives `id-token: write` for trusted publication.
 Homebrew pushes use the separate tap PAT, not the repository's `GITHUB_TOKEN`.
 Other checkouts do not persist credentials. Actions are pinned to full commit
@@ -75,8 +76,8 @@ Checks로 연결한다. 현재 설정과 사용 가능 여부를 먼저 확인�
 
 태그 푸시 후 GitHub Actions가 자동 실행:
 
-1. **quality / verify** - quality는 같은 실행 커밋의 CI workflow를 호출해 root·web·Node 최소/LTS·OS updater 검사를 수행한다. verify는 태그·버전·복구 조건을 검사하고 `npm pack`으로 tgz와 corresponding-source archive를 만든다. tgz를 저장소 밖 임시 경로에 설치해 bin·버전·help·오프라인 목록을 확인한다.
-2. **source** - quality와 verify가 모두 성공해야 GitHub Release 생성/확인 및 실제 commit의 source archive 공개·파일 hash 확인을 수행한다. 한 번 내려받아 한 번 압축 해제하여 대조.
+1. **verify** - 태그·버전·실제 실행 커밋·복구 조건을 검사한다. 그 커밋의 main push로 실행된 `ci.yml`에서 최신 실행과 현재 attempt 및 `CI / required`가 성공했는지 확인한다. 전체 CI를 다시 실행하지 않는다. 확인 후 `npm pack`으로 tgz와 corresponding-source archive를 만들고, tgz를 저장소 밖 임시 경로에 설치해 bin·버전·help·오프라인 목록을 확인한다.
+2. **source** - verify가 성공해야 GitHub Release 생성/확인 및 실제 commit의 source archive 공개·파일 hash 확인을 수행한다. 한 번 내려받아 한 번 압축 해제하여 대조.
 3. **build / npm** - source 성공 뒤 독립 실행. npm은 검증한 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드하고 각 대상 OS/CPU에서 아카이브를 풀어 버전·help·오프라인 목록을 확인 (`PKG_VERSION`은 태그 버전으로 주입)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64
@@ -90,6 +91,15 @@ Homebrew는 native 배포 성공 뒤에만 갱신한다. 동일 npm 버전이 �
 tgz integrity가 같을 때 재게시를 생략하고, 다르면 실패 이유를 보고한다.
 기존 버전/산출물을 덮어쓰거나 일부 성공을 전체 배포 완료로 보고하지 않는다.
 
+CI 증거 확인은 정확한 실행 SHA·저장소·workflow·main push에 한정하며 PR이나 다른
+커밋의 성공을 대신 사용하지 않는다. 실패·취소·진행 중·집계 누락·조회 오류이면
+게시 전에 중단한다. 실패 메시지의 CI 실행을 확인하고, 같은 커밋의 CI가 성공한 뒤
+Release를 재실행한다. 이전 성공을 골라 최신 실패를 무시하지 않는다. 승인 근거인
+CI URL·attempt·SHA는 Release 로그와 job summary에 기록된다.
+
+CI 성공은 소스 검증의 근거이며, Release에서 새로 만든 패키지의 검사 결과와 구분한다.
+웹 타입·빌드·브라우저 검사는 기존 CI에 유지하고 Release에서 다시 빌드하지 않는다.
+
 ## Recover npm Publication
 
 GitHub Release가 이미 게시됐지만 npm 게시만 실패한 경우 기존 태그를 이동하거나
@@ -101,7 +111,8 @@ GitHub Release가 이미 게시됐지만 npm 게시만 실패한 경우 기존 �
 gh workflow run release.yml --ref main -f release_tag=v0.4.0
 ```
 
-수동 실행도 quality·verify·source를 거쳐 npm 게시를 복구하며 바이너리·Homebrew를 재게시하지 않는다.
+수동 실행도 verify·source를 거쳐 npm 게시를 복구하며 바이너리·Homebrew를 재게시하지 않는다.
+CI 증거는 입력 태그의 과거 커밋이 아니라 실제 빌드하는 main 실행 커밋에 대해 확인한다.
 기존 공개 GitHub Release에 복구 빌드의 실제 커밋을 담은 소스 archive를 추가한다.
 기존 태그 빌드의 소스 archive를 덮어쓰지 않는다. 입력 태그와 package.json 버전이 같고, 태그가 현재 커밋의
 조상이며, 태그 이후 변경이 `release.yml`과 이 문서뿐일 때만 게시를 허용한다.
