@@ -75,3 +75,42 @@ test("Bun and Node preserve data before replacement and clean up after close fai
     }
   } finally { await rm(dir, { recursive: true, force: true }); }
 }, 15000);
+
+// Windows reports a lock another process is creating or removing, and a target
+// another process has open, as EPERM. Measured on a Windows runner; retries clear it.
+test("Bun and Node wait out Windows EPERM contention within the deadline and keep it elsewhere", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "temper-contention-"));
+  try {
+    const source = resolve("tests/helpers/file-transaction-contention-worker.ts");
+    const built = await Bun.build({ entrypoints: [source], outdir: join(dir, "build"), target: "node", packages: "external" });
+    expect(built.success).toBe(true);
+    for (const [runtime, worker] of [[process.execPath, source], ["node", join(dir, "build/file-transaction-contention-worker.js")]]) {
+      const run = async (platform: string, step: string, times: string) => {
+        const path = join(dir, "data");
+        await writeFile(path, "old");
+        const child = Bun.spawn([runtime!, worker!, path, platform, step, times], { stdout: "pipe", stderr: "pipe" });
+        const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
+        expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+        const result = { ...JSON.parse(stdout), data: await readFile(path, "utf8"), files: (await readdir(dir)).filter(name => name !== "build").sort() };
+        return result;
+      };
+      // A momentary refusal is waited out and the data is saved.
+      for (const step of ["lock", "rename"]) {
+        expect(await run("win32", step, "3")).toMatchObject({ committed: true, injected: 3, data: "new", files: ["data"] });
+      }
+      // A refusal that lasts past the deadline keeps its own error, not the busy message.
+      const lock = await run("win32", "lock", "always");
+      expect(lock).toMatchObject({ committed: false, code: "EPERM", data: "old", files: ["data"] });
+      expect(lock.text).toContain("EPERM: operation not permitted, open");
+      expect(lock.elapsed).toBeGreaterThanOrEqual(250);
+      const rename = await run("win32", "rename", "always");
+      expect(rename).toMatchObject({ committed: false, data: "old", files: ["data"] });
+      expect(rename.text).toStartWith("Test data was not saved: EPERM: operation not permitted, rename");
+      expect(rename.elapsed).toBeGreaterThanOrEqual(250);
+      // Other platforms keep failing at once.
+      const posix = await run("linux", "lock", "1");
+      expect(posix).toMatchObject({ committed: false, code: "EPERM", injected: 1, data: "old", files: ["data"] });
+      expect(posix.elapsed).toBeLessThan(250);
+    }
+  } finally { await rm(dir, { recursive: true, force: true }); }
+}, 20000);

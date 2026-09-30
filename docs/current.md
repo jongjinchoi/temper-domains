@@ -269,7 +269,12 @@ in both workspaces so root typechecking does not download a separate compiler.
   diagnostics preserve any previous cause separately from cleanup failures.
   CLI, TUI and lookup-result boundaries format these diagnostics once without
   changing the caller's message, conflict data, cancellation or cooldown type.
-- A lock waits up to 5s. A crashed writer may leave `config.json.lock`,
+- A lock waits up to 5s (lookup-limit state: 2s). On Windows, EPERM while
+  creating the lock (another process is creating or removing it) or while
+  renaming over the target (another process has it open) is contention, not a
+  permission failure: both are retried within the same wait. A refusal that lasts
+  past the wait is reported as its original error. Other platforms and error
+  codes fail as before. A crashed writer may leave `config.json.lock`,
   `watchlist.json.lock` or `history.json.lock`;
   it is never deleted automatically while another writer might own it. After
   confirming no temper commands are running, remove only that lock and retry.
@@ -670,6 +675,8 @@ Web-only and developer dependency changes are excluded from checker signatures.
 `src/utils/file-transaction.ts` and `src/utils/storage-error.ts` are included because
 lookup-limit coordination uses them; changing either (even for config/history/watchlist storage) requires refreshing the
 signatures, and existing lookup observations then need rechecking.
+The Windows contention handling added on 2026-10-01 refreshed both signatures;
+every bundled observation was already needs-recheck or not-checked.
 The migration from whole-lock fingerprints preserves existing evidence IDs only
 for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
 Signatures are scoped by method: the RDAP signature excludes `whois.ts`, and the

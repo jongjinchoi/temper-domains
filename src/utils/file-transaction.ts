@@ -13,6 +13,12 @@ interface TransactionOptions {
 }
 interface FileTransaction { replace(text: string): Promise<void> }
 
+// Windows reports contention as EPERM: a lock that another process is creating or
+// removing, and a target that another process has open. Both clear once the other
+// process is done (measured on a Windows runner), so they wait like an existing
+// lock, within the same deadline. Other platforms and error codes are unchanged.
+const contended = (error: unknown) => process.platform === "win32" && (error as NodeJS.ErrnoException)?.code === "EPERM";
+
 // The caller owns validation and the entire read/modify operation inside change.
 // Errors thrown by change keep their identity and message; cleanup errors are
 // attached as their cause. Replacement I/O and cleanup failures become one
@@ -24,17 +30,21 @@ export async function withFileTransaction<T>(path: string, options: TransactionO
   const lockPath = `${path}.lock`;
   let lock: FileHandle;
   let endCritical: () => void;
+  let refused: unknown;
   while (true) {
     options.signal?.throwIfAborted();
     if (isShuttingDown()) throw new Error(`${options.subject} was not changed: temper is shutting down`);
-    if (Date.now() >= options.deadline) throw new Error(options.busyMessage);
+    // A refusal that outlasts the wait keeps its own error, not the lock-removal guidance.
+    if (Date.now() >= options.deadline) throw refused ?? new Error(options.busyMessage);
     // Registered before the attempt: the lock can exist on disk before this
     // code learns that open succeeded, and a signal must not exit in between.
     endCritical = beginCriticalSection();
     try { lock = await open(lockPath, "wx", 0o600); break; }
     catch (error) {
       endCritical();
-      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      const existing = (error as NodeJS.ErrnoException).code === "EEXIST";
+      if (!existing && !contended(error)) throw error;
+      refused = existing ? undefined : error;
       await delay(Math.min(25, Math.max(0, options.deadline - Date.now())), undefined, { signal: options.signal });
     }
   }
@@ -69,7 +79,13 @@ export async function withFileTransaction<T>(path: string, options: TransactionO
           await file.close();
           file = undefined;
           phase = "rename";
-          await rename(temporary, path);
+          while (true) {
+            try { await rename(temporary, path); break; }
+            catch (error) {
+              if (!contended(error) || Date.now() >= options.deadline) throw error;
+              await delay(Math.min(25, Math.max(0, options.deadline - Date.now())));
+            }
+          }
           committed = true;
         } catch (error) { throw new ReplacementFailure({ phase, error }); }
       } });
