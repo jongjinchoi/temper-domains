@@ -63,13 +63,21 @@
 ## 향후 확장 — 플랫폼
 - [ ] GUI 데스크톱 앱 (메뉴바 tray) — CLI를 안 쓰는 사용자/비개발 직군 대상. 사용자 수요 확인 후 진행. Tauri 또는 Electron 검토
 
-## src/mcp 전수조사 발견 사항 (2026-09-30, main @ 619e91f)
-상세: `docs/internal/audit-2026-09-30-src-mcp-report.md` (저장소 미포함)
-- [ ] 조건부 위험·높음: 조회 중 연결 종료·SIGTERM·SIGINT 시 `lookup-limits.json.lock` 잔존 → 이후 같은 home 조회가 모두 `limit_state_error` (`src/mcp/server.ts:654-657`). 판정 대기: MCP 클라이언트의 일반 SIGTERM을 `docs/troubleshooting.md:54-64`의 forced termination으로 볼지
-- [ ] 선택적 개선·낮음: raw shape 입력 스키마 도구 4개가 모르는 키를 오류 없이 버림 (`src/mcp/server.ts:524,557,586,618`)
-- [ ] 선택적 개선·낮음: `search_names` 사용 가능 목록 5개 절단 표시 없음 (`src/mcp/server.ts:290-300`)
-- [ ] 선택적 개선·낮음: 클라이언트 소멸 뒤 응답 쓰기에서 EPIPE로 exit 1 (`src/mcp/server.ts:654`)
-- [ ] 선택적 개선·낮음: ".com 우선" 테스트가 .com 행 없이도 통과 (`src/mcp/server.test.ts:235`)
-- [ ] 선택적 개선·낮음: `open_registrar` 잘못된 도메인 거부의 MCP 수준 테스트 없음 (`src/mcp/stdio.test.ts:26`)
-- [ ] 미확인 가설·낮음: `open_registrar`가 IDNA 변환 전 입력으로 URL 생성 (`src/mcp/server.ts:539`)
-- [ ] 문서 불일치 확인: `docs/current.md:311`은 lookup 도구가 structuredContent·retryPlan을 반환한다고 하나 조사에서는 `whois_domain`에 출력 스키마·structuredContent·retryPlan이 없음. whois를 lookup 도구로 보는지 판정 필요
+## 전수조사 후속 작업 (2026-09-30, main @ 846d68e)
+상세: `docs/internal/audit-2026-09-30-full-report.md`, `docs/internal/audit-2026-09-30-src-mcp-report.md` (저장소 미포함)
+- [ ] 확인된 결함·높음: 조회 중 SIGINT·SIGTERM·SIGHUP(JSON 검색 Ctrl+C, 창 닫기, MCP 클라이언트 종료)으로 `lookup-limits.json.lock`이 남아 같은 home의 모든 조회가 `limit_state_error` — 진입점에 신호 처리를 추가하고 `docs/current.md`·`docs/troubleshooting.md`의 lock 잔존 조건을 함께 갱신 (`src/utils/file-transaction.ts:25-33`) (A14)
+- [ ] 조건부 위험·중간: Windows(릴리스 대상)에서 TUI·저장·checker·MCP 테스트가 실행되지 않고 macOS CI도 src/update만 실행 (`.github/workflows/ci.yml:80-109`) (A28)
+- [ ] 선택적 개선·중간: RDAP 네이티브 전송의 8 MiB 본문·해제 상한과 deflate·br 해제를 검증하는 테스트 추가 (`src/checker/http-transport.ts:43`) (A27)
+- [ ] 확인된 결함·낮음: 첫 429/503 뒤 재허가가 마감에 걸리면 이미 보낸 요청이 `deadline_before_start`가 되고 retryAt을 잃음 (`src/checker/rdap.ts:128`) (A1)
+- [ ] 확인된 결함·낮음: WHOIS 날짜가 TUI에서 호스트 시간대에 따라 하루 밀려 표시됨 (`src/tui/WhoisView.tsx:85`) (A4)
+- [ ] 확인된 결함·낮음: 워치리스트가 IDN의 Unicode·xn-- 형태를 다른 항목으로 저장 (`src/config/watchlist.ts:50`) (A5)
+- [ ] 확인된 결함·낮음: 거부된 RDAP 리다이렉트가 재개 가능한 `network_error`로 분류됨 (`src/checker/rdap.ts:119`) (A6)
+- [ ] 확인된 결함·낮음: media-package 테스트의 엄격 모드 단언이 주입한 변경 없이도 통과 (`scripts/media-package.test.ts:27`) (A33)
+- [ ] 확인된 결함·낮음: real-install 대화형 모드가 Later를 안내하지만 Later 선택 시 실패로 끝남 (`tests/update/real-install.mjs:159`) (A35)
+- [ ] 조건부 위험·낮음: RDAP 응답의 문자열 `status`가 `statusCodes`로 들어가 whois_domain·TUI 상세가 실패 (`src/checker/rdap.ts:238`) (A3)
+- [ ] 조건부 위험·낮음: 회복 중인 origin이 3xx로 응답하면 연속 성공 기록이 초기화됨. "valid answer" 정의 필요 (`src/checker/rdap.ts:90`) (A7)
+- [ ] 조건부 위험·낮음: 워치리스트 새로고침 중 삭제가 들어오면 새로고침이 버려져 checking 행이 남음 (`src/tui/WatchlistView.tsx:45`) (A13)
+- [ ] 조건부 위험·낮음(정책 결정 필요): 응답 뒤 상태 기록이 실패하면 받은 응답을 버리고 `limit_state_error`로 보고 (`src/checker/admission.ts:21`) (A16)
+- [ ] 조건부 위험·낮음: updater PTY 드라이버가 자식 종료 감지 후 남은 출력을 읽지 않고 단언 (`tests/update/terminal-check.py:76`) (A19)
+- [ ] 조건부 위험·낮음: `media:record --apply`가 `--record-package` 선행을 검사하지 않고 안내에서도 빠뜨림 (`scripts/media/record.ts:80`) (A40)
+- [ ] 결정 필요: Vercel 대시보드의 Root Directory 값을 확인해 `vercel.json`의 `cd ..` 전제를 `docs/current.md`에 기록 (A48)
