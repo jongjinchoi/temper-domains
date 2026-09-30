@@ -12,6 +12,15 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - License/source requirements: `docs/licensing.md`, `legal/inventory.json`
 - Historical PRDs and mockups: `docs/archive/`
 
+## Architecture
+
+- Entry points: `src/index.ts` (CLI, 11 commands), `temper mcp` → `src/mcp/server.ts` (stdio MCP server, 7 tools), and the hosted demo route `web/app/api/check/route.ts`.
+- Lookups (`src/checker/`): `checkDomainBatch` (`batch.ts`) uses the IANA bootstrap to choose RDAP or WHOIS per domain and streams rows; `lookupDomainAvailability` (`lookup.ts`) runs `rdap.ts` or `whois.ts`. Every network request passes `withAdmission` (`admission.ts`): the per-server scheduler plus a `LimitCoordinator` permit.
+- Lookup limits: CLI and MCP use `localLimits` (`src/checker/limit-store.ts`), a file store shared across processes; the hosted demo uses in-memory limits.
+- Other modules: `src/tui/` (Ink screens), `src/config/` (config, history, watchlist), `src/extensions/` (bundled TLD catalog; the runtime snapshot is generated from `data-sources/catalog/` by `bun run catalog:update`), `src/update/` (self-update), `src/registrar/` (registrar URLs and browser launch), `src/utils/` (validation, domain parsing, storage helpers).
+- User state lives in `~/.temper/`: `config.json`, `history.json`, `watchlist.json`, `state/lookup-limits.json`, and `cache/` (bootstrap cache, update lock). Config, history, watchlist and lookup-limit writes use `withFileTransaction` (`src/utils/file-transaction.ts`): an exclusive `<file>.lock`, a temporary file, then rename and lock removal. A leftover lock is never reclaimed automatically (`docs/current.md`).
+- The web package imports root `src/checker/*`, `src/utils/validate.ts` and `src/tui/theme-meta.ts` directly.
+
 ## Language
 
 - Talk to the user in Korean with honorifics.
@@ -32,46 +41,32 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 - Browser contract: `bash tests/browser/run.sh` (after web build and `node node_modules/playwright/cli.js install chromium`)
 - Release artifact smoke: `bun tests/packaging/smoke.mjs npm <tgz>` or `bun tests/packaging/smoke.mjs native <target> <tar.gz>` on the target OS/CPU
 
-Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
-Ordinary npm/native compilation does not require Git or release metadata.
-`npm pack` and native packaging create corresponding-source archives under `dist/`.
-For public packaging, `TEMPER_PUBLIC_BUILD=1` checks the commit and only the
-source archive's included inputs. Hosted web builds use deployment commit metadata
-without requiring a clean worktree. Local packaging does not publish or install anything.
+### Build and packaging
 
-Install with `bun ci`. Development and local verification do not require an
-exact Bun or Node.js version. The npm CLI requires Node.js >= 22.12.0.
-Runtime code under `src/` must not use Bun-only APIs such as `Bun.*`: the npm
-package is bundled for Node (`build-npm.ts` targets `node`), and
-`bun run typecheck` does not catch them because `tsconfig.json` loads Bun types.
-CI and release workflows select Bun `latest` and Node.js `lts/*`; compatibility
-CI also checks the minimum supported Node.js version. Record the actual runtime
-versions used for verification.
+- Build commands can update generated output such as `dist/` or `.next/`; check the worktree before and after running them.
+- Ordinary npm/native compilation does not require Git or release metadata.
+- `npm pack` and native packaging create corresponding-source archives under `dist/`. Local packaging does not publish or install anything.
+- Public packaging (`TEMPER_PUBLIC_BUILD=1`) checks the commit and only the source archive's included inputs. Hosted web builds use deployment commit metadata without requiring a clean worktree.
 
-`bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary
-directory. Child-process regression tests also use temporary homes. RDAP calls
-are mocked in tests; these tests do not query Production or update real user
-configuration. The browser check in `tests/browser/playground.mjs` targets a
-local server and intercepts valid `/api/check/` queries; invalid input exercises
-the real local HTTP 400 path. Playwright is a development dependency; install its
-Chromium separately. `tests/browser/run.sh` owns the local production server and
-stops it on exit. It does not use the hosted site.
-Package smoke installs npm artifacts only in a temporary directory, may download
-npm dependencies, and removes its own fixture afterward. Native smoke extracts
-the archive into a temporary directory. Both use isolated homes and offline CLI
-commands; neither publishes, queries registries for domains, nor changes a global installation.
-Transport checks start loopback TLS servers with temporary OpenSSL certificates,
-exercise Bun and Node, and do not query public registries.
-Shared cooldown checks also use temporary homes and loopback HTTP/WHOIS servers;
-they do not query public registries or change real user state.
+### Runtime
 
-CI runs the shared cooldown and browser contracts. `CI / required` requires every
-root/web/Node/updater job to succeed. Release does not rerun CI:
-`scripts/verify-release-ci.mjs` requires successful main-push CI evidence,
-including `CI / required`, for its exact commit before publication, and release
-runs smoke checks on the artifacts it publishes. Branch rules
-and Vercel Deployment Checks must be configured separately; changing workflows
-does not itself enable remote enforcement.
+- Install with `bun ci`. Development and local verification do not require an exact Bun or Node.js version; record the actual runtime versions used for verification.
+- The npm CLI requires Node.js >= 22.12.0. CI and release workflows select Bun `latest` and Node.js `lts/*`; compatibility CI also checks the minimum supported Node.js version.
+- Runtime code under `src/` must not use Bun-only APIs such as `Bun.*`: the npm package is bundled for Node (`build-npm.ts` targets `node`), and `bun run typecheck` does not catch them because `tsconfig.json` loads Bun types.
+
+### Test isolation
+
+- `bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary directory; child-process regression tests also use temporary homes. RDAP calls are mocked; these tests do not query Production or update real user configuration.
+- Browser check (`tests/browser/playground.mjs`): targets a local server and intercepts valid `/api/check/` queries; invalid input exercises the real local HTTP 400 path. `tests/browser/run.sh` owns the local production server, stops it on exit and does not use the hosted site. Playwright is a development dependency; install its Chromium separately.
+- Package smoke installs npm artifacts only in a temporary directory, may download npm dependencies and removes its own fixture afterward. Native smoke extracts the archive into a temporary directory. Both use isolated homes and offline CLI commands; neither publishes, queries registries for domains, nor changes a global installation.
+- Transport checks start loopback TLS servers with temporary OpenSSL certificates, exercise Bun and Node, and do not query public registries.
+- Shared cooldown checks use temporary homes and loopback HTTP/WHOIS servers; they do not query public registries or change real user state.
+
+### CI and release
+
+- CI runs the shared cooldown and browser contracts. `CI / required` requires every root/web/Node/updater job to succeed.
+- Release does not rerun CI: `scripts/verify-release-ci.mjs` requires successful main-push CI evidence, including `CI / required`, for its exact commit before publication. Release then runs smoke checks on the artifacts it publishes. Details: `docs/release.md`.
+- Branch rules and Vercel Deployment Checks must be configured separately; changing workflows does not itself enable remote enforcement.
 
 ## Source Of Truth
 
