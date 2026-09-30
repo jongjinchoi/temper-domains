@@ -56,12 +56,12 @@ official repository and review the new revision before changing the pin.
 # 1. package.json version 수정
 # ex) 0.2.2 → <next-version>
 
-# 2. 변경 브랜치에서 커밋하고 PR 생성
+# 2. 커밋하고 main에 push
 git add package.json
-git commit -m "chore: bump version to <next-version>"
+git commit -m "chore: release v<next-version>"
+git push origin main
 
-# 3. PR의 CI / required 성공 및 최신 main 기준 검증 후 병합
-# main 반영 커밋의 CI 성공을 확인한 다음, 그 커밋에 태그 생성
+# 3. 그 커밋의 main CI(CI / required) 성공을 확인한 다음, 그 커밋에 태그 생성
 git fetch origin main
 git tag v<next-version> <verified-main-commit>
 git push origin v<next-version>
@@ -70,6 +70,8 @@ git push origin v<next-version>
 GitHub의 main 규칙에는 PR 경유, 최신 base 기준 `CI / required` 필수 성공,
 관리자 포함 상시 우회 금지를 설정한다. 새 검사 이름의 실제 원격 성공 실행을
 확인한 뒤 규칙에 등록한다. 이 문서는 운영 절차이며 설정 완료의 증거가 아니다.
+현재 main 규칙은 설정되어 있지 않아 위 단계처럼 main에 직접 push한다(2026-09-30
+확인). 규칙을 설정하면 2단계는 PR 병합으로 바뀐다.
 Vercel의 운영 도메인 승격도 같은 main 커밋의 `CI / required`를 Deployment
 Checks로 연결한다. 현재 설정과 사용 가능 여부를 먼저 확인하며, 배포 빌드 완료와
 운영 도메인 승격을 구분한다. 설정 전에는 자동 차단이 보장되지 않는다.
