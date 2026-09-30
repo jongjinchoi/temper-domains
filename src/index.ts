@@ -222,8 +222,8 @@ program
     const inputError = getDomainInputError(domain);
     if (inputError) exitWithError(inputError);
     const { addWatch } = await import("./config/watchlist.ts");
-    await addWatch(domain);
-    console.log(`  ✓ Added ${domain} to watchlist`);
+    const result = await addWatch(domain);
+    console.log(result.added ? `  ✓ Added ${domain} to watchlist` : `  Already in watchlist: ${result.domain}`);
   });
 
 // --- whois ---

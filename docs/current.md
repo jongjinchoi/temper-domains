@@ -240,7 +240,10 @@ in both workspaces so root typechecking does not download a separate compiler.
   and timers cannot overwrite newer feedback.
 - Config, watchlist and history updates serialize the full read/modify/write operation with an
   exclusive local lock and replace the data file only after a temporary file
-  is written, synced and closed. Watchlist domain keys are case-insensitive.
+  is written, synced and closed. Watchlist domain keys are case-insensitive, and
+  the Unicode and punycode spellings of one domain are the same entry: the first
+  spelling is kept for display, a second add reports the existing entry, and either
+  spelling removes it. Entries duplicated before this rule are not merged automatically.
   Config partial updates read the latest settings under the lock, preserving
   other fields. Config symlinks retain the link and replace its resolved target;
   the temporary file and lock are placed beside that target.

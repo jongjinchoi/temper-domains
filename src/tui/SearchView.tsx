@@ -186,8 +186,8 @@ export default function SearchView({ query, tlds = DEFAULT_TLDS, onlyAvailable =
           if (domain) {
             const noticeId = beginNotice();
             addWatch(domain).then(
-              () => {
-                completeNotice(noticeId, { text: `✓ Added ${domain} to watchlist` }, 3000);
+              (result) => {
+                completeNotice(noticeId, { text: result.added ? `✓ Added ${domain} to watchlist` : `Already in watchlist: ${result.domain}` }, 3000);
               },
               (err: unknown) => {
                 const msg = formatStorageError(err);

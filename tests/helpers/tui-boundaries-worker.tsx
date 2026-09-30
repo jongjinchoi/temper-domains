@@ -56,7 +56,10 @@ mock.module("../../src/config/watchlist.ts", () => ({
     if (mode === 'watch-load-race' && ++loads === 2) await new Promise<void>(resolve => { releaseLoad = resolve; });
     return snapshot;
   },
-  addWatch: async () => { if (mode === "notice-late") await new Promise<void>(resolve => { resolveAdd = resolve; }); },
+  addWatch: async (domain: string) => {
+    if (mode === "notice-late") await new Promise<void>(resolve => { resolveAdd = resolve; });
+    return { added: true, domain };
+  },
   removeWatch: async (domain: string) => {
     deleted.push(domain);
     if (mode === "watch-race") await new Promise((_resolve, reject) => { rejectDelete = reject; });

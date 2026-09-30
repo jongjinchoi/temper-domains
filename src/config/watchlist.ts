@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { readFile } from "node:fs/promises";
+import { domainToASCII } from "node:url";
 import { withFileTransaction } from "../utils/file-transaction.ts";
 import { ensureConfigDir } from "../utils/fs.ts";
 import { isValidDomain, sanitizeDomain } from "../utils/validate.ts";
@@ -46,16 +47,28 @@ async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]):
   });
 }
 
-export async function addWatch(input: string): Promise<void> {
+// Unicode and punycode spellings of one domain share a key. Entries keep the
+// spelling they were added with; text that does not convert keeps its own key
+// so legacy entries stay removable.
+function watchKey(domain: string): string {
+  const clean = sanitizeDomain(domain).toLowerCase();
+  return domainToASCII(clean).toLowerCase() || clean;
+}
+
+export async function addWatch(input: string): Promise<{ added: boolean; domain: string }> {
   const domain = sanitizeDomain(input).toLowerCase();
   const inputError = getDomainInputError(domain);
   if (inputError) throw new Error(`Invalid watchlist domain: ${inputError}`);
-  await updateWatchlist((list) => list.some((entry) => entry.domain === domain)
-    ? list
-    : [...list, { domain, addedAt: new Date().toISOString() }]);
+  const key = watchKey(domain);
+  let existing: WatchEntry | undefined;
+  await updateWatchlist((list) => {
+    existing = list.find((entry) => watchKey(entry.domain) === key);
+    return existing ? list : [...list, { domain, addedAt: new Date().toISOString() }];
+  });
+  return existing ? { added: false, domain: existing.domain } : { added: true, domain };
 }
 
 export async function removeWatch(domain: string): Promise<void> {
-  const normalized = sanitizeDomain(domain).toLowerCase();
-  await updateWatchlist((list) => list.filter((entry) => entry.domain !== normalized));
+  const key = watchKey(domain);
+  await updateWatchlist((list) => list.filter((entry) => watchKey(entry.domain) !== key));
 }

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 let home: string;
 let file: string;
@@ -57,6 +57,28 @@ test("watch additions and removals treat domain case consistently", async () => 
   expect(JSON.parse(await readFile(file, "utf8"))).toHaveLength(1);
   await worker("remove", "ACME.COM");
   expect(JSON.parse(await readFile(file, "utf8"))).toEqual([]);
+});
+
+test.each([["münchen.de", "xn--mnchen-3ya.de"], ["xn--mnchen-3ya.de", "MÜNCHEN.de"]])(
+  "Unicode and punycode forms are one watchlist entry (%s, then %s)", async (first, second) => {
+    await worker("add", first);
+    await worker("add", second);
+    // The first spelling is kept for display; the other spelling is not a second entry.
+    expect((JSON.parse(await readFile(file, "utf8")) as { domain: string }[]).map(entry => entry.domain)).toEqual([first.toLowerCase()]);
+    expect((await worker("remove", second))[0]).toBe(0);
+    expect(JSON.parse(await readFile(file, "utf8"))).toEqual([]);
+  });
+
+test("the watch command says when the domain is already listed under another spelling", async () => {
+  const run = async (domain: string) => {
+    const child = Bun.spawn([process.execPath, "--preload", resolve("tests/helpers/storage-cli-preload.mjs"), resolve("src/index.ts"), "watch", domain], {
+      env: { ...process.env, TEMPER_TEST_HOME: home, TEMPER_STORAGE_FAILURE: "", TEMPER_NO_UPDATE_CHECK: "1" }, stdout: "pipe", stderr: "pipe",
+    });
+    const [code, out] = await Promise.all([child.exited, new Response(child.stdout).text()]);
+    return { code, out: out.trim() };
+  };
+  expect(await run("münchen.de")).toEqual({ code: 0, out: "✓ Added münchen.de to watchlist" });
+  expect(await run("xn--mnchen-3ya.de")).toEqual({ code: 0, out: "Already in watchlist: münchen.de" });
 });
 
 test.each(["www.example.com", "co.uk"])("rejects nonregistrable addition %s without touching storage", async domain => {
