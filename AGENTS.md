@@ -41,6 +41,9 @@ without requiring a clean worktree. Local packaging does not publish or install 
 
 Install with `bun ci`. Development and local verification do not require an
 exact Bun or Node.js version. The npm CLI requires Node.js >= 22.12.0.
+Runtime code under `src/` must not use Bun-only APIs such as `Bun.*`: the npm
+package is bundled for Node (`build-npm.ts` targets `node`), and
+`bun run typecheck` does not catch them because `tsconfig.json` loads Bun types.
 CI and release workflows select Bun `latest` and Node.js `lts/*`; compatibility
 CI also checks the minimum supported Node.js version. Record the actual runtime
 versions used for verification.
@@ -63,8 +66,10 @@ Shared cooldown checks also use temporary homes and loopback HTTP/WHOIS servers;
 they do not query public registries or change real user state.
 
 CI runs the shared cooldown and browser contracts. `CI / required` requires every
-root/web/Node/updater job to succeed. Release reuses CI at the same commit before
-publication and runs smoke checks on the artifacts it publishes. Branch rules
+root/web/Node/updater job to succeed. Release does not rerun CI:
+`scripts/verify-release-ci.mjs` requires successful main-push CI evidence,
+including `CI / required`, for its exact commit before publication, and release
+runs smoke checks on the artifacts it publishes. Branch rules
 and Vercel Deployment Checks must be configured separately; changing workflows
 does not itself enable remote enforcement.
 
@@ -96,7 +101,7 @@ When README, website copy, or `llms.txt` describes runtime behavior, verify it a
 ## Verification
 
 - Run `bun test` after changing shared data, checker behavior, MCP tools, README sync points, or `web/lib/temper-data.ts`.
-- Run `bun run web:typecheck` after changing web TypeScript or TSX files.
+- Run `bun run web:typecheck` after changing web TypeScript or TSX files, or root `src/` modules that the web imports (find them with `rg '\.\./src/' web`).
 - Run `bun run src/index.ts --help` after changing CLI descriptions or command registration.
 - Use `rg` to confirm stale public claims are gone after documentation or marketing copy updates.
 
