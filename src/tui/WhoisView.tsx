@@ -2,6 +2,7 @@ import { lookupNotice } from "../utils/lookup-notice.ts";
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useState } from "react";
 import type { DomainDetail } from "../checker/types.ts";
+import { formatDetailDate, formatDetailExpiry } from "./format-date.ts";
 import FrameBox from "./FrameBox.tsx";
 import Spinner from "./Spinner.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
@@ -77,28 +78,6 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
 
   const { icon, color } = getStatusStyle(detail.status);
 
-  const formatDate = (iso: string | undefined) => {
-    if (!iso) return undefined;
-    try {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      return d.toISOString().slice(0, 10);
-    } catch { return iso; }
-  };
-
-  const formatExpiry = (iso: string | undefined) => {
-    const date = formatDate(iso);
-    if (!date || !iso) return undefined;
-    try {
-      const timestamp = new Date(iso).getTime();
-      if (!Number.isFinite(timestamp)) return date;
-      const days = Math.ceil((timestamp - Date.now()) / (1000 * 60 * 60 * 24));
-      if (days > 0) return `${date}  (in ${days} days)`;
-      if (days === 0) return `${date}  (today)`;
-      return `${date}  (${Math.abs(days)} days ago)`;
-    } catch { return date; }
-  };
-
   const row = (label: string, value: string | undefined) =>
     value ? (
       <Box key={label}>
@@ -123,9 +102,9 @@ export default function WhoisView({ domain, timeoutMs, onBack, onQuit }: Props) 
         <Box flexDirection="column">
           {row("Registrar", detail.registrar)}
           {row("Registrant", detail.registrant)}
-          {row("Created", formatDate(detail.createdDate))}
-          {row("Updated", formatDate(detail.updatedDate))}
-          {row("Expires", formatExpiry(detail.expiryDate))}
+          {row("Created", formatDetailDate(detail.createdDate))}
+          {row("Updated", formatDetailDate(detail.updatedDate))}
+          {row("Expires", formatDetailExpiry(detail.expiryDate))}
           {row("DNSSEC", detail.dnssec != null ? (detail.dnssec ? "signed" : "unsigned") : undefined)}
           {detail.nameServers && detail.nameServers.length > 0 && (
             <Box>

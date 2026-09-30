@@ -228,6 +228,9 @@ in both workspaces so root typechecking does not download a separate compiler.
   deduplicated builder across CLI/TUI/MCP; invalid combined labels stop preflight.
 - WHOIS uses a per-connection UTF-8 StringDecoder and an 8 MiB received-byte cap.
   Oversized responses fail as invalid_response without parsing partial content.
+  A WHOIS date that names no timezone (`.cr` sends `31.12.1995 18:00:00`) is shown
+  in the TUI detail view as the date written, never converted through the host
+  timezone; its expiry day count treats it as UTC. JSON and MCP output the stored value.
 - History renders both date and time in the local timezone; stored timestamps stay UTC.
   History, watchlist and suggestions use a terminal-bounded frame and measured
   list viewport. Search shares list position normalization. Oversized rows prompt
