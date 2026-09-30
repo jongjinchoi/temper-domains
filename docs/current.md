@@ -423,6 +423,11 @@ archive before publishing that channel. Missing, failed or incomplete evidence
 blocks publication. See [the release guide](release.md).
 GitHub required-check rules and Vercel production promotion checks are separate
 remote settings: workflow configuration alone does not enable them.
+The Vercel project's Root Directory is `web`; `vercel.json` relies on it, running
+`cd ..` to install and build from the repository root. "Include files outside the
+root directory in the Build Step" is enabled so the root `src/` modules the web
+imports are part of the build. These are dashboard settings, not enforced by the
+repository (confirmed 2026-09-30).
 
 ### Previous dependency-upgrade verification — 2026-09-19 (before RDAP changes)
 

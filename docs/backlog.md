@@ -80,4 +80,4 @@
 - [ ] 조건부 위험·낮음(정책 결정 필요): 응답 뒤 상태 기록이 실패하면 받은 응답을 버리고 `limit_state_error`로 보고 (`src/checker/admission.ts:21`) (A16)
 - [ ] 조건부 위험·낮음: updater PTY 드라이버가 자식 종료 감지 후 남은 출력을 읽지 않고 단언 (`tests/update/terminal-check.py:76`) (A19)
 - [ ] 조건부 위험·낮음: `media:record --apply`가 `--record-package` 선행을 검사하지 않고 안내에서도 빠뜨림 (`scripts/media/record.ts:80`) (A40)
-- [ ] 결정 필요: Vercel 대시보드의 Root Directory 값을 확인해 `vercel.json`의 `cd ..` 전제를 `docs/current.md`에 기록 (A48)
+- [x] Vercel 대시보드의 Root Directory 값(`web`)을 확인해 `vercel.json`의 `cd ..` 전제를 `docs/current.md`에 기록 (A48, 2026-09-30)
