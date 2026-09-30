@@ -73,7 +73,7 @@
 - [ ] 조건부 위험·낮음: 표준 WHOIS 프로필의 `normalizeDate`가 시간대 없는 날짜-시각을 호스트 로컬로 파싱해 JSON·MCP 값이 호스트 시간대에 따라 달라질 수 있음. 해당 서버가 그런 형식을 보내는지 미확인 (`src/checker/whois.ts:168`) (A4 후속)
 - [x] 확인된 결함·낮음: 워치리스트가 IDN의 Unicode·xn-- 형태를 다른 항목으로 저장 — 비교 키를 ASCII 형태로 통일, 표시는 입력한 형태 유지 (`src/config/watchlist.ts`) (A5, 2026-09-30)
 - [x] 확인된 결함·낮음: 거부된 RDAP 리다이렉트가 재개 가능한 `network_error`로 분류됨 — `invalid_response`로 분류(형식이 잘못된 Location 포함) (`src/checker/rdap.ts`) (A6, 2026-09-30)
-- [ ] 확인된 결함·낮음: media-package 테스트의 엄격 모드 단언이 주입한 변경 없이도 통과 (`scripts/media-package.test.ts:27`) (A33)
+- [x] 확인된 결함·낮음: media-package 테스트의 엄격 모드 단언이 주입한 변경 없이도 통과 — 커밋된 매니페스트 대신 현재 입력과 맞춘 기준에서 시작하고, 통과하는 대조군과 정확한 변경 목록을 단언 (`scripts/media-package.test.ts`) (A33, 2026-09-30)
 - [ ] 확인된 결함·낮음: real-install 대화형 모드가 Later를 안내하지만 Later 선택 시 실패로 끝남 (`tests/update/real-install.mjs:159`) (A35)
 - [ ] 조건부 위험·낮음: RDAP 응답의 문자열 `status`가 `statusCodes`로 들어가 whois_domain·TUI 상세가 실패 (`src/checker/rdap.ts:238`) (A3)
 - [x] 조건부 위험·낮음: 회복 중인 origin이 3xx로 응답하면 연속 성공 기록이 초기화됨 — 받아들인 리다이렉트를 그 서버의 정상 응답으로 셈, "valid answer" 정의를 문서에 추가 (`src/checker/rdap.ts`) (A7, 2026-09-30)

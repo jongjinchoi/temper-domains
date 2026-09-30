@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { captureInputChanges, checkManifest, MANIFEST, ROOT } from './media/core.ts';
+import { captureInputChanges, checkManifest, inputHashes, MANIFEST, ROOT } from './media/core.ts';
 import { recordPackageSource, type DocumentationManifest } from './media-package.ts';
 
 const capture = JSON.parse(readFileSync(`${ROOT}/${MANIFEST}`, 'utf8')) as DocumentationManifest;
@@ -20,8 +20,13 @@ test('public capture metadata omits machine paths without changing capture evide
 
 test('input drift is review information; original media integrity remains enforced', () => {
   const before = JSON.stringify(capture);
-  const changed = { ...capture, inputs: { ...capture.inputs, 'src/tui/SearchView.tsx': 'changed' } };
-  expect(captureInputChanges(changed)).toContain('src/tui/SearchView.tsx');
+  // The checked-in manifest may already differ from the current inputs, so the
+  // strict assertions start from inputs that match this checkout.
+  const current = { ...capture, inputs: inputHashes() };
+  expect(captureInputChanges(current)).toEqual([]);
+  expect(() => checkManifest(current)).not.toThrow();
+  const changed = { ...current, inputs: { ...current.inputs, 'src/tui/SearchView.tsx': 'changed' } };
+  expect(captureInputChanges(changed)).toEqual(['src/tui/SearchView.tsx']);
   expect(() => checkManifest(changed, ROOT, ROOT, false)).not.toThrow();
   // A new recording must still match the inputs it claims to have captured.
   expect(() => checkManifest(changed)).toThrow('Capture inputs changed');
