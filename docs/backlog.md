@@ -74,7 +74,7 @@
 - [x] 확인된 결함·낮음: 워치리스트가 IDN의 Unicode·xn-- 형태를 다른 항목으로 저장 — 비교 키를 ASCII 형태로 통일, 표시는 입력한 형태 유지 (`src/config/watchlist.ts`) (A5, 2026-09-30)
 - [x] 확인된 결함·낮음: 거부된 RDAP 리다이렉트가 재개 가능한 `network_error`로 분류됨 — `invalid_response`로 분류(형식이 잘못된 Location 포함) (`src/checker/rdap.ts`) (A6, 2026-09-30)
 - [x] 확인된 결함·낮음: media-package 테스트의 엄격 모드 단언이 주입한 변경 없이도 통과 — 커밋된 매니페스트 대신 현재 입력과 맞춘 기준에서 시작하고, 통과하는 대조군과 정확한 변경 목록을 단언 (`scripts/media-package.test.ts`) (A33, 2026-09-30)
-- [ ] 확인된 결함·낮음: real-install 대화형 모드가 Later를 안내하지만 Later 선택 시 실패로 끝남 (`tests/update/real-install.mjs:159`) (A35)
+- [x] 확인된 결함·낮음: real-install 대화형 모드가 Later를 안내하지만 Later 선택 시 실패로 끝남 — 이 도구는 설치 완료만 검증하므로 안내문에서 Later를 제거, 버전 검사는 유지 (`tests/update/real-install.mjs`) (A35, 2026-10-01)
 - [ ] 조건부 위험·낮음: RDAP 응답의 문자열 `status`가 `statusCodes`로 들어가 whois_domain·TUI 상세가 실패 (`src/checker/rdap.ts:238`) (A3)
 - [x] 조건부 위험·낮음: 회복 중인 origin이 3xx로 응답하면 연속 성공 기록이 초기화됨 — 받아들인 리다이렉트를 그 서버의 정상 응답으로 셈, "valid answer" 정의를 문서에 추가 (`src/checker/rdap.ts`) (A7, 2026-09-30)
 - [ ] 조건부 위험·낮음: 워치리스트 새로고침 중 삭제가 들어오면 새로고침이 버려져 checking 행이 남음 (`src/tui/WatchlistView.tsx:45`) (A13)

@@ -147,7 +147,7 @@ try {
   console.log(`Starting actual ${channel} CLI update; current checkout with test-only version ${startVersion}, expected ${targetVersion}`);
   if (process.env.TEMPER_TEST_INTERACTIVE === "1") {
     assert.ok(process.stdin.isTTY && process.stdout.isTTY, "Live mode requires a terminal");
-    console.log("LIVE isolated installation. Select Update now to install, or Later to leave it unchanged.");
+    console.log("LIVE isolated installation. Select Update now; this run then verifies the installed version.");
     const child = spawn(command[0], command.slice(1), { cwd: checkout, env, stdio: "inherit" });
     const code = await new Promise((yes, no) => { child.on("error", no); child.on("close", yes); });
     assert.equal(code, 0, "Live CLI did not exit successfully");
