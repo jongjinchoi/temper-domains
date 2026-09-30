@@ -69,6 +69,10 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
     domain, status: "error", method: "rdap", responseTime: Math.round(performance.now() - start),
     attempts, queueTimeMs: Math.round(queueTimeMs), httpStatus, ...fields,
   });
+  // Only a 429/503 answer is kept in lastAnswer past its own return.
+  const limitedRow = (): DomainDetail => row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
+    error: `HTTP ${lastAnswer?.status}`, terminationReason: lastAnswer?.status === 429 ? "rate_limited" : "service_unavailable",
+    retryAt: lastAnswer?.retryAt === undefined ? undefined : new Date(lastAnswer.retryAt).toISOString(), retryAtSource: lastAnswer?.retryAtSource });
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       key = serverKey(url);
@@ -144,10 +148,12 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
       if (answer.status === 404) return row({ status: "available", checkedAt: new Date().toISOString() });
       if (answer.status !== 429 && answer.status !== 503) return row({ error: answer.status === 403 ? "HTTP 403: registry denied access" : `HTTP ${answer.status}`, terminationReason: "http_error" });
       if (ctx.stoppedServers || attempt === 1 || (answer.retryAt ?? 0) >= ctx.deadline) break;
+      // The next admission also waits for request spacing, not only the server's
+      // wait. Best-effort estimate: admission itself reports storage failures.
+      const wait = await ctx.limits.estimateWait([key], signal).catch(() => 0);
+      if (Date.now() + wait >= ctx.deadline) break;
     }
-    return row({ status: lastAnswer?.status === 429 ? "rate_limited" : "error",
-      error: `HTTP ${lastAnswer?.status}`, terminationReason: lastAnswer?.status === 429 ? "rate_limited" : "service_unavailable",
-      retryAt: lastAnswer?.retryAt === undefined ? undefined : new Date(lastAnswer.retryAt).toISOString(), retryAtSource: lastAnswer?.retryAtSource });
+    return limitedRow();
   } catch (error) {
     if (queuedAt !== undefined) queueTimeMs += performance.now() - queuedAt;
     if (error instanceof ServerCooldown) return row({ status: error.kind === "rate_limited" ? "rate_limited" : "error", terminationReason: "server_cooldown",
@@ -155,6 +161,8 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
     if (error instanceof LimitStateError) return row({ status: "error", terminationReason: "limit_state_error", error: formatStorageError(error) });
     const reason = terminationReason ?? (signal.aborted ? abortReason(signal, attempts)
       : error instanceof LookupAbort ? error.reason : error instanceof TransportError && error.kind === "payload" ? "invalid_response" : error instanceof DOMException && error.name === "TimeoutError" ? "deadline_before_start" : "network_error");
+    // A retry that ran out of time must not discard the limited answer already received.
+    if (lastAnswer && (reason === "deadline" || reason === "deadline_before_start")) return limitedRow();
     return row({ status: ["deadline", "deadline_before_start", "request_timeout", "cancelled"].includes(reason) ? "slow" : "error",
       terminationReason: reason, error: error instanceof TransportError ? `${error.kind}: ${error.message}` : formatStorageError(error) });
   }

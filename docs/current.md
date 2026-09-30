@@ -156,7 +156,8 @@ in both workspaces so root typechecking does not download a separate compiler.
   credentials and without an HTTPS-to-HTTP downgrade; a rejected redirect ends the
   lookup as invalid_response, which resume does not repeat. Retry-After
   seconds and HTTP dates are honored without truncation. When waiting would
-  exceed the deadline, return the response with retryAt. HTTP 503 is a service
+  exceed the deadline, return the response with retryAt; the wait includes
+  request spacing, and a retry that runs out of time also returns that response. HTTP 503 is a service
   error, not a rate_limited result.
 - A missing/invalid server wait uses 60/120/240/480/900 seconds plus 0–5 seconds
   of jitter, stored once per cooldown. Only a new limited probe increments the

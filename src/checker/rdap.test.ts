@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { parseRdapResponse, rdapLookup } from "./rdap.ts";
 import { canResume } from "./retry.ts";
+import { LimitCoordinator, MemoryLimitStore } from "./limits.ts";
+import { createRun } from "./run.ts";
 
 const originalFetch = globalThis.fetch;
 
@@ -200,6 +202,36 @@ describe("rdapLookup", () => {
 
     expect({ terminationReason: result.terminationReason, calls, resumable: canResume(result) })
       .toEqual({ terminationReason: "invalid_response", calls: 6, resumable: false });
+  });
+
+  test.each([
+    // early: request spacing after a 429 (1200ms) cannot fit, so the answer returns at once.
+    ["the wait ends before the deadline but request spacing does not", 429, "1", 1100, true],
+    ["a zero wait still leaves request spacing past the deadline", 429, "0", 1000, true],
+    // A 503 keeps normal spacing: the retry is attempted and runs out of time.
+    ["a 503 wait ends just before the deadline", 503, "1", 1100, false],
+  ])("keeps the limited answer and its retry time when the retry does not happen: %s", async (_name, status, retryAfter, timeoutMs, early) => {
+    let calls = 0;
+    globalThis.fetch = (async () => { calls++; return new Response(null, { status, headers: { "retry-after": retryAfter } }); }) as unknown as typeof fetch;
+    const run = createRun(timeoutMs, undefined, 1, 5000, new LimitCoordinator(new MemoryLimitStore()));
+    const started = Date.now();
+    try {
+      const result = await rdapLookup("example.com", `https://limited-deadline-${status}-${retryAfter}.test`, run.signal, run.context);
+      expect({ status: result.status, terminationReason: result.terminationReason, httpStatus: result.httpStatus, attempts: result.attempts, calls, retryAtSource: result.retryAtSource })
+        .toEqual({ status: status === 429 ? "rate_limited" : "error", terminationReason: status === 429 ? "rate_limited" : "service_unavailable", httpStatus: status, attempts: 1, calls: 1, retryAtSource: "server" });
+      expect(Number.isFinite(Date.parse(result.retryAt ?? ""))).toBe(true);
+      if (early) expect(Date.now() - started).toBeLessThan(500);
+    } finally { run.close(); }
+  });
+
+  test("still retries a limited lookup when the retry fits before the deadline", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => new Response(null, ++calls === 1 ? { status: 429, headers: { "retry-after": "1" } } : { status: 404 })) as unknown as typeof fetch;
+    const run = createRun(4000, undefined, 1, 5000, new LimitCoordinator(new MemoryLimitStore()));
+    try {
+      const result = await rdapLookup("example.com", "https://limited-retry-fits.test", run.signal, run.context);
+      expect({ status: result.status, calls }).toEqual({ status: "available", calls: 2 });
+    } finally { run.close(); }
   });
 
   test("honors Retry-After before retrying and before subsequent work", async () => {

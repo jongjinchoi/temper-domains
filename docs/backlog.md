@@ -68,7 +68,7 @@
 - [x] 확인된 결함·높음: 조회 중 SIGINT·SIGTERM·SIGHUP으로 `lookup-limits.json.lock`이 남아 같은 home의 모든 조회가 `limit_state_error` — 신호를 받으면 진행 중인 파일 트랜잭션을 끝낸 뒤 128+신호번호로 종료하도록 수정 (`src/utils/shutdown.ts`) (A14, 2026-09-30)
 - [ ] 조건부 위험·중간: Windows(릴리스 대상)에서 TUI·저장·checker·MCP 테스트가 실행되지 않고 macOS CI도 src/update만 실행 (`.github/workflows/ci.yml:80-109`) (A28)
 - [ ] 선택적 개선·중간: RDAP 네이티브 전송의 8 MiB 본문·해제 상한과 deflate·br 해제를 검증하는 테스트 추가 (`src/checker/http-transport.ts:43`) (A27)
-- [ ] 확인된 결함·낮음: 첫 429/503 뒤 재허가가 마감에 걸리면 이미 보낸 요청이 `deadline_before_start`가 되고 retryAt을 잃음 (`src/checker/rdap.ts:128`) (A1)
+- [x] 확인된 결함·낮음: 첫 429/503 뒤 재허가가 마감에 걸리면 retryAt을 잃음 — 요청 간격까지 고려해 재시도를 판단하고, 시간이 모자라면 받은 제한 응답을 유지 (`src/checker/rdap.ts`) (A1, 2026-09-30)
 - [ ] 확인된 결함·낮음: WHOIS 날짜가 TUI에서 호스트 시간대에 따라 하루 밀려 표시됨 (`src/tui/WhoisView.tsx:85`) (A4)
 - [x] 확인된 결함·낮음: 워치리스트가 IDN의 Unicode·xn-- 형태를 다른 항목으로 저장 — 비교 키를 ASCII 형태로 통일, 표시는 입력한 형태 유지 (`src/config/watchlist.ts`) (A5, 2026-09-30)
 - [x] 확인된 결함·낮음: 거부된 RDAP 리다이렉트가 재개 가능한 `network_error`로 분류됨 — `invalid_response`로 분류(형식이 잘못된 Location 포함) (`src/checker/rdap.ts`) (A6, 2026-09-30)
