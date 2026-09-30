@@ -71,6 +71,14 @@ jobs:
           }
           Get-Content logs/node-checks.log
           exit $code
+      # Diagnostic output only; it does not count towards the observed result.
+      - name: Record real file transactions under contention
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          node tests/limits/transaction-stress.mjs *> logs/transaction-stress.log
+          bun tests/limits/transaction-stress.mjs *>> logs/transaction-stress.log
+          Get-Content logs/transaction-stress.log
       - id: limits
         continue-on-error: true
         shell: pwsh

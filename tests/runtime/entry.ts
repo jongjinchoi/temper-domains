@@ -8,3 +8,5 @@ export { loadConfig, saveConfig } from "../../src/config/config.ts";
 export { default as SearchView } from "../../src/tui/SearchView.tsx";
 export { DEFAULT_TLDS } from "../../src/checker/types.ts";
 export { whoisDetail, whoisLookup } from "../../src/checker/whois.ts";
+export { FileLimitStore } from "../../src/checker/limit-store.ts";
+export { LimitCoordinator } from "../../src/checker/limits.ts";
