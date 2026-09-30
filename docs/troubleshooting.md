@@ -37,7 +37,8 @@ Repeating a search during the wait does not increase that backoff. After the
 wait, a new user request enters gradual recovery; no background retry runs.
 Recovery allows one request at a time. After a 429, spacing starts at 1200ms and
 can increase to 2400/4800/9600ms after new limits. Each step back toward normal
-requires eight consecutive valid answers and at least 30s of observation.
+requires eight consecutive valid answers and at least 30s of observation. A valid
+answer is a domain response, a not-found response or a redirect that Temper follows.
 These conservative policy values are not measured registry quotas or a speed guarantee.
 
 `terminationReason: "server_cooldown"` with `attempts: 0` means that domain was

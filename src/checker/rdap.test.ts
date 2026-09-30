@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { parseRdapResponse, rdapLookup } from "./rdap.ts";
+import { canResume } from "./retry.ts";
 
 const originalFetch = globalThis.fetch;
 
@@ -170,6 +171,35 @@ describe("rdapLookup", () => {
 
     expect(result.status).toBe("error");
     expect(result.error).toBe("HTTP 403: registry denied access");
+  });
+
+  test.each([
+    ["https downgrade", "http://redirect-downgrade.test/domain/example.com"],
+    ["missing Location", undefined],
+    ["credentials", "https://user:pass@other.test/domain/example.com"],
+    ["unsupported scheme", "ftp://other.test/example.com"],
+    ["malformed Location", "https://[bad"],
+  ])("a rejected redirect (%s) is an invalid response that resume does not repeat", async (name, location) => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return new Response(null, { status: 302, headers: location === undefined ? {} : { location } });
+    }) as unknown as typeof fetch;
+
+    const result = await rdapLookup("example.com", `https://redirect-${name.replaceAll(" ", "-").toLowerCase()}.test`, new AbortController().signal);
+
+    expect({ status: result.status, terminationReason: result.terminationReason, calls, resumable: canResume(result) })
+      .toEqual({ status: "error", terminationReason: "invalid_response", calls: 1, resumable: false });
+  });
+
+  test("a redirect loop stops after five hops as an invalid response", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => new Response(null, { status: 302, headers: { location: `https://redirect-loop.test/domain/example.com?hop=${++calls}` } })) as unknown as typeof fetch;
+
+    const result = await rdapLookup("example.com", "https://redirect-loop.test", new AbortController().signal);
+
+    expect({ terminationReason: result.terminationReason, calls, resumable: canResume(result) })
+      .toEqual({ terminationReason: "invalid_response", calls: 6, resumable: false });
   });
 
   test("honors Retry-After before retrying and before subsequent work", async () => {

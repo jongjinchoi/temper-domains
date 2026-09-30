@@ -32,6 +32,8 @@ for (const domain of ['taken.com','redirect.com','downgrade.com','stall.com']) {
   clearTimeout(timer);
   assert.equal(result.status, domain === 'taken.com' ? 'taken' : domain === 'redirect.com' ? 'available' : domain === 'stall.com' ? 'slow' : 'error', JSON.stringify(result));
   if (domain === 'redirect.com') assert.equal(result.attempts, 2);
+  // A rejected redirect is a server answer that cannot be used, not a connection failure.
+  if (domain === 'downgrade.com') assert.equal(result.terminationReason, 'invalid_response', JSON.stringify(result));
 }
 const denied = await rdapLookup('limit.com', [h2, h1], new AbortController().signal);
 assert.equal(denied.status, 'rate_limited'); assert.equal(denied.attempts, 1);

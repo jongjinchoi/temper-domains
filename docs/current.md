@@ -151,7 +151,10 @@ in both workspaces so root typechecking does not download a separate compiler.
   checker uses memory only; separate instances do not share a distributed limit.
 - RDAP 429/503 retries re-enter the scheduler (at most two limited-response passes
   for an initial lookup; one for explicit resume). Redirects and published HTTPS
-  endpoint failover can add transmissions; attempts counts actual requests. Retry-After
+  endpoint failover can add transmissions; attempts counts actual requests. A
+  redirect is followed at most five times and only to an http(s) URL without
+  credentials and without an HTTPS-to-HTTP downgrade; a rejected redirect ends the
+  lookup as invalid_response, which resume does not repeat. Retry-After
   seconds and HTTP dates are honored without truncation. When waiting would
   exceed the deadline, return the response with retryAt. HTTP 503 is a service
   error, not a rate_limited result.
@@ -162,7 +165,8 @@ in both workspaces so root typechecking does not download a separate compiler.
   A longer previously observed wait cannot be shortened by a later response.
 - After a wait, recovery admits one request at a time. 429 spacing starts at 1200ms
   and increases through 2400/4800/9600ms; eight consecutive valid answers and 30s
-  of observation relax one step (600 then 300ms on the way back). Errors, cancellation
+  of observation relax one step (600 then 300ms on the way back). A valid answer is
+  a domain response, a not-found response or an accepted redirect. Errors, cancellation
   and abandoned leases interrupt the streak. 503 preserves its separate failure kind
   without increasing the 429 speed level. No background replay runs. Shared admission
   returns a wait without retaining a lease or local transport slot; another server

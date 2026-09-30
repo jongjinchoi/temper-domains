@@ -6,6 +6,8 @@ import { join } from "node:path";
 import { FileLimitStore } from "./limit-store.ts";
 import { LimitCoordinator, MemoryLimitStore } from "./limits.ts";
 import { checkFullDomains } from "./checker.ts";
+import { rdapLookup } from "./rdap.ts";
+import { createRequestScope } from "./scheduler.ts";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => { globalThis.fetch = originalFetch; });
@@ -138,3 +140,46 @@ test("resume stops a newly limited server even with zero Retry-After and continu
   expect(results.find(r => r.domain === "c.net")).toMatchObject({ status: "available", httpStatus: 404 });
   expect(results.find(r => r.domain === "c.net")!.checkedAt).toBeDefined();
 });
+
+// An accepted redirect is a valid answer from the redirecting server; a rejected one is an error.
+async function recoverThroughRedirects(mode: "direct" | "other-server" | "same-server" | "rejected") {
+  let now = 1_000_000;
+  const store = new MemoryLimitStore();
+  const limits = new LimitCoordinator(store, () => now, () => 0);
+  const origin = `https://redirect-recovery-${mode}.test`;
+  const limited = await expectPermit(limits.tryAcquire(origin, now + 10000, signal));
+  await limited.limited("rate_limited", 0); await limited.release();
+  globalThis.fetch = (async input => {
+    const url = String(input);
+    now += 3000; // each request takes simulated time, so pacing between hops can elapse
+    if (mode === "other-server" && url.startsWith(origin)) return new Response(null, { status: 302, headers: { location: "https://redirect-target.test/domain/example.com" } });
+    if (mode === "same-server" && !url.includes("/v2/")) return new Response(null, { status: 302, headers: { location: `${origin}/v2/domain/example.com` } });
+    if (mode === "rejected" && url.includes("rejected.com")) return new Response(null, { status: 302, headers: { location: "http://redirect-target.test/domain/example.com" } });
+    return new Response(null, { status: 404 });
+  }) as typeof fetch;
+  const statuses: string[] = [];
+  const lookup = async (domain: string) => {
+    now += 5000;
+    statuses.push((await rdapLookup(domain, origin, signal, { limits, scope: createRequestScope(1), deadline: Date.now() + 10000, requestTimeoutMs: 5000 })).status);
+  };
+  for (let index = 0; index < 12; index++) await lookup(mode === "rejected" && index === 5 ? "rejected.com" : `name${index}.com`);
+  const entry = (await store.update(state => state.servers[origin]))!;
+  return { statuses, level: entry.level, successes: entry.successes };
+}
+
+test("servers that answer with accepted redirects recover like servers that answer directly", async () => {
+  const direct = await recoverThroughRedirects("direct");
+  expect(direct).toMatchObject({ level: 1, successes: 4 });
+  expect(direct.statuses).toEqual(Array(12).fill("available"));
+  expect(await recoverThroughRedirects("other-server")).toEqual(direct);
+  const sameServer = await recoverThroughRedirects("same-server");
+  expect(sameServer.statuses).toEqual(direct.statuses);
+  expect(sameServer.level).toBeLessThan(2);
+}, 30000);
+
+test("a rejected redirect interrupts the recovery streak", async () => {
+  // Five answers, one rejected redirect, then six answers: the streak restarts at the rejection.
+  const result = await recoverThroughRedirects("rejected");
+  expect(result.statuses.filter(status => status === "error")).toHaveLength(1);
+  expect(result).toMatchObject({ level: 2, successes: 6 });
+}, 30000);

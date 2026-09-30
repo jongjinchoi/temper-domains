@@ -35,7 +35,17 @@ function validateDomainResponse(value: unknown, domain: string): Record<string, 
   return data;
 }
 
-interface RdapAnswer { location?: string | null; status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number; retryAtSource?: "server" | "client_policy" }
+// Returns the next URL, or the reason the redirect is rejected.
+function redirectTarget(location: string | null, from: string, redirects: number): URL | string {
+  if (!location || redirects > 5) return "Invalid or excessive RDAP redirects";
+  let target: URL;
+  try { target = new URL(location, from); }
+  catch { return "Invalid or excessive RDAP redirects"; }
+  if (!["https:", "http:"].includes(target.protocol) || target.username || target.password || (from.startsWith("https:") && target.protocol !== "https:")) return "Unsafe RDAP redirect";
+  return target;
+}
+
+interface RdapAnswer { redirect?: string; redirectError?: string; status: number; json?: Record<string, unknown>; parsed?: Partial<DomainDetail>; retryAt?: number; retryAtSource?: "server" | "client_policy" }
 async function queryRdap(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
   if (!context) {
     const run = createRun(10000, signal);
@@ -88,7 +98,15 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
             return { status: response.status, retryAt: Date.parse(metadata.retryAt), retryAtSource: metadata.retryAtSource };
           }
           if (response.status === 404) await permit.answered();
-          if (response.status !== 200) return { status: response.status, location: response.headers.get("location") };
+          if ([301, 302, 303, 307, 308].includes(response.status)) {
+            // Decided while the permit is held: an accepted redirect is a valid
+            // answer from this server; a rejected one is not.
+            const target = redirectTarget(response.headers.get("location"), url, ++redirects);
+            if (typeof target === "string") return { status: response.status, redirectError: target };
+            await permit.answered();
+            return { status: response.status, redirect: target.href };
+          }
+          if (response.status !== 200) return { status: response.status };
           try {
             const json = validateDomainResponse(await response.json(), domain);
             const parsed = parseRdapResponse(json);
@@ -115,12 +133,12 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
         }
         throw error;
       }
-      if ([301, 302, 303, 307, 308].includes(answer.status)) {
-        if (!answer.location || ++redirects > 5) throw new TransportError("protocol", "Invalid or excessive RDAP redirects");
-        const target = new URL(answer.location, url);
-        if (!["https:", "http:"].includes(target.protocol) || target.username || target.password || (url.startsWith("https:") && target.protocol !== "https:")) throw new TransportError("protocol", "Unsafe RDAP redirect");
-        url = target.href; attempt--; continue;
+      if (answer.redirectError) {
+        // The server answered, but not with a usable response: repeating the request cannot help.
+        terminationReason = "invalid_response";
+        throw new TransportError("protocol", answer.redirectError);
       }
+      if (answer.redirect) { url = answer.redirect; attempt--; continue; }
       lastAnswer = answer;
       if (answer.status === 200) return row({ status: "taken", ...answer.parsed, rawRdap: answer.json, checkedAt: new Date().toISOString() });
       if (answer.status === 404) return row({ status: "available", checkedAt: new Date().toISOString() });
