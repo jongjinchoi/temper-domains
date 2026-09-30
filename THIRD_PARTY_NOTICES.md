@@ -447,14 +447,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## @next/env@16.3.5
+## @next/env@16.3.7
 
 Declared license: "MIT". Scope: web.
-Source/version metadata: https://registry.npmjs.org/%40next%2Fenv/16.3.5
+Source/version metadata: https://registry.npmjs.org/%40next%2Fenv/16.3.7
 
 ### Upstream notice
 
-https://github.com/vercel/next.js/blob/v16.3.5/license.md
+https://github.com/vercel/next.js/blob/v16.3.7/license.md
 
 ```text
 The MIT License (MIT)
@@ -480,14 +480,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## @next/swc-darwin-arm64@16.3.5
+## @next/swc-darwin-arm64@16.3.7
 
 Declared license: "MIT". Scope: web.
-Source/version metadata: https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.5
+Source/version metadata: https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.7
 
 ### Upstream notice
 
-https://github.com/vercel/next.js/blob/v16.3.5/license.md
+https://github.com/vercel/next.js/blob/v16.3.7/license.md
 
 ```text
 The MIT License (MIT)
@@ -4597,10 +4597,10 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-## next@16.3.5
+## next@16.3.7
 
 Declared license: "MIT". Scope: web.
-Source/version metadata: https://registry.npmjs.org/next/16.3.5
+Source/version metadata: https://registry.npmjs.org/next/16.3.7
 
 ### license.md
 

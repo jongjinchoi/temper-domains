@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lockSha256": "c7746e85821335f89c8f8361872326a7d2d086c656f448447f3ad6a4fbec9626",
+  "lockSha256": "d4e3a45038eca508363c65d2ef8baa21d36e956f84fb47350204b139fe00bbaf",
   "lockEntries": 220,
   "packages": [
     {
@@ -114,7 +114,7 @@
       ]
     },
     {
-      "id": "@next/env@16.3.5",
+      "id": "@next/env@16.3.7",
       "license": "MIT",
       "scopes": [
         "web"
@@ -124,16 +124,16 @@
         "url": "https://github.com/vercel/next.js",
         "directory": "packages/next-env"
       },
-      "source": "https://registry.npmjs.org/%40next%2Fenv/16.3.5",
+      "source": "https://registry.npmjs.org/%40next%2Fenv/16.3.7",
       "notices": [
         {
-          "path": "https://github.com/vercel/next.js/blob/v16.3.5/license.md",
+          "path": "https://github.com/vercel/next.js/blob/v16.3.7/license.md",
           "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
         }
       ]
     },
     {
-      "id": "@next/swc-darwin-arm64@16.3.5",
+      "id": "@next/swc-darwin-arm64@16.3.7",
       "license": "MIT",
       "scopes": [
         "web"
@@ -143,10 +143,10 @@
         "url": "https://github.com/vercel/next.js",
         "directory": "crates/next-napi-bindings/npm/darwin-arm64"
       },
-      "source": "https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.5",
+      "source": "https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.7",
       "notices": [
         {
-          "path": "https://github.com/vercel/next.js/blob/v16.3.5/license.md",
+          "path": "https://github.com/vercel/next.js/blob/v16.3.7/license.md",
           "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
         }
       ]
@@ -1618,13 +1618,13 @@
       ]
     },
     {
-      "id": "next@16.3.5",
+      "id": "next@16.3.7",
       "license": "MIT",
       "scopes": [
         "web"
       ],
       "repository": "vercel/next.js",
-      "source": "https://registry.npmjs.org/next/16.3.5",
+      "source": "https://registry.npmjs.org/next/16.3.7",
       "notices": [
         {
           "path": "license.md",
@@ -4296,8 +4296,8 @@
       ]
     },
     {
-      "id": "@next/swc-darwin-x64@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-darwin-x64/16.3.5",
+      "id": "@next/swc-darwin-x64@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-darwin-x64/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4305,22 +4305,22 @@
         "directory": "crates/next-napi-bindings/npm/darwin-x64"
       },
       "dist": {
-        "shasum": "ed3a7b1f4ab757f03d306f21d187b951107c4940",
-        "tarball": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.3.5.tgz",
+        "shasum": "36acce741c262fbcefb941f5b47cab1501aa197f",
+        "tarball": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-76VaGYvf6HPa5/w12yLkE3dXTn9AfdEviI79oEL3aZoAmRLc9rWitjWqyjViVysK/ht/y9YKzFkBrUdi/wGkow==",
+        "integrity": "sha512-Usd86QilBWl2G7JxfWskV9NLAxacVRrDDQ3WQIoPKRB0MXiVuVSdyu3wt5EA8SyjQpaVk/7VOzSkRB4LgJltyA==",
         "signatures": [
           {
-            "sig": "MEYCIQD/S2h83m9HrO3bCjXQctMVg8dGaOSie3GksIEYPaWz0gIhAOk8frWxgCDoHhWOXrpXbjzr4w6RrFqh9c/WK7C5hZAu",
+            "sig": "MEUCIQC056if1JvoBC9rhmLqgIM33q38uLkq+a6Uz3r2U8sBewIgFvp5qLey+UxWUSgz5tQs+h1dWPxCgrsAVfIyhghBn5I=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEYCIQDxPr2KzrKP1hWNZXyged4KnoMLCQcPonEiR77j8Ka8ewIhAJWN61kWzT8e2hKX3Z78hjqow1RIEpK1Z5g1IWKyEp2f",
+            "sig": "MEYCIQCDmfG2bS/lc+w4N9hE3YymANZwB3UGKYWhpUkR8Q29CgIhAN03brBfThznyKWlT0SZJcSGTXp/pGHymFEByU3cGJGU",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-darwin-x64@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-darwin-x64@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4335,8 +4335,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-arm64-gnu@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-gnu/16.3.5",
+      "id": "@next/swc-linux-arm64-gnu@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-gnu/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4344,27 +4344,27 @@
         "directory": "crates/next-napi-bindings/npm/linux-arm64-gnu"
       },
       "dist": {
-        "shasum": "c116c0edc9da69e286b1cf1fc7d55601de1f7362",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.3.5.tgz",
+        "shasum": "63b8b55fd458ce722d8ba59cc161fc1516a06d3f",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-zKDELJ5jSQMHeO/hmXUQsAzagX4bQD4OiMi3pQ5FbUj+yK506oLVHnKA2YXMlbg1EHHqJYtyePOgByIDXD1lqw==",
+        "integrity": "sha512-pVauSs1WomgtBgfJj/Q+846nBix4CdohLUIDafyJGdAvNw5kOusLawoX+rpc2P4U3Kd7tLwqFXsnHeSkLZrqyw==",
         "signatures": [
           {
-            "sig": "MEUCIQDn3/j5aMVJcy6dH/lxdp3hHOP+YNqog/sccx9A88bL0AIgNhMo6oWWCUwQ7z8pCja9wZSlFM/mhKJvStewOAj4xvQ=",
+            "sig": "MEUCIQC/+n319v4Tn3mwnxiEP7yPSgBmOnWK7ZnBayVzwuo21gIgQ97mUcTPyFt7Ke9/nv95F8DRrmr7/oMsTwXavLgy/xk=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEQCICOqyciy5Sx+VPDDOWzZVGlPPkuDEQDqsCD7A8PYJJZdAiA7aAe5BVnMDPd7TwN2O0yH+Lo4s67D3w+Z+XyZY9zsFQ==",
+            "sig": "MEUCIQDZ0ZSo/3Qrsbw8ZdM1lv90bXnWIisVkqN/1QPiKRtLbAIgcYw25TN135JfGdUgJMudWBm4esTb43xzwxha/LRsR6I=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-gnu@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-gnu@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
         },
-        "unpackedSize": 89858626
+        "unpackedSize": 89859138
       },
       "os": [
         "linux"
@@ -4374,8 +4374,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-arm64-musl@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-musl/16.3.5",
+      "id": "@next/swc-linux-arm64-musl@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-musl/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4383,27 +4383,27 @@
         "directory": "crates/next-napi-bindings/npm/linux-arm64-musl"
       },
       "dist": {
-        "shasum": "dc9902a8c4bec1ba3d3a6af294e288f54c12e34c",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.3.5.tgz",
+        "shasum": "8cc2b09d0745cd8cb0256b72baaea7df5f595387",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-7Vql0pgzCoHagv6+FNOZoqmJqA52c6zeVbhtS/47qFozO1MSx4ms7x7GHiciY8R5CDsSMKMQjJEryoJLcsBIbA==",
+        "integrity": "sha512-vY+iamd6cOfk29bGTgxeS/OXlrlfOfyFgyd34cibC7e25bXRMxuqNUfs2Z9Fxb/VHpV5dopffMSWnCeR2tc8rA==",
         "signatures": [
           {
-            "sig": "MEUCIQDPuY+cBjuYYgnFnyR9pipaDH3hlc1r6tMsAwRSJvlJNQIgeRXFgzxBlHL6IohAsehm4AXTztcp4dUYHKrOYiQTkko=",
+            "sig": "MEYCIQCSO/F6L31PbYFLAHGzhnHfHSmgwP4cMvuSBFKcDnDQHwIhAOmREwaim0JSuO6sQCXCUc0vxA3+Kh1EpPp9dzBjZmH1",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEUCIQDImssNOelhEVXfYV+5c4C3PXrNHnSXc3ppx+946fYIkQIgRPb1quHxy1o0x7HrGBX34A0b9DX7+abj+AoxfJ1wZQQ=",
+            "sig": "MEQCIDWd22EtpQRdcRSGrf93T8drHvZ6aZMP58iL4WUmMgRQAiBHDPGz2sRZT0IjepOVysWowGcPeMWVRCcqkWPX02XMhw==",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-musl@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-musl@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
         },
-        "unpackedSize": 87531727
+        "unpackedSize": 87532175
       },
       "os": [
         "linux"
@@ -4413,8 +4413,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-x64-gnu@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-gnu/16.3.5",
+      "id": "@next/swc-linux-x64-gnu@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-gnu/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4422,27 +4422,27 @@
         "directory": "crates/next-napi-bindings/npm/linux-x64-gnu"
       },
       "dist": {
-        "shasum": "c092cb89504ac782edb42b253195a73dcfaf2251",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.3.5.tgz",
+        "shasum": "4d8a1070211226e8b4887c0c4ff132169ee6725a",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-NH/xzehyHEFWE2nlcZon7TB/0+H4shfWCi7S1zka815XCOhJDYZhoeJtOYy0dh0WVRWACVXSyGNFFytoMxUhRg==",
+        "integrity": "sha512-NWx0LRZ9IO9rTDXLc+Hi/bNcTKblT86du4OLMRm5Z62C2T5/+mNEhK2XeQxwoSmVFvU2rjMSjJMK4ttZAk88+w==",
         "signatures": [
           {
-            "sig": "MEQCIGGfQWQqB0q0B2LhvP0p5PWu/XjfGRUrr/CljFgEhtpyAiAZ0nYLQMNR7wenx5DTdJWwqKDVZvZuNiZ+jbjM/EifQA==",
+            "sig": "MEYCIQCiXDsoJKmRcWQuOi96YffII2Eg+ArYidWHAMSnHfUNOwIhANTUKFAK9TVsyTFdPpRr2CKvoEaT2U4SuhkFF4EuHgYL",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEUCIQDyNIwRQkFPCC2HkWrvSm2WUv9ErSrVmshtjuk0UUlD/wIgDWSki5VH0428tL2ATviVs6ZJJpnlvg5Y446MEOTYVZM=",
+            "sig": "MEQCIAktIEWn1O2AmiNVDghtyuqVBQ/tvxcVOUwfuKxnx53FAiA6kNGY1Jdds8VL24nCy8SrWb0Ev26SrmGF9w0+6hrG5g==",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-gnu@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-gnu@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
         },
-        "unpackedSize": 96732103
+        "unpackedSize": 96732487
       },
       "os": [
         "linux"
@@ -4452,8 +4452,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-x64-musl@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-musl/16.3.5",
+      "id": "@next/swc-linux-x64-musl@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-musl/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4461,27 +4461,27 @@
         "directory": "crates/next-napi-bindings/npm/linux-x64-musl"
       },
       "dist": {
-        "shasum": "22e553dee247026244d486d311efd07e4986f9af",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.3.5.tgz",
+        "shasum": "15fc46ea0588407fe517bc48d4edb2e4f8bcfccf",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-lV4+EhWMfS8jcC+EH2nn/Cm5cn6XsgbE07bU9tMH8fCo0tNAqhyzi1b5wQ/Tn6NGFTvKDY65w3ZH95EjwBRAnQ==",
+        "integrity": "sha512-v5Dk/iMB4JyQZwQ+UWOZGGAqA4HjkBewKwaCkXi5DqL1Dy1TjXpRmAh8N7VOuID0hLmouICSXozJrMBBG1Xeyw==",
         "signatures": [
           {
-            "sig": "MEMCH2aYuf+UvaWepTNeghP8AGdysW8f8dDMhjQRtCNzwD4CIFBa0edupuXpHVUxYoaKrKMn+MQ4YUja5pNIKDc4s9Kh",
+            "sig": "MEUCIQD+CMMOBGQ4TrN8vl1QHQBevpRwLPFvJgMzVCScWOQf6gIgEKEGd/7U+gNMArnrtzuH80SQRTb1jtgi/+qacUIPrv4=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEUCIQCYcOgRhHg69w5t060jBYgMPd3l4sutSEe3/lbxhVyKLQIgJ2tBzWJqRR6c2dOOGMv2gRoAtnHn+1gkg2rRF7U2T60=",
+            "sig": "MEQCIAtdkXvQx6jFR2tQXRhEfdkwq/nR60HhyB9CImwCkNgOAiBNG79aX3R98x6MCohddchDNWe7r8NGcmQBMbDd+lHybw==",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-musl@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-musl@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
         },
-        "unpackedSize": 94830721
+        "unpackedSize": 94831105
       },
       "os": [
         "linux"
@@ -4491,8 +4491,8 @@
       ]
     },
     {
-      "id": "@next/swc-win32-arm64-msvc@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-arm64-msvc/16.3.5",
+      "id": "@next/swc-win32-arm64-msvc@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-arm64-msvc/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4500,22 +4500,22 @@
         "directory": "crates/next-napi-bindings/npm/win32-arm64-msvc"
       },
       "dist": {
-        "shasum": "22fb04be07b602f475b7e4ec7e4b3940551ff749",
-        "tarball": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.3.5.tgz",
+        "shasum": "2417ca372f2da697d1ff36343b268d9ea72ed017",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-/wKzAREX2RF++MhicjDbg8tGn2AiBIM0+EFeTFKoUEUbW5D6amCJehd5Z5G1H5/gxNdgnwoXMcHz24H/c2tGkQ==",
+        "integrity": "sha512-G4BkB7AhfKJnaoIpIkoA66l5pXPGJXD3EF1EsuYj/sgM4rHA41dsa3CIIqjR4FQFZEjU+zGQRbIEPYZIOi5EoA==",
         "signatures": [
           {
-            "sig": "MEUCIH4VxUB+cd9i1keLQZUbbecQ4VJ9tVJVgkZvbjYAkYvOAiEAjUuq5TRYmEu9Rn4GG8Gmp7MbF8PPvnI8hBFVE2CT+yM=",
+            "sig": "MEYCIQCtbM3FMtonLW4SAyeJwWMMq8jV8wN4940YLe+7roBABwIhAKJu41l0tKDCRJrF3zJpOy5zAQPn92BHsc3MXKaqRU76",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEUCIQDhFKpvzMEwi5ODCS/6yw1ursCgR/I+/vs7vNogDrwJEAIgYjo/PhDBlezZFvxJ42XuWxfjvIfGjzMb7lSDrzBai7o=",
+            "sig": "MEUCIAiUe3xfRbinx0Ccd9YcsjtuB2C9D059c2c+84+lMJEgAiEAyRB4lCnB33ZkZaFAH37xPBk0bXKtkJlv2juxJ5xPu74=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-arm64-msvc@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-arm64-msvc@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4530,8 +4530,8 @@
       ]
     },
     {
-      "id": "@next/swc-win32-x64-msvc@16.3.5",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-x64-msvc/16.3.5",
+      "id": "@next/swc-win32-x64-msvc@16.3.7",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-x64-msvc/16.3.7",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4539,27 +4539,27 @@
         "directory": "crates/next-napi-bindings/npm/win32-x64-msvc"
       },
       "dist": {
-        "shasum": "e137de36cddf64742f739ccb9092c4bcd48d2683",
-        "tarball": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.3.5.tgz",
+        "shasum": "ce4615489e79520a05892c5b72f54cef2968b087",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.3.7.tgz",
         "fileCount": 3,
-        "integrity": "sha512-LNdCHzgLFc+UeqMS84LzXPaeBRKyqDN9OMyFAr1OrB0XrNw78IRrEVtZvvA7245W/HsaoeVOQX9jPjPk8jojwA==",
+        "integrity": "sha512-DuvRhf50tGU7leT9Ow0cs/9lo81X5lHdNoxSRk4ckSk2Ihn2dsM+BEe5j7ANpEFhD25p//SmV8ajdRtuaBIg3g==",
         "signatures": [
           {
-            "sig": "MEUCIGURppyUbh684GQFgZlmRDW0Icowpy8BoA/nZVAwm+HqAiEA4+1Lv/1t7nh7SOZ0OP8h1n8umoM9Du9r5jvdcD8umoo=",
+            "sig": "MEQCIE/ejDXy6H+f9dksDTiqqtydjr4AC2MvIr+1bd9IWLesAiBERRMItrxCMFBegyOMskbPvyesP7/Xhk6DgOXSxcb4tA==",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           },
           {
-            "sig": "MEQCIExpTdg9ZEALWEN5WMQJzyXJGNNaTMs3H8uy9mtkeJt7AiAu/L8ve2kppya3P7EvK4VhtCMp5zrxUHJYICxlyjHcHw==",
+            "sig": "MEUCIQCK81wo7ZwEa7TH5HRhtRnacDWeHcUgGdSEqAQeeDXjfwIgSkc/gBhCON64DvUQDlGVDAeBZcnKfpWNKkpDjlKNimE=",
             "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-x64-msvc@16.3.5",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-x64-msvc@16.3.7",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
         },
-        "unpackedSize": 106189317
+        "unpackedSize": 106189829
       },
       "os": [
         "win32"
