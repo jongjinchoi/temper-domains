@@ -17,9 +17,6 @@ jobs:
       GIT_CONFIG_COUNT: '1'
       GIT_CONFIG_KEY_0: core.autocrlf
       GIT_CONFIG_VALUE_0: 'false'
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
@@ -30,31 +27,77 @@ jobs:
           bun-version: latest
       - run: bun ci
       - run: mkdir -p logs
-      # Each observed step continues on error so that later steps still run.
+        shell: bash
+      # Observed steps use the default Windows shell, as users and the release build do:
+      # under bash, Git's GNU tar takes precedence and reads C:\ as a remote host.
+      # Each one continues on error so that later steps still run.
       - id: bun_test
         continue-on-error: true
-        run: bun test 2>&1 | tee logs/bun-test.log
+        shell: pwsh
+        run: |
+          bun test *> logs/bun-test.log
+          $code = $LASTEXITCODE
+          Get-Content logs/bun-test.log
+          exit $code
       - id: build
         continue-on-error: true
-        run: bun run build:npm 2>&1 | tee logs/build-npm.log
+        shell: pwsh
+        run: |
+          bun run build:npm *> logs/build-npm.log
+          $code = $LASTEXITCODE
+          Get-Content logs/build-npm.log
+          exit $code
       - id: node_cli
         continue-on-error: true
+        shell: pwsh
         run: |
-          node dist/npm/index.js --help 2>&1 | tee logs/node-cli.log
-          node dist/npm/index.js extensions --categories 2>&1 | tee -a logs/node-cli.log
+          node dist/npm/index.js --help *> logs/node-cli.log
+          $code = $LASTEXITCODE
+          if ($code -eq 0) {
+            node dist/npm/index.js extensions --categories *>> logs/node-cli.log
+            $code = $LASTEXITCODE
+          }
+          Get-Content logs/node-cli.log
+          exit $code
       - id: node_checks
         continue-on-error: true
+        shell: pwsh
         run: |
-          bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
-          node --test tests/runtime/node-checks.mjs 2>&1 | tee logs/node-checks.log
+          bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js *> logs/node-checks.log
+          $code = $LASTEXITCODE
+          if ($code -eq 0) {
+            node --test tests/runtime/node-checks.mjs *>> logs/node-checks.log
+            $code = $LASTEXITCODE
+          }
+          Get-Content logs/node-checks.log
+          exit $code
       - id: limits
         continue-on-error: true
-        run: node tests/limits/runner.mjs 2>&1 | tee logs/limits.log
+        shell: pwsh
+        run: |
+          node tests/limits/runner.mjs *> logs/limits.log
+          $code = $LASTEXITCODE
+          Get-Content logs/limits.log
+          exit $code
       - id: transport
         continue-on-error: true
-        run: node tests/transport/runner.mjs 2>&1 | tee logs/transport.log
+        shell: pwsh
+        run: |
+          node tests/transport/runner.mjs *> logs/transport.log
+          $code = $LASTEXITCODE
+          Get-Content logs/transport.log
+          exit $code
+      # Diagnostic output only; it does not count towards the observed result.
+      - name: Record how localhost is reached
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          node tests/transport/loopback-probe.mjs *> logs/loopback.log
+          bun tests/transport/loopback-probe.mjs *>> logs/loopback.log
+          Get-Content logs/loopback.log
       - name: Summarize
         if: always()
+        shell: bash
         env:
           OUTCOMES: "bun test=${{ steps.bun_test.outcome }} | build:npm=${{ steps.build.outcome }} | node CLI=${{ steps.node_cli.outcome }} | node checks=${{ steps.node_checks.outcome }} | limits=${{ steps.limits.outcome }} | transport=${{ steps.transport.outcome }}"
         run: |
@@ -67,6 +110,7 @@ jobs:
       # The run result reflects what was observed; nothing depends on it.
       - name: Report the observed result
         if: always()
+        shell: bash
         env:
           FAILED: ${{ contains(steps.*.outcome, 'failure') }}
         run: test "$FAILED" = false

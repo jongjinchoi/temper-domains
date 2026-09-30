@@ -79,7 +79,8 @@ test("file state preserves cooldown across instances and keeps private atomic fi
   await permit.release();
   await expect(new LimitCoordinator(new FileLimitStore(path)).tryAcquire(key, Date.now() + 1000, signal()))
     .rejects.toMatchObject({ until: Date.parse(response.retryAt), source: "server" });
-  expect((await stat(path)).mode & 0o777).toBe(0o600);
+  // Windows does not apply POSIX modes: only the write permission can be changed.
+  if (process.platform !== "win32") expect((await stat(path)).mode & 0o777).toBe(0o600);
   expect((await readFile(path, "utf8"))).not.toContain("first.com");
 });
 
@@ -128,7 +129,8 @@ test("expired leases do not permanently block a new probe", async () => {
   await replacement.release();
 });
 
-test("state directory permissions are reported without dispatching or resetting state", async () => {
+// chmod cannot make a directory unwritable on Windows, so the failure cannot be injected there.
+test.skipIf(process.platform === "win32")("state directory permissions are reported without dispatching or resetting state", async () => {
   const dir = await mkdtemp(join(tmpdir(), "temper-limits-permission-"));
   const path = join(dir, "limits.json");
   const limits = new LimitCoordinator(new FileLimitStore(path));

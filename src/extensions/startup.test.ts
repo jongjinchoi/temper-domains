@@ -12,16 +12,17 @@ test("light CLI paths and MCP initialization do not execute the catalog", async 
     await symlink(resolve("node_modules"), join(dir, "node_modules"), "dir");
     const built = await Bun.build({ entrypoints: [resolve("src/index.ts")], outdir: dir,
       target: "node", packages: "external", splitting: true, define: { PKG_VERSION: '"0.0.0-test"' }, plugins: [{ name: "catalog-execution-sentinel", setup(build) {
-        build.onLoad({ filter: /extensions\/catalog\.ts$/ }, async args => ({
+        build.onLoad({ filter: /extensions[\\/]catalog\.ts$/ }, async args => ({
           contents: 'throw new Error("CATALOG_EXECUTED");\n' + await Bun.file(args.path).text(), loader: "ts",
         }));
-        build.onLoad({ filter: /extensions\/data\/catalog\.json$/ }, () => {
+        build.onLoad({ filter: /extensions[\\/]data[\\/]catalog\.json$/ }, () => {
           throw new Error('Full maintenance catalog must not be bundled into the CLI');
         });
       } }] });
     expect(built.success).toBe(true);
     const entry = join(dir, "index.js");
-    const env = { ...process.env, HOME: dir, TEMPER_NO_UPDATE_CHECK: "1" };
+    // The home directory comes from USERPROFILE on Windows and from HOME elsewhere.
+    const env = { ...process.env, HOME: dir, USERPROFILE: dir, TEMPER_NO_UPDATE_CHECK: "1" };
     for (const args of [["--version"], ["--help"], ["config", "theme", "--list"], ["watch", "acme.com"],
       ["search", "acme", "--format", "json", "--timeout", "0"],
       ["search", "acme", "--extended", "--format", "json", "--timeout", "0"]]) {

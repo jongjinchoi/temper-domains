@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promis
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import { PassThrough, Writable } from "node:stream";
 import React from "react";
 import { render } from "ink";
@@ -12,6 +13,8 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 
 const home = await mkdtemp(join(tmpdir(), "temper-node-"));
 process.env.TEMPER_TEST_HOME = home;
+// --import takes a module specifier: a Windows path such as D:\... is not one.
+const preload = pathToFileURL(resolve("tests/runtime/preload.mjs")).href;
 await import("./preload.mjs");
 const { isValidDomain, isValidDomainLabel, checkFullDomains, GET, addHistory, loadHistory, removeHistoryAt, loadWatchlist, SuggestView, loadConfig, saveConfig, SearchView, DEFAULT_TLDS } = await import("../../dist/test-runtime/entry.js");
 after(() => rm(home, { recursive: true, force: true }));
@@ -24,7 +27,7 @@ test("Node WHOIS preserves UTF-8 boundaries and enforces its byte limit", () => 
   assert.equal(result.status, 0, result.stderr);
 });
 function cli(args) {
-  return spawnSync(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "dist/npm/index.js", ...args], { encoding: "utf8", env: process.env, timeout: 10000 });
+  return spawnSync(process.execPath, ["--import", preload, "dist/npm/index.js", ...args], { encoding: "utf8", env: process.env, timeout: 10000 });
 }
 
 test("Node CLI rejects invalid converted timeouts before requests or state writes", async () => {
@@ -126,7 +129,7 @@ test("Node CLI and web preserve valid numeric and IDN search results", async () 
 
 test("Node MCP rejects invalid full domains without querying registries", async () => {
   const client = new Client({ name: "temper-node-regression", version: "1.0.0" });
-  const transport = new StdioClientTransport({ command: process.execPath, args: ["--import", resolve("tests/runtime/preload.mjs"), resolve("dist/npm/index.js"), "mcp"], env: process.env });
+  const transport = new StdioClientTransport({ command: process.execPath, args: ["--import", preload, resolve("dist/npm/index.js"), "mcp"], env: process.env });
   try {
     await client.connect(transport);
     const before = await requests();
@@ -159,7 +162,7 @@ test("a legacy watchlist containing URL syntax is preserved for repair", async (
 test("Node history writers preserve additions and reject deletion from an old snapshot", async () => {
   const jobs = ["first", "second"].map(query => new Promise((done, reject) => {
     const script = `import { addHistory } from './dist/test-runtime/entry.js'; await addHistory({query: ${JSON.stringify(query)}, timestamp: '2026-09-20T00:00:00Z', available: 1, total: 1});`;
-    const child = spawn(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "--input-type=module", "-e", script], { env: process.env, stdio: ["ignore", "ignore", "pipe"] });
+    const child = spawn(process.execPath, ["--import", preload, "--input-type=module", "-e", script], { env: process.env, stdio: ["ignore", "ignore", "pipe"] });
     let stderr = "";
     child.stderr.on("data", chunk => { stderr += chunk; });
     child.on("error", reject);
@@ -196,7 +199,7 @@ test("Node renders uppercase suggestion rows after completion", async () => {
 function configProcess(partial) {
   return new Promise((done, reject) => {
     const script = `import { saveConfig } from './dist/test-runtime/entry.js'; await saveConfig(${JSON.stringify(partial)});`;
-    const child = spawn(process.execPath, ["--import", resolve("tests/runtime/preload.mjs"), "--input-type=module", "-e", script], { env: process.env, stdio: ["ignore", "ignore", "pipe"] });
+    const child = spawn(process.execPath, ["--import", preload, "--input-type=module", "-e", script], { env: process.env, stdio: ["ignore", "ignore", "pipe"] });
     let stderr = "";
     child.stderr.on("data", chunk => { stderr += chunk; });
     child.on("error", reject);
@@ -229,7 +232,7 @@ test("Node concurrent config updates preserve both fields while readers see comp
   assert.equal(cli(["search", "acme", "--tlds", "com", "--format", "json"]).status, 0);
   const client = new Client({ name: "temper-config-regression", version: "1.0.0" });
   try {
-    await client.connect(new StdioClientTransport({ command: process.execPath, args: ["--import", resolve("tests/runtime/preload.mjs"), resolve("dist/npm/index.js"), "mcp"], env: process.env }));
+    await client.connect(new StdioClientTransport({ command: process.execPath, args: ["--import", preload, resolve("dist/npm/index.js"), "mcp"], env: process.env }));
     assert.ok((await client.listTools()).tools.length > 0);
   } finally { await client.close(); }
 });
@@ -315,7 +318,7 @@ test("Node catalog pages are offline and composite CLI selection sends only sele
 
 test("Node MCP exposes catalog and selected suffix schemas and preserves composite results", async () => {
   const client = new Client({ name: "temper-node-extensions", version: "1.0.0" });
-  const transport = new StdioClientTransport({ command: process.execPath, args: ["--import", resolve("tests/runtime/preload.mjs"), resolve("dist/npm/index.js"), "mcp"], env: process.env });
+  const transport = new StdioClientTransport({ command: process.execPath, args: ["--import", preload, resolve("dist/npm/index.js"), "mcp"], env: process.env });
   try {
     await client.connect(transport);
     const { tools } = await client.listTools();

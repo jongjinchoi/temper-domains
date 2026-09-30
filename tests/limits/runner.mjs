@@ -4,6 +4,7 @@ import { createServer as createWhoisServer } from 'node:net';
 import { mkdir, mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -33,7 +34,7 @@ try {
     activeRuntime = runtime; phase = 'migration and cooldown'; activeTrace = undefined;
     const home = await mkdtemp(join(root, `${runtime}-`));
     const env = { ...process.env, HOME: home, TEMPER_LIMIT_TEST_HOME: home, TEMPER_LIMIT_TEST_ORIGIN: origin, TEMPER_LIMIT_TEST_WHOIS_PORT: String(whoisServer.address().port), NO_COLOR: '1' };
-    const prefix = runtime === 'bun' ? ['--preload', resolve('tests/limits/trace-preload.mjs'), resolve('src/index.ts')] : ['--import', resolve('tests/limits/trace-preload.mjs'), resolve('dist/npm/index.js')];
+    const prefix = runtime === 'bun' ? ['--preload', resolve('tests/limits/trace-preload.mjs'), resolve('src/index.ts')] : ['--import', pathToFileURL(resolve('tests/limits/trace-preload.mjs')).href, resolve('dist/npm/index.js')];
     const cli = (args, onStart) => new Promise((resolve, reject) => {
       const child = spawn(runtime, [...prefix, ...args], { env, stdio: ['ignore', 'pipe', 'pipe'] });
       onStart?.(child);

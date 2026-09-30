@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { mkdtemp, readdir, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 // A JSON search interrupted by a signal must not leave the shared limit-state
 // lock behind: a leftover lock makes every later lookup fail until it is removed.
@@ -21,7 +22,7 @@ test.skipIf(process.platform === "win32")("Bun and Node JSON searches interrupte
     for (const runtime of ["bun", "node"]) {
       const home = join(dir, runtime);
       const state = join(home, ".temper/state");
-      const command = runtime === "bun" ? [process.execPath, "--preload", preload, resolve("src/index.ts")] : ["node", "--import", preload, join(output, "index.js")];
+      const command = runtime === "bun" ? [process.execPath, "--preload", preload, resolve("src/index.ts")] : ["node", "--import", pathToFileURL(preload).href, join(output, "index.js")];
       const env = { ...process.env, TEMPER_LIMIT_TEST_HOME: home, TEMPER_LIMIT_TEST_ORIGIN: `http://127.0.0.1:${server.port}`, TEMPER_NO_UPDATE_CHECK: "1" };
       const search = () => Bun.spawn([...command, "search", "shutdowncheck", "--tlds", "com,net,org", "-f", "json"], { env, stdout: "pipe", stderr: "pipe" });
       const leftovers = async () => (await readdir(state).catch(() => [])).filter(name => name !== "lookup-limits.json");

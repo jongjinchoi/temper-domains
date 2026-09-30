@@ -174,7 +174,8 @@ in both workspaces so root typechecking does not download a separate compiler.
   can continue while one server is deferred. Duplicate
   normalized domains in one batch share the lookup but retain each output row.
 - Local state is version 2 and validated, with an exclusive short file lock,
-  fsynced temporary file/rename and 0600 permissions. Only server metadata is
+  fsynced temporary file/rename and 0600 permissions (on POSIX; Windows does not
+  apply POSIX modes, observed as 0666 on a Windows runner). Only server metadata is
   stored, not queried domains or response bodies. Request leases use the run
   deadline and process identity. Invalid/unwritable/busy state stops requests
   with limit_state_error; it is not replaced with empty state. A lock left by
@@ -430,8 +431,12 @@ A separate `Windows check` workflow (`.github/workflows/windows-check.yml`) runs
 only when started manually (`gh workflow run windows-check.yml --ref main`). On a
 Windows runner it runs the full `bun test`, the npm build, the Node runtime
 checks, the shared cooldown runner and the transport runner, continuing past a
-failed step and keeping the logs as an artifact. It is an observation: it is not
-part of `CI / required` and is not release evidence. The PTY exit check is
+failed step and keeping the logs as an artifact. These steps use the default
+Windows shell, as the release build does; under bash, Git's GNU tar takes
+precedence and rejects `C:\` paths. It also records
+`tests/transport/loopback-probe.mjs`, a diagnostic of how Node and Bun reach an
+IPv4-only loopback server addressed as `localhost`. It is an observation: it is
+not part of `CI / required` and is not release evidence. The PTY exit check is
 excluded because it needs POSIX terminal modules.
 The Vercel project's Root Directory is `web`; `vercel.json` relies on it, running
 `cd ..` to install and build from the repository root. "Include files outside the

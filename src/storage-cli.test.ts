@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 test("Bun and Node CLI report storage failures and the cleanup needed before retry", async () => {
   const dir = await mkdtemp(join(tmpdir(), "temper-storage-cli-"));
@@ -18,7 +19,7 @@ test("Bun and Node CLI report storage failures and the cleanup needed before ret
       const run = async (args: string[], failure = "") => {
         const command = runtime === "bun"
           ? [process.execPath, "--preload", resolve("tests/helpers/storage-cli-preload.mjs"), resolve("src/index.ts")]
-          : ["node", "--import", resolve("tests/helpers/storage-cli-preload.mjs"), join(output, "index.js")];
+          : ["node", "--import", pathToFileURL(resolve("tests/helpers/storage-cli-preload.mjs")).href, join(output, "index.js")];
         const child = Bun.spawn([...command, ...args], { env: { ...process.env, TEMPER_TEST_HOME: home, TEMPER_STORAGE_FAILURE: failure }, stdout: "pipe", stderr: "pipe" });
         const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
         expect(err).toContain(`storage-injected=${failure ? 1 : 0}`);
