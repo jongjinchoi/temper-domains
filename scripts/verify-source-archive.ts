@@ -8,13 +8,14 @@ export function verifySourceArchive(manifestPath: string, archivePath: string) {
   const local = JSON.parse(readFileSync(manifestPath, 'utf8'));
   const archive = resolve(archivePath);
   const tar = (...args: string[]) => execFileSync('tar', args, { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
-  const names = tar('-tzf', archive).trim().split('\n');
+  // tar on Windows ends its listing lines with CRLF.
+  const names = tar('-tzf', archive).trim().split(/\r?\n/);
   for (const name of names) {
     const path = name.replace(/^\.\//, '');
     if (path.startsWith('/') || path.includes('\\') || path.split('/').includes('..')) throw new Error(`Unsafe source archive path: ${name}`);
     if (path && !path.endsWith('/') && path !== 'SOURCE-MANIFEST.json' && !Object.hasOwn(local.files, path)) throw new Error(`Unexpected source archive file: ${name}`);
   }
-  if (tar('-tvzf', archive).trim().split('\n').some(line => !['-', 'd'].includes(line[0]!))) throw new Error('Source archive contains a non-regular file');
+  if (tar('-tvzf', archive).trim().split(/\r?\n/).some(line => !['-', 'd'].includes(line[0]!))) throw new Error('Source archive contains a non-regular file');
   const stage = mkdtempSync(join(tmpdir(), 'temper-verify-source-'));
   try {
     tar('-xzf', archive, '-C', stage);

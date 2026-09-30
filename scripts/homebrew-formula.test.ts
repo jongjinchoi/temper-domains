@@ -49,7 +49,7 @@ test("formula changes only after all four archives pass download and archive che
       await writeFile(formula, "original formula\n");
       const child = Bun.spawn(["bash", script, "0.7.0", `http://127.0.0.1:${address.port}`, formula], { stdout: "pipe", stderr: "pipe" });
       const [code, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()]);
-      expect(requests.length).toBeGreaterThanOrEqual(4);
+      expect(requests.length, `${mode}: ${stderr}`).toBeGreaterThanOrEqual(4);
       if (mode !== "none") {
         expect(code, `${mode}: ${stderr}`).not.toBe(0);
         expect(await readFile(formula, "utf8")).toBe("original formula\n");

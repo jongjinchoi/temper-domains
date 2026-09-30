@@ -22,7 +22,7 @@ const invalid = ["example.com/path", "example.com?x", "example.com#x", "example.
 const requests = () => readFile(join(home, "requests"), "utf8").catch(() => "");
 test("Node WHOIS preserves UTF-8 boundaries and enforces its byte limit", () => {
   const result = spawnSync(process.execPath, ['tests/runtime/whois-boundaries.mjs'], {
-    env: { ...process.env, TEMPER_WHOIS_MODULE: resolve('dist/test-runtime/entry.js') }, encoding: 'utf8', timeout: 15000,
+    env: { ...process.env, TEMPER_WHOIS_MODULE: pathToFileURL(resolve('dist/test-runtime/entry.js')).href }, encoding: 'utf8', timeout: 15000,
   });
   assert.equal(result.status, 0, result.stderr);
 });

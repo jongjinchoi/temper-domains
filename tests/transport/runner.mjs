@@ -27,7 +27,8 @@ const h2=createSecureServer({...credentials,allowHTTP1:true}, (req,res)=>{
   handler(req,res);
 });
 h1=createServer(credentials, handler);
-for (const server of [h2,h1]) await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+// Bound by the name the clients use: Node on Windows resolves localhost to ::1 alone.
+for (const server of [h2,h1]) await new Promise(resolve=>server.listen(0,'localhost',resolve));
 try {
   execFileSync('bun', ['build','tests/transport/worker.ts','--target=node',`--outfile=${join(dir,'worker.mjs')}`]);
   for (const runtime of ['bun','node']) {

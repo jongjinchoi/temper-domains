@@ -88,13 +88,15 @@ jobs:
           Get-Content logs/transport.log
           exit $code
       # Diagnostic output only; it does not count towards the observed result.
-      - name: Record how localhost is reached
+      - name: Record how lock and replace steps behave under contention
         continue-on-error: true
         shell: pwsh
         run: |
-          node tests/transport/loopback-probe.mjs *> logs/loopback.log
-          bun tests/transport/loopback-probe.mjs *>> logs/loopback.log
-          Get-Content logs/loopback.log
+          try { "real-time protection enabled: $((Get-MpComputerStatus).RealTimeProtectionEnabled)" > logs/lock-probe.log }
+          catch { "real-time protection status unavailable: $($_.Exception.Message)" > logs/lock-probe.log }
+          node tests/limits/lock-probe.mjs *>> logs/lock-probe.log
+          bun tests/limits/lock-probe.mjs *>> logs/lock-probe.log
+          Get-Content logs/lock-probe.log
       - name: Summarize
         if: always()
         shell: bash

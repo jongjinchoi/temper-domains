@@ -434,8 +434,9 @@ checks, the shared cooldown runner and the transport runner, continuing past a
 failed step and keeping the logs as an artifact. These steps use the default
 Windows shell, as the release build does; under bash, Git's GNU tar takes
 precedence and rejects `C:\` paths. It also records
-`tests/transport/loopback-probe.mjs`, a diagnostic of how Node and Bun reach an
-IPv4-only loopback server addressed as `localhost`. It is an observation: it is
+`tests/limits/lock-probe.mjs`, a diagnostic of the errors that the lock and
+replace steps of a file transaction meet when several Node or Bun processes
+contend. It is an observation: it is
 not part of `CI / required` and is not release evidence. The PTY exit check is
 excluded because it needs POSIX terminal modules.
 The Vercel project's Root Directory is `web`; `vercel.json` relies on it, running
