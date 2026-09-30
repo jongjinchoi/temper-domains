@@ -151,7 +151,7 @@ export function getVersion(): string {
 // Source of truth for page metadata, OG tags, sitemap, robots. Change
 // SITE_URL in one place when migrating to a custom domain.
 
-export const SITE_URL = "https://temper-domains.vercel.app";
+export const SITE_URL = "https://temper.domains";
 export const SITE_TITLE = "temper — terminal-first domain search";
 export const SITE_TAGLINE = "terminal-first domain search";
 export const SITE_DESCRIPTION =

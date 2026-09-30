@@ -45,8 +45,8 @@
   - useListNavigation은 React 공식 문서 기준 편의 래퍼 안티패턴 → 미추출
 
 ## 문서
-- [ ] README: About description 설정 완료 확인
-- [ ] README: topics 설정 완료 확인
+- [x] README: About description 설정 완료 확인
+- [x] README: topics 설정 완료 확인
 - [x] Next.js landing/live demo site (`web/`) 구축
 
 ## 배포 채널 확장
