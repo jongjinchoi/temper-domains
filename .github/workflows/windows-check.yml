@@ -1,0 +1,72 @@
+name: Windows check
+
+# Manual observation only: not part of CI / required and not release evidence.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    name: Windows check / observe
+    runs-on: windows-latest
+    timeout-minutes: 30
+    # Keep checkout bytes identical to the other platforms; hashes are compared.
+    env:
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22.12.0"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: latest
+      - run: bun ci
+      - run: mkdir -p logs
+      # Each observed step continues on error so that later steps still run.
+      - id: bun_test
+        continue-on-error: true
+        run: bun test 2>&1 | tee logs/bun-test.log
+      - id: build
+        continue-on-error: true
+        run: bun run build:npm 2>&1 | tee logs/build-npm.log
+      - id: node_cli
+        continue-on-error: true
+        run: |
+          node dist/npm/index.js --help 2>&1 | tee logs/node-cli.log
+          node dist/npm/index.js extensions --categories 2>&1 | tee -a logs/node-cli.log
+      - id: node_checks
+        continue-on-error: true
+        run: |
+          bun build tests/runtime/entry.ts --target=node --packages=external --outfile=dist/test-runtime/entry.js
+          node --test tests/runtime/node-checks.mjs 2>&1 | tee logs/node-checks.log
+      - id: limits
+        continue-on-error: true
+        run: node tests/limits/runner.mjs 2>&1 | tee logs/limits.log
+      - id: transport
+        continue-on-error: true
+        run: node tests/transport/runner.mjs 2>&1 | tee logs/transport.log
+      - name: Summarize
+        if: always()
+        env:
+          OUTCOMES: "bun test=${{ steps.bun_test.outcome }} | build:npm=${{ steps.build.outcome }} | node CLI=${{ steps.node_cli.outcome }} | node checks=${{ steps.node_checks.outcome }} | limits=${{ steps.limits.outcome }} | transport=${{ steps.transport.outcome }}"
+        run: |
+          { echo "### Windows check"; echo "$OUTCOMES"; for f in logs/*.log; do echo; echo "#### $f (last 40 lines)"; echo '```'; tail -40 "$f"; echo '```'; done; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: windows-check-logs
+          path: logs
+      # The run result reflects what was observed; nothing depends on it.
+      - name: Report the observed result
+        if: always()
+        env:
+          FAILED: ${{ contains(steps.*.outcome, 'failure') }}
+        run: test "$FAILED" = false

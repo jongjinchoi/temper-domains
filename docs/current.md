@@ -426,6 +426,13 @@ archive before publishing that channel. Missing, failed or incomplete evidence
 blocks publication. See [the release guide](release.md).
 GitHub required-check rules and Vercel production promotion checks are separate
 remote settings: workflow configuration alone does not enable them.
+A separate `Windows check` workflow (`.github/workflows/windows-check.yml`) runs
+only when started manually (`gh workflow run windows-check.yml --ref main`). On a
+Windows runner it runs the full `bun test`, the npm build, the Node runtime
+checks, the shared cooldown runner and the transport runner, continuing past a
+failed step and keeping the logs as an artifact. It is an observation: it is not
+part of `CI / required` and is not release evidence. The PTY exit check is
+excluded because it needs POSIX terminal modules.
 The Vercel project's Root Directory is `web`; `vercel.json` relies on it, running
 `cd ..` to install and build from the repository root. "Include files outside the
 root directory in the Build Step" is enabled so the root `src/` modules the web
