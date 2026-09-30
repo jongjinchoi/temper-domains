@@ -17,7 +17,8 @@ async function archive(dir: string, name: string, files: readonly string[], exec
   return output;
 }
 
-test("formula changes only after all four archives pass download and archive checks", async () => {
+// Windows cannot set the executable bit, so the archives the script requires cannot be built there.
+test.skipIf(process.platform === "win32")("formula changes only after all four archives pass download and archive checks", async () => {
   const dir = await mkdtemp(join(tmpdir(), "temper-formula-"));
   const script = resolve("scripts/update-homebrew.sh");
   const files = nativeArchiveFiles("bun-darwin-arm64");
