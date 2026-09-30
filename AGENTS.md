@@ -81,7 +81,7 @@ does not itself enable remote enforcement.
 - Extension discovery, classification, selection and bundled data: `src/extensions/`
 - RDAP/WHOIS lookup behavior: `src/checker/`
 - MCP tools and tool descriptions: `src/mcp/server.ts`
-- TUI themes: `src/tui/theme.ts`
+- TUI themes: `src/tui/theme-meta.ts` (keys, labels and palettes shared with the web) and `src/tui/theme.ts` (active theme and status styles)
 - Web synced display data: `web/lib/temper-data.ts`
 - Web live check API: `web/app/api/check/route.ts`
 - Web server-side checker: `web/server/checker.ts`
@@ -95,7 +95,7 @@ When README, website copy, or `llms.txt` describes runtime behavior, verify it a
 - For Codex-specific guidance, verify against official OpenAI Codex documentation first.
 - Do not claim hosted web demo queries run locally. The hosted demo uses the Next.js `/api/check/` route.
 - CLI/MCP local privacy claims apply to local CLI and local MCP server flows, not the hosted web demo.
-- Keep current documentation in `docs/current.md`, `docs/release.md`, and `docs/backlog.md`.
+- Keep current documentation in `docs/current.md`, `docs/release.md`, and `docs/backlog.md`. `docs/backlog.md` is a developer note and is not included in the npm package.
 - Keep old planning material in `docs/archive/`; do not treat archived PRDs as current implementation truth.
 
 ## Verification

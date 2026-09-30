@@ -80,7 +80,8 @@ server or client_policy. Do not bypass a cooldown by changing home or protocol.
 State errors stop local requests; the hosted demo uses separate memory-only state.
 Version 2 shared state preserves existing waits on migration and refuses active old
 leases. Update older processes/reconnect MCP clients; do not delete cooldown state.
-Lookup tools return structured rows, summary and retryPlan alongside text.
+Lookup tools (search_domain, search_names, suggest_domain, check_domain_availability)
+return structured rows, summary and retryPlan alongside text; whois_domain returns text details only.
 Resume only exact prior unresolved names when asked, with a 30s MCP lookup budget;
 do not silently truncate over 100 names or automatically replay remaining pages.
 TUI r/R resumes selected/visible unresolved candidates after confirmation (max 120s);
@@ -93,8 +94,8 @@ Homebrew tap for a stable update on every invocation, with a 2-second automatic
 check deadline. Failures are reported briefly without blocking the original command.
 Later skips this invocation only. Set TEMPER_NO_UPDATE_CHECK=1 to disable automatic
 checks; manual update checks bypass this opt-out. No cached result or earlier
-postponement suppresses a fresh check. MCP, JSON, pipes, CI, help/version and offline
-commands never check automatically. In a terminal, bare temper shows a welcome box;
+postponement suppresses a fresh check. All other commands, and MCP, JSON, pipes, CI and
+help/version runs, never check automatically. In a terminal, bare temper shows a welcome box;
 temper help and temper --help display the same full command help in a box.
 Checks send no domain names or history; the version services see normal connection metadata.
 npx/local packages, direct downloads and unknown installers receive instructions.

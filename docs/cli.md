@@ -50,7 +50,8 @@ temper update --check  # Check now and show instructions; never install
 Interactive `temper`, `search`, `suggest`, `whois`, and `list` attempt a fresh check on
 each invocation (at most 2 seconds); a failed check reports briefly and continues.
 **Later** (default) continues the original command and skips only this invocation.
-MCP, JSON, pipes, CI, help/version, `extensions`, and config/history skip automatic checks.
+All other commands (such as `init`, `watch`, `extensions`, `config`, `history` and `update`)
+and MCP, JSON, pipes, CI and help/version runs skip automatic checks.
 
 | Installation | Version query | Installation by Temper |
 |---|---|---|
@@ -62,9 +63,11 @@ Detection uses the running installation; the command name `npx` alone does not i
 npm updates the same prefix. Homebrew refreshes metadata and asks again if the target changes.
 There is no `--yes` option. After installation verification, Temper exits: **run your command again**.
 Failure or cancellation does not imply rollback. Errors, warnings and installer prompts remain visible.
-Esc/Ctrl+C during the pre-install checks cancels before installation and waits for cleanup.
+Esc/Ctrl+C during the pre-install version query cancels before installation and waits for cleanup.
+Ctrl+C while Homebrew refreshes its metadata is handled by Homebrew and reported as a failed
+update; no upgrade starts and locks are cleaned up.
 During installation, Ctrl+C is handled by the installer; successful installation is still verified.
-Verified completion exits with code 0; pre-install cancellation exits with code 130.
+Verified completion exits with code 0; cancellation during the version query exits with code 130.
 If lock cleanup fails, Temper retains the verified version or cancellation result,
 reports the cleanup error separately and exits with code 1. This does not by itself
 mean installation failed. When lock removal fails, the message identifies the path;
@@ -99,7 +102,7 @@ temper search myproject --extended               # 60 TLDs
 temper search myproject --tlds com,design,co.uk   # only selected extensions
 temper search myproject --category design-arts   # industry classification
 temper search myproject -a                        # available only
-temper search myproject -t 8                      # 8s whole-search limit, including bootstrap
+temper search myproject -t 8                      # 8s limit per name, including bootstrap
 temper search myproject --format json             # JSON output for piping
 temper search gethalden writeholt --format json   # multiple keywords in JSON mode
 ```
@@ -110,7 +113,9 @@ Search and WHOIS accept only `--format tui` or `--format json`; other values
 exit with an error before starting a lookup. `Esc` quits a root search, returns
 from a nested search, or stops an active resume as indicated by the footer.
 
-For search and WHOIS, `--timeout` accepts seconds rounded to the nearest
+For search, `--timeout` applies to each query name separately, including bootstrap
+loading; a multi-name JSON search can therefore take up to the number of names
+times the timeout. For search and WHOIS, `--timeout` accepts seconds rounded to the nearest
 millisecond. The rounded value must be between 1 and 2,147,483,647 milliseconds;
 out-of-range values exit with an input error before starting a lookup.
 Fractional seconds are supported: `0.0009` rounds to 1ms, while `0.0001` is
@@ -291,7 +296,7 @@ Options:
   -a, --only-available     Show only available domains
   -f, --format <format>    Output format (choices: "tui", "json", default:
                            "tui")
-  -t, --timeout <seconds>  Whole-search timeout including bootstrap (default:
+  -t, --timeout <seconds>  Timeout per query name including bootstrap (default:
                            automatic 5–30s)
   -h, --help               display help for command
 ```

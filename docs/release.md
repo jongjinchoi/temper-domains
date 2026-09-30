@@ -78,11 +78,11 @@ Checks로 연결한다. 현재 설정과 사용 가능 여부를 먼저 확인�
 
 1. **verify** - 태그·버전·실제 실행 커밋·복구 조건을 검사한다. 그 커밋의 main push로 실행된 `ci.yml`에서 최신 실행과 현재 attempt 및 `CI / required`가 성공했는지 확인한다. 전체 CI를 다시 실행하지 않는다. 확인 후 `npm pack`으로 tgz와 corresponding-source archive를 만들고, tgz를 저장소 밖 임시 경로에 설치해 bin·버전·help·오프라인 목록을 확인한다.
 2. **source** - verify가 성공해야 GitHub Release 생성/확인 및 실제 commit의 source archive 공개·파일 hash 확인을 수행한다. 한 번 내려받아 한 번 압축 해제하여 대조.
-3. **build / npm** - source 성공 뒤 독립 실행. npm은 검증한 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드하고 각 대상 OS/CPU에서 아카이브를 풀어 버전·help·오프라인 목록을 확인 (`PKG_VERSION`은 태그 버전으로 주입)
+3. **build / npm** - source 성공 뒤 독립 실행. npm은 검증한 동일 tgz를 OIDC로 게시하며 다시 빌드하지 않음. 바이너리는 5개 플랫폼으로 빌드하고 각 대상 OS/CPU에서 아카이브를 풀어 버전·help·오프라인 목록을 확인 (`PKG_VERSION`은 package.json 버전으로 주입하며, verify가 태그와 같은지 확인)
    - bun-darwin-arm64, bun-darwin-x64
    - bun-linux-x64, bun-linux-arm64
    - bun-windows-x64
-4. **release** - 성공한 바이너리 `tar.gz` 업로드
+4. **release** - 5개 플랫폼 build가 모두 성공한 경우에만 바이너리 `tar.gz`를 업로드한다. 하나라도 실패하면 업로드하지 않으며, 실패한 build는 해당 실행의 "Re-run failed jobs"로 다시 실행한다
 5. **homebrew** - 네 native archive의 다운로드·압축 검사를 모두 통과한 뒤 SHA를 넣어 `jongjinchoi/homebrew-temper-domains` Formula를 교체. 실패 시 기존 Formula 보존.
 
 Source 공개가 바이너리보다 먼저 완료될 수 있다. 채널별 결과를 따로 확인한다.
@@ -108,7 +108,7 @@ GitHub Release가 이미 게시됐지만 npm 게시만 실패한 경우 기존 �
 수정된 `main`의 수동 실행을 사용한다.
 
 ```bash
-gh workflow run release.yml --ref main -f release_tag=v0.4.0
+gh workflow run release.yml --ref main -f release_tag=vX.Y.Z  # package.json 버전과 같은 기존 태그
 ```
 
 수동 실행도 verify·source를 거쳐 npm 게시를 복구하며 바이너리·Homebrew를 재게시하지 않는다.
@@ -134,7 +134,8 @@ GitHub Secret을 정리하고 npm Publishing access에서 토큰 게시를 제�
 Before publication, inspect the actual npm tarball and all five native archives:
 
 - npm contains `LICENSE`, `THIRD_PARTY_NOTICES.md`, the linked user guides and
-  `dist/npm/SOURCE.md`; no private environment files or developer notes.
+  `dist/npm/SOURCE.md`; no private environment files or developer notes
+  (`docs/backlog.md`, `docs/internal/`).
 - Native archives contain `temper` (Windows: `temper.exe`) plus `LICENSE`,
   `THIRD_PARTY_NOTICES.md` and the build-specific `SOURCE.md`.
 - `temper-source-<actual-commit>.tar.gz` contains the source, lockfile, build

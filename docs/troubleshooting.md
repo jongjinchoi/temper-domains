@@ -85,6 +85,8 @@ the resume while retaining prior results. Returning from history or another scre
 preserves the current search in memory; exiting Temper ends that session. Resuming
 updates its existing history entry without recreating a deleted entry.
 Selecting a past history entry starts a new search using only its query, not its old options.
+An initial search or resume that you stop or leave before it finishes does not record
+that run's results in history; the next completed resume updates the entry.
 
 ## Privacy and transport
 

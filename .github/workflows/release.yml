@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Existing release tag to recover npm publication (e.g. v0.4.0)"
+        description: "Existing release tag to recover npm publication (vX.Y.Z matching package.json)"
         required: true
         type: string
 

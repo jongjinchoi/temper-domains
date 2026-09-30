@@ -24,7 +24,9 @@ documents live in `docs/archive/`.
 
 Install with `bun ci`. Development and local verification have no exact Bun or
 Node.js version requirement; the npm CLI requires Node.js >= 22.12.0. CI and
-release workflows select Bun `latest` and Node.js `lts/*`. Record the actual
+release workflows select Bun `latest` and Node.js `lts/*`; the Node
+compatibility CI job also runs Node.js 22.12.0, and the updater compatibility
+jobs use Node.js 22.12.0. Record the actual
 runtime versions used when reporting verification. TypeScript 7.0.2 is declared
 in both workspaces so root typechecking does not download a separate compiler.
 
@@ -68,7 +70,7 @@ in both workspaces so root typechecking does not download a separate compiler.
   failures identify the check stage and distinguish timeout, HTTP and invalid-response
   failures before continuing. Raw remote bodies are not printed. Later skips only this invocation.
   `TEMPER_NO_UPDATE_CHECK=1` disables automatic checks.
-  MCP/JSON/pipes/CI/help/version/offline commands are excluded.
+  All other commands, and MCP/JSON/pipes/CI/help/version runs, are excluded.
 - Bare `temper` displays a themed welcome box and exits successfully. `temper help`
   and `temper --help` share boxed command/option help in interactive terminals;
   non-TTY/CI help stays plain text. Subcommand help uses the same renderer.
@@ -208,6 +210,8 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Availability and detailed lookup results may include `confidence`, `reason`, `rdapKey`, `publicSuffix`, and `registrableDomain` metadata.
 - Detailed lookup output describes a missing registration record and its review reason instead of claiming guaranteed purchase availability.
 - Low-confidence available results are treated as review in MCP and web demo summaries.
+  Review counts every row that is neither available (excluding low confidence)
+  nor taken, including premium, reserved, rate_limited, error and slow rows.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
@@ -278,7 +282,8 @@ in both workspaces so root typechecking does not download a separate compiler.
   server's pending resume work. Counts distinguish round progress from retained
   answers; cumulative attempts survive zero-attempt deferrals. History updates
   compare the exact session-owned entry under lock and never resurrect deletions.
-  Past-history re-search creates a new session. App exit does not persist candidates.
+  Past-history re-search creates a new session from the stored query only, using
+  the default TLDs and default timeout. App exit does not persist candidates.
   Unresolved/low-confidence registrar dialogs request availability confirmation.
 - Search filtering resets selection and scroll position as text changes. Displayed
   rows, keyboard actions and registrar targets use the same position normalized
@@ -301,6 +306,12 @@ in both workspaces so root typechecking does not download a separate compiler.
   remain compatible: a new file still includes the default registrar field.
   Search and MCP continue to require an explicit registrar choice.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
+  `name` must be a valid label; optional `tlds` takes 1–20 comma-separated
+  extended TLDs (length checked before duplicates are removed) and otherwise uses
+  the 15 playground TLDs. Invalid input returns HTTP 400 JSON `{error}`. Valid
+  requests stream NDJSON rows, then `{done, elapsed, summary}` or `{error}`, with
+  a fixed 3s budget and in-memory lookup limits. The route has no per-caller
+  request rate limit; outbound pacing is the process-local scheduler.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - The web demo supports Escape while searching, restores input focus after
   completion/error, and reports a stream ending without a terminal event as
@@ -308,8 +319,10 @@ in both workspaces so root typechecking does not download a separate compiler.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
-- Lookup tools return schemaVersion 1/rows/summary/retryPlan in structuredContent
-  and JSON text while retaining human-readable text. Exact prior unresolved domains
+- Lookup tools (`search_domain`, `search_names`, `suggest_domain`,
+  `check_domain_availability`) return schemaVersion 1/rows/summary/retryPlan in
+  structuredContent and JSON text while retaining human-readable text;
+  `whois_domain` returns text details only. Exact prior unresolved domains
   can be passed to check_domain_availability with resume=true only on user request;
   max 100 stays explicit, with no automatic replay or truncation. Resume lookup budget
   is 30s independent of progress notifications; response/cleanup is additional.
@@ -337,10 +350,15 @@ and NDJSON completion/cancellation.
 MCP tests exercise all seven tools over stdio, including invalid inputs and
 network-free TLD catalog discovery; registrar
 opening is captured as a URL without launching a real browser.
+A PTY check (`tests/helpers/tui-exit-check.py`, 24 scenarios) verifies that real
+TUI exits drain storage; it is skipped on Windows.
 
 Node compatibility CI is configured to run the built CLI and MCP, shared validation, and
 the web route, config concurrent writers/readers and SearchView filtering with isolated homes and controlled RDAP responses on the minimum
-supported Node.js 22.12.0 and the Node.js LTS selected by `lts/*`.
+supported Node.js 22.12.0 and the Node.js LTS selected by `lts/*`. The same job
+also runs the PTY exit check and the local TLS transport runner against the
+built CLI. Only the updater tests run on Windows and macOS; TUI, storage,
+checker and MCP behavior is not verified on Windows.
 Run from the repository root:
 
 ```bash
@@ -512,7 +530,8 @@ theme gallery live in the CLI guide.
 
 - `docs/current.md`: current implementation reference.
 - `docs/release.md`: release process.
-- `docs/backlog.md`: current backlog and follow-up ideas.
+- `docs/backlog.md`: current backlog and follow-up ideas (developer notes, not
+  included in the npm package).
 - `docs/archive/`: historical PRDs, mockups, and design explorations.
 
 Historical docs are useful for product intent, but they are not the source of truth for current behavior.
@@ -618,7 +637,9 @@ lookup-limit coordination uses them; changing either (even for config/history/wa
 signatures, and existing lookup observations then need rechecking.
 The migration from whole-lock fingerprints preserves existing evidence IDs only
 for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
-Refreshing signatures makes old
+Signatures are scoped by method: the RDAP signature excludes `whois.ts`, and the
+WHOIS signature excludes `rdap.ts` and `http-transport.ts`.
+Refreshing a method's signature makes that method's old
 observations require rechecking; it does not manufacture a new server success.
 Historical successful observations remain visible after route or checker changes.
 No automatic live probe runs while listing extensions or building the package.

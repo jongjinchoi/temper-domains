@@ -79,7 +79,7 @@ program
   .option("--extended", "Check 60 TLDs instead of 30")
   .option("-a, --only-available", "Show only available domains")
   .addOption(new Option("-f, --format <format>", "Output format").choices(["tui", "json"]).default("tui"))
-  .option("-t, --timeout <seconds>", "Whole-search timeout including bootstrap (default: automatic 5–30s)")
+  .option("-t, --timeout <seconds>", "Timeout per query name including bootstrap (default: automatic 5–30s)")
   .description("Search domain availability across TLDs")
   .action(async (queries: string[], opts) => {
     queries = queries.map((q) => validateLabelOrExit(q, "query"));

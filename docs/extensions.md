@@ -3,8 +3,10 @@
 [Back to the README](../README.md) · [CLI reference](cli.md)
 
 
-The bundled catalog contains **756 supported extensions** in the September 22,
-2026 snapshot. It combines offering evidence from Porkbun, Dynadot and Gandi
+The bundled catalog contains **756 supported extensions**. Its structural inputs
+(registration boundaries and routes) were captured on September 21, 2026, the date
+`temper extensions` shows as "as of"; commercial offering sources were checked on
+September 22, 2026. It combines offering evidence from Porkbun, Dynadot and Gandi
 with registration-boundary checks and known RDAP/WHOIS routes. This is not a
 claim that every registry has answered a live lookup or that every name can be
 purchased. Lookup results may differ from final purchase availability.
