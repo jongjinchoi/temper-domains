@@ -62,3 +62,14 @@
 
 ## 향후 확장 — 플랫폼
 - [ ] GUI 데스크톱 앱 (메뉴바 tray) — CLI를 안 쓰는 사용자/비개발 직군 대상. 사용자 수요 확인 후 진행. Tauri 또는 Electron 검토
+
+## src/mcp 전수조사 발견 사항 (2026-09-30, main @ 619e91f)
+상세: `docs/internal/audit-2026-09-30-src-mcp-report.md` (저장소 미포함)
+- [ ] 조건부 위험·높음: 조회 중 연결 종료·SIGTERM·SIGINT 시 `lookup-limits.json.lock` 잔존 → 이후 같은 home 조회가 모두 `limit_state_error` (`src/mcp/server.ts:654-657`). 판정 대기: MCP 클라이언트의 일반 SIGTERM을 `docs/troubleshooting.md:54-64`의 forced termination으로 볼지
+- [ ] 선택적 개선·낮음: raw shape 입력 스키마 도구 4개가 모르는 키를 오류 없이 버림 (`src/mcp/server.ts:524,557,586,618`)
+- [ ] 선택적 개선·낮음: `search_names` 사용 가능 목록 5개 절단 표시 없음 (`src/mcp/server.ts:290-300`)
+- [ ] 선택적 개선·낮음: 클라이언트 소멸 뒤 응답 쓰기에서 EPIPE로 exit 1 (`src/mcp/server.ts:654`)
+- [ ] 선택적 개선·낮음: ".com 우선" 테스트가 .com 행 없이도 통과 (`src/mcp/server.test.ts:235`)
+- [ ] 선택적 개선·낮음: `open_registrar` 잘못된 도메인 거부의 MCP 수준 테스트 없음 (`src/mcp/stdio.test.ts:26`)
+- [ ] 미확인 가설·낮음: `open_registrar`가 IDNA 변환 전 입력으로 URL 생성 (`src/mcp/server.ts:539`)
+- [ ] 문서 불일치 확인: `docs/current.md:311`은 lookup 도구가 structuredContent·retryPlan을 반환한다고 하나 조사에서는 `whois_domain`에 출력 스키마·structuredContent·retryPlan이 없음. whois를 lookup 도구로 보는지 판정 필요
