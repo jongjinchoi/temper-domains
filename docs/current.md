@@ -469,7 +469,7 @@ for example.com/net/org and detail for example.com. This does not establish
 purchase availability or deployed Production behavior.
 
 Execution scope, commands and evidence are recorded in
-[the RDAP implementation plan](https://github.com/jongjinchoi/temper-domains/blob/main/docs/superpowers/plans/2026-09-19-rdap-reliability.md).
+[the RDAP implementation plan](https://github.com/jongjinchoi/temper-domains/blob/main/docs/archive/2026-09-19-rdap-reliability.md).
 
 ## Documentation Sync
 
@@ -550,7 +550,8 @@ theme gallery live in the CLI guide.
 - `docs/release.md`: release process.
 - `docs/backlog.md`: current backlog and follow-up ideas (developer notes, not
   included in the npm package).
-- `docs/archive/`: historical PRDs, mockups, and design explorations.
+- `docs/archive/`: historical PRDs, mockups, design explorations and completed
+  implementation plans.
 
 Historical docs are useful for product intent, but they are not the source of truth for current behavior.
 

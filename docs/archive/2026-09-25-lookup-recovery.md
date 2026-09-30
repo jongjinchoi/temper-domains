@@ -2,7 +2,7 @@
 
 Goal: preserve lookup evidence and let users explicitly resume unresolved candidates without bypassing shared waits.
 
-Design approved on 2026-09-25. The technical requirements and validation scope are recorded below; see [current implementation notes](../../current.md) for the maintained behavior reference.
+Design approved on 2026-09-25. The technical requirements and validation scope are recorded below; see [current implementation notes](../current.md) for the maintained behavior reference.
 
 Architecture: a non-sleeping shared admission transaction feeds the local scheduler. Checker resume runs stop queued work for a newly limited server. A memory-owned TUI session merges results by run epoch; MCP returns bounded structured results and a manual retry plan. No new dependencies, cache, provider API or persisted domain list.
 
