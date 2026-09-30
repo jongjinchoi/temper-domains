@@ -263,6 +263,11 @@ in both workspaces so root typechecking does not download a separate compiler.
   confirming no temper commands are running, remove only that lock and retry.
 - Normal TUI exit awaits Ink teardown and returns without forcing process exit.
   View cleanup cancels lookups; pending file transactions can finish their cleanup.
+  SIGINT, SIGTERM and SIGHUP (JSON Ctrl+C, a closed terminal, an MCP client
+  stopping the server) let a transaction that holds its lock finish, then exit
+  with 128 + the signal number; no new transaction starts, and a second signal
+  exits immediately (`src/utils/shutdown.ts`). During an update install, SIGINT
+  and SIGTERM still go to the installer. SIGHUP is not handled on Windows.
   SIGKILL, process crashes and power loss can still leave a lock for manual recovery.
 - Config failures before replacement preserve the existing file. Failures while
   cleaning up after replacement explicitly report that the settings were saved.
@@ -350,8 +355,8 @@ and NDJSON completion/cancellation.
 MCP tests exercise all seven tools over stdio, including invalid inputs and
 network-free TLD catalog discovery; registrar
 opening is captured as a URL without launching a real browser.
-A PTY check (`tests/helpers/tui-exit-check.py`, 24 scenarios) verifies that real
-TUI exits drain storage; it is skipped on Windows.
+A PTY check (`tests/helpers/tui-exit-check.py`, 33 scenarios) verifies that real
+TUI exits, including SIGHUP, SIGTERM and SIGINT, drain storage; it is skipped on Windows.
 
 Node compatibility CI is configured to run the built CLI and MCP, shared validation, and
 the web route, config concurrent writers/readers and SearchView filtering with isolated homes and controlled RDAP responses on the minimum

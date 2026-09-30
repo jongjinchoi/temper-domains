@@ -57,8 +57,11 @@ then remove only `lookup-limits.json.lock`. Request leases otherwise expire or
 are reclaimed after their process exits. Different homes, machines and hosted
 web instances do not share this local state; the web demo uses memory only.
 
-Normal TUI quit allows pending file transactions to finish. It does not repair a
-lock left by an earlier crash or forced termination. The same recovery rule applies
+Normal TUI quit allows pending file transactions to finish. So do Ctrl+C in a JSON
+search, closing the terminal, and an MCP client stopping the server (SIGINT, SIGHUP,
+SIGTERM): Temper finishes the file it is writing and then exits with 128 + the signal
+number. A second signal exits immediately. None of this repairs a
+lock left by an earlier crash or forced termination (SIGKILL, power loss). The same recovery rule applies
 to `config.json.lock`, `history.json.lock` and `watchlist.json.lock`: stop Temper
 processes, confirm the recorded owner is no longer running, then remove only the
 affected lock. Preserve the corresponding JSON file.

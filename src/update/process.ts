@@ -3,6 +3,7 @@ import { EventEmitter } from "node:events";
 import { createHash } from "node:crypto";
 import { mkdir, open, unlink } from "node:fs/promises";
 import { join } from "node:path";
+import { forwardSignals } from "../utils/shutdown.ts";
 
 export interface Invocation { file: string; args: string[] }
 export interface ProcessOptions { signal?: AbortSignal; inherit?: boolean; env?: NodeJS.ProcessEnv; onOutput?: (text: string, stream: "stdout" | "stderr") => void }
@@ -27,7 +28,11 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
     const terminate = () => { interrupted = true; child.kill("SIGTERM"); };
     options.signal?.addEventListener("abort", stop, { once: true });
     if (options.signal?.aborted) stop();
-    if (options.inherit) { process.on("SIGINT", interrupt); process.on("SIGTERM", terminate); }
+    // While the child owns the terminal, SIGINT and SIGTERM go to it instead of ending this process.
+    const stopForwarding = options.inherit ? forwardSignals(signal => {
+      if (signal === "SIGINT") interrupt(); else if (signal === "SIGTERM") terminate(); else return false;
+      return true;
+    }) : undefined;
     const collect = (chunk: string, stream: "stdout" | "stderr") => {
       if (options.onOutput) { options.onOutput(chunk, stream); return; }
       if (stream === "stdout") stdout += chunk; else stderr += chunk;
@@ -41,7 +46,7 @@ export function runProcess(command: Invocation, options: ProcessOptions = {}): P
     events.on("error", (error: Error) => { failure = error; });
     events.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
       options.signal?.removeEventListener("abort", stop);
-      if (options.inherit) { process.off("SIGINT", interrupt); process.off("SIGTERM", terminate); }
+      stopForwarding?.();
       if (failure) reject(failure);
       else if (interrupted || signal) reject(new Error(`Update command interrupted${signal ? ` (${signal})` : " or timed out"}`));
       else if (code !== 0) reject(new Error(`Command failed (exit ${code}): ${displayInvocation(command)}${stderr.trim() ? `\n${stderr.trim().slice(0, 2000)}` : ""}`));

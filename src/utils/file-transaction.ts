@@ -1,6 +1,7 @@
 import { open, rename, unlink, type FileHandle } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
+import { beginCriticalSection, isShuttingDown } from "./shutdown.ts";
 import { FileTransactionError, type StorageFailure, type StoragePhase } from "./storage-error.ts";
 export { FileTransactionError } from "./storage-error.ts";
 
@@ -22,11 +23,17 @@ export async function withFileTransaction<T>(path: string, options: TransactionO
   change: (transaction: FileTransaction) => Promise<T>): Promise<T> {
   const lockPath = `${path}.lock`;
   let lock: FileHandle;
+  let endCritical: () => void;
   while (true) {
     options.signal?.throwIfAborted();
+    if (isShuttingDown()) throw new Error(`${options.subject} was not changed: temper is shutting down`);
     if (Date.now() >= options.deadline) throw new Error(options.busyMessage);
+    // Registered before the attempt: the lock can exist on disk before this
+    // code learns that open succeeded, and a signal must not exit in between.
+    endCritical = beginCriticalSection();
     try { lock = await open(lockPath, "wx", 0o600); break; }
     catch (error) {
+      endCritical();
       if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
       await delay(Math.min(25, Math.max(0, options.deadline - Date.now())), undefined, { signal: options.signal });
     }
@@ -76,6 +83,7 @@ export async function withFileTransaction<T>(path: string, options: TransactionO
     });
     await lock.close().catch(error => { cleanup.push({ phase: "lock-close", error }); });
     await unlink(lockPath).catch(error => { cleanup.push({ phase: "lock-unlink", error }); });
+    endCritical();
   }
   if (primary?.kind === "caller") {
     const { error } = primary;

@@ -7,6 +7,7 @@ import { THEME_NAMES, setTheme } from "./tui/theme.ts";
 import { isValidDomain, isValidDomainLabel, sanitizeDomain } from "./utils/validate.ts";
 import { VERSION } from "./version.ts";
 import { formatStorageError } from "./utils/storage-error.ts";
+import { installShutdownHandlers } from "./utils/shutdown.ts";
 import { assertCandidateLimit, validateSearchCombinations, splitFilter } from "./extensions/input.ts";
 import { maybeUpdate, updateCommand } from "./update/cli.ts";
 
@@ -370,6 +371,8 @@ async function main(): Promise<void> {
     configure(program);
   }
 
+  // Let a file transaction finish before SIGINT, SIGTERM or SIGHUP ends the process.
+  installShutdownHandlers();
   await (process.argv.length === 2 ? showStart() : program.parseAsync());
 }
 

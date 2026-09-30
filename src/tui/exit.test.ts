@@ -5,5 +5,5 @@ test.skipIf(process.platform === "win32")("real TUI exits drain storage and pres
     stdout: "pipe", stderr: "pipe",
   });
   const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()]);
-  expect({ code, err, completed: out.trim().split("\n").length }).toEqual({ code: 0, err: "", completed: 24 });
+  expect({ code, err, completed: out.trim().split("\n").length }).toEqual({ code: 0, err: "", completed: 33 });
 }, 120000);

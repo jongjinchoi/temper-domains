@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import pty
 import select
+import signal
 import struct
 import subprocess
 import sys
@@ -57,7 +58,7 @@ def mcp(env):
         child.stderr.close()
 
 
-def terminal(env, args, mode='', key=b'q'):
+def terminal(env, args, mode='', key=b'q', signal_number=None):
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 30, 110, 0, 0))
     child = subprocess.Popen(command + args, cwd=root, env=env, stdin=slave, stdout=slave, stderr=slave)
@@ -66,6 +67,7 @@ def terminal(env, args, mode='', key=b'q'):
     step = 0
     sent = False
     released = False
+    signalled_at = 0.0
     requests_at_exit = None
     deadline = time.monotonic() + 12
     try:
@@ -84,13 +86,21 @@ def terminal(env, args, mode='', key=b'q'):
                 ready = (mode == 'complete' and b'Confirm purchase availability' in output) or (mode != 'complete' and (home / 'gate-entered').exists())
                 if ready:
                     requests_at_exit = (home / 'requests').read_bytes() if (home / 'requests').exists() else b''
-                    os.write(master, key); sent = True
-            if sent and not raw and not released:
+                    if signal_number is None: os.write(master, key)
+                    else: os.kill(child.pid, signal_number)
+                    sent = True
+                    signalled_at = time.monotonic()
+            # A signal must not end the process while the gated transaction holds its lock.
+            if sent and signal_number is not None and not released and time.monotonic() - signalled_at > 0.2:
+                assert child.poll() is None, (args, 'exited before the transaction finished')
+                (home / 'gate-release').touch(); released = True
+            if sent and signal_number is None and not raw and not released:
                 (home / 'gate-release').touch(); released = True
         child.wait(timeout=1)
         while select.select([master], [], [], 0)[0]:
             output += os.read(master, 65536)
-        assert child.returncode == 0, (args, child.returncode, output.decode(errors='replace'))
+        expected = 0 if signal_number is None else 128 + signal_number
+        assert child.returncode == expected, (args, child.returncode, output.decode(errors='replace'))
         assert termios.tcgetattr(slave)[3] & termios.ICANON, 'terminal left in raw mode'
         if mode:
             assert sent, (mode, 'gate never reached', output.decode(errors='replace'))
@@ -147,6 +157,22 @@ if group in ('all', 'exit'):
                     terminal(env, ['search', 'newhistory', '--tlds', 'com'], 'complete')
                     assert any(row['query'] == 'newhistory' for row in json.loads((folder / 'history.json').read_text()))
                 print(f'PASS {mode}/{phase}', flush=True)
+
+if group in ('all', 'signal'):
+    # SIGHUP (closed window), SIGTERM and an external SIGINT must let the
+    # transaction finish: no orphan lock, and the next lookup still answers.
+    for name in ['SIGHUP', 'SIGTERM', 'SIGINT']:
+        for phase in ['lock-write', 'rename', 'cleanup']:
+            with tempfile.TemporaryDirectory(prefix='temper-signal-') as home:
+                folder = Path(home) / '.temper'; folder.mkdir()
+                env = environment(home)
+                env.update(TEMPER_GATE_TARGET='state/lookup-limits.json', TEMPER_GATE_PHASE=phase)
+                terminal(env, ['search', 'reviewsignal', '--tlds', 'com'], 'search', signal_number=getattr(signal, name))
+                assert not list(folder.rglob('*.lock')), (name, phase, 'orphan lock')
+                assert not list(folder.rglob('*.tmp')), (name, phase, 'orphan temporary file')
+                env.pop('TEMPER_GATE_PHASE')
+                assert json.loads(cli(env, ['search', 'aftersignal', '--tlds', 'com', '-f', 'json']))[0]['status'] == 'available'
+                print(f'PASS signal/{name}/{phase}', flush=True)
 
 if group in ('all', 'settings'):
     for content, denied in [('{', False), ('[]', False), ('{"theme":"dracula"}', True)]:

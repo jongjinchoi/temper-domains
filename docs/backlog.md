@@ -65,7 +65,7 @@
 
 ## 전수조사 후속 작업 (2026-09-30, main @ 846d68e)
 상세: `docs/internal/audit-2026-09-30-full-report.md`, `docs/internal/audit-2026-09-30-src-mcp-report.md` (저장소 미포함)
-- [ ] 확인된 결함·높음: 조회 중 SIGINT·SIGTERM·SIGHUP(JSON 검색 Ctrl+C, 창 닫기, MCP 클라이언트 종료)으로 `lookup-limits.json.lock`이 남아 같은 home의 모든 조회가 `limit_state_error` — 진입점에 신호 처리를 추가하고 `docs/current.md`·`docs/troubleshooting.md`의 lock 잔존 조건을 함께 갱신 (`src/utils/file-transaction.ts:25-33`) (A14)
+- [x] 확인된 결함·높음: 조회 중 SIGINT·SIGTERM·SIGHUP으로 `lookup-limits.json.lock`이 남아 같은 home의 모든 조회가 `limit_state_error` — 신호를 받으면 진행 중인 파일 트랜잭션을 끝낸 뒤 128+신호번호로 종료하도록 수정 (`src/utils/shutdown.ts`) (A14, 2026-09-30)
 - [ ] 조건부 위험·중간: Windows(릴리스 대상)에서 TUI·저장·checker·MCP 테스트가 실행되지 않고 macOS CI도 src/update만 실행 (`.github/workflows/ci.yml:80-109`) (A28)
 - [ ] 선택적 개선·중간: RDAP 네이티브 전송의 8 MiB 본문·해제 상한과 deflate·br 해제를 검증하는 테스트 추가 (`src/checker/http-transport.ts:43`) (A27)
 - [ ] 확인된 결함·낮음: 첫 429/503 뒤 재허가가 마감에 걸리면 이미 보낸 요청이 `deadline_before_start`가 되고 retryAt을 잃음 (`src/checker/rdap.ts:128`) (A1)
