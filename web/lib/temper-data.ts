@@ -270,11 +270,6 @@ export const AUTHOR_PRODUCTS: readonly SideProject[] = [
   { name: "Halden", url: "https://gethalden.com" },
 ] as const;
 
-export const AUTHOR_OSS: readonly SideProject[] = [
-  { name: "getclaudecode", url: "https://getclaudecode.com" },
-  { name: "wtfont", url: "https://wtfont.wtf" },
-] as const;
-
 export const COLOPHON_LOCATION = "GANGHWA";
 export const COLOPHON_YEAR = 2026;
 

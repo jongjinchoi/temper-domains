@@ -1,5 +1,4 @@
 import {
-  AUTHOR_OSS,
   AUTHOR_PRODUCTS,
   AUTHOR_URL,
   BUILD_STACK,
@@ -67,15 +66,6 @@ export default function Colophon() {
                   {p.name}
                 </a>
                 {i < AUTHOR_PRODUCTS.length - 1 && " · "}
-              </span>
-            ))}
-            <div className={styles.subHd}>OPEN SOURCE</div>
-            {AUTHOR_OSS.map((p, i) => (
-              <span key={p.name}>
-                <a href={p.url} target="_blank" rel="noopener noreferrer">
-                  {p.name}
-                </a>
-                {i < AUTHOR_OSS.length - 1 && " · "}
               </span>
             ))}
           </div>
