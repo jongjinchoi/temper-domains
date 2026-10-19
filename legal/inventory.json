@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lockSha256": "d4e3a45038eca508363c65d2ef8baa21d36e956f84fb47350204b139fe00bbaf",
+  "lockSha256": "87cf6eb3279617dc2733058373c69c4b6b230377bffa78bc016811d3b01817ad",
   "lockEntries": 220,
   "packages": [
     {
@@ -114,7 +114,7 @@
       ]
     },
     {
-      "id": "@next/env@16.3.7",
+      "id": "@next/env@16.3.8",
       "license": "MIT",
       "scopes": [
         "web"
@@ -124,16 +124,16 @@
         "url": "https://github.com/vercel/next.js",
         "directory": "packages/next-env"
       },
-      "source": "https://registry.npmjs.org/%40next%2Fenv/16.3.7",
+      "source": "https://registry.npmjs.org/%40next%2Fenv/16.3.8",
       "notices": [
         {
-          "path": "https://github.com/vercel/next.js/blob/v16.3.7/license.md",
+          "path": "https://github.com/vercel/next.js/blob/v16.3.8/license.md",
           "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
         }
       ]
     },
     {
-      "id": "@next/swc-darwin-arm64@16.3.7",
+      "id": "@next/swc-darwin-arm64@16.3.8",
       "license": "MIT",
       "scopes": [
         "web"
@@ -143,10 +143,10 @@
         "url": "https://github.com/vercel/next.js",
         "directory": "crates/next-napi-bindings/npm/darwin-arm64"
       },
-      "source": "https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.7",
+      "source": "https://registry.npmjs.org/%40next%2Fswc-darwin-arm64/16.3.8",
       "notices": [
         {
-          "path": "https://github.com/vercel/next.js/blob/v16.3.7/license.md",
+          "path": "https://github.com/vercel/next.js/blob/v16.3.8/license.md",
           "sha256": "ee765244e2d59f5234d474f62e0766fa0c8b99af967fdd4c0cb8dcb0c76ea224"
         }
       ]
@@ -1618,13 +1618,13 @@
       ]
     },
     {
-      "id": "next@16.3.7",
+      "id": "next@16.3.8",
       "license": "MIT",
       "scopes": [
         "web"
       ],
       "repository": "vercel/next.js",
-      "source": "https://registry.npmjs.org/next/16.3.7",
+      "source": "https://registry.npmjs.org/next/16.3.8",
       "notices": [
         {
           "path": "license.md",
@@ -4296,8 +4296,8 @@
       ]
     },
     {
-      "id": "@next/swc-darwin-x64@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-darwin-x64/16.3.7",
+      "id": "@next/swc-darwin-x64@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-darwin-x64/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4306,7 +4306,7 @@
       },
       "dist": {
         "shasum": "36acce741c262fbcefb941f5b47cab1501aa197f",
-        "tarball": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-Usd86QilBWl2G7JxfWskV9NLAxacVRrDDQ3WQIoPKRB0MXiVuVSdyu3wt5EA8SyjQpaVk/7VOzSkRB4LgJltyA==",
         "signatures": [
@@ -4320,7 +4320,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-darwin-x64@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-darwin-x64@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4335,8 +4335,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-arm64-gnu@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-gnu/16.3.7",
+      "id": "@next/swc-linux-arm64-gnu@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-gnu/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4345,7 +4345,7 @@
       },
       "dist": {
         "shasum": "63b8b55fd458ce722d8ba59cc161fc1516a06d3f",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-pVauSs1WomgtBgfJj/Q+846nBix4CdohLUIDafyJGdAvNw5kOusLawoX+rpc2P4U3Kd7tLwqFXsnHeSkLZrqyw==",
         "signatures": [
@@ -4359,7 +4359,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-gnu@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-gnu@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4374,8 +4374,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-arm64-musl@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-musl/16.3.7",
+      "id": "@next/swc-linux-arm64-musl@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-arm64-musl/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4384,7 +4384,7 @@
       },
       "dist": {
         "shasum": "8cc2b09d0745cd8cb0256b72baaea7df5f595387",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-vY+iamd6cOfk29bGTgxeS/OXlrlfOfyFgyd34cibC7e25bXRMxuqNUfs2Z9Fxb/VHpV5dopffMSWnCeR2tc8rA==",
         "signatures": [
@@ -4398,7 +4398,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-musl@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-arm64-musl@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4413,8 +4413,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-x64-gnu@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-gnu/16.3.7",
+      "id": "@next/swc-linux-x64-gnu@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-gnu/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4423,7 +4423,7 @@
       },
       "dist": {
         "shasum": "4d8a1070211226e8b4887c0c4ff132169ee6725a",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-NWx0LRZ9IO9rTDXLc+Hi/bNcTKblT86du4OLMRm5Z62C2T5/+mNEhK2XeQxwoSmVFvU2rjMSjJMK4ttZAk88+w==",
         "signatures": [
@@ -4437,7 +4437,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-gnu@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-gnu@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4452,8 +4452,8 @@
       ]
     },
     {
-      "id": "@next/swc-linux-x64-musl@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-musl/16.3.7",
+      "id": "@next/swc-linux-x64-musl@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-linux-x64-musl/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4462,7 +4462,7 @@
       },
       "dist": {
         "shasum": "15fc46ea0588407fe517bc48d4edb2e4f8bcfccf",
-        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-v5Dk/iMB4JyQZwQ+UWOZGGAqA4HjkBewKwaCkXi5DqL1Dy1TjXpRmAh8N7VOuID0hLmouICSXozJrMBBG1Xeyw==",
         "signatures": [
@@ -4476,7 +4476,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-musl@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-linux-x64-musl@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4491,8 +4491,8 @@
       ]
     },
     {
-      "id": "@next/swc-win32-arm64-msvc@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-arm64-msvc/16.3.7",
+      "id": "@next/swc-win32-arm64-msvc@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-arm64-msvc/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4501,7 +4501,7 @@
       },
       "dist": {
         "shasum": "2417ca372f2da697d1ff36343b268d9ea72ed017",
-        "tarball": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-G4BkB7AhfKJnaoIpIkoA66l5pXPGJXD3EF1EsuYj/sgM4rHA41dsa3CIIqjR4FQFZEjU+zGQRbIEPYZIOi5EoA==",
         "signatures": [
@@ -4515,7 +4515,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-arm64-msvc@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-arm64-msvc@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
@@ -4530,8 +4530,8 @@
       ]
     },
     {
-      "id": "@next/swc-win32-x64-msvc@16.3.7",
-      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-x64-msvc/16.3.7",
+      "id": "@next/swc-win32-x64-msvc@16.3.8",
+      "url": "https://registry.npmjs.org/%40next%2Fswc-win32-x64-msvc/16.3.8",
       "license": "MIT",
       "repository": {
         "url": "git+https://github.com/vercel/next.js.git",
@@ -4540,7 +4540,7 @@
       },
       "dist": {
         "shasum": "ce4615489e79520a05892c5b72f54cef2968b087",
-        "tarball": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.3.7.tgz",
+        "tarball": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.3.8.tgz",
         "fileCount": 3,
         "integrity": "sha512-DuvRhf50tGU7leT9Ow0cs/9lo81X5lHdNoxSRk4ckSk2Ihn2dsM+BEe5j7ANpEFhD25p//SmV8ajdRtuaBIg3g==",
         "signatures": [
@@ -4554,7 +4554,7 @@
           }
         ],
         "attestations": {
-          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-x64-msvc@16.3.7",
+          "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2fswc-win32-x64-msvc@16.3.8",
           "provenance": {
             "predicateType": "https://slsa.dev/provenance/v1"
           }
