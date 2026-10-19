@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "sourceCommit": "11670dabb8393be6747439a7c7070adad048378a",
-  "capturedAt": "2026-09-27T15:46:27.518Z",
+  "sourceCommit": "03cecbca209ff206866970a3295bc9e6d3948d5c",
+  "capturedAt": "2026-10-19T15:18:41.474Z",
   "mode": "current-source-with-synthetic-rdap",
   "runtime": {
     "bun": "1.4.2",
@@ -22,12 +22,13 @@
     "assets/tape/theme-catppuccin-latte.tape": "dc9f143055b8f43b3c75e32cf2c91a6c01a37f51f7087fb723df48470a4855f1",
     "assets/tape/theme-rose-pine-dawn.tape": "24233a7144a1570b7bd4456635e9d803569be732ef9dd2bf40a348a63512de88",
     "assets/tape/themes.tape": "3cc61844091edf79ae88eb2fbcd8360fcc96d758b3fdc0b2f317940f5939dda6",
-    "bun.lock": "febbacc37d37c8b9f11a4ff875b7dfb62776977e2028d5ec528bb54210a8bfa6",
-    "package.json": "aad15189d3389b66660c6a7bf1ee1cd1fda5009afd734e336f6bc548de2c2e63",
-    "scripts/media/core.ts": "11d8aafa70a90527c5b36891d66aa3f77e7db2204cfb39565a03d2de54dc1668",
+    "assets/tape/watchlist.tape": "8ca00c0bfd7f936b2d71fef4870f3e40ed3e8a97075363a9d03a1ec81ed0f037",
+    "bun.lock": "87cf6eb3279617dc2733058373c69c4b6b230377bffa78bc016811d3b01817ad",
+    "package.json": "87e32094ad44f13725397919ad16201e1aa3a6092c9964eb8ebea1eb38d80ccf",
+    "scripts/media/core.ts": "2bf68b773117d3ec43acae88ee9916d62a923e124cec5678b7f06f9dfede54c9",
     "scripts/media/fixture.ts": "663dff10db195c93e4e8b343f97e0838846fec4e9cf3209722b45c584a76294b",
     "scripts/media/preload.ts": "4327b2b3f67c9f73d37da096ac593442faadda04c259147f525e8e6cfeee2173",
-    "scripts/media/record.ts": "24133c8b709bc2830d64ba7e8108e0c8d1344d92b2ecc733ddca92492bf872c6",
+    "scripts/media/record.ts": "789d453e6897fd0040abf55014fe1d5e82675c0f8bb5e0066c1f0cd68b6ca721",
     "src/checker/admission.ts": "936b0c732dc70159512ffba4513406591dba0026fc6b7448f8bc3203ecfc0aac",
     "src/checker/batch.ts": "c27a9bff237f7c85506e48197f9513f40d8bfcd69a6a524f11e317869a9f226a",
     "src/checker/bootstrap-cache.ts": "a54b8f5558f81ca02793a993e34bb4968d7ecd9edcef0804ee8bbfd2db79838a",
@@ -39,7 +40,7 @@
     "src/checker/limits.ts": "f616ffa829ee0d7745792605d7cfe6045559b3932913ce9f52798468a5f2e195",
     "src/checker/lookup.ts": "e8943069aeda20f716038cbe6833b9944dd652472f61cd28843c40629ee394b5",
     "src/checker/policy.ts": "50658929ab91f0721e3f98427840c108030ae98693db603e6d562ddb90fe1fae",
-    "src/checker/rdap.ts": "dc964f9e05f45756ac92fb2e705a72c14217d7520ab54dbefc397fd67c7df277",
+    "src/checker/rdap.ts": "8b84763bcabc9721db5d3dc18417cb3ce0a1edb5a5906243449befc8f1b32f16",
     "src/checker/retry.ts": "16367fe90adf03c751a589b0351735c404f6f8855d8e5729b6d016b526bf4a16",
     "src/checker/run.ts": "42d575b676e92f82a06ad657b4fa2fccdd76406174b3d6d56ff2e524973c2fc6",
     "src/checker/scheduler.ts": "bdbb35f1364688b3fc88771c1faa0eba7c2799930e3df415c3af602752099c54",
@@ -50,8 +51,8 @@
     "src/checker/whois.ts": "ae5ef075d9e9b1bce1078d7b12763334af8419a3f0062ac92130a2220e8609a7",
     "src/config/config.ts": "8eebb34b49eac621c3c02a2cf510f910be56bfdbdbac121dc405148c05e4105b",
     "src/config/history.ts": "98db62e866af9e9cb03071f2cceeb3cecbdbb96acd200e9771d9916d4ca86c17",
-    "src/config/watchlist.ts": "e4a619d6c011d329761e6452d3c54541a360d16f236a317a09a875b20bb6a7cd",
-    "src/index.ts": "67d8ae474c8f4df6c3a98a80094426a1086bc935133b02ced92f48d3109b2c4b",
+    "src/config/watchlist.ts": "387acb1d02e23ceed0643977abb6f22385c1c0a0903a55720eba121386469cff",
+    "src/index.ts": "bb1edbc32e13e4eef55e327971f9db8cbdc240af6b9dc4b0aa9bcc8cb4330c0f",
     "src/registrar/browser.ts": "a5ddc7c4aced02a660610a49d93c31a22c6043364d8b9660c022575267c745e4",
     "src/registrar/urls.ts": "eea2f5e117d07a739ca4659a3c0d7accb33f56bbfcd90a7606ac9a85857924c8",
     "src/tui/App.tsx": "ac0d44554dfb8421456c45f1ec82162721b71901ef6f375bb72a8ed9d078e271",
@@ -62,15 +63,15 @@
     "src/tui/ProgressBar.tsx": "f2ce97c256a61568febb16c2147596d8d23fdeccb08feb399bcbaaa8ec405f9e",
     "src/tui/RegistrarModal.tsx": "b1d9cadc07034c970b92f1f9efd2d3d5209a13cace9f872c1b7e3408615da322",
     "src/tui/ResultRow.tsx": "7f3a07d9568e0ef506c95fa07435b40820c124e84724cab32379c2b3a8ef6a78",
-    "src/tui/SearchView.tsx": "d7e60277c3f29fd8c9bd6ff25eeac2ae595f3966ad89f235fe99a119e3559616",
+    "src/tui/SearchView.tsx": "3d506eb61a5a317e9b5570f3f84f89fd9b4484fc2a9f139f63308bf010132ff0",
     "src/tui/Spinner.tsx": "b0723659bad4d7a0aed53cb176461b77cce9b2427d1dd2cb06f9f9639ecaca2b",
     "src/tui/SuggestView.tsx": "bc05fa9175768254e3e116de17b147bc69409b47f4a822fb2f67467bbd643019",
     "src/tui/TerminalPanel.tsx": "64ce67d27ac2c25d59997f9065ec61d1a7bef2b3c935488c1c4ac7c580cadc57",
     "src/tui/UpdatePrompt.tsx": "419e587370e1d028a8f2e7e4dc3d8aa8dc7042c755130370adfdc8832a92187e",
     "src/tui/WatchlistView.tsx": "e701850634209cb79d973291e9abded44a681534650081daf82e09970d503141",
     "src/tui/Welcome.tsx": "18841947dc97848274172441f50b02d860c5c93cf617433693fadbe274094477",
-    "src/tui/WhoisView.tsx": "2f78b025611b43fb64e7b59c3a9665d008dcf91757029f4f3aee09c212919831",
-    "src/tui/format-date.ts": "7dffab891e90335d149407bd94a5e0b422f326d4289573c1212534d559f3145f",
+    "src/tui/WhoisView.tsx": "7450944f3b8f0a85c2ef4306a7dff252e03b4be5dc5ffa2a18608a29974975fa",
+    "src/tui/format-date.ts": "0d0262fb016efe28d951e63bda84977b7f9da63cdf0aabe6650ab0207a299a86",
     "src/tui/hooks/useListViewport.ts": "6d477d803709097e7bb68066b5b59baf26b7089afaa5e0c1863cc6664a8298cb",
     "src/tui/hooks/useNotice.ts": "646ecb2ffb4d7120164ad2195bca3fe62acc79a33f8adb14ff218209bbbf75ab",
     "src/tui/hooks/useSearchExecution.ts": "e7db53c2dcfcf0de67471677c90b5a559edda8b9469fff2d727f6778b20e54b8",
@@ -80,9 +81,10 @@
     "src/tui/theme.ts": "c0a5fde6ab11f3505327ed07b99da192f672c783434affabb4076cc09c60c3d0",
     "src/tui/watchlist-state.ts": "7684a31d36cc7fc5c6bf670441cb5c64f64cdae1f2c45e4347211c0639f96ae8",
     "src/utils/domain.ts": "5c6ce259634694cdf4907ea0f873d012d6ebc90fba1a60a197dbc2f715811aa8",
-    "src/utils/file-transaction.ts": "ce99fd58b4c771cdc08d4cb3e8241eaea4fb65e2168a5e91221bfdf7e310bb21",
+    "src/utils/file-transaction.ts": "7e9ff90854a6f08709b3e9fc54f22b4457f6726862a72d1149736fdcb5c527d8",
     "src/utils/fs.ts": "19412484b7264c5379991af1d35445b363596b0e35843f4113726654ab4b3de3",
     "src/utils/lookup-notice.ts": "0d11d6061cb8e780be93a344f3d4baed6f19f17944f21a553c7ea006fc2dcee4",
+    "src/utils/shutdown.ts": "b06690500ca0bb66688e58e20b79d85a9ee30b5ceeaea4e2319ece47f85edb2e",
     "src/utils/storage-error.ts": "072f1b4a6e4c95f66cc6deeffa5cabcb3d19e6672749dbddfa19afdba49568e5",
     "src/utils/suggestions.ts": "3ec8a4cc0945da34ddaa7dd854bb572f60c40fff81781587bc74b512e9f5a652",
     "src/utils/validate.ts": "308c31d0c25e90a81ac99345a361d5c33d4d6de95f56ddfe872192b851752d54",
@@ -90,13 +92,13 @@
   },
   "outputs": {
     "assets/screenshots/demo.gif": {
-      "sha256": "9054a6f53312c308475ab30c8c2cc234be06c0407347a3238910afeda1b59af9",
+      "sha256": "20e9a7f7088b8d4ebf8ef3c81beb835504e0dd0a8555b443baa964731f3244f4",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/init.gif": {
-      "sha256": "c088e140228d1300b4203994b381699a2819bf9670699ee238a4c1dfc774ba4f",
+      "sha256": "2ad50183b9c8b3598d6e99b2901796a040ddd0c89b84cf701cb562a82488032a",
       "format": "gif",
       "width": 1200,
       "height": 700
@@ -120,25 +122,25 @@
       "height": 700
     },
     "assets/screenshots/search.gif": {
-      "sha256": "de149ce69a21d3dc3085eef702aff0ac7ede660767c950f87563e5374bea8b8d",
+      "sha256": "210ee642e3ff12bdfeba87ae5090852d7b1cc912d680b9208c11995e5dad6f79",
       "format": "gif",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/search.png": {
-      "sha256": "7f43c7d6e3e67da3e343ac1071b86e610dbaa2532cba847de67765c451d4bfb5",
+      "sha256": "9c1d9e8d5f9664e2c3e5a278ee8f501f9349253b142c3f51630e3440a4a974e9",
       "format": "png",
       "width": 1200,
       "height": 1000
     },
     "assets/screenshots/suggest.gif": {
-      "sha256": "acbcf308f52986d9acaed0285f6e054e5d877f39917d3dc215ea1b71d53d103a",
+      "sha256": "8e27104193e030b9b08c28534dfda36f87f95b8b9779e7247bf0efda05aa7dc9",
       "format": "gif",
       "width": 1200,
       "height": 700
     },
     "assets/screenshots/suggest.png": {
-      "sha256": "5ae4152384eee8bf7b55b21d6197bea77d994cc32f2cc433c8848d6d8f5b779d",
+      "sha256": "62c76ad1fff0c9c4b7fa01302688822d43bb2fbe6b4deacb02dc1b75f4ec33b9",
       "format": "png",
       "width": 1200,
       "height": 700
@@ -202,7 +204,19 @@
       "format": "gif",
       "width": 1200,
       "height": 1000
+    },
+    "assets/screenshots/watchlist.gif": {
+      "sha256": "79cb32424bebb46f3f049640d0be64e83ec6cbd394a2f9fbb829a1fcf396f54c",
+      "format": "gif",
+      "width": 1200,
+      "height": 700
+    },
+    "assets/screenshots/watchlist.png": {
+      "sha256": "9507074878de89a97c2ecfa49332213b8fc133d3d7ee099a8ec224b4faeed7bc",
+      "format": "png",
+      "width": 1200,
+      "height": 700
     }
   },
-  "packageSource": "{\n  \"name\": \"temper-domains\",\n  \"version\": \"0.7.0\",\n  \"description\": \"Search domain availability from your terminal\",\n  \"main\": \"dist/npm/index.js\",\n  \"type\": \"module\",\n  \"workspaces\": [\"web\"],\n  \"bin\": {\n    \"temper\": \"./dist/npm/index.js\"\n  },\n  \"engines\": {\n    \"node\": \">=22.12.0\"\n  },\n  \"license\": \"AGPL-3.0-only\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jongjinchoi/temper-domains.git\"\n  },\n  \"keywords\": [\"domain\", \"cli\", \"terminal\", \"tui\", \"mcp\", \"whois\", \"rdap\"],\n  \"files\": [\"dist/npm\", \"README.md\", \"LICENSE\", \"SOURCE.md\", \"THIRD_PARTY_NOTICES.md\", \"docs/cli.md\", \"docs/extensions.md\", \"docs/troubleshooting.md\", \"docs/mcp.md\", \"docs/licensing.md\", \"docs/current.md\", \"docs/release.md\", \"docs/backlog.md\"],\n  \"scripts\": {\n    \"docs:check\": \"bun run scripts/docs.ts\",\n    \"docs:help\": \"bun run scripts/docs.ts --write-help\",\n    \"media:record\": \"bun run scripts/media/record.ts\",\n    \"typecheck\": \"tsc --noEmit\",\n    \"catalog:verify\": \"bun run scripts/checker-fingerprint.ts\",\n    \"catalog:update\": \"bun run scripts/update-extension-catalog.ts\",\n    \"build:npm\": \"bun run build-npm.ts\",\n    \"web:dev\": \"bun run --cwd web dev\",\n    \"web:typecheck\": \"bun run --cwd web typecheck\",\n    \"web:build\": \"bun run catalog:verify && bun run --cwd web build\",\n    \"prepack\": \"bun run build-npm.ts && bun run scripts/pack-npm.ts\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"7.0.2\",\n    \"@types/bun\": \"1.4.2\",\n    \"@types/react\": \"19.3.0\",\n    \"react-devtools-core\": \"8.0.0\"\n  },\n  \"dependencies\": {\n    \"@modelcontextprotocol/sdk\": \"1.30.0\",\n    \"commander\": \"15.0.0\",\n    \"ink\": \"7.1.1\",\n    \"react\": \"19.3.0\",\n    \"tldts\": \"7.4.13\",\n    \"zod\": \"4.6.5\"\n  }\n}\n"
+  "packageSource": "{\n  \"name\": \"temper-domains\",\n  \"version\": \"0.7.2\",\n  \"description\": \"Search domain availability from your terminal\",\n  \"main\": \"dist/npm/index.js\",\n  \"type\": \"module\",\n  \"workspaces\": [\"web\"],\n  \"bin\": {\n    \"temper\": \"./dist/npm/index.js\"\n  },\n  \"engines\": {\n    \"node\": \">=22.12.0\"\n  },\n  \"license\": \"AGPL-3.0-only\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jongjinchoi/temper-domains.git\"\n  },\n  \"keywords\": [\"domain\", \"cli\", \"terminal\", \"tui\", \"mcp\", \"whois\", \"rdap\"],\n  \"files\": [\"dist/npm\", \"README.md\", \"LICENSE\", \"SOURCE.md\", \"THIRD_PARTY_NOTICES.md\", \"docs/cli.md\", \"docs/extensions.md\", \"docs/troubleshooting.md\", \"docs/mcp.md\", \"docs/licensing.md\", \"docs/current.md\", \"docs/release.md\"],\n  \"scripts\": {\n    \"docs:check\": \"bun run scripts/docs.ts\",\n    \"docs:help\": \"bun run scripts/docs.ts --write-help\",\n    \"media:record\": \"bun run scripts/media/record.ts\",\n    \"typecheck\": \"tsc --noEmit\",\n    \"catalog:verify\": \"bun run scripts/checker-fingerprint.ts\",\n    \"catalog:update\": \"bun run scripts/update-extension-catalog.ts\",\n    \"build:npm\": \"bun run build-npm.ts\",\n    \"web:dev\": \"bun run --cwd web dev\",\n    \"web:typecheck\": \"bun run --cwd web typecheck\",\n    \"web:build\": \"bun run catalog:verify && bun run --cwd web build\",\n    \"prepack\": \"bun run build-npm.ts && bun run scripts/pack-npm.ts\"\n  },\n  \"devDependencies\": {\n    \"@types/bun\": \"1.4.2\",\n    \"@types/react\": \"19.3.0\",\n    \"playwright\": \"1.63.0\",\n    \"react-devtools-core\": \"8.0.0\",\n    \"typescript\": \"7.0.2\"\n  },\n  \"dependencies\": {\n    \"@modelcontextprotocol/sdk\": \"1.30.0\",\n    \"commander\": \"15.0.0\",\n    \"ink\": \"7.1.1\",\n    \"react\": \"19.3.0\",\n    \"tldts\": \"7.4.13\",\n    \"zod\": \"4.6.5\"\n  }\n}\n"
 }

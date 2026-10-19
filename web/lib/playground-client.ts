@@ -2,7 +2,7 @@ import type { CheckSummary, LookupMetadata } from "../../src/checker/types.ts";
 export type { CheckSummary } from "../../src/checker/types.ts";
 
 // Browser-side streaming reader for /api/check. Parses NDJSON lines and
-// dispatches to callbacks so the Playground CRT can append rows as they
+// dispatches to callbacks so the hero demo terminal can append rows as they
 // resolve, matching the CLI's AsyncGenerator feel.
 
 export type LiveStatus =

@@ -9,9 +9,11 @@ import {
   COMMANDS,
   DEFAULT_TLDS_COUNT,
   EXTENDED_TLDS_COUNT,
-  HERO_DEMO_TLDS,
+  DEMO_FIRST_TLDS,
+  DEMO_MORE_TLDS,
+  FAQ,
+  LOOP_STEPS,
   MCP_TOOLS,
-  PLAYGROUND_TLDS,
   THEMES,
 } from "../temper-data.ts";
 
@@ -24,17 +26,25 @@ describe("temper-data sync", () => {
     expect(EXTENDED_TLDS_COUNT).toBe(EXTENDED_TLDS.length);
   });
 
-  test("PLAYGROUND_TLDS is a subset of EXTENDED_TLDS", () => {
-    const extended = new Set<string>(EXTENDED_TLDS);
-    for (const tld of PLAYGROUND_TLDS) {
-      expect(extended.has(tld)).toBe(true);
-    }
+  test("the two demo passes together are exactly DEFAULT_TLDS and each fits one /api/check/ request", () => {
+    expect(DEMO_FIRST_TLDS.length).toBe(10);
+    expect(DEMO_FIRST_TLDS.every((tld) => (DEFAULT_TLDS as readonly string[]).includes(tld))).toBe(true);
+    expect(DEMO_MORE_TLDS.some((tld) => (DEMO_FIRST_TLDS as readonly string[]).includes(tld))).toBe(false);
+    expect([...DEMO_FIRST_TLDS, ...DEMO_MORE_TLDS].sort()).toEqual([...DEFAULT_TLDS].sort());
+    expect(DEMO_MORE_TLDS.length).toBeLessThanOrEqual(20);
   });
 
-  test("HERO_DEMO_TLDS is a subset of EXTENDED_TLDS", () => {
-    const extended = new Set<string>(EXTENDED_TLDS);
-    for (const tld of HERO_DEMO_TLDS) {
-      expect(extended.has(tld)).toBe(true);
+  test("FAQ entries are unique and non-empty", () => {
+    expect(new Set(FAQ.map((item) => item.q)).size).toBe(FAQ.length);
+    for (const item of FAQ) expect(item.q.trim() && item.a.trim()).toBeTruthy();
+  });
+
+  test("hero demo media are byte-identical copies of the recorded assets", () => {
+    for (const step of LOOP_STEPS) {
+      const name = step.media.src.replace(/^\/media\//, "");
+      const copy = readFileSync(join(import.meta.dir, "../../public/media", name));
+      const original = readFileSync(join(import.meta.dir, "../../../assets/screenshots", name));
+      expect(copy.equals(original)).toBe(true);
     }
   });
 

@@ -1,237 +1,31 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import {
-  SEARCH_TIMEOUT_DESCRIPTION,
-  DEFAULT_TLDS_COUNT,
-  HERO_DEMO_NAME,
-  HERO_DEMO_TLDS,
-  INSTALL_CMD,
-  getVersion,
-} from "@/lib/temper-data";
-import { type LiveResult, getLiveDisplayStatus, runLiveSearch } from "@/lib/playground-client";
+import { DEFAULT_TLDS_COUNT, EXTENDED_TLDS_COUNT, MCP_TOOLS } from "@/lib/temper-data";
+import CopyInstall from "./CopyInstall";
+import DemoTerminal from "./DemoTerminal";
 import styles from "./Hero.module.css";
 
-type HeroState =
-  | { kind: "pending" }
-  | { kind: "streaming"; rows: (LiveResult | null)[] }
-  | { kind: "done"; rows: (LiveResult | null)[]; elapsedMs: number }
-  | { kind: "fallback" };
-
-const ROW_PAD = 14;
-
 export default function Hero() {
-  const [copyState, setCopyState] = useState<"idle" | "pending" | "copied" | "failed">("idle");
-  const copyAttempt = useRef(0);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  useEffect(() => () => { copyAttempt.current++; clearTimeout(copyTimer.current); }, []);
-  const [state, setState] = useState<HeroState>({ kind: "pending" });
-  const version = getVersion();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const rowsByTld: (LiveResult | null)[] = HERO_DEMO_TLDS.map(() => null);
-    setState({ kind: "streaming", rows: [...rowsByTld] });
-
-    void runLiveSearch(
-      HERO_DEMO_NAME,
-      {
-        onRow: (row) => {
-          const idx = HERO_DEMO_TLDS.indexOf(row.tld as (typeof HERO_DEMO_TLDS)[number]);
-          if (idx < 0) return;
-          rowsByTld[idx] = row;
-          setState({ kind: "streaming", rows: [...rowsByTld] });
-        },
-        onDone: (elapsedMs) => {
-          setState({ kind: "done", rows: [...rowsByTld], elapsedMs });
-        },
-        onError: () => {
-          setState({ kind: "fallback" });
-        },
-      },
-      controller.signal,
-      HERO_DEMO_TLDS,
-    );
-
-    return () => controller.abort();
-  }, []);
-
-  const handleCopy = async () => {
-    const attempt = ++copyAttempt.current;
-    clearTimeout(copyTimer.current);
-    setCopyState("pending");
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
-      await navigator.clipboard.writeText(INSTALL_CMD);
-      if (attempt !== copyAttempt.current) return;
-      setCopyState("copied");
-      copyTimer.current = setTimeout(() => setCopyState("idle"), 1200);
-    } catch {
-      if (attempt === copyAttempt.current) setCopyState("failed");
-    }
-  };
-
-  const availableCount =
-    state.kind === "done"
-      ? state.rows.filter((r) => r?.status === "available" && r.confidence !== "low").length
-      : 0;
-  const resolvedCount =
-    state.kind === "done"
-      ? state.rows.filter((r): r is LiveResult => r !== null).length
-      : 0;
-  const takenCount =
-    state.kind === "done"
-      ? state.rows.filter((r) => r?.status === "taken").length
-      : 0;
-  const reviewCount =
-    state.kind === "done"
-      ? resolvedCount - availableCount - takenCount
-      : 0;
-
   return (
     <header className={styles.hero}>
-      <div className={styles.heroStickers}>
-        <span className={`${styles.sticker} ${styles.flame} ${styles.s1}`}>
-          NEW · v{version}
-        </span>
-        <span className={`${styles.sticker} ${styles.navy} ${styles.s2}`}>
-          MADE IN GANGHWA / KOREA
-        </span>
-        <span className={`${styles.sticker} ${styles.s3}`}>AGPL 3.0</span>
+      <span className={styles.eyebrow}>For developers naming their next side project</span>
+      <h1 className={styles.headline}>
+        Name it. <em>Check the domain.</em> Stay in the terminal.
+      </h1>
+      <p className={styles.lede}>
+        One command checks {DEFAULT_TLDS_COUNT} TLDs. Press <kbd>s</kbd> for name variations when .com is
+        taken, and enter to open the registrar you pick — only when you&apos;re ready.
+      </p>
+      <DemoTerminal />
+      <div className={styles.installRow}>
+        <CopyInstall label="Copy install command" />
+        <a className={styles.alt} href="#install">npm · npx · binaries →</a>
       </div>
-
-      <div className={styles.heroGrid}>
-        <div>
-          <div className={styles.issueBar}>
-            <span>v{version}</span>
-            <span>{DEFAULT_TLDS_COUNT} TLDs</span>
-            <span>AGPL-3.0-only</span>
-          </div>
-          <h1 className={styles.headline}>
-            Never{" "}
-            <span className={styles.headlineStrike}>open a browser</span>
-            <br />
-            to find a{" "}
-            <span className={styles.headlineUnderline}>domain.</span>
-            <br />
-            Just type &amp; <em className={styles.headlineFlame}>go.</em>
-          </h1>
-          <p className={styles.lede}>
-            temper is a terminal-first domain search CLI —{" "}
-            <strong>{DEFAULT_TLDS_COUNT} TLDs</strong> by default with an {SEARCH_TIMEOUT_DESCRIPTION} and no telemetry in the CLI/MCP flow. Also an MCP server,
-            so Codex, Claude, and Cursor can search on your behalf.
-          </p>
-          <button
-            type="button"
-            className={styles.installSticker}
-            onClick={handleCopy}
-            aria-label="Copy install command"
-          >
-            <span className={styles.installIc}>▸</span>
-            <span className={styles.installCommand}>{copyState === "copied" ? "copied ✓" : INSTALL_CMD}</span>
-            <span className={styles.copyHint}>(CLICK TO COPY)</span>
-          </button>
-          <div role="status" aria-live="polite">
-            {copyState === "failed" ? "Copy failed — select the command" : copyState === "copied" ? "Command copied" : ""}
-          </div>
-        </div>
-
-        <div className={styles.crt} role="status" aria-live="polite">
-          <span className={styles.crtPrompt}>&gt;</span> temper search{" "}
-          {HERO_DEMO_NAME}
-          {"\n"}
-          <span className={styles.crtMuted}>
-            {"  "}
-            {state.kind === "done"
-              ? `${HERO_DEMO_TLDS.length} TLDs · ${(state.elapsedMs / 1000).toFixed(1)}s`
-              : state.kind === "fallback"
-                ? "(live check unavailable)"
-                : `resolving ${HERO_DEMO_TLDS.length} TLDs...`}
-          </span>
-          {"\n\n"}
-
-          {state.kind !== "fallback" &&
-            HERO_DEMO_TLDS.map((tld, i) => {
-              const row =
-                state.kind === "pending"
-                  ? null
-                  : state.rows[i] ?? null;
-              return <HeroRow key={tld} tld={tld} row={row} />;
-            })}
-
-          {state.kind === "fallback" && (
-            <>
-              {HERO_DEMO_TLDS.map((tld) => (
-                <HeroRow key={tld} tld={tld} row={null} muted />
-              ))}
-              {"\n"}
-              <span className={styles.crtMuted}>
-                {"  "}install: {INSTALL_CMD}
-              </span>
-            </>
-          )}
-
-          {state.kind === "done" && (
-            <>
-              {"\n"}
-              <span className={styles.crtMuted}>
-                {"  "}──{" "}
-              </span>
-              <span className={styles.crtOk}>{availableCount} available</span>
-              <span className={styles.crtMuted}> · </span>
-              <span className={styles.crtTaken}>{takenCount} taken</span>
-              {reviewCount > 0 && (
-                <>
-                  <span className={styles.crtMuted}> · </span>
-                  <span className={styles.crtPending}>{reviewCount} review</span>
-                </>
-              )}
-            </>
-          )}
-          <span className={styles.caret} />
-        </div>
+      <div className={styles.facts}>
+        <span><b>{DEFAULT_TLDS_COUNT}</b> TLDs by default</span>
+        <span><b>{EXTENDED_TLDS_COUNT}</b> with --extended</span>
+        <span><b>{MCP_TOOLS.length}</b> MCP tools</span>
+        <span><b>0</b> telemetry in CLI/MCP</span>
+        <span>AGPL-3.0-only</span>
       </div>
     </header>
-  );
-}
-
-interface HeroRowProps {
-  tld: string;
-  row: LiveResult | null;
-  muted?: boolean;
-}
-
-function HeroRow({ tld, row, muted }: HeroRowProps) {
-  const domain = `${HERO_DEMO_NAME}.${tld}`;
-  const pad = " ".repeat(Math.max(1, ROW_PAD - domain.length));
-  if (!row) {
-    return (
-      <span>
-        {"  "}
-        {domain}
-        {pad}
-        <span className={styles.crtPending}>
-          {muted ? "[---]" : "… resolving"}
-        </span>
-        {"\n"}
-      </span>
-    );
-  }
-  const displayStatus = getLiveDisplayStatus(row);
-  const unavailable = displayStatus === "error" || displayStatus === "rate_limited" || displayStatus === "slow";
-  const label = unavailable ? "[---]" : `[${displayStatus}]`;
-  const cls = displayStatus === "available"
-    ? styles.crtOk
-    : unavailable || displayStatus === "review"
-      ? styles.crtPending
-      : styles.crtTaken;
-  return (
-    <span>
-      {"  "}
-      {domain}
-      {pad}
-      <span className={cls}>{label}</span>
-      {"\n"}
-    </span>
   );
 }

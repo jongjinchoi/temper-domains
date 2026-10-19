@@ -1,0 +1,210 @@
+.demo {
+  position: relative;
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.term {
+  background: var(--screen);
+  color: var(--s-fg);
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  box-shadow: 10px 10px 0 var(--flame);
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.7;
+  outline: none;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--s-mu);
+  border-bottom: 1px solid var(--s-line);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-right: 6px;
+}
+
+.dots b {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--s-line);
+}
+
+.barRight {
+  margin-left: auto;
+}
+
+.body {
+  padding: 18px 22px 20px;
+  min-height: 440px;
+  max-height: 620px;
+  overflow: auto;
+  white-space: pre;
+  cursor: text;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--s-mu);
+  padding: 10px 14px;
+  border-top: 1px solid var(--s-line);
+}
+
+.foot kbd {
+  color: var(--s-fg);
+  background: var(--s-raise);
+  border-color: var(--s-line);
+}
+
+.pr { color: var(--flame); }
+.ok { color: var(--s-ok); }
+.tk { color: var(--s-tk); }
+.pm { color: var(--s-pm); }
+.wn { color: var(--s-wn); }
+.mu { color: var(--s-mu); }
+
+/* Summary lines wrap between items on narrow screens. */
+.sum {
+  display: inline-block;
+  max-width: 100%;
+  padding-left: 2ch;
+  white-space: normal;
+}
+
+.sum > span:not(.mu) {
+  white-space: nowrap;
+}
+
+.promptLine {
+  display: inline-block;
+  border-bottom: 1px dashed var(--s-line);
+  padding-bottom: 1px;
+}
+
+.promptLine:focus-within {
+  border-bottom-color: var(--flame);
+}
+
+.promptLine:focus-within .cursor {
+  display: none;
+}
+
+.cursor {
+  display: inline-block;
+  width: 9px;
+  height: 18px;
+  margin-right: 2px;
+  background: var(--flame);
+  vertical-align: -3px;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.input {
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--s-fg);
+  font: inherit;
+  width: 220px;
+  padding: 0;
+  caret-color: var(--flame);
+}
+
+.input::placeholder {
+  color: #c9bda5;
+  opacity: 0.55;
+}
+
+.more {
+  font: inherit;
+  font-weight: 700;
+  color: var(--screen);
+  background: var(--flame);
+  border: 0;
+  border-radius: 6px;
+  padding: 2px 12px;
+  cursor: pointer;
+}
+
+.hintInline {
+  display: none;
+  color: var(--flame);
+}
+
+/* "Now try your own name" cue, left of the terminal on wide screens. */
+.cue {
+  position: absolute;
+  right: calc(100% + 14px);
+  width: 170px;
+  text-align: right;
+  pointer-events: none;
+  z-index: 2;
+  font-family: var(--grot);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--flame);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.35s, transform 0.35s;
+}
+
+.cueOn {
+  opacity: 1;
+  transform: none;
+}
+
+.cue small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.cue svg {
+  display: block;
+  margin: 6px -40px 0 auto;
+  overflow: visible;
+}
+
+.cue svg path {
+  fill: none;
+  stroke: var(--flame);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 1199px) {
+  .cue { display: none; }
+  .hintInline { display: inline; }
+}
+
+@media (max-width: 820px) {
+  .term { box-shadow: 6px 6px 0 var(--flame); }
+  .body { font-size: 13px; min-height: 400px; padding: 16px 14px; }
+  .time { display: none; }
+  .input { width: 150px; }
+}

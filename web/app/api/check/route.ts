@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { EXTENDED_TLDS, type CheckSummary } from "../../../../src/checker/types.ts";
 import { isValidDomainLabel } from "../../../../src/utils/validate.ts";
 import { checkDomains } from "../../../server/checker";
-import { PLAYGROUND_TLDS } from "../../../lib/temper-data";
+import { DEMO_FIRST_TLDS } from "../../../lib/temper-data";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     });
   }
   const tldsToQuery: readonly string[] =
-    parsed.kind === "explicit" ? parsed.tlds : PLAYGROUND_TLDS;
+    parsed.kind === "explicit" ? parsed.tlds : DEMO_FIRST_TLDS;
 
   const start = performance.now();
   const encoder = new TextEncoder();

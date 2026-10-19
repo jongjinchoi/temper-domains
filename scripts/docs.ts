@@ -47,7 +47,7 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
   if (original.match(match)![0] !== expected || original.match(optionsMatch)![0] !== optionsExpected) throw new Error('CLI reference help differs; run bun run docs:help');
   const pages = new Map([...USER_DOCS, 'docs/current.md', 'docs/release.md', 'docs/backlog.md'].map(path => [path, readFileSync(join(ROOT, path), 'utf8')]));
   validateLinks(pages, path => existsSync(join(ROOT, path)));
-  const labels = ['README.md', 'web/components/Hero.tsx', 'web/components/Features.tsx', 'web/components/Cta.tsx', 'web/components/Footer.tsx', 'web/app/layout.tsx', 'web/app/llms.txt/route.ts'];
+  const labels = ['README.md', 'web/components/Hero.tsx', 'web/lib/temper-data.ts', 'web/components/Cta.tsx', 'web/components/Footer.tsx', 'web/app/layout.tsx', 'web/app/llms.txt/route.ts'];
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   validateLicenseLabels(pkg.license, new Map(labels.map(path => [path, readFileSync(join(ROOT, path), 'utf8')])));
   if (JSON.parse(readFileSync(join(ROOT, 'web/package.json'), 'utf8')).license !== pkg.license) throw new Error('Workspace license differs');
@@ -64,7 +64,7 @@ if (process.argv.slice(2).join(' ') === '--write-help') {
   const references = [...[...pages.values()].join('\n').matchAll(/(?:https:\/\/raw\.githubusercontent\.com\/jongjinchoi\/temper-domains\/main\/)?(assets\/[a-zA-Z0-9/_.-]+\.(?:png|gif))/g)].map(m => m[1]!);
   for (const ref of references) if (!existsSync(join(ROOT, ref))) throw new Error(`Missing README media: ${ref}`);
   const tapes = tapeSources();
-  if (outputPaths(tapes).length !== 19) throw new Error('Expected 19 capture outputs');
+  if (outputPaths(tapes).length !== 21) throw new Error('Expected 21 capture outputs');
   for (const tape of tapes) {
     if (!tape.includes('Wait+Screen') || !tape.includes('Set FontFamily') || !tape.includes('Require temper-media-session')) throw new Error('Tape lacks recording safeguards');
   }

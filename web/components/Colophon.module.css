@@ -1,6 +1,6 @@
 .colophon {
-  padding: 48px 0 60px;
-  border-top: 3px solid var(--fg);
+  padding: 32px 0 40px;
+  border-top: 2px solid var(--border);
 }
 
 .mastheadRow {

@@ -1,24 +1,24 @@
 import Colophon from "@/components/Colophon";
 import Commands from "@/components/Commands";
 import Cta from "@/components/Cta";
-import Features from "@/components/Features";
+import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
+import Install from "@/components/Install";
+import Loop from "@/components/Loop";
 import Mcp from "@/components/Mcp";
 import Nav from "@/components/Nav";
-import Playground from "@/components/Playground";
-import Themes from "@/components/Themes";
 
 export default function Home() {
   return (
-    <div className="wrap">
+    <div className="wrap" id="top">
       <Nav />
       <Hero />
-      <Features />
+      <Loop />
       <Mcp />
+      <Install />
       <Commands />
-      <Themes />
-      <Playground />
+      <Faq />
       <Cta />
       <Colophon />
       <Footer />

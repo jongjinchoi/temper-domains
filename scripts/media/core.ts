@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 
 export const ROOT = resolve(import.meta.dir, '../..');
 export const MANIFEST = 'assets/screenshots/manifest.json';
-export const TAPES = ['demo', 'search', 'suggest', 'registrar', 'init', 'themes', 'theme-catppuccin-latte', 'theme-rose-pine-dawn'];
+export const TAPES = ['demo', 'search', 'suggest', 'registrar', 'init', 'themes', 'theme-catppuccin-latte', 'theme-rose-pine-dawn', 'watchlist'];
 export const digest = (bytes: Uint8Array | string) => createHash('sha256').update(bytes).digest('hex');
 export function snapshot(root: string, paths: string[]): Record<string, string | null> {
   return Object.fromEntries([...paths].sort().map(path => [path, existsSync(join(root, path)) ? digest(readFileSync(join(root, path))) : null]));
@@ -56,7 +56,7 @@ export function checkManifest(manifest: CaptureManifest, mediaRoot = ROOT, sourc
   if (manifest.schema !== 1 || manifest.mode !== 'current-source-with-synthetic-rdap') throw new Error('Unknown capture manifest');
   if (requireCurrentInputs && captureInputChanges(manifest, sourceRoot).length) throw new Error('Capture inputs changed: regenerate media');
   const outputs = outputPaths(tapeSources(sourceRoot));
-  if (outputs.length !== 19 || JSON.stringify(Object.keys(manifest.outputs).sort()) !== JSON.stringify(outputs)) throw new Error('Expected all 19 media outputs');
+  if (outputs.length !== 21 || JSON.stringify(Object.keys(manifest.outputs).sort()) !== JSON.stringify(outputs)) throw new Error('Expected all 21 media outputs');
   for (const path of outputs) {
     const bytes = readFileSync(join(mediaRoot, path));
     const info = mediaInfo(bytes), entry = manifest.outputs[path]!;

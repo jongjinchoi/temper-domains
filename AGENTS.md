@@ -57,7 +57,7 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 ### Test isolation
 
 - `bun test` preloads `tests/preload.ts` to isolate `homedir()` in a temporary directory; child-process regression tests also use temporary homes. RDAP calls are mocked; these tests do not query Production or update real user configuration.
-- Browser check (`tests/browser/playground.mjs`): targets a local server and intercepts valid `/api/check/` queries; invalid input exercises the real local HTTP 400 path. `tests/browser/run.sh` owns the local production server, stops it on exit and does not use the hosted site. Playwright is a development dependency; install its Chromium separately.
+- Browser check (`tests/browser/playground.mjs`): targets a local server and intercepts valid `/api/check/` queries and the cached hero example `/api/example/`; invalid input exercises the real local HTTP 400 path. `tests/browser/run.sh` owns the local production server, stops it on exit and does not use the hosted site. Playwright is a development dependency; install its Chromium separately.
 - Package smoke installs npm artifacts only in a temporary directory, may download npm dependencies and removes its own fixture afterward. Native smoke extracts the archive into a temporary directory. Both use isolated homes and offline CLI commands; neither publishes, queries registries for domains, nor changes a global installation.
 - Transport checks start loopback TLS servers with temporary OpenSSL certificates, exercise Bun and Node, and do not query public registries.
 - Shared cooldown checks use temporary homes and loopback HTTP/WHOIS servers; they do not query public registries or change real user state.

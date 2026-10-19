@@ -142,62 +142,86 @@ body::before {
   z-index: 2;
 }
 
+/* Terminal surfaces stay dark in both themes, so their text colors are fixed. */
+:root {
+  --s-fg:    #f3ead3;
+  --s-ok:    #7bc488;
+  --s-tk:    #ff6770;
+  --s-pm:    #f0a35e;
+  --s-wn:    #e3c25a;
+  --s-mu:    #9a8d75;
+  --s-line:  #3a332c;
+  --s-raise: #272421;
+}
+
+html { scroll-behavior: smooth; }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: 5px;
+  padding: 1px 7px;
+  color: var(--fg);
+  background: var(--surface);
+  margin-right: 4px;
+}
+
 /* Shared section chrome (used by every section after Hero) */
 .sec {
-  padding: 70px 0;
+  padding: 112px 0 0;
   position: relative;
-  border-top: 2px dashed var(--border);
+  scroll-margin-top: 72px;
 }
 
-.sec-head {
-  margin-bottom: 36px;
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.sec-head h2 {
+.sec h2 {
   font-family: var(--grot);
-  font-size: clamp(32px, 5vw, 64px);
+  font-size: clamp(32px, 4.2vw, 48px);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   margin: 0;
 }
 
-.sec-head h2 em {
-  font-style: italic;
+.sec h2 em {
+  font-style: normal;
   color: var(--flame);
 }
 
-.sec-head h2 .ul {
-  position: relative;
-  display: inline-block;
-}
+.center { text-align: center; }
 
-.sec-head h2 .ul::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2px;
-  height: 10px;
-  background: var(--flame);
-  opacity: 0.3;
-  z-index: -1;
-}
-
-.sec-head .dek {
-  font-family: var(--mono);
-  font-size: 13px;
+.sub {
   color: var(--muted);
-  max-width: 44ch;
+  font-size: 18px;
+  margin: 12px auto 48px;
+  max-width: 620px;
 }
 
-.sec-head .dek code {
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--bg-2);
-  padding: 1px 4px;
+.btn {
+  display: inline-block;
+  font-family: var(--grot);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.btn.fill {
+  background: var(--fg);
+  color: var(--bg);
 }

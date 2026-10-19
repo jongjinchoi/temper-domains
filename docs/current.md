@@ -54,7 +54,10 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Persistent CLI state: `src/config/`
 - Registrar URLs and browser opening: `src/registrar/`
 - Web synced copy/data: `web/lib/temper-data.ts`
-- Hosted demo API route: `web/app/api/check/route.ts`
+- Hosted demo API route: `web/app/api/check/route.ts`; cached hero example: `web/app/api/example/route.ts`
+- Homepage sections: `web/app/page.tsx` (Hero, Loop, Mcp, Install, Commands, Faq, Cta, Colophon, Footer).
+  FAQ text is shared by the page and the FAQPage JSON-LD. Loop GIFs in `web/public/media/`
+  are byte-identical copies of `assets/screenshots/` (checked by `web/lib/__tests__/temper-data.test.ts`).
 - Web serverless checker: `web/server/checker.ts`
 
 ## Current Behavior Notes
@@ -330,14 +333,24 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Hosted web demo uses a Next.js `/api/check/` route and an in-memory RDAP bootstrap cache.
   `name` must be a valid label; optional `tlds` takes 1–20 comma-separated
   extended TLDs (length checked before duplicates are removed) and otherwise uses
-  the 15 playground TLDs. Invalid input returns HTTP 400 JSON `{error}`. Valid
+  the 10 `DEMO_FIRST_TLDS`. Invalid input returns HTTP 400 JSON `{error}`. Valid
   requests stream NDJSON rows, then `{done, elapsed, summary}` or `{error}`, with
   a fixed 3s budget and in-memory lookup limits. The route has no per-caller
   request rate limit; outbound pacing is the process-local scheduler.
+- The homepage hero replays a cached example from `/api/example/`: `gethalden`
+  against `DEMO_FIRST_TLDS`, as JSON `{name, checkedAt, rows, summary, elapsed}`.
+  The route uses ISR (`revalidate = 1800`), so page views do not start lookups;
+  regeneration runs at most once per 30 minutes after a request. Next.js
+  prerenders it during `next build`, so every web build (CI, local, Vercel)
+  sends those 10 real registry lookups. A failed lookup still returns 200 with
+  `error` and no rows, and that result stays cached until the next regeneration.
+- A name typed into the hero checks `DEMO_FIRST_TLDS` (10) through `/api/check/`;
+  "check 20 more TLDs" checks the remaining `DEFAULT_TLDS` in a second request,
+  so the two passes match the CLI's default 30.
 - CLI and local MCP privacy claims do not apply to the hosted web demo.
 - The web demo supports Escape while searching, restores input focus after
   completion/error, and reports a stream ending without a terminal event as
-  incomplete. Its input has an accessible name.
+  incomplete. Its input has an accessible name. It does not move focus on load.
 - OG and Twitter images use the Node.js runtime; Next.js prerenders them at
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
@@ -420,9 +433,12 @@ bash tests/browser/run.sh
 The runner starts and stops its own server (default port 3000; override with
 `TEMPER_TEST_PORT`). To check an already running local server, use
 `TEMPER_TEST_URL=http://127.0.0.1:3000 node tests/browser/playground.mjs`.
-The script intercepts valid lookup requests, checks actual invalid-input HTTP 400
+The script intercepts valid lookup requests and the cached hero example
+(`/api/example/`), checks that page load sends no `/api/check/` request, the
+10-then-20 TLD passes, FAQ/JSON-LD agreement, actual invalid-input HTTP 400
 guidance and recovery, Escape, focus, incomplete streams and 390px/1440px layout.
-It does not query public registries or access the hosted site.
+It does not query public registries or access the hosted site; the web build it
+runs against does (see the hosted demo notes above).
 
 The `CI / required` job succeeds only when root, web, both Node versions and
 all updater platforms succeed. Release requires successful main-push CI evidence
@@ -498,8 +514,8 @@ When public behavior changes, check whether these files also need updates:
 
 - `README.md`
 - `web/lib/temper-data.ts`
-- `web/components/Hero.tsx`
-- `web/components/Features.tsx`
+- `web/components/Hero.tsx`, `web/components/DemoTerminal.tsx`
+- `web/components/Loop.tsx`, `web/components/Install.tsx`
 - `web/components/Mcp.tsx`
 - `web/app/layout.tsx`
 - `web/app/opengraph-image.tsx`
@@ -520,7 +536,7 @@ Use `rg` to confirm stale claims are gone after copy updates.
   CI runs this without VHS or public registry requests. Prose semantics still
   require source review; this command is not a complete documentation audit.
 - `bun run media:record --only search` previews one tape. `bun run media:record`
-  stages all eight tapes and their existing 19 PNG/GIF outputs in a temporary
+  stages all nine tapes and their 21 PNG/GIF outputs in a temporary
   directory. Recording requires VHS, ttyd, ffmpeg/ffprobe, zsh, Fontconfig's
   `fc-match`, and the Andale Mono font. Versions used are recorded, not imposed
   as development runtime requirements. No dependency is installed by the script.

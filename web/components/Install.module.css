@@ -1,0 +1,89 @@
+.inst {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.card h3 {
+  font-family: var(--grot);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 4px 0 14px;
+}
+
+.card pre {
+  margin: auto 0 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--screen);
+  color: var(--s-fg);
+  border-radius: 8px;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.link {
+  margin-top: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--flame);
+}
+
+.themes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 36px;
+}
+
+.theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+}
+
+.theme i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.themesCap {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+@media (max-width: 960px) {
+  .inst { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .inst { grid-template-columns: minmax(0, 1fr); }
+}

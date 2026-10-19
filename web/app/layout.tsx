@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { JetBrains_Mono, Space_Grotesk, VT323 } from "next/font/google";
 import {
   AUTHOR_URL,
+  FAQ,
   GITHUB_URL,
   SITE_DESCRIPTION,
   SITE_TITLE,
@@ -128,48 +129,11 @@ const JSON_LD = {
 const JSON_LD_FAQ = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "How do I install temper?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "On macOS and Linux, run: brew install jongjinchoi/temper-domains/temper. On any platform with Node.js 22.12.0 or newer, run: npm i -g temper-domains.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What operating systems does temper support?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "temper runs on macOS, Linux, and Windows through release binaries or npm. Homebrew installation supports macOS and Linux.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is temper free?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. temper is open-source software released under the AGPL-3.0-only license.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How many TLDs does temper check?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "30 TLDs by default. Use --extended for 60, --tlds for chosen extensions including co.uk, or --category for an industry. Use temper extensions to browse the full supported catalog by industry, purpose and region.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What is MCP and how does temper use it?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing seven tools: list_supported_tlds, search_domain, search_names, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
-      },
-    },
-  ],
+  mainEntity: FAQ.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
 };
 
 const JSON_LD_HOWTO = {

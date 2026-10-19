@@ -15,7 +15,7 @@ if (args[0] === '--apply' && args.length === 2) {
   checkManifest(manifest, stage);
   const baseline = JSON.parse(readFileSync(join(stage, 'destination-before.json'), 'utf8'));
   await promote(stage, ROOT, [...outputPaths(tapeSources()), MANIFEST], baseline);
-  console.log('Applied all 19 media files and their capture manifest.');
+  console.log('Applied all 21 media files and their capture manifest.');
 } else {
   if (args.length && !(args.length === 2 && args[0] === '--only' && TAPES.includes(args[1]!))) throw new Error('Usage: media:record [--only <tape> | --apply <reviewed-staging-directory>]');
   const selected = args.length ? [args[1]!] : TAPES;
@@ -48,7 +48,9 @@ if (args[0] === '--apply' && args.length === 2) {
       chmodSync(join(bin, 'temper-media-session'), 0o755);
       writeFileSync(wrapper, `#!/bin/sh\nexport TEMPER_MEDIA_HOME=${quote(home)}\nexport HOME=${quote(home)}\nexport TEMPER_NO_UPDATE_CHECK=1\nexec ${quote(process.execPath)} --preload ${quote(join(ROOT, 'scripts/media/preload.ts'))} ${quote(join(ROOT, 'src/index.ts'))} "$@"\n`);
       chmodSync(wrapper, 0o755);
-      const env: Record<string, string | undefined> = { ...process.env, HOME: home, ZDOTDIR: home, XDG_CONFIG_HOME: join(home, '.config'), PATH: `${bin}:${process.env.PATH}`, TEMPER_NO_UPDATE_CHECK: '1', TEMPER_MEDIA_SCENARIO: '' };
+      // VHS starts zsh with --no-rcs (no .zshrc) but passes this environment through ttyd. An empty
+      // PROMPT_EOL_MARK hides zsh's partial-line '%' marker, which can appear above the first prompt.
+      const env: Record<string, string | undefined> = { ...process.env, HOME: home, ZDOTDIR: home, XDG_CONFIG_HOME: join(home, '.config'), PATH: `${bin}:${process.env.PATH}`, TEMPER_NO_UPDATE_CHECK: '1', TEMPER_MEDIA_SCENARIO: '', PROMPT_EOL_MARK: '' };
       delete env.NODE_OPTIONS;
       const tape = join(work, `${name}.tape`);
       writeFileSync(tape, readFileSync(join(ROOT, `assets/tape/${name}.tape`)));

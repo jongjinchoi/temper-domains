@@ -102,44 +102,39 @@ export default function Mcp() {
   const [active, setActive] = useState<Client>("codex");
 
   return (
-    <section className="sec" id="mcp">
-      <div className="sec-head">
-        <h2>
-          Let <em>Codex</em> do the <span className="ul">typing.</span>
-        </h2>
-        <div className="dek">
-          // temper speaks MCP over stdio — codex · claude · cursor · windsurf · cline
-        </div>
-      </div>
-
-      <div className={styles.mcpWrap}>
-        <div className={styles.mcpIntro}>
-          <h3>
-            AI-native, <em>local-only.</em>
-          </h3>
-          <p>
-            temper runs as a local MCP server. Your AI assistant searches
+    <section className="sec" id="ai">
+      <div className={styles.ai}>
+        <div>
+          <h2>
+            Your AI names it.
+            <br />
+            <em>temper checks it.</em>
+          </h2>
+          <p className={styles.lead}>
+            <code>temper mcp</code> runs a local MCP server. Your AI assistant searches
             domains, discovers extensions by industry, purpose or region, and
             checks only the extensions you choose. On request, it can resume exact
             unresolved candidates while respecting server waits, or open registrar pages.
           </p>
+          <div className={styles.flow}>
+            <div><b>1</b><span>&ldquo;8 names for a habit tracker — check .com and .app&rdquo; <i>(example prompt)</i></span></div>
+            <div><b>2</b><span>It calls temper&apos;s tools on your machine, for the extensions you asked for.</span></div>
+            <div><b>3</b><span>You see what&apos;s free, and <code>open_registrar</code> opens the page you pick.</span></div>
+          </div>
           <p className={styles.muted}>
             When invoked through your local MCP server, temper does not proxy
             requests through a temper-hosted service.
           </p>
-          <div className={styles.toolsPill}>
-            {MCP_TOOLS.map((tool) => (
-              <span key={tool}>{tool}</span>
-            ))}
-          </div>
         </div>
 
-        <div className={styles.mcpPanel}>
-          <div className={styles.mcpTabs}>
+        <div>
+          <div className={styles.mcpTabs} role="tablist" aria-label="MCP client">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
                 type="button"
+                role="tab"
+                aria-selected={active === tab.key}
                 className={active === tab.key ? styles.active : ""}
                 onClick={() => setActive(tab.key)}
               >
@@ -157,6 +152,11 @@ export default function Mcp() {
               its configuration path may differ from older Windsurf versions.
             </p>
           )}
+          <div className={styles.toolsPill}>
+            {MCP_TOOLS.map((tool) => (
+              <span key={tool}>{tool}</span>
+            ))}
+          </div>
         </div>
       </div>
     </section>

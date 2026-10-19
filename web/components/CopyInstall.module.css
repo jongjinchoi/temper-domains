@@ -1,0 +1,35 @@
+.copy {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  background: var(--fg);
+  color: var(--bg);
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  max-width: 100%;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.ic {
+  color: var(--flame);
+  margin-right: 8px;
+}
+
+.command {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.status {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 1.5em;
+  flex-basis: 100%;
+  /* Keep sibling links on the button's row; the status line goes last. */
+  order: 10;
+  text-align: center;
+}

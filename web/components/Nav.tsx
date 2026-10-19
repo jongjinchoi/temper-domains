@@ -6,30 +6,23 @@ import styles from "./Nav.module.css";
 export default function Nav() {
   return (
     <nav className={styles.nav}>
-      <div className={styles.brand}>
-        <span className={styles.monogram}>
-          <Monogram variant="flame" size={26} />
-        </span>
-        <span>
-          temper <span className={styles.brandSub}>/ domains</span>
-        </span>
-      </div>
+      <a className={styles.brand} href="#top">
+        <Monogram variant="flame" size={24} />
+        <span>temper</span>
+      </a>
       <div className={styles.navLinks}>
-        <a href="#features">features</a>
-        <a href="#mcp">mcp</a>
-        <a href="#commands">commands</a>
-        <a href="#themes">themes</a>
-        <a href="#play">demo</a>
+        <a href="#loop">How it works</a>
+        <a href="#ai">AI</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
       </div>
       <div className={styles.navRight}>
         <ThemeToggle />
-        <a
-          className={styles.navCta}
-          href={GITHUB_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ★ STAR
+        <a className="btn" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+          ★ GitHub
+        </a>
+        <a className={`btn fill ${styles.install}`} href="#install">
+          Install
         </a>
       </div>
     </nav>
