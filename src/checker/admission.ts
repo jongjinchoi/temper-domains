@@ -1,6 +1,6 @@
 import { setTimeout as delay } from "node:timers/promises";
 import type { LimitPermit } from "./limits.ts";
-import { ServerCooldown } from "./limits.ts";
+import { LimitStateError, ServerCooldown } from "./limits.ts";
 import type { LookupContext } from "./run.ts";
 import { requestScheduler } from "./scheduler.ts";
 
@@ -18,8 +18,13 @@ export async function withAdmission<T>(key: string, context: LookupContext, sign
       const admission = await context.limits.tryAcquire(key, context.deadline, signal);
       if (!admission.permit) return { wait: admission.wait };
       const permit = admission.permit;
-      try { await permit.check(); signal.throwIfAborted(); return { result: await query(permit) }; }
-      finally { await permit.release(); }
+      let answered = false;
+      try { await permit.check(); signal.throwIfAborted(); const result = await query(permit); answered = true; return { result }; }
+      finally {
+        // A received answer outlives a failed lease release; tryAcquire drops the
+        // lease once it expires or its process exits.
+        await permit.release().catch(error => { if (!answered || !(error instanceof LimitStateError)) throw error; });
+      }
     }, signal);
     if ("result" in attempt) return attempt.result as T;
     await delay(Math.min(attempt.wait!, 100), undefined, { signal });

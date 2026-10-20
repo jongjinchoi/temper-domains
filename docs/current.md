@@ -181,7 +181,11 @@ in both workspaces so root typechecking does not download a separate compiler.
   apply POSIX modes, observed as 0666 on a Windows runner). Only server metadata is
   stored, not queried domains or response bodies. Request leases use the run
   deadline and process identity. Invalid/unwritable/busy state stops requests
-  with limit_state_error; it is not replaced with empty state. A lock left by
+  with limit_state_error before they are sent; it is not replaced with empty state.
+  An answer already received (domain, not-found or accepted redirect) is kept when
+  recording it or releasing its lease then fails: only its recovery credit is lost,
+  and an unreleased lease expires with the run deadline or its process. A failed
+  cooldown record after 429/503 still ends the lookup with limit_state_error. A lock left by
   an interrupted file transaction requires manual removal of only the .lock
   after confirming no Temper commands are running; the state must be preserved.
   Version 1 migration under that lock preserves cooldown/nextStart and refuses live
@@ -692,7 +696,9 @@ Web-only and developer dependency changes are excluded from checker signatures.
 lookup-limit coordination uses them; changing either (even for config/history/watchlist storage) requires refreshing the
 signatures, and existing lookup observations then need rechecking.
 The Windows contention handling added on 2026-10-01 refreshed both signatures;
-every bundled observation was already needs-recheck or not-checked.
+every bundled observation was already needs-recheck or not-checked. Keeping
+received answers after a failed lookup-state record and ignoring a non-array RDAP
+`status` (2026-10-20) refreshed them again under the same condition.
 The migration from whole-lock fingerprints preserves existing evidence IDs only
 for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
 Signatures are scoped by method: the RDAP signature excludes `whois.ts`, and the

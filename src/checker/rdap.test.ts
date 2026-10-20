@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { parseRdapResponse, rdapLookup } from "./rdap.ts";
 import { canResume } from "./retry.ts";
-import { LimitCoordinator, MemoryLimitStore } from "./limits.ts";
+import { LimitCoordinator, LimitStateError, MemoryLimitStore, type LimitState } from "./limits.ts";
 import { createRun } from "./run.ts";
+import { runWhoisRequest } from "./whois-request.ts";
+import type { DomainResult } from "./types.ts";
 
 const originalFetch = globalThis.fetch;
 
@@ -103,6 +105,15 @@ describe("parseRdapResponse", () => {
     const json = { status: ["active", "clientTransferProhibited"] };
     const result = parseRdapResponse(json);
     expect(result.statusCodes).toEqual(["active", "clientTransferProhibited"]);
+  });
+
+  test.each([
+    ["a string", "active", undefined],
+    ["an object", { active: true }, undefined],
+    ["a mixed array", ["active", 1, null, "clientHold"], ["active", "clientHold"]],
+    ["an array without strings", [1, 2], undefined],
+  ])("ignores status that is %s instead of a string array", (_name, status, expected) => {
+    expect(parseRdapResponse({ status }).statusCodes).toEqual(expected);
   });
 
   test("handles missing entities gracefully", () => {
@@ -251,5 +262,63 @@ describe("rdapLookup", () => {
     expect(afterLookup - start).toBeGreaterThanOrEqual(1950);
     expect(afterLookup - start).toBeLessThan(3000);
     expect(afterBackoff - start).toBeGreaterThanOrEqual(3950);
+  });
+});
+
+// Simulates lookup state that becomes unavailable after the request was sent:
+// "all" fails every later update (answered and release), "once" only the next.
+class FailingAfterSendStore extends MemoryLimitStore {
+  mode: "off" | "once" | "all" = "off";
+  override async update<T>(change: (state: LimitState) => T, signal?: AbortSignal): Promise<T> {
+    if (this.mode !== "off") {
+      if (this.mode === "once") this.mode = "off";
+      throw new LimitStateError("injected state failure");
+    }
+    return super.update(change, signal);
+  }
+}
+
+describe("answers survive a failed lookup-state record", () => {
+  test.each([
+    ["200 after answered and release fail", 200, "all", "taken"],
+    ["404 after answered and release fail", 404, "all", "available"],
+    ["200 after only answered fails", 200, "once", "taken"],
+  ] as const)("keeps the server answer: %s", async (_name, status, mode, expected) => {
+    const store = new FailingAfterSendStore();
+    globalThis.fetch = (async () => {
+      store.mode = mode;
+      return status === 200 ? Response.json({ objectClassName: "domain", ldhName: "example.com" }) : new Response(null, { status });
+    }) as unknown as typeof fetch;
+    const run = createRun(4000, undefined, 1, 5000, new LimitCoordinator(store));
+    try {
+      const result = await rdapLookup("example.com", `https://state-failure-${status}-${mode}.test`, run.signal, run.context);
+      expect({ status: result.status, httpStatus: result.httpStatus, terminationReason: result.terminationReason })
+        .toEqual({ status: expected, httpStatus: status, terminationReason: undefined });
+    } finally { run.close(); }
+  });
+
+  test("a failed cooldown record after 429 still stops the lookup", async () => {
+    const store = new FailingAfterSendStore();
+    globalThis.fetch = (async () => {
+      store.mode = "all";
+      return new Response(null, { status: 429, headers: { "retry-after": "60" } });
+    }) as unknown as typeof fetch;
+    const run = createRun(4000, undefined, 1, 5000, new LimitCoordinator(store));
+    try {
+      const result = await rdapLookup("example.com", "https://state-failure-429.test", run.signal, run.context);
+      expect({ status: result.status, terminationReason: result.terminationReason }).toEqual({ status: "error", terminationReason: "limit_state_error" });
+    } finally { run.close(); }
+  });
+
+  test("keeps a WHOIS answer when the state record fails", async () => {
+    const store = new FailingAfterSendStore();
+    const run = createRun(4000, undefined, 1, 5000, new LimitCoordinator(store));
+    try {
+      const result = await runWhoisRequest("example.io", run.signal, run.context, async () => {
+        store.mode = "all";
+        return { domain: "example.io", tld: "io", status: "taken", method: "whois", responseTime: 1 } as DomainResult;
+      });
+      expect(result.status).toBe("taken");
+    } finally { run.close(); }
   });
 });

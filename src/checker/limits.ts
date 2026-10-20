@@ -133,6 +133,11 @@ export class LimitCoordinator {
           entry.level = Math.max(0, entry.level - 1); entry.successes = 0; entry.stableSince = this.now();
           if (entry.level === 0) { entry.recovery = false; entry.strikes = 0; }
         }
+      }).catch(error => {
+        // The server already answered; only this recovery credit is lost, and
+        // release() then resets the streak. Unusable state still stops the next
+        // admission before any request is sent.
+        if (!(error instanceof LimitStateError)) throw error;
       }),
       release: () => this.store.update(state => {
         const entry = state.servers[key];

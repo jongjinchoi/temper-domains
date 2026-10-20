@@ -195,7 +195,7 @@ interface RdapNameserver {
 }
 
 interface RdapResponse {
-  status?: string[];
+  status?: unknown;
   entities?: RdapEntity[];
   events?: RdapEvent[];
   nameservers?: RdapNameserver[];
@@ -260,9 +260,10 @@ export function parseRdapResponse(data: Record<string, unknown>): Partial<Domain
     detail.dnssec = json.secureDNS.delegationSigned ?? false;
   }
 
-  // Status codes
-  if (json.status?.length) {
-    detail.statusCodes = json.status;
+  // Status codes (RFC 9083: an array of strings; other shapes are ignored)
+  if (Array.isArray(json.status)) {
+    const codes = json.status.filter((code): code is string => typeof code === "string");
+    if (codes.length) detail.statusCodes = codes;
   }
 
   return detail;
