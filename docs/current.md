@@ -591,8 +591,8 @@ theme gallery live in the CLI guide.
 - `docs/release.md`: release process.
 - `docs/backlog.md`: current backlog and follow-up ideas (developer notes, not
   included in the npm package).
-- `docs/archive/`: historical PRDs, mockups, design explorations and completed
-  implementation plans.
+- `docs/archive/`: historical PRDs, mockups, design explorations, and
+  implementation plans and their records.
 
 Historical docs are useful for product intent, but they are not the source of truth for current behavior.
 
