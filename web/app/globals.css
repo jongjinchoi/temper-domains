@@ -163,6 +163,7 @@ code {
   border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
   padding: 1px 6px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 kbd {

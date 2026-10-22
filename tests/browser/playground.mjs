@@ -100,6 +100,13 @@ try {
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     assert.ok(scrollWidth <= width, `page overflows at ${width}px: ${scrollWidth}px`);
   }
+  // Inline commands such as `temper list` must not split across lines.
+  for (const width of [390, 860, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const split = await page.evaluate(() => [...document.querySelectorAll('code')]
+      .filter(el => el.getClientRects().length > 1).map(el => el.textContent));
+    assert.deepEqual(split, [], `inline code wraps at ${width}px: ${split.join(', ')}`);
+  }
   const input = region.locator('input');
   await input.fill('example.com');
   const invalidResponse = page.waitForResponse(response => {
