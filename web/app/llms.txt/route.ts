@@ -61,7 +61,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper search <name> --category design-arts\` - search the industry selection (max 480 name × suffix combinations)
 - \`temper suggest <name>\` - prefix/suffix brainstorm
 - \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
-- \`temper watch <domain>\` - track availability, \`temper list\` to review
+- \`temper watch <domain>\` - watch a taken domain, \`temper list\` to recheck
 - \`temper history\` - interactive search history
 - \`temper update\` - check now; verified global npm/Homebrew installs require confirmation before updating
 - \`temper update --check\` - show published version and instructions without installing

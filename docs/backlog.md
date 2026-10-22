@@ -11,6 +11,7 @@
 - [x] search ↔ history ↔ suggest 간 화면 전환 시 기존 검색 세션 결과 유지 (history 항목의 새 검색은 검색어만 재사용)
 - [ ] watchlist 알림 기능 (cron 또는 launchd로 주기적 체크)
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
+- [ ] 워치리스트 GIF 재녹화: 문구는 "타인이 보유한 도메인을 지켜보는 목록"으로 바뀌었지만(2026-10-22) 녹화는 여전히 available 도메인(`gethalden.dev`)을 포함 — `assets/tape/watchlist.tape`를 taken 도메인만 쓰도록 바꿔 재녹화. 만료일 표시(1단계)와 함께 진행
 
 ## 코드 품질
 - [x] 승인된 안정 버전 의존성 갱신, Bun/Node 버전 고정 및 Node 최소 버전 명시 (2026-09-19, 로컬 검증)

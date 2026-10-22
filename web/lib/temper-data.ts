@@ -88,7 +88,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 04",
     sig: { cmd: "watch", arg: "<domain>" },
-    desc: "Track availability. `temper list` shows the watchlist.",
+    desc: "Watch a taken domain. `temper list` rechecks the watchlist.",
     example: "$ temper watch gethalden.com",
   },
   {
@@ -188,8 +188,8 @@ export const LOOP_STEPS: LoopStep[] = [
   },
   {
     tag: "04 · KEEP",
-    title: "Not ready? Watch it.",
-    body: "`a` adds the selected domain to your watchlist, and `temper list` rechecks every watched domain. `temper whois` shows a taken domain's registrar and expiry.",
+    title: "Taken? Watch it.",
+    body: "If someone already holds it, `a` adds it to your watchlist. `temper list` rechecks every watched domain each time you run it, and `temper whois` shows its registrar and expiry.",
     media: { src: "/media/watchlist.gif", alt: "temper list rechecking a watchlist", caption: "temper list" },
   },
 ];

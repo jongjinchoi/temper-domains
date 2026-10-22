@@ -71,7 +71,7 @@ Running `temper` shows common commands. Use `temper --help` or
 - **Extension discovery:** browse supported extensions by industry, purpose or region.
 - **Name suggestions:** try prefixes and suffixes around a candidate.
 - **Domain details:** inspect registrar, dates and nameservers with `temper whois`.
-- **Watchlist and history:** save candidates and revisit earlier searches.
+- **Watchlist and history:** keep an eye on taken domains and revisit earlier searches.
 - **JSON output:** pipe results into your own tools.
 - **Local MCP server:** let your AI assistant search domains.
 - **Keyboard navigation and themes:** work in your terminal.
