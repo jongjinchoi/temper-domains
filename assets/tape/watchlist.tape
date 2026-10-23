@@ -14,16 +14,16 @@ Set TypingSpeed 45ms
 Set CursorBlink false
 Set Theme "Catppuccin Mocha"
 
-Type "temper watch gethalden.dev"
-Enter
-Wait+Screen /Added gethalden.dev to watchlist/
 Type "temper watch gethalden.com"
 Enter
 Wait+Screen /Added gethalden.com to watchlist/
+Type "temper watch gethalden.net"
+Enter
+Wait+Screen /Added gethalden.net to watchlist/
 Type "temper list"
 Enter
-Wait+Screen@15s /gethalden.dev.*available/
-Wait+Screen /gethalden.com.*taken/
+Wait+Screen@15s /gethalden.com.*taken.*expires/
+Wait+Screen /gethalden.net.*taken.*expires/
 Sleep 1s
 Screenshot assets/screenshots/watchlist.png
 Sleep 3s

@@ -31,7 +31,9 @@ const respond = async (input: string | URL | Request, init?: RequestInit): Promi
   if (!match || !suffixes.has(match[1]!) || !match[2]!.includes(fixture.query) || !match[2]!.endsWith(`.${match[1]}`)) return blocked(url);
   appendFileSync(join(home!, 'requests.log'), `${match[2]}\n`);
   if (process.env.TEMPER_MEDIA_SCENARIO === 'partial' && match[2] === fixture.partialDomain) return new Response(null, { status: 400 });
-  if (fixture.registered.includes(match[2]!)) return Response.json({ objectClassName: 'domain', ldhName: match[2] });
+  if (fixture.registered.includes(match[2]!)) return Response.json({ objectClassName: 'domain', ldhName: match[2],
+    events: [{ eventAction: 'expiration', eventDate: fixture.registration.expiryDate }],
+    entities: [{ roles: ['registrar'], vcardArray: ['vcard', [['fn', {}, 'text', fixture.registration.registrar]]] }] });
   return new Response(null, { status: 404 });
 };
 globalThis.fetch = respond as typeof fetch;

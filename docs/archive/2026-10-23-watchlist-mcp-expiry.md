@@ -69,6 +69,25 @@
 
 녹화 영향 검토: 워치리스트 화면의 열 순서와 내용이 바뀌었으므로 `watchlist` 녹화는 낡았다. 재녹화는 백로그 항목으로 미뤘다(사용자 결정). 다른 화면은 바뀌지 않았다.
 
+## GIF 재녹화 (같은 날, `2041a9f` 이후)
+
+`2041a9f`로 홈페이지 문구가 "shows its expiry and registrar"로 바뀌었다. 녹화는 예전 화면(available 행 포함)이었으므로 push 전에 다시 녹화했다.
+
+- 입력
+  - `scripts/media/fixture.ts`: 가상의 등록 정보(`2027-03-14T00:00:00Z`, `Example Registrar`)를 추가했다.
+  - `scripts/media/preload.ts`: 등록 도메인 응답에 expiration 이벤트와 registrar entity를 넣었다. 등록인은 넣지 않았다.
+  - `assets/tape/watchlist.tape`: `gethalden.com`·`gethalden.net`(둘 다 taken)을 등록하고, 화면 확인 조건을 `taken.*expires`로 바꿨다.
+- 테스트: `scripts/media/fixture.test.ts`에 추가했다. 녹화 환경의 검색 JSON에는 등록 정보가 없고, `whois`에는 가상의 값이 있으며 등록인이 없음을 확인한다. 변경 전에 실패하는 것을 확인했다.
+- 녹화
+  - `bun run media:record`로 9개 전체를 녹화했다(vhs 0.11.0, ffmpeg 8.1, ttyd 1.7.7, Bun 1.4.2).
+  - 21개 중 20개의 바이트가 바뀌었다(`init.png`만 같음).
+  - PNG를 비교한 결과, 워치리스트 외 화면(search, registrar, suggest, 테마)은 소요 시간 표시(0.1s→0.2s, 4.8s→4.9s)만 달랐다.
+  - 워치리스트 화면: taken 2행, `expires 2027-03-14 (in 142 days)`, `Example Registrar`. 일수는 녹화일 기준이다.
+- 사용자가 PNG와 GIF를 검토한 뒤 `scripts/docs.ts --record-package` → `media:record --apply`를 실행했다.
+- 바이트가 바뀐 웹 사본 GIF 4개(search, suggest, registrar, watchlist)를 `web/public/media/`로 복사했다.
+- 검증: `bun run docs:check` 통과(녹화 입력 변경 경고 해소). `bun test` 636 통과·0 실패. `bun run web:build` + `bash tests/browser/run.sh` 통과(빌드가 실제 레지스트리 10건 조회).
+
+
 관찰: 전체 TUI 테스트를 한 번 실행했을 때 `browser accepted feedback preserves search results without premature success`가 한 번 실패했다. 단독으로 3회 재실행하면 모두 통과했다. 검색 화면 테스트이고, 이번 변경과의 관련은 확인하지 못했다.
 
 미검증: Windows 실행, 원격 CI, 실제 WHOIS 경로의 MCP 조회, 80열 터미널의 실제 화면.

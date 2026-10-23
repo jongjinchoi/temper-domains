@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { ROOT } from './core.ts';
+import { fixture } from './fixture.ts';
 
 async function withHome(work: (home: string) => Promise<void>) {
   const home = await mkdtemp(join(tmpdir(), 'temper-media-fixture-'));
@@ -63,5 +64,22 @@ test('local embedded WASM data remains readable without a network request', asyn
       if (bytes.length !== 4 || bytes[1] !== 97) throw new Error('invalid embedded bytes');
     `]);
     expect(result.exitCode).toBe(0);
+  });
+});
+
+test('recording registrations appear only in detail and watchlist paths, never with a registrant', async () => {
+  await withHome(async home => {
+    const search = execute(home, ['src/index.ts', 'search', 'gethalden', '--format', 'json']);
+    expect(search.exitCode).toBe(0);
+    for (const row of JSON.parse(search.stdout.toString())) {
+      expect(row).not.toHaveProperty('expiryDate');
+      expect(row).not.toHaveProperty('registrar');
+    }
+    const detail = execute(home, ['src/index.ts', 'whois', 'gethalden.com', '--format', 'json']);
+    expect(detail.exitCode).toBe(0);
+    const parsed = JSON.parse(detail.stdout.toString());
+    expect(parsed.expiryDate).toBe(fixture.registration.expiryDate);
+    expect(parsed.registrar).toBe(fixture.registration.registrar);
+    expect(parsed).not.toHaveProperty('registrant');
   });
 });
