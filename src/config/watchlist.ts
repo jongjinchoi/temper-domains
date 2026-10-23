@@ -35,7 +35,8 @@ export async function loadWatchlist(): Promise<WatchEntry[]> {
   }
 }
 
-async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]): Promise<void> {
+async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]): Promise<number> {
+  let removed = 0;
   await ensureConfigDir();
   const lockPath = `${WATCHLIST_FILE}.lock`;
   await withFileTransaction(WATCHLIST_FILE, {
@@ -43,14 +44,18 @@ async function updateWatchlist(update: (entries: WatchEntry[]) => WatchEntry[]):
     deadline: Date.now() + 5000,
     busyMessage: `Watchlist is busy: ${lockPath}. Retry after other temper commands finish. If a command crashed, remove only this lock file after confirming no temper command is running.`,
   }, async transaction => {
-    await transaction.replace(JSON.stringify(update(await loadWatchlist()), null, 2) + "\n");
+    const entries = await loadWatchlist();
+    const next = update(entries);
+    removed = entries.length - next.length;
+    await transaction.replace(JSON.stringify(next, null, 2) + "\n");
   });
+  return removed;
 }
 
 // Unicode and punycode spellings of one domain share a key. Entries keep the
 // spelling they were added with; text that does not convert keeps its own key
 // so legacy entries stay removable.
-function watchKey(domain: string): string {
+export function watchKey(domain: string): string {
   const clean = sanitizeDomain(domain).toLowerCase();
   return domainToASCII(clean).toLowerCase() || clean;
 }
@@ -68,7 +73,8 @@ export async function addWatch(input: string): Promise<{ added: boolean; domain:
   return existing ? { added: false, domain: existing.domain } : { added: true, domain };
 }
 
-export async function removeWatch(domain: string): Promise<void> {
+// Resolves true when an entry was removed, false when none matched.
+export async function removeWatch(domain: string): Promise<boolean> {
   const key = watchKey(domain);
-  await updateWatchlist((list) => list.filter((entry) => watchKey(entry.domain) !== key));
+  return await updateWatchlist((list) => list.filter((entry) => watchKey(entry.domain) !== key)) > 0;
 }

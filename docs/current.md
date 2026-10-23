@@ -228,6 +228,16 @@ in both workspaces so root typechecking does not download a separate compiler.
 - TUI suggest checks generated `.com` preview candidates through RDAP/WHOIS, then Enter opens a full TLD search.
 - MCP `suggest_domain` checks generated combinations across `.com`, `.dev`, `.io`, `.app`, and `.ai` through RDAP/WHOIS.
 - Watchlist refreshes use RDAP/WHOIS full-domain checks, not DNS NS lookup.
+  The watchlist is for domains someone else already holds. Watchlist checks
+  (`temper list`, MCP `check_watchlist`) pass `includeRegistration`, which keeps
+  expiryDate, registrar and statusCodes from the response already received
+  (RDAP domain object, or the WHOIS text of a taken domain with the detail
+  parser); no extra request is sent. Registrant names and other detail fields are
+  never added. Other lookups (search, suggestions, check_domain_availability, the
+  hosted demo) do not set it and keep their previous output. The TUI row shows the
+  expiry and a registrar shortened to 20 characters; status codes stay in MCP and
+  whois detail. An expiry is reference information, not a release date.
+  `removeWatch` reports whether an entry was removed.
 - Watch additions use the shared registrable-domain policy before storage.
   Legacy syntactically valid subdomain/public-suffix entries remain readable and removable.
 - Search/WHOIS output formats are validated by Commander before command execution.
@@ -359,13 +369,21 @@ in both workspaces so root typechecking does not download a separate compiler.
   build time. Font downloads therefore remain a build-time network dependency.
 - `temper mcp` starts a local stdio MCP server.
 - Lookup tools (`search_domain`, `search_names`, `suggest_domain`,
-  `check_domain_availability`) return schemaVersion 1/rows/summary/retryPlan in
+  `check_domain_availability`, `check_watchlist`) return schemaVersion 1/rows/summary/retryPlan in
   structuredContent and JSON text while retaining human-readable text;
   `whois_domain` returns text details only. Exact prior unresolved domains
   can be passed to check_domain_availability with resume=true only on user request;
   max 100 stays explicit, with no automatic replay or truncation. Resume lookup budget
   is 30s independent of progress notifications; response/cleanup is additional.
   Cancellation may discard the current tool's unreturned results at the host.
+- Watchlist tools share `~/.temper/watchlist.json` and its file transaction with
+  the CLI/TUI. `watch_domain` and `unwatch_domain` change it only on user request
+  (annotated as writes; unwatch as destructive). `list_watchlist` makes no lookups.
+  `check_watchlist` checks the whole watchlist only when it has at most 100
+  entries; otherwise, or for a subset, `domains` (1–100 watched domains) is
+  required, and domains outside the watchlist are rejected before any lookup.
+  Its `resume` and budget match check_domain_availability. A no-argument call is
+  accepted over stdio, as for list_supported_tlds.
 - `list_supported_tlds` is offline. No arguments returns the 30/30/60 bundles
   and full catalog count; view=extensions offers paged discovery (50 default,
   100 maximum), view=categories exposes industry/purpose/region navigation.
@@ -386,7 +404,7 @@ in both workspaces so root typechecking does not download a separate compiler.
 concurrent config/watch/history updates, stale history deletion, failed file replacement, damaged storage preservation,
 Init save/retry/cleanup handling, TUI case/error/filter/resize/navigation regressions,
 and NDJSON completion/cancellation.
-MCP tests exercise all seven tools over stdio, including invalid inputs and
+MCP tests exercise all eleven tools over stdio, including invalid inputs and
 network-free TLD catalog discovery; registrar
 opening is captured as a URL without launching a real browser.
 A PTY check (`tests/helpers/tui-exit-check.py`, 33 scenarios) verifies that real
@@ -698,7 +716,8 @@ signatures, and existing lookup observations then need rechecking.
 The Windows contention handling added on 2026-10-01 refreshed both signatures;
 every bundled observation was already needs-recheck or not-checked. Keeping
 received answers after a failed lookup-state record and ignoring a non-array RDAP
-`status` (2026-10-20) refreshed them again under the same condition.
+`status` (2026-10-20) refreshed them again under the same condition, as did
+watchlist registration details (2026-10-23; 615 needs-recheck, 141 not-checked).
 The migration from whole-lock fingerprints preserves existing evidence IDs only
 for the explicitly matched, unchanged checker inputs; timestamps/results are not rewritten.
 Signatures are scoped by method: the RDAP signature excludes `whois.ts`, and the

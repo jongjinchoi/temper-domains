@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -21,9 +21,18 @@ afterAll(async () => { await client.close(); await rm(home, { recursive: true, f
 test("stdio tool schemas reject invalid input while preserving error responses", async () => {
   const { tools } = await client.listTools();
   expect(tools.map((tool) => tool.name).sort()).toEqual([
-    "check_domain_availability", "list_supported_tlds", "open_registrar", "search_domain", "search_names", "suggest_domain", "whois_domain",
+    "check_domain_availability", "check_watchlist", "list_supported_tlds", "list_watchlist", "open_registrar", "search_domain", "search_names",
+    "suggest_domain", "unwatch_domain", "watch_domain", "whois_domain",
   ]);
+  const annotations = Object.fromEntries(tools.map(tool => [tool.name, tool.annotations]));
+  expect(annotations.unwatch_domain).toMatchObject({ readOnlyHint: false, destructiveHint: true });
+  expect(annotations.watch_domain).toMatchObject({ readOnlyHint: false, destructiveHint: false });
+  expect(annotations.list_watchlist).toMatchObject({ readOnlyHint: true });
+  expect(annotations.check_watchlist).toMatchObject({ readOnlyHint: true, openWorldHint: true });
   for (const [name, args] of [
+    ["watch_domain", { domain: "acme" }],
+    ["unwatch_domain", { domain: "acme" }],
+    ["check_watchlist", { domains: Array(101).fill("acme.com") }],
     ["search_domain", { name: "acme.com" }],
     ["search_names", { names: [] }],
     ["search_names", { names: Array(9).fill("acme") }],
@@ -228,4 +237,64 @@ test("selected MCP accepts an IDN suffix and a technically supported suffix outs
   const log = await readFile(join(home, "requests"), "utf8");
   const domains = log.split("\n").filter(url => url.includes("/domain/idnselection.")).map(url => url.split("/domain/")[1]).sort();
   expect(domains).toEqual(["idnselection.ac.me", "idnselection.xn--3ds443g"]);
+});
+
+test("watchlist tools save, list, check with registration details and remove over stdio", async () => {
+  const call = async (name: string, args?: Record<string, unknown>) => {
+    const response = await client.callTool({ name, ...(args ? { arguments: args } : {}) }) as
+      { content: { text?: string }[]; isError?: boolean; structuredContent?: unknown };
+    return { ...response, text: response.content.map(item => item.text ?? "").join("\n") };
+  };
+  expect((await call("watch_domain", { domain: "Expiring.com" })).text).toContain("Added expiring.com");
+  expect((await call("watch_domain", { domain: "expiring.com" })).text).toContain("already in the watchlist");
+  await call("watch_domain", { domain: "free.dev" });
+
+  const before = await readFile(join(home, "requests"), "utf8").catch(() => "");
+  const listed = await call("list_watchlist");
+  expect(listed.isError).not.toBe(true);
+  expect(listed.text).toContain("expiring.com");
+  expect(listed.text).toContain("free.dev");
+  expect(await readFile(join(home, "requests"), "utf8").catch(() => "")).toBe(before);
+
+  const checked = await call("check_watchlist");
+  expect(checked.isError).not.toBe(true);
+  const rows = (checked.structuredContent as { rows: Record<string, unknown>[] }).rows;
+  const expiring = rows.find(row => row.domain === "expiring.com")!;
+  expect(expiring).toMatchObject({ status: "taken", expiryDate: "2027-06-01T00:00:00Z", registrar: "Example Registrar",
+    statusCodes: ["client transfer prohibited"] });
+  expect(expiring).not.toHaveProperty("registrant");
+  expect(rows.find(row => row.domain === "free.dev")).not.toHaveProperty("expiryDate");
+  expect(checked.text).toContain("expires 2027-06-01");
+  expect(checked.text).toContain("registrar Example Registrar");
+  expect(checked.text).not.toContain("Private Person");
+
+  // Ordinary availability checks do not gain registration details.
+  const plain = await call("check_domain_availability", { domains: ["expiring.com"] });
+  expect((plain.structuredContent as { rows: Record<string, unknown>[] }).rows[0]).not.toHaveProperty("expiryDate");
+
+  const outside = await call("check_watchlist", { domains: ["other.com"] });
+  expect(outside.isError).toBe(true);
+  expect(outside.text).toContain("other.com");
+
+  expect((await call("unwatch_domain", { domain: "EXPIRING.com" })).text).toContain("Removed expiring.com");
+  expect((await call("unwatch_domain", { domain: "expiring.com" })).text).toContain("was not in the watchlist");
+  const after = await call("list_watchlist");
+  expect(after.text).not.toContain("expiring.com");
+  expect(after.text).toContain("free.dev");
+  await call("unwatch_domain", { domain: "free.dev" });
+});
+
+test("check_watchlist refuses more than 100 watched domains without querying", async () => {
+  await mkdir(join(home, ".temper"), { recursive: true });
+  const entries = Array.from({ length: 101 }, (_, i) => ({ domain: `page${i}.com`, addedAt: "2026-01-01T00:00:00Z" }));
+  await writeFile(join(home, ".temper", "watchlist.json"), JSON.stringify(entries));
+  const before = await readFile(join(home, "requests"), "utf8").catch(() => "");
+  const response = await client.callTool({ name: "check_watchlist", arguments: {} });
+  expect(response.isError).toBe(true);
+  expect(JSON.stringify(response.content)).toMatch(/101.*100/);
+  expect(await readFile(join(home, "requests"), "utf8").catch(() => "")).toBe(before);
+  const page = await client.callTool({ name: "check_watchlist", arguments: { domains: ["page0.com", "page1.com"] } });
+  expect(page.isError).not.toBe(true);
+  expect((page.structuredContent as { rows: unknown[] }).rows).toHaveLength(2);
+  await writeFile(join(home, ".temper", "watchlist.json"), "[]");
 });

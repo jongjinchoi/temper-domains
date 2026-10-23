@@ -17,6 +17,14 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
       reject(init.signal!.reason);
     }, { once: true });
   });
+  if (String(input).includes("/domain/expiring.")) return Response.json({
+    objectClassName: "domain", ldhName: decodeURIComponent(String(input).split("/domain/")[1]!), status: ["client transfer prohibited"],
+    events: [{ eventAction: "expiration", eventDate: "2027-06-01T00:00:00Z" }],
+    entities: [
+      { roles: ["registrar"], vcardArray: ["vcard", [["fn", {}, "text", "Example Registrar"]]] },
+      { roles: ["registrant"], vcardArray: ["vcard", [["fn", {}, "text", "Private Person"]]] },
+    ],
+  });
   return String(input).includes("/domain/taken.")
     ? Response.json({ objectClassName: "domain", ldhName: decodeURIComponent(String(input).split("/domain/")[1]!), status: ["active"] })
     : new Response(null, { status: 404 });

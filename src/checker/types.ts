@@ -43,6 +43,10 @@ export interface DomainResult extends LookupMetadata {
   confidence?: ResultConfidence;
   reason?: string;
   error?: string;
+  // Present only when the caller requests registration details (watchlist checks).
+  expiryDate?: string;
+  registrar?: string;
+  statusCodes?: string[];
 }
 
 export const DEFAULT_TLDS = [
@@ -79,6 +83,13 @@ export interface DomainDetail extends LookupMetadata {
   rawWhois?: string;
   rawRdap?: Record<string, unknown>;
   error?: string;
+}
+
+// Registration details an availability row may carry. Registrant names and the
+// other detail fields stay in detailed lookups.
+export function registrationFields(detail: Partial<DomainDetail>): Pick<DomainResult, "expiryDate" | "registrar" | "statusCodes"> {
+  const { expiryDate, registrar, statusCodes } = detail;
+  return { ...(expiryDate ? { expiryDate } : {}), ...(registrar ? { registrar } : {}), ...(statusCodes?.length ? { statusCodes } : {}) };
 }
 
 export const DEFAULT_PREFIXES = ["get", "use", "try", "my", "go", "join"] as const;

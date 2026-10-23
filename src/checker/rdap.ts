@@ -1,7 +1,7 @@
 import { ServerCooldown, LimitStateError } from "./limits.ts";
 import { formatStorageError } from "../utils/storage-error.ts";
 import { rdapTransport, TransportError } from "./http-transport.ts";
-import type { DomainDetail, DomainResult, TerminationReason } from "./types.ts";
+import { registrationFields, type DomainDetail, type DomainResult, type TerminationReason } from "./types.ts";
 import { serverKey } from "./scheduler.ts";
 import { withAdmission, stopLimitedServer } from "./admission.ts";
 import { createRun, abortReason, LookupAbort, type LookupContext } from "./run.ts";
@@ -168,10 +168,11 @@ async function queryRdap(domain: string, base: string | readonly string[], signa
   }
 }
 
-export async function rdapLookup(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainResult> {
+export async function rdapLookup(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext,
+  includeRegistration = false): Promise<DomainResult> {
   const { rawRdap, registrar, registrant, createdDate, updatedDate, expiryDate, nameServers, dnssec, statusCodes, ...result } =
     await queryRdap(domain, base, signal, context);
-  return { ...result, tld: getTld(domain) };
+  return { ...result, tld: getTld(domain), ...(includeRegistration ? registrationFields({ expiryDate, registrar, statusCodes }) : {}) };
 }
 export async function rdapDetail(domain: string, base: string | readonly string[], signal: AbortSignal, context?: LookupContext): Promise<DomainDetail> {
   return queryRdap(domain, base, signal, context);

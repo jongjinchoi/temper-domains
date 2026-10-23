@@ -10,6 +10,8 @@ export interface CheckOptions {
   requestTimeoutMs?: number;
   signal?: AbortSignal;
   onSummary?: (summary: CheckSummary) => void;
+  // Adds expiry, registrar and status codes from responses already received.
+  includeRegistration?: boolean;
 }
 export function summarizeResults(results: readonly DomainResult[], requested: number, elapsedMs: number): CheckSummary {
   const answered = results.filter(r => ["available", "taken", "premium", "reserved"].includes(r.status)).length;

@@ -10,13 +10,13 @@ import { getTld } from "../utils/domain.ts";
 import { formatStorageError } from "../utils/storage-error.ts";
 
 export async function lookupDomainAvailability(domain: string, rdapUrl: string | null, signal: AbortSignal,
-  timeoutMs: number, rdapKey?: string, context?: LookupContext, endpoints?: readonly string[]): Promise<DomainResult> {
+  timeoutMs: number, rdapKey?: string, context?: LookupContext, endpoints?: readonly string[], includeRegistration = false): Promise<DomainResult> {
   if (!context) {
     const run = createRun(timeoutMs, signal);
-    try { return await lookupDomainAvailability(domain, rdapUrl, run.signal, timeoutMs, rdapKey, run.context, endpoints); }
+    try { return await lookupDomainAvailability(domain, rdapUrl, run.signal, timeoutMs, rdapKey, run.context, endpoints, includeRegistration); }
     finally { run.close(); }
   }
-  if (rdapUrl) return enrichDomainResult(await rdapLookup(domain, endpoints ?? rdapUrl, signal, context), rdapKey);
+  if (rdapUrl) return enrichDomainResult(await rdapLookup(domain, endpoints ?? rdapUrl, signal, context, includeRegistration), rdapKey);
   const queuedAt = performance.now();
   let attempts = 0;
   let queueTimeMs = 0;
@@ -25,7 +25,7 @@ export async function lookupDomainAvailability(domain: string, rdapUrl: string |
       signal.throwIfAborted();
       attempts++;
       queueTimeMs = performance.now() - queuedAt;
-      return whoisLookup(domain, signal, Math.min(timeoutMs, context?.requestTimeoutMs ?? 5000));
+      return whoisLookup(domain, signal, Math.min(timeoutMs, context?.requestTimeoutMs ?? 5000), includeRegistration);
     });
     attempts = result.attempts ?? attempts;
     return enrichDomainResult({ ...result, attempts, queueTimeMs: Math.round(queueTimeMs),

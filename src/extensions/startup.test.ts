@@ -38,7 +38,7 @@ test("light CLI paths and MCP initialization do not execute the catalog", async 
       expect(await child.exited).toBe(1);
     }
     await client.connect(new StdioClientTransport({ command: "node", args: [entry, "mcp"], env: env as Record<string, string> }));
-    expect((await client.listTools()).tools).toHaveLength(7);
+    expect((await client.listTools()).tools).toHaveLength(11);
     const discovery = await client.callTool({ name: "list_supported_tlds", arguments: {} });
     expect(discovery.isError).toBe(true);
     expect(JSON.stringify(discovery.content)).toContain("CATALOG_EXECUTED");

@@ -56,7 +56,7 @@ export async function* checkDomainBatch(domains: readonly string[], options: Che
       let result = pending.get(domain);
       if (!result) {
         result = lookupDomainAvailability(domain, plan.method === "rdap" ? plan.endpoints[0]! : null,
-          signal, run.context.requestTimeoutMs, plan.key, run.context, plan.method === "rdap" ? plan.endpoints : []);
+          signal, run.context.requestTimeoutMs, plan.key, run.context, plan.method === "rdap" ? plan.endpoints : [], options.includeRegistration);
         pending.set(domain, result);
       }
       return result;

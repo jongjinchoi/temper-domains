@@ -15,6 +15,8 @@ import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
 import { assertCandidateLimit, validateSearchCombinations } from "../extensions/input.ts";
 import { formatSelectedResults } from "./search-format.ts";
+import { addWatch, loadWatchlist, removeWatch, watchKey } from "../config/watchlist.ts";
+import { formatDetailExpiry } from "../tui/format-date.ts";
 
 export const MCP_INSTRUCTIONS = `temper is a domain availability search tool.
 
@@ -27,6 +29,7 @@ TOOL ROUTING RULES:
 - Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
 - Use check_domain_availability for full domains explicitly provided by the user, such as "lockway.com", or set resume=true for exact unresolved domains from a prior result when the user asks to resume them.
 - Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
+- The watchlist holds domains someone else already holds that the user wants to keep an eye on; an available domain can be registered instead. Use watch_domain and unwatch_domain only when the user asks to add or remove a domain. list_watchlist reads the saved domains without querying registries. check_watchlist checks them and adds expiry, registrar and status codes. An expiry date is reference information, not the date a domain becomes available. With more than 100 watched domains, check_watchlist needs domains in pages of at most 100; check further pages only when the user asks.
 
 Respect reported lookup waits: server_cooldown with attempts=0 means this domain was not queried because of a previous server limit. retryAt is the earliest retry time, not a success guarantee; retryAtSource distinguishes server guidance from Temper policy. Local CLI/MCP processes sharing the same home share cooldown state. Do not change homes, endpoints or protocols to bypass a cooldown, or automatically replay deferred queries. State coordination errors need repair before retrying. Structured lookup results include a retryPlan; resume only on user request, at most 100 exact domains per call, and never silently truncate or automatically repeat the remaining pages. A resumed call makes one pass and stops queued work for each newly limited server. Each lookup call has a server-owned budget of at most 30 seconds, independent of progress notifications. Update older Temper processes and reconnect MCP clients when state versions differ; do not delete cooldown state.
 
@@ -181,11 +184,21 @@ function orderResultsByInput(
   return ordered;
 }
 
+// Watchlist rows carry registration details; the expiry is reference information only.
+function formatRegistration(result: DomainResult): string {
+  return [
+    result.expiryDate && `expires ${formatDetailExpiry(result.expiryDate)}`,
+    result.registrar && `registrar ${result.registrar}`,
+    result.statusCodes?.length && `status ${result.statusCodes.join(", ")}`,
+  ].filter(Boolean).join("; ");
+}
+
 export function formatFullDomainResults(
   requestedDomains: readonly string[],
   results: readonly DomainResult[],
+  title = "Domain availability check:",
 ): string {
-  const lines = ["Domain availability check:\n"];
+  const lines = [`${title}\n`];
   const orderedResults = orderResultsByInput(requestedDomains, results);
 
   for (const result of orderedResults) {
@@ -195,6 +208,8 @@ export function formatFullDomainResults(
     lines.push(
       `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`,
     );
+    const registration = formatRegistration(result);
+    if (registration) lines.push(`    ${registration}`);
   }
 
   const available = results.filter(isAvailableResult).length;
@@ -613,6 +628,76 @@ server.registerTool("check_domain_availability", {
   }
 });
 
+const textResult = (text: string, isError = false) => ({ content: [{ type: "text" as const, text }], ...(isError ? { isError: true } : {}) });
+const errorResult = (err: unknown) => textResult(`Error: ${err instanceof Error ? err.message : String(err)}`, true);
+
+server.registerTool("watch_domain", {
+  description: "Add a full domain that someone else already holds to the user's local watchlist. Only when the user asks to watch it.",
+  inputSchema: { domain: z.string().describe("Full domain name, e.g. 'gethalden.com'") },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+}, async ({ domain }) => {
+  try {
+    const normalized = normalizeFullDomainInput(domain);
+    if (normalized.error || !normalized.domain) return textResult(`Error: ${normalized.error ?? "Invalid domain."}`, true);
+    const result = await addWatch(normalized.domain);
+    return textResult(result.added ? `Added ${result.domain} to the watchlist.` : `${result.domain} is already in the watchlist.`);
+  } catch (err) { return errorResult(err); }
+});
+
+server.registerTool("list_watchlist", {
+  description: "List the domains saved in the user's local watchlist and when they were added. Does not query registries; use check_watchlist for current status and expiry.",
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+}, async () => {
+  try {
+    const entries = await loadWatchlist();
+    if (entries.length === 0) return textResult("The watchlist is empty.");
+    return textResult([`Watchlist (${entries.length}):`, ...entries.map(entry => `- ${entry.domain}  added ${entry.addedAt}`)].join("\n"));
+  } catch (err) { return errorResult(err); }
+});
+
+server.registerTool("unwatch_domain", {
+  description: "Remove a domain from the user's local watchlist. Only when the user asks to remove it.",
+  inputSchema: { domain: z.string().describe("Full domain name in the watchlist, e.g. 'gethalden.com'") },
+  annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+}, async ({ domain }) => {
+  try {
+    const normalized = sanitizeDomain(domain).toLowerCase();
+    if (!normalized.includes(".")) return textResult(`Error: ${domain} is not a full domain.`, true);
+    return textResult(await removeWatch(normalized) ? `Removed ${normalized} from the watchlist.` : `${normalized} was not in the watchlist.`);
+  } catch (err) { return errorResult(err); }
+});
+
+server.registerTool("check_watchlist", {
+  description: "Check the user's watched domains using RDAP/WHOIS, adding expiry, registrar and status codes for taken domains. Without domains, checks the whole watchlist when it has at most 100 entries; otherwise pass up to 100 watched domains per call. Expiry is reference information, not the date a domain becomes available.",
+  outputSchema: lookupOutputSchema,
+  inputSchema: {
+    domains: z.array(z.string()).min(1).max(100).optional().describe("Watched domains to check, at most 100. Omit to check the whole watchlist."),
+    resume: z.boolean().optional().describe("Only when the user asks to resume exact unresolved watched domains from a prior result. One pass; no automatic repetition."),
+  },
+  annotations: { readOnlyHint: true, openWorldHint: true },
+}, async ({ domains, resume }, extra) => {
+  try {
+    const entries = await loadWatchlist();
+    const byKey = new Map(entries.map(entry => [watchKey(entry.domain), entry.domain]));
+    let selected: string[];
+    if (domains) {
+      const outside = domains.filter(domain => !byKey.has(watchKey(domain)));
+      if (outside.length) return textResult(`Error: not in the watchlist: ${outside.join(", ")}. Use list_watchlist to see watched domains.`, true);
+      selected = [...new Set(domains.map(domain => byKey.get(watchKey(domain))!))];
+    } else {
+      if (entries.length === 0) return textResult("The watchlist is empty.");
+      if (entries.length > 100) return textResult(`Error: the watchlist has ${entries.length} domains; check at most 100 per call by passing domains.`, true);
+      selected = entries.map(entry => entry.domain);
+    }
+    const results: DomainResult[] = [];
+    let summary: CheckSummary | undefined;
+    for await (const result of checkFullDomains(selected, { concurrency: 20, resume, includeRegistration: true, ...(resume ? { timeoutMs: 30000 } : {}), signal: extra.signal, onSummary: value => { summary = value; } })) {
+      results.push(result);
+    }
+    return lookupResult(formatFullDomainResults(selected, results, "Watchlist check:") + (summary ? "\n" + formatCoverage(summary) : ""), results, summary);
+  } catch (err) { return errorResult(err); }
+});
+
 server.registerTool("whois_domain", {
   description: "Get detailed WHOIS/RDAP information for a domain including registrar, expiry date, nameservers, and status codes.",
   inputSchema: {
@@ -636,13 +721,14 @@ server.registerTool("whois_domain", {
   }
 });
 
-// SDK 1.30 validates an absent argument object as undefined. Preserve the original
-// no-argument discovery call while exposing its new optional fields in tools/list.
+// SDK 1.30 validates an absent argument object as undefined. Preserve no-argument
+// calls to tools whose arguments are all optional.
+const OPTIONAL_ARGUMENT_TOOLS = new Set(["list_supported_tlds", "check_watchlist"]);
 class DiscoveryStdioTransport extends StdioServerTransport {
   override async start() {
     const receive = this.onmessage;
     this.onmessage = (message) => {
-      if ("method" in message && message.method === "tools/call" && message.params?.name === "list_supported_tlds" && message.params.arguments === undefined) {
+      if ("method" in message && message.method === "tools/call" && OPTIONAL_ARGUMENT_TOOLS.has(String(message.params?.name)) && message.params?.arguments === undefined) {
         message = { ...message, params: { ...message.params, arguments: {} } };
       }
       receive?.(message);

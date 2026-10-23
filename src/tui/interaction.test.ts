@@ -43,6 +43,20 @@ test.each([
   expect(result.unhandled).toEqual([]);
 });
 
+test("watchlist rows show the expiry and a shortened registrar for taken domains only", async () => {
+  const result = await scenario("watch-registration");
+  const lines = (result.frames.list as string).split("\n");
+  const taken = lines.find(line => line.includes("acme.com"))!.replace(/\s+/g, " ");
+  const available = lines.find(line => line.includes("acme.net"))!;
+  expect(taken).toContain(`expires ${result.frames.expiry.slice(0, 10)} (in 3 days)`);
+  expect(taken).toContain("Example Registrar");
+  expect(taken).not.toContain("Incorporated");
+  expect(result.frames.list).not.toContain("Private Person");
+  expect(result.frames.list).not.toContain("client transfer prohibited");
+  expect(available).not.toContain("expires");
+  expect(result.unhandled).toEqual([]);
+});
+
 test.each(["normal", "delayed", "write-failure", "cleanup-failure", "read-failure", "leave-save", "leave-read", "fast-reentry"])(
   "history return reconciles storage and preserves failure boundaries: %s", async mode => {
     await scenario(mode, "tui-history-return-worker.tsx");

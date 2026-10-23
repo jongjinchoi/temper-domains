@@ -57,6 +57,10 @@ export const MCP_TOOLS = [
   "check_domain_availability",
   "whois_domain",
   "open_registrar",
+  "watch_domain",
+  "list_watchlist",
+  "check_watchlist",
+  "unwatch_domain",
 ] as const;
 
 export interface Command {
@@ -189,7 +193,7 @@ export const LOOP_STEPS: LoopStep[] = [
   {
     tag: "04 · KEEP",
     title: "Taken? Watch it.",
-    body: "If someone already holds it, `a` adds it to your watchlist. `temper list` rechecks every watched domain each time you run it, and `temper whois` shows its registrar and expiry.",
+    body: "If someone already holds it, `a` adds it to your watchlist. `temper list` rechecks every watched domain each time you run it and shows its expiry and registrar.",
     media: { src: "/media/watchlist.gif", alt: "temper list rechecking a watchlist", caption: "temper list" },
   },
 ];
@@ -224,7 +228,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "What is MCP and how does temper use it?",
-    a: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing seven tools: list_supported_tlds, search_domain, search_names, suggest_domain, check_domain_availability, whois_domain, and open_registrar.",
+    a: "MCP (Model Context Protocol) lets AI assistants like Codex, Claude, and Cursor call external tools. Running 'temper mcp' starts a local stdio server exposing eleven tools: list_supported_tlds, search_domain, search_names, suggest_domain, check_domain_availability, whois_domain, open_registrar, and the watchlist tools watch_domain, list_watchlist, check_watchlist and unwatch_domain.",
   },
   {
     q: "Does temper track my searches?",

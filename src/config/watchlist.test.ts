@@ -17,7 +17,7 @@ function worker(operation: string, domain: string, gate = "", extraEnv: Record<s
     cwd: import.meta.dir + "/../..", env: { ...process.env, TEMPER_TEST_HOME: home, ...extraEnv },
     stdout: "pipe", stderr: "pipe",
   });
-  return Promise.all([child.exited, new Response(child.stderr).text()]);
+  return Promise.all([child.exited, new Response(child.stderr).text(), new Response(child.stdout).text()]);
 }
 
 test("concurrent processes preserve every successful watch addition", async () => {
@@ -57,6 +57,12 @@ test("watch additions and removals treat domain case consistently", async () => 
   expect(JSON.parse(await readFile(file, "utf8"))).toHaveLength(1);
   await worker("remove", "ACME.COM");
   expect(JSON.parse(await readFile(file, "utf8"))).toEqual([]);
+});
+
+test("removal reports whether the domain was listed", async () => {
+  await worker("add", "acme.com");
+  expect((await worker("remove", "ACME.com"))[2].trim()).toBe("removed");
+  expect((await worker("remove", "acme.com"))[2].trim()).toBe("absent");
 });
 
 test.each([["münchen.de", "xn--mnchen-3ya.de"], ["xn--mnchen-3ya.de", "MÜNCHEN.de"]])(

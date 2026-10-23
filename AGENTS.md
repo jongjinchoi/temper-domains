@@ -14,7 +14,7 @@ temper is a Bun/TypeScript terminal-first domain discovery tool.
 
 ## Architecture
 
-- Entry points: `src/index.ts` (CLI, 11 commands), `temper mcp` → `src/mcp/server.ts` (stdio MCP server, 7 tools), and the hosted demo route `web/app/api/check/route.ts`.
+- Entry points: `src/index.ts` (CLI, 11 commands), `temper mcp` → `src/mcp/server.ts` (stdio MCP server, 11 tools), and the hosted demo route `web/app/api/check/route.ts`.
 - Lookups (`src/checker/`): `checkDomainBatch` (`batch.ts`) uses the IANA bootstrap to choose RDAP or WHOIS per domain and streams rows; `lookupDomainAvailability` (`lookup.ts`) runs `rdap.ts` or `whois.ts`. Every network request passes `withAdmission` (`admission.ts`): the per-server scheduler plus a `LimitCoordinator` permit.
 - Lookup limits: CLI and MCP use `localLimits` (`src/checker/limit-store.ts`), a file store shared across processes; the hosted demo uses in-memory limits.
 - Other modules: `src/tui/` (Ink screens), `src/config/` (config, history, watchlist), `src/extensions/` (bundled TLD catalog; the runtime snapshot is generated from `data-sources/catalog/` by `bun run catalog:update`), `src/update/` (self-update), `src/registrar/` (registrar URLs and browser launch), `src/utils/` (validation, domain parsing, storage helpers).

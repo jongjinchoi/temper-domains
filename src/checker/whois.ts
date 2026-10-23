@@ -1,6 +1,6 @@
 import { createConnection } from "node:net";
 import { StringDecoder } from "node:string_decoder";
-import type { DomainDetail, DomainResult, DomainStatus } from "./types.ts";
+import { registrationFields, type DomainDetail, type DomainResult, type DomainStatus } from "./types.ts";
 import { getTld } from "../utils/domain.ts";
 
 import { WHOIS_PROFILES } from "./services.ts";
@@ -129,6 +129,7 @@ export async function whoisLookup(
   domain: string,
   signal: AbortSignal,
   timeoutMs = 3000,
+  includeRegistration = false,
 ): Promise<DomainResult> {
   const tld = getTld(domain);
   const host = WHOIS_PROFILES[tld]?.host;
@@ -147,7 +148,9 @@ export async function whoisLookup(
 
     const responseTime = Math.round(performance.now() - start);
     const status = detectStatus(raw, domain);
-    return { domain, tld, status, method: "whois", responseTime, attempts, ...(status === "rate_limited" ? { error: whoisLimitMessage(raw), terminationReason: "rate_limited" as const } : {}), ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
+    // The same parser and profile as whoisDetail, applied to the response already received.
+    const registration = includeRegistration && status === "taken" ? registrationFields(parseWhoisRaw(raw, WHOIS_PROFILES[tld]?.parser)) : {};
+    return { domain, tld, status, method: "whois", responseTime, attempts, ...registration, ...(status === "rate_limited" ? { error: whoisLimitMessage(raw), terminationReason: "rate_limited" as const } : {}), ...(status === "error" ? { error: "WHOIS response is unrecognized or does not match the query", terminationReason: "invalid_response" as const } : {}) };
   } catch (err) {
     const responseTime = Math.round(performance.now() - start);
     const reason = failureReason(err, signal, attempts);

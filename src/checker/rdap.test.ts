@@ -151,6 +151,32 @@ describe("rdapLookup", () => {
     });
   });
 
+  test("returns registration details only when requested, never the registrant", async () => {
+    globalThis.fetch = (async () => Response.json({
+      objectClassName: "domain", ldhName: "example.com", status: ["client transfer prohibited"],
+      events: [
+        { eventAction: "registration", eventDate: "2015-06-06T23:59:59Z" },
+        { eventAction: "expiration", eventDate: "2027-06-06T23:59:59Z" },
+      ],
+      entities: [
+        { roles: ["registrar"], vcardArray: ["vcard", [["fn", {}, "text", "Example Registrar"]]] },
+        { roles: ["registrant"], vcardArray: ["vcard", [["fn", {}, "text", "Private Person"]]] },
+      ],
+      nameservers: [{ ldhName: "ns1.example.com" }],
+    })) as unknown as typeof fetch;
+
+    const plain = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal);
+    const detailed = await rdapLookup("example.com", "https://rdap.test", new AbortController().signal, undefined, true);
+
+    expect(plain.status).toBe("taken");
+    for (const key of ["expiryDate", "registrar", "statusCodes", "registrant", "nameServers", "createdDate", "rawRdap"]) {
+      expect(plain).not.toHaveProperty(key);
+    }
+    expect(detailed).toMatchObject({ status: "taken", expiryDate: "2027-06-06T23:59:59Z",
+      registrar: "Example Registrar", statusCodes: ["client transfer prohibited"] });
+    for (const key of ["registrant", "nameServers", "createdDate", "rawRdap"]) expect(detailed).not.toHaveProperty(key);
+  });
+
   test("retries one rate-limited RDAP response", async () => {
     let calls = 0;
     globalThis.fetch = (async () => {

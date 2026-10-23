@@ -36,6 +36,11 @@ if (scenario === "watch-corrupt" || scenario === "history-corrupt" || scenario =
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, scenario === "watch-corrupt" ? "watchlist.json" : "history.json"), "{}");
 }
+if (scenario === "watch-registration") {
+  const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
+  await mkdir(dir, { recursive: true });
+  await writeFile(join(dir, "watchlist.json"), JSON.stringify(["acme.com", "acme.net"].map(domain => ({ domain, addedAt: new Date().toISOString() }))));
+}
 if (scenario?.startsWith("history-delete-")) {
   await addHistory({ query: "older", timestamp: new Date().toISOString(), available: 1, total: 1 });
   await addHistory({ query: "selected", timestamp: new Date().toISOString(), available: 1, total: 1 });
@@ -53,6 +58,15 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
     return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
   if (scenario === "search-resume-many") throw new Error("test temporary connection failure");
+  if (scenario === "watch-registration") {
+    if (!String(input).endsWith("/acme.com")) return new Response(null, { status: 404 });
+    return Response.json({ objectClassName: "domain", ldhName: "acme.com", status: ["client transfer prohibited"],
+      events: [{ eventAction: "expiration", eventDate: expiryFixtures.future }],
+      entities: [
+        { roles: ["registrar"], vcardArray: ["vcard", [["fn", {}, "text", "Example Registrar With A Very Long Legal Name Incorporated"]]] },
+        { roles: ["registrant"], vcardArray: ["vcard", [["fn", {}, "text", "Private Person"]]] },
+      ] });
+  }
   if (scenario?.startsWith("whois-expiry-")) {
     const expiry = expiryFixtures[scenario.slice("whois-expiry-".length)];
     return Response.json({ objectClassName: "domain", ldhName: "acme.com", events: [
@@ -101,7 +115,7 @@ let back = 0;
 const element = scenario === "suggest"
   ? <SuggestView query="Acme" prefixes={[]} suffixes={[]} onBack={() => back++} />
   : scenario?.startsWith("whois-expiry-") ? <WhoisView domain="acme.com" onBack={() => back++} />
-  : scenario === "watch-corrupt" ? <WatchlistView />
+  : scenario === "watch-corrupt" || scenario === "watch-registration" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
   : scenario === "search-resume" ? <App query="Acme" tlds={["com", "net"]} />
@@ -202,6 +216,10 @@ try {
       }
       frames.afterNavigation = plain();
     }
+  } else if (scenario === "watch-registration") {
+    await until(() => frame.includes("available") && frame.includes("taken"));
+    frames.expiry = expiryFixtures.future!;
+    frames.list = plain();
   } else if (scenario === "suggest") {
     await until(() => frame.includes("1 names checked"));
     input.write("\r");

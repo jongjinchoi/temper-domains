@@ -206,8 +206,14 @@ once, keeping the first occurrence in base/prefix/suffix order.
 ```bash
 temper history                # interactive search history (re-search, remove)
 temper list                   # interactive watchlist (refresh, remove)
-temper watch gethalden.com    # add a domain to watchlist from CLI
+temper watch gethalden.com    # add a domain someone else holds to the watchlist
 ```
+
+The watchlist is for domains someone else already holds; an available domain can
+be registered instead. `temper list` rechecks every watched domain and shows the
+expiry date and registrar of taken ones from the same lookup. The expiry is
+reference information, not the date a domain becomes available. Status codes
+and other details remain in `temper whois`.
 
 In search view, press `a` to add a domain to your watchlist, `h` to view history, `w` to view watchlist.
 

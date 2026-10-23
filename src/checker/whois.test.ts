@@ -19,6 +19,12 @@ test.each(['lookup', 'detail', 'integration'])("WHOIS %s preserves timeout class
   expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
 }, 20000);
 
+test("WHOIS lookup returns registration details only when requested, never the registrant", async () => {
+  const child = Bun.spawn([process.execPath, "tests/helpers/whois-registration.ts"], { stdout: "pipe", stderr: "pipe" });
+  const [code, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()]);
+  expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+});
+
 test("generic WHOIS notices are not denials and contradictory evidence stays unresolved", () => {
   expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain not found.", "sample.io")).toBe("available");
   expect(detectStatus("Terms: automated access may be subject to rate limits.\nDomain Name: sample.io", "sample.io")).toBe("taken");

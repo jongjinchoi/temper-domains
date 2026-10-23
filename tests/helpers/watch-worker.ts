@@ -29,7 +29,7 @@ if (gate) {
 try {
   if (operation === "config") await saveConfig({ theme: "seoul-night" });
   else if (operation === "history") await addHistory({ query: "acme", timestamp: new Date().toISOString(), available: 1, total: 1 });
-  else if (operation === "remove") await removeWatch(domain!);
+  else if (operation === "remove") console.log(await removeWatch(domain!) ? "removed" : "absent");
   else await addWatch(domain!);
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));

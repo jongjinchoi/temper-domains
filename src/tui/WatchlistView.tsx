@@ -8,6 +8,8 @@ import { getStatusStyle, theme } from "./theme.ts";
 import ListViewport from "./ListViewport.tsx";
 import { useListViewport } from "./hooks/useListViewport.ts";
 import { initialWatchlistState, watchlistReducer } from "./watchlist-state.ts";
+import { formatDetailExpiry } from "./format-date.ts";
+import type { DomainResult } from "../checker/types.ts";
 
 interface Props {
   onBack?: () => void;
@@ -48,7 +50,7 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       entriesLoaded = true;
       for await (const result of checkFullDomains(
         watchlist.map((entry) => entry.domain),
-        { concurrency: 10, timeoutMs: 8000, signal: abortController.signal },
+        { concurrency: 10, timeoutMs: 8000, signal: abortController.signal, includeRegistration: true },
       )) {
         if (cancelledRef.current || runId !== runIdRef.current) return;
         dispatch({ type: "result", result });
@@ -165,8 +167,10 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
           ? { icon: "…", color: theme.dim }
           : getStatusStyle(item.status);
         const addedAgo = formatAgo(item.addedAt);
-        const detail = item.result
-          ? ` ${item.result.method} ${item.result.responseTime}ms${item.result.error ? ` ${item.result.error}` : ""}`
+        const registration = item.result ? formatRegistration(item.result) : "";
+        // Registration details take the place of lookup timing on taken rows.
+        const detail = item.result && !registration
+          ? `${item.result.method} ${item.result.responseTime}ms${item.result.error ? ` ${item.result.error}` : ""}`
           : "";
 
         return { key: item.domain, content: (
@@ -174,8 +178,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
             <Box width={2} flexShrink={0}>{isSelected ? <Text color={theme.primary}>▸ </Text> : <Text>  </Text>}</Box>
             <Text color={theme.text}>{item.domain.padEnd(22)}</Text>
             <Text color={color}>{icon} {item.status.padEnd(12)}</Text>
-            {detail && <Text color={theme.dim}>{detail.padEnd(18)}</Text>}
-            <Text color={theme.dim}>{addedAgo}</Text>
+            <Text color={theme.dim}>{addedAgo.padEnd(10)}</Text>
+            {detail && <Text color={theme.dim}>{detail}</Text>}
+            {registration && <Text color={theme.dim} wrap="truncate-end">{registration}</Text>}
           </Box>
         ) };
       })} />
@@ -185,6 +190,15 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       </Box>
     </FrameBox>
   );
+}
+
+const REGISTRAR_WIDTH = 20;
+
+// Status codes stay in MCP and whois detail; the row keeps expiry and registrar.
+function formatRegistration(result: DomainResult): string {
+  const registrar = result.registrar && (result.registrar.length > REGISTRAR_WIDTH
+    ? `${result.registrar.slice(0, REGISTRAR_WIDTH - 1)}…` : result.registrar);
+  return [result.expiryDate && `expires ${formatDetailExpiry(result.expiryDate)}`, registrar].filter(Boolean).join("  ");
 }
 
 function formatAgo(isoDate: string): string {

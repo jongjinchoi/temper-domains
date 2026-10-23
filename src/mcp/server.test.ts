@@ -188,6 +188,13 @@ describe("MCP bare-name routing", () => {
     expect(MCP_INSTRUCTIONS).toContain("Do not infer, append, or choose TLDs");
   });
 
+  test("instructions limit watchlist changes to user requests and treat expiry as reference only", () => {
+    expect(MCP_INSTRUCTIONS).toContain("someone else already holds");
+    expect(MCP_INSTRUCTIONS).toContain("only when the user asks to add or remove a domain");
+    expect(MCP_INSTRUCTIONS).toContain("not the date a domain becomes available");
+    expect(MCP_INSTRUCTIONS).toContain("pages of at most 100");
+  });
+
   test("check_domain_availability description forbids inferred TLDs", () => {
     expect(CHECK_DOMAIN_AVAILABILITY_DESCRIPTION).toContain("explicitly provided by the user");
     expect(CHECK_DOMAIN_AVAILABILITY_DESCRIPTION).toContain("Do not infer, append, or choose TLDs");

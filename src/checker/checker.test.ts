@@ -129,6 +129,28 @@ describe("checker", () => {
     expect(byDomain.get("taken.com")?.method).toBe("rdap");
   });
 
+  test("adds registration details to taken rows only when the caller asks", async () => {
+    globalThis.fetch = (async (input: Parameters<typeof fetch>[0]) => String(input).includes("/domain/taken.com")
+      ? Response.json({ objectClassName: "domain", ldhName: "taken.com", status: ["active"],
+        events: [{ eventAction: "expiration", eventDate: "2027-01-02T00:00:00Z" }],
+        entities: [{ roles: ["registrar"], vcardArray: ["vcard", [["fn", {}, "text", "Example Registrar"]]] }] })
+      : new Response(null, { status: 404 })) as unknown as typeof fetch;
+    const rdapUrls = new Map([["com", "https://rdap.test"]]);
+    const collect = async (includeRegistration?: boolean) => {
+      const rows: DomainResult[] = [];
+      for await (const row of checkFullDomains(["available.com", "taken.com"], { rdapUrls, includeRegistration })) rows.push(row);
+      return new Map(rows.map(row => [row.domain, row]));
+    };
+
+    const plain = await collect();
+    const detailed = await collect(true);
+
+    expect(plain.get("taken.com")).not.toHaveProperty("expiryDate");
+    expect(plain.get("taken.com")).not.toHaveProperty("registrar");
+    expect(detailed.get("taken.com")).toMatchObject({ expiryDate: "2027-01-02T00:00:00Z", registrar: "Example Registrar", statusCodes: ["active"] });
+    expect(detailed.get("available.com")).not.toHaveProperty("expiryDate");
+  });
+
   test("returns error for invalid full domains before network lookup", async () => {
     let calls = 0;
     globalThis.fetch = (async () => {

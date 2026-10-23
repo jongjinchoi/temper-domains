@@ -140,12 +140,19 @@ own timeouts in addition to Temper's lookup budgets.
 | `check_domain_availability` | `domains`: array of full domains, maximum 100 | `resume`: boolean; only for a user-requested retry of exact prior unresolved domains. No inferred suffixes. An empty array is accepted and returns no rows. | Lookup envelope; a resume makes one pass with a 30s budget. |
 | `whois_domain` | `domain`: full domain | No timeout argument; lookup budget 10s. | Text details, confidence/review and lookup error/wait information. |
 | `open_registrar` | `domain`: full domain; `registrar`: cloudflare/porkbun/namecheap/vercel | Registrar is required; saved setup preferences do not supply a default. | Text containing the URL and accepted/unconfirmed browser request; failure returns `isError`. No purchase is performed. |
+| `watch_domain` | `domain`: full registrable domain | Use only when the user asks to watch it. Unicode and punycode spellings are one entry. | Text: added, or already in the watchlist. |
+| `list_watchlist` | None | Reads `~/.temper/watchlist.json`; no registry requests. | Text listing each domain and when it was added. |
+| `check_watchlist` | None | `domains`: 1–100 domains already in the watchlist; without it the whole watchlist is checked when it has at most 100 entries, otherwise an error asks for `domains`. `resume` as in `check_domain_availability`. | Lookup envelope whose taken rows add `expiryDate`, `registrar` and `statusCodes` from the responses already received. |
+| `unwatch_domain` | `domain`: full domain | Use only when the user asks to remove it. | Text: removed, or not in the watchlist. |
 
 Lookup envelopes contain `schemaVersion`, `rows`, `summary`, and `retryPlan` in
 `structuredContent` and a JSON text item, alongside the human-readable text.
 Input/operation errors return MCP errors or `isError`; partial lookup failures
 remain represented in the rows. A completed call is not proof that every domain
 was answered. [Retry eligibility and waits](troubleshooting.md) apply.
+The watchlist is for domains someone else already holds. Watchlist rows never
+include registrant names, and an expiry date is reference information: it is not
+the date a domain becomes available. Other lookup tools do not add these fields.
 
 ### Tools at a glance
 
@@ -158,10 +165,14 @@ was answered. [Retry eligibility and waits](troubleshooting.md) apply.
 | `check_domain_availability` | Check explicit full domains, or user-requested resume of exact prior unresolved domains (up to 100) |
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
+| `watch_domain` | Add a domain someone else holds to the local watchlist |
+| `list_watchlist` | List watched domains without lookups |
+| `check_watchlist` | Check watched domains with expiry, registrar and status codes (up to 100 per call) |
+| `unwatch_domain` | Remove a domain from the local watchlist |
 
 MCP output keeps uncertain results visible. Low-confidence availability is
 reported as review instead of a final recommendation.
-Search, suggestion and availability tools also return `structuredContent` with
+Search, suggestion, availability and watchlist check tools also return `structuredContent` with
 `schemaVersion`, `rows`, `summary`, and `retryPlan`, plus the same payload as JSON
 text. Use `resume: true` only when the user asks to resume exact unresolved names
 from a prior result. Each resumed call makes one pass with a 30s lookup budget;

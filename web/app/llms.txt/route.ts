@@ -51,6 +51,10 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`check_domain_availability\` - explicit full domains, or resume=true for exact prior unresolved domains on user request; maximum 100 per call
 - \`whois_domain\` - registrar, expiry, nameserver lookup
 - \`open_registrar\` - open purchase page in the browser
+- \`watch_domain\` - add a full domain someone else already holds to the local watchlist, only on user request
+- \`list_watchlist\` - list saved watchlist domains without querying registries
+- \`check_watchlist\` - check watched domains with expiry, registrar and status codes; at most 100 per call (pass domains for larger watchlists)
+- \`unwatch_domain\` - remove a domain from the local watchlist, only on user request
 
 ## Commands
 
@@ -61,7 +65,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper search <name> --category design-arts\` - search the industry selection (max 480 name × suffix combinations)
 - \`temper suggest <name>\` - prefix/suffix brainstorm
 - \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
-- \`temper watch <domain>\` - watch a taken domain, \`temper list\` to recheck
+- \`temper watch <domain>\` - watch a taken domain, \`temper list\` to recheck it with expiry and registrar
 - \`temper history\` - interactive search history
 - \`temper update\` - check now; verified global npm/Homebrew installs require confirmation before updating
 - \`temper update --check\` - show published version and instructions without installing
@@ -80,8 +84,9 @@ server or client_policy. Do not bypass a cooldown by changing home or protocol.
 State errors stop local requests; the hosted demo uses separate memory-only state.
 Version 2 shared state preserves existing waits on migration and refuses active old
 leases. Update older processes/reconnect MCP clients; do not delete cooldown state.
-Lookup tools (search_domain, search_names, suggest_domain, check_domain_availability)
+Lookup tools (search_domain, search_names, suggest_domain, check_domain_availability, check_watchlist)
 return structured rows, summary and retryPlan alongside text; whois_domain returns text details only.
+Only check_watchlist rows add expiryDate, registrar and statusCodes; expiry is reference information, not a release date.
 Resume only exact prior unresolved names when asked, with a 30s MCP lookup budget;
 do not silently truncate over 100 names or automatically replay remaining pages.
 TUI r/R resumes selected/visible unresolved candidates after confirmation (max 120s);
