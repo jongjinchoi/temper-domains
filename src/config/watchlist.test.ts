@@ -59,6 +59,52 @@ test("watch additions and removals treat domain case consistently", async () => 
   expect(JSON.parse(await readFile(file, "utf8"))).toEqual([]);
 });
 
+const taken = (domain: string, extra: Record<string, unknown> = {}) => ({ domain, tld: domain.split(".").pop(), status: "taken",
+  method: "rdap", responseTime: 1, checkedAt: "2026-10-23T00:00:00.000Z", expiryDate: "2027-01-01T00:00:00Z", registrar: "Example Registrar", ...extra });
+const record = (results: unknown[], gate = "") => worker("record", "-", gate, { TEMPER_TEST_RESULTS: JSON.stringify(results) });
+const stored = async () => JSON.parse(await readFile(file, "utf8")) as Record<string, unknown>[];
+
+test("recorded results update existing entries without adding removed domains", async () => {
+  await writeFile(file, JSON.stringify([{ domain: "acme.com", addedAt: "2026-01-01T00:00:00Z" }]));
+  expect((await record([taken("ACME.com", { registrant: "Private Person" }), taken("gone.com")]))[0]).toBe(0);
+  expect(await stored()).toEqual([{ domain: "acme.com", addedAt: "2026-01-01T00:00:00Z", lastStatus: "taken",
+    checkedAt: "2026-10-23T00:00:00.000Z", expiryDate: "2027-01-01T00:00:00Z", registrar: "Example Registrar" }]);
+});
+
+test("unresolved results keep the saved answer and a status change is recorded", async () => {
+  await writeFile(file, JSON.stringify([{ domain: "acme.com", addedAt: "2026-01-01T00:00:00Z", lastStatus: "taken",
+    checkedAt: "2026-10-01T00:00:00.000Z", expiryDate: "2027-01-01T00:00:00Z", registrar: "Example Registrar" }]));
+  await record([{ domain: "acme.com", tld: "com", status: "slow", method: "rdap", responseTime: 0 }]);
+  expect((await stored())[0]).toMatchObject({ lastStatus: "taken", checkedAt: "2026-10-01T00:00:00.000Z", expiryDate: "2027-01-01T00:00:00Z" });
+  await record([{ domain: "acme.com", tld: "com", status: "available", method: "rdap", responseTime: 1, checkedAt: "2026-10-23T00:00:00.000Z" }]);
+  const [entry] = await stored();
+  expect(entry).toMatchObject({ lastStatus: "available", previousStatus: "taken", statusChangedAt: "2026-10-23T00:00:00.000Z" });
+  expect(entry).not.toHaveProperty("expiryDate");
+  expect(entry).not.toHaveProperty("registrar");
+  // The same status again keeps the earlier change.
+  await record([{ domain: "acme.com", tld: "com", status: "available", method: "rdap", responseTime: 1, checkedAt: "2026-10-24T00:00:00.000Z" }]);
+  expect((await stored())[0]).toMatchObject({ previousStatus: "taken", statusChangedAt: "2026-10-23T00:00:00.000Z", checkedAt: "2026-10-24T00:00:00.000Z" });
+});
+
+test("malformed saved results are ignored while core and unknown fields are kept", async () => {
+  await writeFile(file, JSON.stringify([{ domain: "acme.com", addedAt: "2026-01-01T00:00:00Z", lastStatus: 5,
+    expiryDate: 9, registrar: ["x"], checkedAt: "never", note: "kept" }]));
+  const [code, stderr, stdout] = await worker("load", "-");
+  expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+  expect(JSON.parse(stdout)).toEqual([{ domain: "acme.com", addedAt: "2026-01-01T00:00:00Z", note: "kept" }]);
+});
+
+test("recording results alongside concurrent additions loses no entry", async () => {
+  await writeFile(file, JSON.stringify([{ domain: "old.com", addedAt: "2026-01-01T00:00:00Z" }]));
+  const gate = join(home, "start");
+  const jobs = [record([taken("old.com")], gate), ...Array.from({ length: 8 }, (_, i) => worker("add", `new${i}.com`, gate))];
+  await writeFile(gate, "start");
+  for (const [code, stderr] of await Promise.all(jobs)) expect({ code, stderr }).toEqual({ code: 0, stderr: "" });
+  const entries = await stored();
+  expect(entries).toHaveLength(9);
+  expect(entries.find(entry => entry.domain === "old.com")).toMatchObject({ lastStatus: "taken" });
+});
+
 test("removal reports whether the domain was listed", async () => {
   await worker("add", "acme.com");
   expect((await worker("remove", "ACME.com"))[2].trim()).toBe("removed");

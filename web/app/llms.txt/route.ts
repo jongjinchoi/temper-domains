@@ -52,8 +52,8 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`whois_domain\` - registrar, expiry, nameserver lookup
 - \`open_registrar\` - open purchase page in the browser
 - \`watch_domain\` - add a full domain someone else already holds to the local watchlist, only on user request
-- \`list_watchlist\` - list saved watchlist domains without querying registries
-- \`check_watchlist\` - check watched domains with expiry, registrar and status codes; at most 100 per call (pass domains for larger watchlists)
+- \`list_watchlist\` - list saved watchlist domains and the results saved by the last check, without querying registries
+- \`check_watchlist\` - check watched domains with expiry, registrar and status codes, save the answers and mark domains freed since an earlier check; at most 100 per call (pass domains for larger watchlists)
 - \`unwatch_domain\` - remove a domain from the local watchlist, only on user request
 
 ## Commands
@@ -66,6 +66,7 @@ temper is an open-source command-line tool that uses official RDAP and WHOIS rou
 - \`temper suggest <name>\` - prefix/suffix brainstorm
 - \`temper whois <domain>\` - registrar details through the shared RDAP/WHOIS route
 - \`temper watch <domain>\` - watch a taken domain, \`temper list\` to recheck it with expiry and registrar
+- \`temper list --format json\` - check the watchlist, save the answers and print JSON for scripts
 - \`temper history\` - interactive search history
 - \`temper update\` - check now; verified global npm/Homebrew installs require confirmation before updating
 - \`temper update --check\` - show published version and instructions without installing

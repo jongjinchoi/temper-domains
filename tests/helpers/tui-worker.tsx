@@ -36,6 +36,14 @@ if (scenario === "watch-corrupt" || scenario === "history-corrupt" || scenario =
   await mkdir(dir, { recursive: true });
   await writeFile(join(dir, scenario === "watch-corrupt" ? "watchlist.json" : "history.json"), "{}");
 }
+if (scenario === "watch-saved") {
+  const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
+  await mkdir(dir, { recursive: true });
+  await writeFile(join(dir, "watchlist.json"), JSON.stringify([
+    { domain: "acme.com", addedAt: new Date().toISOString(), lastStatus: "taken", checkedAt: "2026-01-01T00:00:00.000Z" },
+    { domain: "acme.net", addedAt: new Date().toISOString() },
+  ]));
+}
 if (scenario === "watch-registration") {
   const dir = join(process.env.TEMPER_TEST_HOME!, ".temper");
   await mkdir(dir, { recursive: true });
@@ -58,6 +66,12 @@ globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: RequestIni
     return Response.json({ services: [...EXTENDED_TLDS, "uk"].map((tld) => [[tld], [`https://${tld}.test/`]]) });
   }
   if (scenario === "search-resume-many") throw new Error("test temporary connection failure");
+  if (scenario === "watch-saved") {
+    if (!String(input).endsWith("/acme.net")) return new Response(null, { status: 404 });
+    return Response.json({ objectClassName: "domain", ldhName: "acme.net",
+      events: [{ eventAction: "expiration", eventDate: expiryFixtures.future }],
+      entities: [{ roles: ["registrar"], vcardArray: ["vcard", [["fn", {}, "text", "Example Registrar"]]] }] });
+  }
   if (scenario === "watch-registration") {
     if (!String(input).endsWith("/acme.com")) return new Response(null, { status: 404 });
     return Response.json({ objectClassName: "domain", ldhName: "acme.com", status: ["client transfer prohibited"],
@@ -115,7 +129,7 @@ let back = 0;
 const element = scenario === "suggest"
   ? <SuggestView query="Acme" prefixes={[]} suffixes={[]} onBack={() => back++} />
   : scenario?.startsWith("whois-expiry-") ? <WhoisView domain="acme.com" onBack={() => back++} />
-  : scenario === "watch-corrupt" || scenario === "watch-registration" ? <WatchlistView />
+  : scenario === "watch-corrupt" || scenario === "watch-registration" || scenario === "watch-saved" ? <WatchlistView />
   : scenario === "history-corrupt" || scenario?.startsWith("history-delete-") ? <HistoryView />
   : scenario?.startsWith("suggest-") ? <SuggestView query="Acme" prefixes={["Get"]} suffixes={["App"]} />
   : scenario === "search-resume" ? <App query="Acme" tlds={["com", "net"]} />
@@ -216,6 +230,14 @@ try {
       }
       frames.afterNavigation = plain();
     }
+  } else if (scenario === "watch-saved") {
+    await until(() => frame.includes("available") && frame.includes("expires"));
+    const saved = join(process.env.TEMPER_TEST_HOME!, ".temper/watchlist.json");
+    const deadline = Date.now() + 2000;
+    while (!(await readFile(saved, "utf8")).includes('"previousStatus"') && Date.now() < deadline) await Bun.sleep(10);
+    frames.expiry = expiryFixtures.future!;
+    frames.list = plain();
+    frames.raw = frame;
   } else if (scenario === "watch-registration") {
     await until(() => frame.includes("available") && frame.includes("taken"));
     frames.expiry = expiryFixtures.future!;

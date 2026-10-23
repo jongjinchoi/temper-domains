@@ -1,14 +1,14 @@
 import { Box, Text, useApp, useInput } from "ink";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { checkFullDomains } from "../checker/checker.ts";
-import { loadWatchlist, removeWatch } from "../config/watchlist.ts";
+import { freedSince, loadWatchlist, recordWatchResults, removeWatch } from "../config/watchlist.ts";
 import { formatStorageError } from "../utils/storage-error.ts";
 import FrameBox from "./FrameBox.tsx";
 import { getStatusStyle, theme } from "./theme.ts";
 import ListViewport from "./ListViewport.tsx";
 import { useListViewport } from "./hooks/useListViewport.ts";
 import { initialWatchlistState, watchlistReducer } from "./watchlist-state.ts";
-import { formatDetailExpiry } from "./format-date.ts";
+import { formatDetailExpiry, isExpirySoon } from "./format-date.ts";
 import type { DomainResult } from "../checker/types.ts";
 
 interface Props {
@@ -48,13 +48,19 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
       dispatch({ type: "loaded", entries: watchlist });
       setLoaded(true);
       entriesLoaded = true;
+      const results: DomainResult[] = [];
       for await (const result of checkFullDomains(
         watchlist.map((entry) => entry.domain),
         { concurrency: 10, timeoutMs: 8000, signal: abortController.signal, includeRegistration: true },
       )) {
         if (cancelledRef.current || runId !== runIdRef.current) return;
+        results.push(result);
         dispatch({ type: "result", result });
       }
+      // Only a completed check is saved; removed domains are never re-added.
+      await recordWatchResults(results).catch((error: unknown) => {
+        if (!cancelledRef.current && runId === runIdRef.current) dispatch({ type: "recordFailed", error: formatStorageError(error) });
+      });
     } catch (err) {
       if (cancelledRef.current || runId !== runIdRef.current) return;
       if (!entriesLoaded && beforeMutation !== mutationId.current) return;
@@ -168,6 +174,8 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
           : getStatusStyle(item.status);
         const addedAgo = formatAgo(item.addedAt);
         const registration = item.result ? formatRegistration(item.result) : "";
+        // Freed since an earlier check that found it taken (saved results).
+        const freed = freedSince(item, item.status);
         // Registration details take the place of lookup timing on taken rows.
         const detail = item.result && !registration
           ? `${item.result.method} ${item.result.responseTime}ms${item.result.error ? ` ${item.result.error}` : ""}`
@@ -179,8 +187,9 @@ export default function WatchlistView({ onBack, onQuit }: Props = {}) {
             <Text color={theme.text}>{item.domain.padEnd(22)}</Text>
             <Text color={color}>{icon} {item.status.padEnd(12)}</Text>
             <Text color={theme.dim}>{addedAgo.padEnd(10)}</Text>
+            {freed && <Text color={theme.green}>was taken  </Text>}
             {detail && <Text color={theme.dim}>{detail}</Text>}
-            {registration && <Text color={theme.dim} wrap="truncate-end">{registration}</Text>}
+            {registration && <Text color={item.result && isExpirySoon(item.result.expiryDate) ? theme.yellow : theme.dim} wrap="truncate-end">{registration}</Text>}
           </Box>
         ) };
       })} />

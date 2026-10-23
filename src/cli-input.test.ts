@@ -19,7 +19,7 @@ async function run(args: string[], observeTimeout = false) {
 }
 
 test.each([
-  ["search", "acme", "--format", "jsn"], ["whois", "acme.com", "--format", "jsn"],
+  ["search", "acme", "--format", "jsn"], ["whois", "acme.com", "--format", "jsn"], ["list", "--format", "jsn"],
   ["whois", "www.example.com"], ["whois", "co.uk"],
   ["watch", "www.example.com"], ["watch", "co.uk"],
   ["suggest", "acme", "-p", "get,,use"], ["suggest", "acme", "-s", "app,"],

@@ -238,6 +238,19 @@ in both workspaces so root typechecking does not download a separate compiler.
   expiry and a registrar shortened to 20 characters; status codes stay in MCP and
   whois detail. An expiry is reference information, not a release date.
   `removeWatch` reports whether an entry was removed.
+- Completed watchlist checks (TUI after the whole refresh, `list --format json`,
+  MCP `check_watchlist`) call `recordWatchResults`: one file transaction that
+  updates only entries still watched (a removed domain is never re-added) with
+  lastStatus, checkedAt, and for taken domains expiryDate/registrar (cleared
+  otherwise). Unanswered rows keep the saved answer. A status change records
+  previousStatus and statusChangedAt. `loadWatchlist` drops malformed saved
+  fields, keeps unknown fields, and still rejects malformed domain/addedAt.
+  Every released version (v0.1.1–v0.7.2) rewrites entries with their extra
+  fields intact. The TUI highlights an expiry within 30 days or past
+  (`isExpirySoon`) and marks "was taken" (`freedSince`); a failed save keeps the
+  rows and shows an error. `list --format json` skips theme, update check and Ink,
+  uses the automatic lookup budget, prints rows with addedAt (and the change
+  fields), and exits 1 after printing when saving fails.
 - Watch additions use the shared registrable-domain policy before storage.
   Legacy syntactically valid subdomain/public-suffix entries remain readable and removable.
 - Search/WHOIS output formats are validated by Commander before command execution.
@@ -379,7 +392,10 @@ in both workspaces so root typechecking does not download a separate compiler.
 - Watchlist tools share `~/.temper/watchlist.json` and its file transaction with
   the CLI/TUI. `watch_domain` and `unwatch_domain` change it only on user request
   (annotated as writes; unwatch as destructive). `list_watchlist` makes no lookups.
-  `check_watchlist` checks the whole watchlist only when it has at most 100
+  `list_watchlist` shows the saved results of the last check. `check_watchlist`
+  saves its answers (annotated as a non-destructive write), marks "was taken",
+  and still returns the rows with a warning when saving fails. It checks the
+  whole watchlist only when it has at most 100
   entries; otherwise, or for a subset, `domains` (1–100 watched domains) is
   required, and domains outside the watchlist are rejected before any lookup.
   Its `resume` and budget match check_domain_availability. A no-argument call is

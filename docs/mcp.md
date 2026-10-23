@@ -141,8 +141,8 @@ own timeouts in addition to Temper's lookup budgets.
 | `whois_domain` | `domain`: full domain | No timeout argument; lookup budget 10s. | Text details, confidence/review and lookup error/wait information. |
 | `open_registrar` | `domain`: full domain; `registrar`: cloudflare/porkbun/namecheap/vercel | Registrar is required; saved setup preferences do not supply a default. | Text containing the URL and accepted/unconfirmed browser request; failure returns `isError`. No purchase is performed. |
 | `watch_domain` | `domain`: full registrable domain | Use only when the user asks to watch it. Unicode and punycode spellings are one entry. | Text: added, or already in the watchlist. |
-| `list_watchlist` | None | Reads `~/.temper/watchlist.json`; no registry requests. | Text listing each domain and when it was added. |
-| `check_watchlist` | None | `domains`: 1–100 domains already in the watchlist; without it the whole watchlist is checked when it has at most 100 entries, otherwise an error asks for `domains`. `resume` as in `check_domain_availability`. | Lookup envelope whose taken rows add `expiryDate`, `registrar` and `statusCodes` from the responses already received. |
+| `list_watchlist` | None | Reads `~/.temper/watchlist.json`; no registry requests. Saved results come from the last check and may be outdated. | Text listing each domain, when it was added and its saved last status, check time, expiry, registrar and "was taken" change. |
+| `check_watchlist` | None | `domains`: 1–100 domains already in the watchlist; without it the whole watchlist is checked when it has at most 100 entries, otherwise an error asks for `domains`. `resume` as in `check_domain_availability`. | Lookup envelope whose taken rows add `expiryDate`, `registrar` and `statusCodes` from the responses already received. Saves the answers to the watchlist (a warning is added if saving fails) and marks "was taken" when an earlier check found the domain taken. |
 | `unwatch_domain` | `domain`: full domain | Use only when the user asks to remove it. | Text: removed, or not in the watchlist. |
 
 Lookup envelopes contain `schemaVersion`, `rows`, `summary`, and `retryPlan` in
@@ -166,7 +166,7 @@ the date a domain becomes available. Other lookup tools do not add these fields.
 | `whois_domain` | Detailed WHOIS/RDAP info (registrar, dates, nameservers) |
 | `open_registrar` | Open purchase page in browser |
 | `watch_domain` | Add a domain someone else holds to the local watchlist |
-| `list_watchlist` | List watched domains without lookups |
+| `list_watchlist` | List watched domains and their saved last check, without lookups |
 | `check_watchlist` | Check watched domains with expiry, registrar and status codes (up to 100 per call) |
 | `unwatch_domain` | Remove a domain from the local watchlist |
 

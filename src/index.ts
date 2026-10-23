@@ -266,12 +266,37 @@ program
 // --- list ---
 program
   .command("list")
+  .addOption(new Option("-f, --format <format>", "Output format").choices(["tui", "json"]).default("tui"))
   .description("Show watchlist with current availability")
-  .action(async () => {
+  .action(async (opts) => {
+    // JSON output mode — no Ink, theme or update check
+    if (opts.format === "json") {
+      const { loadWatchlist, recordWatchResults, watchKey } = await import("./config/watchlist.ts");
+      const entries = await loadWatchlist();
+      const { checkFullDomains } = await import("./checker/checker.ts");
+      const results = [];
+      for await (const result of checkFullDomains(entries.map(entry => entry.domain), { includeRegistration: true })) results.push(result);
+      let saveError: unknown;
+      const saved = await recordWatchResults(results).catch((error: unknown) => { saveError = error; return undefined; });
+      const byKey = new Map((saved ?? entries).map(entry => [watchKey(entry.domain), entry]));
+      console.log(JSON.stringify(results.map(result => {
+        const entry = byKey.get(watchKey(result.domain));
+        return { ...result, ...(entry ? { domain: entry.domain, addedAt: entry.addedAt } : {}),
+          ...(entry?.previousStatus ? { previousStatus: entry.previousStatus, statusChangedAt: entry.statusChangedAt } : {}) };
+      }), null, 2));
+      // The answers above are still printed; the command reports that they were not saved.
+      // exitCode rather than exit() so piped JSON is not cut short.
+      if (saveError !== undefined) {
+        console.error(`Error: results were not saved: ${formatStorageError(saveError)}`);
+        process.exitCode = 1;
+      }
+      return;
+    }
+
     const config = await loadConfig();
     setTheme(config.theme);
 
-    if (await maybeUpdate("list")) return;
+    if (await maybeUpdate("list", opts.format)) return;
 
     const { render } = await import("ink");
     const React = (await import("react")).default;

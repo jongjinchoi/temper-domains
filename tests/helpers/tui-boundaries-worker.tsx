@@ -60,6 +60,9 @@ mock.module("../../src/config/watchlist.ts", () => ({
     if (mode === "notice-late") await new Promise<void>(resolve => { resolveAdd = resolve; });
     return { added: true, domain };
   },
+  // Saving checked results is covered by the storage and watch-saved tests.
+  recordWatchResults: async () => undefined,
+  freedSince: () => false,
   removeWatch: async (domain: string) => {
     deleted.push(domain);
     if (mode === "watch-race") await new Promise((_resolve, reject) => { rejectDelete = reject; });

@@ -24,6 +24,7 @@ export type WatchlistAction =
   | { type: "deleteFailed"; error: string }
   | { type: "reconciled"; entries: WatchEntry[] }
   | { type: "reloadFailed"; error: string }
+  | { type: "recordFailed"; error: string }
   | { type: "move"; delta: number };
 
 export const initialWatchlistState: WatchlistState = { items: [], cursor: 0, loadError: null, actionError: null };
@@ -69,6 +70,8 @@ export function watchlistReducer(state: WatchlistState, action: WatchlistAction)
       const previous = new Map(state.items.map(item => [item.domain, item]));
       return withItems(state, action.entries.map(entry => previous.get(entry.domain) ?? { ...entry, status: "error" }));
     }
+    case "recordFailed":
+      return { ...state, actionError: `${action.error}. The results above were not saved.` };
     case "reloadFailed":
       return { ...state, actionError: `${action.error}. Could not reload the watchlist; press r to retry.` };
     case "move":

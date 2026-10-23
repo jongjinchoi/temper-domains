@@ -9,7 +9,7 @@
 ## 기능 개선
 - [ ] search 화면에서 `e` 키로 extended TLD 전환 (30 ↔ 60)
 - [x] search ↔ history ↔ suggest 간 화면 전환 시 기존 검색 세션 결과 유지 (history 항목의 새 검색은 검색어만 재사용)
-- [ ] watchlist 알림 기능 (cron 또는 launchd로 주기적 체크)
+- [ ] watchlist 알림 기능 (cron 또는 launchd로 주기적 체크) — `temper list --format json`이 조회·저장 후 `previousStatus`/`statusChangedAt`과 만료일을 출력하므로(2026-10-23) 사용자가 cron으로 직접 붙일 수 있음. 내장 등록·OS 알림은 미구현
 - [ ] `temper` 인자 없이 실행 시 마지막 검색 또는 메인 메뉴 표시
 - [x] 워치리스트 GIF 재녹화: taken 도메인(`gethalden.com`, `gethalden.net`)과 가상의 만료일·등록 기관(`scripts/media/fixture.ts`)으로 테이프 9개 전체 재녹화, 사용자 검토 후 적용. 다른 화면은 소요 시간 표시만 달라짐 (2026-10-23, `docs/archive/2026-10-23-watchlist-mcp-expiry.md`)
 
@@ -58,7 +58,7 @@
 
 ## 향후 확장 — 기능
 - [x] WHOIS/RDAP 상세 조회 (`temper whois <domain>`) — 만료일, 등록자, 네임서버 등 표시. CLI + TUI(`i` 키) + MCP tool `whois_domain`. RFC 9083 준수
-- [ ] 만료일 기반 워치리스트 강화 — 진행: 워치리스트 조회(`temper list`, MCP `check_watchlist`)에 만료일·등록 기관 표시(상태 코드는 MCP), 추가 요청 없이 이미 받은 응답에서 추출 (2026-10-23, `docs/archive/2026-10-23-watchlist-mcp-expiry.md`). 남음: 만료일 저장, 만료 30일 이내 하이라이트, `list --format json`
+- [x] 만료일 기반 워치리스트 강화 — 워치리스트 조회에 만료일·등록 기관 표시(`docs/archive/2026-10-23-watchlist-mcp-expiry.md`), 조회 결과 저장·만료 30일 이내 강조·"was taken" 표시·`list --format json`(`docs/archive/2026-10-23-watchlist-saved-results.md`) (2026-10-23)
 - [ ] DNS 레코드 조회 (`temper dns <domain>`) — A, AAAA, MX, TXT, CNAME, NS 조회. MCP tool `dns_lookup` 추가. `--format json` 지원
 
 ## 향후 확장 — 플랫폼

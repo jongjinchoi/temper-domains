@@ -25,7 +25,7 @@ Commands:
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
   whois [options] <domain>       Show detailed WHOIS/RDAP info for a domain
-  list                           Show watchlist with current availability
+  list [options]                 Show watchlist with current availability
   extensions [options]           Discover extensions by industry, purpose and
                                  region (offline)
   config                         Manage temper configuration
@@ -206,6 +206,7 @@ once, keeping the first occurrence in base/prefix/suffix order.
 ```bash
 temper history                # interactive search history (re-search, remove)
 temper list                   # interactive watchlist (refresh, remove)
+temper list --format json     # check the watchlist and print JSON (no terminal UI)
 temper watch gethalden.com    # add a domain someone else holds to the watchlist
 ```
 
@@ -214,6 +215,16 @@ be registered instead. `temper list` rechecks every watched domain and shows the
 expiry date and registrar of taken ones from the same lookup. The expiry is
 reference information, not the date a domain becomes available. Status codes
 and other details remain in `temper whois`.
+
+Each completed check saves its answers in `~/.temper/watchlist.json`: the last
+status, check time, expiry and registrar. Unanswered domains keep their saved
+answer. An expiry within 30 days, or already past, is highlighted. A domain that
+an earlier check found taken and that is available now is marked "was taken".
+`temper list --format json` runs the same check without the terminal UI, update
+check or theme, prints one row per watched domain (lookup fields plus `addedAt`,
+and `previousStatus`/`statusChangedAt` after a change), and saves the answers.
+If saving fails it still prints the rows and exits with status 1. Run it from
+cron or launchd to build your own notification.
 
 In search view, press `a` to add a domain to your watchlist, `h` to view history, `w` to view watchlist.
 
@@ -377,7 +388,8 @@ Usage: temper list [options]
 Show watchlist with current availability
 
 Options:
-  -h, --help  display help for command
+  -f, --format <format>  Output format (choices: "tui", "json", default: "tui")
+  -h, --help             display help for command
 ```
 
 ### temper extensions
@@ -486,7 +498,7 @@ Commands:
   history                        Show search history
   watch <domain>                 Add a domain to watchlist
   whois [options] <domain>       Show detailed WHOIS/RDAP info for a domain
-  list                           Show watchlist with current availability
+  list [options]                 Show watchlist with current availability
   extensions [options]           Discover extensions by industry, purpose and
                                  region (offline)
   config                         Manage temper configuration

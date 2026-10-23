@@ -43,6 +43,20 @@ test.each([
   expect(result.unhandled).toEqual([]);
 });
 
+test("watchlist marks a domain freed since the saved check, highlights a near expiry and saves the results", async () => {
+  const result = await scenario("watch-saved", "tui-worker.tsx", { FORCE_COLOR: "3" });
+  const lines = (result.frames.list as string).split("\n");
+  expect(lines.find(line => line.includes("acme.com"))).toContain("was taken");
+  expect(lines.find(line => line.includes("acme.net"))).not.toContain("was taken");
+  // temper-forge yellow #ffbf47 marks an expiry within 30 days.
+  expect(result.frames.raw).toMatch(/\x1b\[38;2;255;191;71m[^\x1b]*expires/);
+  const saved = Object.fromEntries((result.watch as { domain: string }[]).map(entry => [entry.domain, entry]));
+  expect(saved["acme.com"]).toMatchObject({ lastStatus: "available", previousStatus: "taken" });
+  expect(saved["acme.net"]).toMatchObject({ lastStatus: "taken", registrar: "Example Registrar", expiryDate: result.frames.expiry });
+  expect(saved["acme.net"]).not.toHaveProperty("previousStatus");
+  expect(result.unhandled).toEqual([]);
+});
+
 test("watchlist rows show the expiry and a shortened registrar for taken domains only", async () => {
   const result = await scenario("watch-registration");
   const lines = (result.frames.list as string).split("\n");

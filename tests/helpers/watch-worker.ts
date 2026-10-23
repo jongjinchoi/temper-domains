@@ -15,7 +15,7 @@ if (process.env.TEMPER_TEST_FAIL_LOCK_CLOSE) {
 if (process.env.TEMPER_TEST_FAIL_RENAME) {
   mock.module("node:fs/promises", () => ({ ...fs, rename: async () => { throw new Error("test rename failed"); } }));
 }
-const { addWatch, removeWatch } = await import("../../src/config/watchlist.ts");
+const { addWatch, loadWatchlist, recordWatchResults, removeWatch } = await import("../../src/config/watchlist.ts");
 const { saveConfig } = await import("../../src/config/config.ts");
 const { addHistory } = await import("../../src/config/history.ts");
 
@@ -30,6 +30,8 @@ try {
   if (operation === "config") await saveConfig({ theme: "seoul-night" });
   else if (operation === "history") await addHistory({ query: "acme", timestamp: new Date().toISOString(), available: 1, total: 1 });
   else if (operation === "remove") console.log(await removeWatch(domain!) ? "removed" : "absent");
+  else if (operation === "record") await recordWatchResults(JSON.parse(process.env.TEMPER_TEST_RESULTS!));
+  else if (operation === "load") console.log(JSON.stringify(await loadWatchlist()));
   else await addWatch(domain!);
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));

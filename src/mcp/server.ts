@@ -15,7 +15,7 @@ import { isValidDomainLabel, sanitizeDomain } from "../utils/validate.ts";
 import { VERSION } from "../version.ts";
 import { assertCandidateLimit, validateSearchCombinations } from "../extensions/input.ts";
 import { formatSelectedResults } from "./search-format.ts";
-import { addWatch, loadWatchlist, removeWatch, watchKey } from "../config/watchlist.ts";
+import { addWatch, freedSince, loadWatchlist, recordWatchResults, removeWatch, watchKey, type WatchEntry } from "../config/watchlist.ts";
 import { formatDetailExpiry } from "../tui/format-date.ts";
 
 export const MCP_INSTRUCTIONS = `temper is a domain availability search tool.
@@ -29,7 +29,7 @@ TOOL ROUTING RULES:
 - Use extended=true only after the default TLD results are not enough or the user asks for a wider search.
 - Use check_domain_availability for full domains explicitly provided by the user, such as "lockway.com", or set resume=true for exact unresolved domains from a prior result when the user asks to resume them.
 - Do not infer, append, or choose TLDs for the user and then pass those invented domains to check_domain_availability.
-- The watchlist holds domains someone else already holds that the user wants to keep an eye on; an available domain can be registered instead. Use watch_domain and unwatch_domain only when the user asks to add or remove a domain. list_watchlist reads the saved domains without querying registries. check_watchlist checks them and adds expiry, registrar and status codes. An expiry date is reference information, not the date a domain becomes available. With more than 100 watched domains, check_watchlist needs domains in pages of at most 100; check further pages only when the user asks.
+- The watchlist holds domains someone else already holds that the user wants to keep an eye on; an available domain can be registered instead. Use watch_domain and unwatch_domain only when the user asks to add or remove a domain. list_watchlist reads the saved domains and the results saved by the last check without querying registries; saved results may be outdated. check_watchlist checks them, adds expiry, registrar and status codes, saves the answers and marks a domain that was taken earlier and is available now. An expiry date is reference information, not the date a domain becomes available. With more than 100 watched domains, check_watchlist needs domains in pages of at most 100; check further pages only when the user asks.
 
 Respect reported lookup waits: server_cooldown with attempts=0 means this domain was not queried because of a previous server limit. retryAt is the earliest retry time, not a success guarantee; retryAtSource distinguishes server guidance from Temper policy. Local CLI/MCP processes sharing the same home share cooldown state. Do not change homes, endpoints or protocols to bypass a cooldown, or automatically replay deferred queries. State coordination errors need repair before retrying. Structured lookup results include a retryPlan; resume only on user request, at most 100 exact domains per call, and never silently truncate or automatically repeat the remaining pages. A resumed call makes one pass and stops queued work for each newly limited server. Each lookup call has a server-owned budget of at most 30 seconds, independent of progress notifications. Update older Temper processes and reconnect MCP clients when state versions differ; do not delete cooldown state.
 
@@ -197,6 +197,7 @@ export function formatFullDomainResults(
   requestedDomains: readonly string[],
   results: readonly DomainResult[],
   title = "Domain availability check:",
+  marks: ReadonlyMap<string, string> = new Map(),
 ): string {
   const lines = [`${title}\n`];
   const orderedResults = orderResultsByInput(requestedDomains, results);
@@ -206,7 +207,7 @@ export function formatFullDomainResults(
     const error = [result.error, lookupNotice(result)].filter(Boolean).map(value => `  ${value}`).join("");
     const confidence = formatConfidence(result);
     lines.push(
-      `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}`,
+      `${icon} ${result.domain.padEnd(30)} ${result.status.padEnd(14)} ${result.method.padEnd(5)} ${String(result.responseTime).padStart(4)}ms${confidence}${error}${marks.has(result.domain) ? `  ${marks.get(result.domain)}` : ""}`,
     );
     const registration = formatRegistration(result);
     if (registration) lines.push(`    ${registration}`);
@@ -644,14 +645,25 @@ server.registerTool("watch_domain", {
   } catch (err) { return errorResult(err); }
 });
 
+// Saved results come from the last check and may be outdated.
+function formatSavedEntry(entry: WatchEntry): string {
+  const saved = entry.lastStatus && entry.checkedAt ? [
+    `last check ${entry.checkedAt}: ${entry.lastStatus}`,
+    entry.expiryDate && `expires ${formatDetailExpiry(entry.expiryDate)}`,
+    entry.registrar && `registrar ${entry.registrar}`,
+    freedSince(entry) && `was taken (changed ${entry.statusChangedAt})`,
+  ].filter(Boolean).join("; ") : "not checked yet";
+  return `- ${entry.domain}  added ${entry.addedAt}; ${saved}`;
+}
+
 server.registerTool("list_watchlist", {
-  description: "List the domains saved in the user's local watchlist and when they were added. Does not query registries; use check_watchlist for current status and expiry.",
+  description: "List the domains in the user's local watchlist with the results saved by the last check (status, expiry, registrar, and whether a taken domain became available). Does not query registries; saved results may be outdated, so use check_watchlist for a current check.",
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
 }, async () => {
   try {
     const entries = await loadWatchlist();
     if (entries.length === 0) return textResult("The watchlist is empty.");
-    return textResult([`Watchlist (${entries.length}):`, ...entries.map(entry => `- ${entry.domain}  added ${entry.addedAt}`)].join("\n"));
+    return textResult([`Watchlist (${entries.length}):`, ...entries.map(formatSavedEntry)].join("\n"));
   } catch (err) { return errorResult(err); }
 });
 
@@ -668,17 +680,18 @@ server.registerTool("unwatch_domain", {
 });
 
 server.registerTool("check_watchlist", {
-  description: "Check the user's watched domains using RDAP/WHOIS, adding expiry, registrar and status codes for taken domains. Without domains, checks the whole watchlist when it has at most 100 entries; otherwise pass up to 100 watched domains per call. Expiry is reference information, not the date a domain becomes available.",
+  description: "Check the user's watched domains using RDAP/WHOIS, adding expiry, registrar and status codes for taken domains, and save the answers to the local watchlist. Marks a domain that was taken at an earlier check and is available now. Without domains, checks the whole watchlist when it has at most 100 entries; otherwise pass up to 100 watched domains per call. Expiry is reference information, not the date a domain becomes available.",
   outputSchema: lookupOutputSchema,
   inputSchema: {
     domains: z.array(z.string()).min(1).max(100).optional().describe("Watched domains to check, at most 100. Omit to check the whole watchlist."),
     resume: z.boolean().optional().describe("Only when the user asks to resume exact unresolved watched domains from a prior result. One pass; no automatic repetition."),
   },
-  annotations: { readOnlyHint: true, openWorldHint: true },
+  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
 }, async ({ domains, resume }, extra) => {
   try {
     const entries = await loadWatchlist();
     const byKey = new Map(entries.map(entry => [watchKey(entry.domain), entry.domain]));
+    const savedByKey = new Map(entries.map(entry => [watchKey(entry.domain), entry]));
     let selected: string[];
     if (domains) {
       const outside = domains.filter(domain => !byKey.has(watchKey(domain)));
@@ -694,7 +707,14 @@ server.registerTool("check_watchlist", {
     for await (const result of checkFullDomains(selected, { concurrency: 20, resume, includeRegistration: true, ...(resume ? { timeoutMs: 30000 } : {}), signal: extra.signal, onSummary: value => { summary = value; } })) {
       results.push(result);
     }
-    return lookupResult(formatFullDomainResults(selected, results, "Watchlist check:") + (summary ? "\n" + formatCoverage(summary) : ""), results, summary);
+    const marks = new Map(results.filter(result => {
+      const entry = savedByKey.get(watchKey(result.domain));
+      return entry && freedSince(entry, result.status);
+    }).map(result => [result.domain, "was taken"]));
+    // The answers are returned even when saving them fails.
+    const saveError = await recordWatchResults(results).then(() => "", (error: unknown) =>
+      `\nWarning: these results were not saved to the watchlist: ${error instanceof Error ? error.message : String(error)}`);
+    return lookupResult(formatFullDomainResults(selected, results, "Watchlist check:", marks) + (summary ? "\n" + formatCoverage(summary) : "") + saveError, results, summary);
   } catch (err) { return errorResult(err); }
 });
 

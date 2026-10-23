@@ -48,3 +48,16 @@ test.each(['UTC', 'Asia/Seoul', 'America/Los_Angeles'])('counts expiry days for 
   expect(await detail(tz, `formatDetailExpiry(process.env.TEST_VALUE, ${now})`, '2027-01-04')).toBe('2027-01-04  (in 3 days)');
   expect(await detail(tz, `formatDetailExpiry(process.env.TEST_VALUE, ${now})`, '2027-01-04T00:30:00Z')).toBe('2027-01-04  (in 3 days)');
 });
+
+test("expiry days count whole days and mark expiry within 30 days, including past dates, as soon", async () => {
+  const { expiryDays, isExpirySoon } = await import("./format-date.ts");
+  const now = Date.parse("2026-10-23T12:00:00Z");
+  expect(expiryDays("2026-11-22T12:00:00Z", now)).toBe(30);
+  expect(isExpirySoon("2026-11-22T12:00:00Z", now)).toBe(true);
+  expect(isExpirySoon("2026-11-22T12:00:01Z", now)).toBe(false);
+  expect(expiryDays("2026-10-20T12:00:00Z", now)).toBe(-3);
+  expect(isExpirySoon("2026-10-20T12:00:00Z", now)).toBe(true);
+  expect(expiryDays("2026-10-25", now)).toBe(2);
+  expect(expiryDays("not disclosed", now)).toBeUndefined();
+  expect(isExpirySoon(undefined, now)).toBe(false);
+});

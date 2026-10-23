@@ -28,7 +28,7 @@ test("stdio tool schemas reject invalid input while preserving error responses",
   expect(annotations.unwatch_domain).toMatchObject({ readOnlyHint: false, destructiveHint: true });
   expect(annotations.watch_domain).toMatchObject({ readOnlyHint: false, destructiveHint: false });
   expect(annotations.list_watchlist).toMatchObject({ readOnlyHint: true });
-  expect(annotations.check_watchlist).toMatchObject({ readOnlyHint: true, openWorldHint: true });
+  expect(annotations.check_watchlist).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: true });
   for (const [name, args] of [
     ["watch_domain", { domain: "acme" }],
     ["unwatch_domain", { domain: "acme" }],
@@ -297,4 +297,36 @@ test("check_watchlist refuses more than 100 watched domains without querying", a
   expect(page.isError).not.toBe(true);
   expect((page.structuredContent as { rows: unknown[] }).rows).toHaveLength(2);
   await writeFile(join(home, ".temper", "watchlist.json"), "[]");
+});
+
+test("check_watchlist saves its answers and list_watchlist shows them without querying", async () => {
+  const call = async (name: string, args?: Record<string, unknown>) => {
+    const response = await client.callTool({ name, ...(args ? { arguments: args } : {}) }) as
+      { content: { text?: string }[]; isError?: boolean; structuredContent?: unknown };
+    return { ...response, text: response.content.map(item => item.text ?? "").join("\n") };
+  };
+  const file = join(home, ".temper", "watchlist.json");
+  await mkdir(join(home, ".temper"), { recursive: true });
+  await writeFile(file, JSON.stringify([
+    { domain: "expiring.com", addedAt: "2026-01-01T00:00:00Z" },
+    { domain: "freed.dev", addedAt: "2026-01-01T00:00:00Z", lastStatus: "taken", checkedAt: "2026-01-02T00:00:00.000Z" },
+  ]));
+  const checked = await call("check_watchlist");
+  expect(checked.isError).not.toBe(true);
+  expect(checked.text.split("\n").find(line => line.includes("freed.dev"))).toContain("was taken");
+  const saved = Object.fromEntries((JSON.parse(await readFile(file, "utf8")) as { domain: string }[]).map(entry => [entry.domain, entry]));
+  expect(saved["expiring.com"]).toMatchObject({ lastStatus: "taken", expiryDate: "2027-06-01T00:00:00Z", registrar: "Example Registrar" });
+  expect(saved["expiring.com"]).not.toHaveProperty("registrant");
+  expect(saved["freed.dev"]).toMatchObject({ lastStatus: "available", previousStatus: "taken" });
+
+  const before = await readFile(join(home, "requests"), "utf8").catch(() => "");
+  const listed = await call("list_watchlist");
+  expect(await readFile(join(home, "requests"), "utf8").catch(() => "")).toBe(before);
+  const expiring = listed.text.split("\n").find(line => line.includes("expiring.com"))!;
+  expect(expiring).toContain("taken");
+  expect(expiring).toContain("expires 2027-06-01");
+  expect(expiring).toContain("Example Registrar");
+  expect(listed.text.split("\n").find(line => line.includes("freed.dev"))).toContain("was taken");
+  expect(listed.text).toContain("last check");
+  await writeFile(file, "[]");
 });

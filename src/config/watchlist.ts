@@ -6,12 +6,41 @@ import { withFileTransaction } from "../utils/file-transaction.ts";
 import { ensureConfigDir } from "../utils/fs.ts";
 import { isValidDomain, sanitizeDomain } from "../utils/validate.ts";
 import { getDomainInputError } from "../checker/policy.ts";
+import { isAnswered } from "../checker/retry.ts";
+import type { DomainResult } from "../checker/types.ts";
 
 const WATCHLIST_FILE = join(homedir(), ".temper", "watchlist.json");
 
+type AnsweredStatus = "available" | "taken" | "premium" | "reserved";
+
+// Saved results describe the last answered check; they are not refreshed by reading.
 export interface WatchEntry {
   domain: string;
   addedAt: string;
+  lastStatus?: AnsweredStatus;
+  checkedAt?: string;
+  expiryDate?: string;
+  registrar?: string;
+  previousStatus?: AnsweredStatus;
+  statusChangedAt?: string;
+}
+
+const ANSWERED: readonly string[] = ["available", "taken", "premium", "reserved"];
+const isTime = (value: unknown) => typeof value === "string" && Number.isFinite(Date.parse(value));
+const SAVED_FIELDS: Record<string, (value: unknown) => boolean> = {
+  lastStatus: value => ANSWERED.includes(value as string),
+  previousStatus: value => ANSWERED.includes(value as string),
+  checkedAt: isTime,
+  statusChangedAt: isTime,
+  expiryDate: value => typeof value === "string" && value.length > 0,
+  registrar: value => typeof value === "string" && value.length > 0,
+};
+
+// A damaged saved result is dropped rather than blocking the list; unknown fields are kept.
+function readEntry(entry: Record<string, unknown>): WatchEntry {
+  const clean: Record<string, unknown> = { ...entry, domain: (entry.domain as string).toLowerCase() };
+  for (const [field, valid] of Object.entries(SAVED_FIELDS)) if (field in clean && !valid(clean[field])) delete clean[field];
+  return clean as unknown as WatchEntry;
 }
 
 export async function loadWatchlist(): Promise<WatchEntry[]> {
@@ -29,7 +58,7 @@ export async function loadWatchlist(): Promise<WatchEntry[]> {
       typeof entry.domain === "string" && isValidDomain(entry.domain) &&
       typeof entry.addedAt === "string" && Number.isFinite(Date.parse(entry.addedAt))
     )) throw new Error("Invalid watchlist entries");
-    return entries.map((entry) => ({ ...entry, domain: entry.domain.toLowerCase() }));
+    return entries.map(readEntry);
   } catch {
     throw new Error(`Invalid watchlist: ${WATCHLIST_FILE}. Back up and repair this file before retrying; it has not been overwritten.`);
   }
@@ -71,6 +100,37 @@ export async function addWatch(input: string): Promise<{ added: boolean; domain:
     return existing ? list : [...list, { domain, addedAt: new Date().toISOString() }];
   });
   return existing ? { added: false, domain: existing.domain } : { added: true, domain };
+}
+
+// Saves answered results onto entries that are still watched; never adds an entry,
+// so a domain removed during the check stays removed. Unresolved rows keep the
+// saved answer. Registration details are kept only for taken domains. Resolves
+// the saved list, or undefined when nothing was answered and nothing was written.
+export async function recordWatchResults(results: readonly DomainResult[]): Promise<WatchEntry[] | undefined> {
+  const answered = new Map(results.filter(isAnswered).map(result => [watchKey(result.domain), result]));
+  if (!answered.size) return undefined;
+  let saved: WatchEntry[] = [];
+  await updateWatchlist(list => saved = list.map(entry => {
+    const result = answered.get(watchKey(entry.domain));
+    if (!result) return entry;
+    const { expiryDate, registrar, ...rest } = entry;
+    const status = result.status as AnsweredStatus;
+    const checkedAt = result.checkedAt ?? new Date().toISOString();
+    const changed = entry.lastStatus !== undefined && entry.lastStatus !== status;
+    return {
+      ...rest, lastStatus: status, checkedAt,
+      ...(status === "taken" && result.expiryDate ? { expiryDate: result.expiryDate } : {}),
+      ...(status === "taken" && result.registrar ? { registrar: result.registrar } : {}),
+      ...(changed ? { previousStatus: entry.lastStatus, statusChangedAt: checkedAt } : {}),
+    };
+  }));
+  return saved;
+}
+
+// Available now (or at the saved check) after an earlier check found it taken.
+export function freedSince(entry: Pick<WatchEntry, "lastStatus" | "previousStatus">, status: string | undefined = entry.lastStatus): boolean {
+  if (status !== "available") return false;
+  return entry.lastStatus === "taken" || (entry.lastStatus === "available" && entry.previousStatus === "taken");
 }
 
 // Resolves true when an entry was removed, false when none matched.

@@ -17,10 +17,12 @@ await original.writeFile(join(directory, "config.json"), '{"theme":"temper-forge
 const target = join(directory, mode === "init" ? "config.json" : mode.startsWith("history") || mode === "search-history" ? "history.json" : "watchlist.json");
 let injected = 0;
 let lockPath = "";
+// The watch screen saves its check before the deletion under test; fail only the deletion's cleanup.
+let armed = mode !== "watch";
 const canonicalLock = join(await original.realpath(directory), basename(target) + ".lock");
 mock.module("node:fs/promises", () => ({ ...original, unlink: async (...args: Parameters<typeof fs.unlink>) => {
   const path = String(args[0]);
-  if (join(await original.realpath(dirname(path)), basename(path)) === canonicalLock) {
+  if (armed && join(await original.realpath(dirname(path)), basename(path)) === canonicalLock) {
     injected++; lockPath = path; throw new Error("storage cleanup denied");
   }
   return original.unlink(...args);
@@ -58,6 +60,11 @@ try {
   } else if (mode !== "search-history") {
     await until(() => frame.includes(mode.startsWith("history") ? "selected" : "acme.com"));
     if (!mode.startsWith("history")) await until(() => frame.includes("available"));
+    if (mode === "watch") {
+      const deadline = Date.now() + 3000;
+      while (!(await original.readFile(target, "utf8")).includes("lastStatus") && Date.now() < deadline) await Bun.sleep(10);
+      armed = true;
+    }
     if (mode === "search-add") await until(() => frame.includes("a add"));
     await original.writeFile(target, mode === "history-conflict" ? JSON.stringify([{ ...entry, query: "new" }, entry]) : "{");
     input.write(mode === "search-add" ? "a" : "d");
