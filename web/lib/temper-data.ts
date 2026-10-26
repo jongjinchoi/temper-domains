@@ -92,7 +92,7 @@ export const COMMANDS: Command[] = [
   {
     slot: "CMD / 04",
     sig: { cmd: "watch", arg: "<domain>" },
-    desc: "Watch a taken domain. `temper list` rechecks the watchlist.",
+    desc: "Watch a taken domain. `temper list` rechecks and saves the watchlist; add `--format json` for scripts.",
     example: "$ temper watch gethalden.com",
   },
   {
@@ -193,7 +193,7 @@ export const LOOP_STEPS: LoopStep[] = [
   {
     tag: "04 · KEEP",
     title: "Taken? Watch it.",
-    body: "If someone already holds it, `a` adds it to your watchlist. `temper list` rechecks every watched domain each time you run it and shows its expiry and registrar.",
+    body: "If someone already holds it, `a` adds it to your watchlist. `temper list` rechecks every watched domain, shows its expiry and registrar, and saves the answers. An expiry within 30 days, or already past, is highlighted; a domain taken at an earlier check and available now is marked \"was taken\".",
     media: { src: "/media/watchlist.gif", alt: "temper list rechecking a watchlist", caption: "temper list" },
   },
 ];
@@ -236,7 +236,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "Can I use the results in scripts?",
-    a: "Yes. temper search <name> --format json prints results you can pipe into jq or your own tools.",
+    a: "Yes. temper search <name> --format json prints results you can pipe into jq or your own tools. temper list --format json checks your watchlist, saves the answers and prints JSON, so you can run it from cron or launchd.",
   },
 ];
 
